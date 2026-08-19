@@ -1,0 +1,35 @@
+---
+description: Vertical-slice feature containers; one feature per task; autonomous gates
+globs:
+alwaysApply: true
+---
+
+# Feature Modules (Lego Assembly)
+
+## Rules
+
+- **One feature per agent task** — no batching multiple BUILD_PLAN feature rows
+- **Vertical slice** — logic, view, tests, i18n in one container folder
+- **Thin wiring** — composition root (`appBootstrap.ts` / `main.ts`, `GoldenPathApp.kt` / `MainActivity`) ≤10 lines per feature
+- **Sequential before Parallel** — after scaffold step 2, parallel agents may run on **non-overlapping** scopes; orchestrator owns BUILD_PLAN + merge
+
+## After every AGENT step
+
+```bash
+python3 scripts/agent-run.py watch-agent-gates --once --autofix
+```
+
+On exit `1`: read gate JSON + `.cursor/agent-progress.json`; **auto-fix** lint/tests in feature scope; re-run until pass or 3-strike.
+
+On exit `2`: halt and escalate to human; switch to **Debug Mode** per `docs/CURSOR_MODES.md` when root cause is unclear.
+
+## Auto-fix allowed (no human approval)
+
+- Lint, format, type, and test fixes within active feature container + wiring + tests
+- `scripts/feature-autofix.sh` mechanical fixers
+
+## Still requires human
+
+- `git push`, releases, disabling gates (`destructive-ops.mdc`)
+
+See `docs/FEATURE_MODULES.md`.

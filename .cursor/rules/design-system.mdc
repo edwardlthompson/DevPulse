@@ -1,0 +1,58 @@
+---
+description: Design system rules for UI work — tokens, themes, i18n separation
+globs:
+  - examples/web/**
+  - examples/android/**
+  - design-tokens/**
+  - branding/**
+  - docs/DESIGN_GUIDE.md
+  - docs/WEB_PROJECT_LAYOUT.md
+---
+
+# Design System
+
+Before editing UI in `examples/web/` or `examples/android/`:
+
+1. Read @docs/WEB_PROJECT_LAYOUT.md before moving site files or choosing publish paths (web stack)
+2. Read @docs/DESIGN_GUIDE.md and @branding/BRANDING.md
+3. Read generated tokens in `design-tokens/design-tokens.json` (source) — not hand-edit outputs
+4. Logos and pitch copy live under `branding/` — run sync + `generate-project-readme.py` after edits
+
+## Repository layout (web)
+
+- **`docs/` is agent documentation only** — never the public website root
+- **App source:** `examples/web/`; **published output:** `examples/web/dist/` via GitHub Actions
+- Do not enable GitHub Pages "Deploy from `/docs`" — use the Actions workflow in `.github/workflows/pages.yml`
+
+## Mandatory rules
+
+- **Tokens:** Change `design-tokens/design-tokens.json` only; run `python3 scripts/sync-design-tokens.py`
+- **Branding:** Edit `branding/assets/` and `branding/product.json`; sync distributes icons; README overwrite only when `product.json` `mode` is `product`
+- **No raw hex** in UI Kotlin/TS/CSS (except `design-tokens.css`, generated `Color.kt`, and `branding/assets/*.svg`)
+- **No UI string literals** in Compose (`Text("...")`) or web `main.ts` innerHTML — use `stringResource` / `t()`
+- **No copy in CSS** — no `content:` text, no user-facing strings in stylesheets
+- **Theme toggle:** Preserve system / light / dark cycle; default `system`
+- **Layout:** CSS logical properties (`margin-inline`, `text-align: start`); Compose `Start`/`End` alignment
+- **FOSS Android:** No `com.google.android.gms`, Firebase, or proprietary SDKs
+
+## Stack specifics
+
+### Android Compose M3
+
+- `GoldenPathTheme(themeMode) { }` wrapper required
+- `MaterialTheme.colorScheme`, `MaterialTheme.typography`, `Dimens.kt` spacing
+- Theme preference via `ThemePreferences` (DataStore)
+- Bottom actions and snackbars: `GoldenPathScaffold` + `Modifier.bottomInsetPadding()` — see `docs/DESIGN_GUIDE.md` Android system bars
+
+### Web
+
+- `var(--gp-*)` from `design-tokens.css`
+- `initTheme()` + `createThemeToggle()` pattern
+- Locales in `src/locales/*.json`
+
+## Critique before merge
+
+- Checklist rows use 🔲 / ✅ / ❌ (see `docs/DESIGN_GUIDE.md` agent checklist)
+- Long translated strings still layout correctly?
+- Dark and light modes both readable (contrast)?
+- Toggle accessible (`contentDescription` / `aria-label` from i18n)?

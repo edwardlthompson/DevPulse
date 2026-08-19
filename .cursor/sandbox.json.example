@@ -1,0 +1,18 @@
+{
+  "networkPolicy": {
+    "mode": "sandbox_json_plus_defaults",
+    "allow": [
+      "registry.npmjs.org",
+      "pypi.org",
+      "files.pythonhosted.org",
+      "github.com",
+      "objects.githubusercontent.com",
+      "registry.yarnpkg.com",
+      "crates.io",
+      "proxy.golang.org",
+      "repo.maven.apache.org",
+      "services.gradle.org"
+    ]
+  },
+  "_comment": "Copy to .cursor/sandbox.json (gitignored). See https://cursor.com/docs/agent/security/run-modes and https://cursor.com/docs/reference/sandbox.md"
+}

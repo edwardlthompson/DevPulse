@@ -1,0 +1,48 @@
+# Opt-in Cursor CLI headless example — NOT under .github/workflows/ (GHA will not auto-run this file).
+# Enable: copy to .github/workflows/cursor-agent.yml and add repository secret CURSOR_API_KEY.
+# Docs: docs/CURSOR_CLI.md
+
+name: Cursor agent (opt-in example)
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: Restricted prompt (gate triage only; no git push)
+        required: true
+        default: >-
+          Run python3 scripts/agent-run.py validate-bootstrap --quick and
+          python3 scripts/agent-run.py check-repo-hygiene. Summarize pass/fail.
+          Do not modify files outside scripts/ or docs/. Do not run git push.
+
+permissions:
+  contents: read
+
+jobs:
+  cursor-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Cursor CLI
+        # Pin and follow https://cursor.com/docs/cli/github-actions
+        run: |
+          echo "Install Cursor CLI per docs/CURSOR_CLI.md before enabling this workflow."
+          echo "This example refuses to run without CURSOR_API_KEY and an install step you add."
+          if [ -z "${{ secrets.CURSOR_API_KEY }}" ]; then
+            echo "Missing CURSOR_API_KEY secret — aborting (example workflow)."
+            exit 1
+          fi
+
+      - name: Restricted agent prompt
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+        run: |
+          # Replace with your pinned `cursor agent -p` / headless invocation from CURSOR_CLI.md.
+          # Hard rules for any enablement:
+          # - workflow_dispatch only
+          # - never git push / force-push
+          # - never commit secrets
+          echo "Prompt: ${{ inputs.prompt }}"
+          echo "Wire the Cursor CLI headless command here after installing the CLI."
+          exit 1

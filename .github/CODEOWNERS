@@ -1,0 +1,8 @@
+# Default owners for all files
+* @edwardlthompson
+
+# Critical paths require explicit review
+/.github/ @edwardlthompson
+/docs/INITIALIZATION_PROMPT.md @edwardlthompson
+/SECURITY.md @edwardlthompson
+/scripts/ @edwardlthompson

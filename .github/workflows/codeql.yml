@@ -1,0 +1,63 @@
+name: CodeQL
+
+# Matrix covers primary stacks (JS/TS, Python, Android). Optional examples/rust and
+# examples/go are excluded — see modules/rust/MODULE.md and modules/go/MODULE.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+# Do not add jobs.<id>.environment — Environments block Release Please bot PRs
+# (ACTION_REQUIRED) and stall auto-merge. github-pages is Pages-only.
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript
+          - language: python
+          - language: java-kotlin
+            paths: examples/android
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Java (Android)
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Setup Android SDK
+        if: matrix.language == 'java-kotlin'
+        uses: android-actions/setup-android@v4
+      - name: Accept Android SDK licenses
+        if: matrix.language == 'java-kotlin'
+        run: yes | sdkmanager --licenses
+      - name: Initialize CodeQL (repo-wide)
+        if: matrix.language != 'java-kotlin'
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+      - name: Initialize CodeQL (Android)
+        if: matrix.language == 'java-kotlin'
+        uses: github/codeql-action/init@v4
+        with:
+          languages: java-kotlin
+          paths: examples/android
+      - name: Build Android (CodeQL traced)
+        if: matrix.language == 'java-kotlin'
+        working-directory: examples/android
+        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - uses: github/codeql-action/analyze@v4

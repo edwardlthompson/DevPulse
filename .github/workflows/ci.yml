@@ -1,0 +1,567 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# Do not add jobs.<id>.environment here. GitHub Environments block Release Please
+# bot PRs (statusCheckRollup ACTION_REQUIRED) and stall auto-merge. Pages may use
+# the github-pages environment; CI / Security Scan / CodeQL must not.
+
+jobs:
+  stack-presence:
+    name: Detect active stacks
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.stacks.outputs.python }}
+      web: ${{ steps.stacks.outputs.web }}
+      node: ${{ steps.stacks.outputs.node }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: stacks
+        run: |
+          for spec in python:examples/python/pyproject.toml web:examples/web/package-lock.json node:examples/node/package-lock.json; do
+            key="${spec%%:*}"
+            path="${spec#*:}"
+            if [ -f "$path" ]; then
+              echo "${key}=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "${key}=false" >> "$GITHUB_OUTPUT"
+            fi
+          done
+
+  path-changes:
+    name: Detect path changes
+    runs-on: ubuntu-latest
+    outputs:
+      android: ${{ steps.paths.outputs.android }}
+      rust: ${{ steps.paths.outputs.rust }}
+      go: ${{ steps.paths.outputs.go }}
+      lightroom: ${{ steps.paths.outputs.lightroom }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: paths
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            for spec in android:examples/android rust:examples/rust go:examples/go lightroom:examples/lightroom; do
+              key="${spec%%:*}"
+              prefix="${spec#*:}"
+              if [ -d "$prefix" ]; then
+                echo "${key}=true" >> "$GITHUB_OUTPUT"
+              else
+                echo "${key}=false" >> "$GITHUB_OUTPUT"
+              fi
+            done
+            exit 0
+          fi
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          fi
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            for spec in android:examples/android rust:examples/rust go:examples/go lightroom:examples/lightroom; do
+              key="${spec%%:*}"
+              prefix="${spec#*:}"
+              if [ -d "$prefix" ]; then
+                echo "${key}=true" >> "$GITHUB_OUTPUT"
+              else
+                echo "${key}=false" >> "$GITHUB_OUTPUT"
+              fi
+            done
+            exit 0
+          fi
+          changed() { git diff --name-only "$BASE" "$HEAD" | grep -q "^$1"; }
+          android_changed() {
+            git diff --name-only "$BASE" "$HEAD" | grep -qE '^(examples/android|modules/android|\.github/workflows/ci\.yml|scripts/)'
+          }
+          for spec in rust:examples/rust go:examples/go lightroom:examples/lightroom; do
+            key="${spec%%:*}"
+            prefix="${spec#*:}"
+            if [ -d "$prefix" ] && changed "$prefix"; then
+              echo "${key}=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "${key}=false" >> "$GITHUB_OUTPUT"
+            fi
+          done
+          if [ -d "examples/android" ] && android_changed; then
+            echo "android=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "android=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  encoding-check:
+    name: File Encoding (UTF-8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check text files are UTF-8
+        run: bash scripts/check-file-encoding.sh
+
+  file-limits:
+    name: File Size Budgets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check file line limits
+        run: bash scripts/check-file-limits.sh
+
+  repo-hygiene:
+    name: Repo Hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check tracked artifacts and repo config
+        run: bash scripts/check-repo-hygiene.sh
+
+  feature-gate:
+    name: Feature Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - uses: astral-sh/setup-uv@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Install web dependencies
+        if: hashFiles('examples/web/package-lock.json') != ''
+        working-directory: examples/web
+        run: npm ci
+      - name: Install node example dependencies
+        if: hashFiles('examples/node/package-lock.json') != ''
+        working-directory: examples/node
+        run: npm ci
+      - name: Sync python example
+        if: hashFiles('examples/python/pyproject.toml') != ''
+        working-directory: examples/python
+        run: uv sync --locked --all-extras
+      - name: Prepare Android wrapper
+        if: hashFiles('examples/android/gradlew') != ''
+        run: chmod +x examples/android/gradlew
+      - name: Run feature gate (strict multi-stack)
+        run: bash scripts/feature-gate.sh --stack multi --strict --json
+
+  validate-index:
+    name: Validate Template Index
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate TEMPLATE_INDEX.json paths
+        run: bash scripts/validate-template-index.sh
+
+  workflow-actions:
+    name: Validate Workflow Action Refs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify action tags and SHAs resolve on GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/validate-workflow-actions.sh
+
+  validate-bootstrap:
+    name: Validate Bootstrap Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check Sprint 0 artifacts exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/validate-bootstrap.sh
+
+  web:
+    name: Web - Lint, Test, Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: examples/web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: examples/web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Bundle size budget
+        working-directory: ${{ github.workspace }}
+        run: bash scripts/check-bundle-size.sh
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - run: npm run lighthouse
+      - name: Upload web coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-web
+          path: examples/web/coverage/coverage-summary.json
+          if-no-files-found: ignore
+      - name: License compliance (web)
+        working-directory: ${{ github.workspace }}
+        run: bash scripts/check-license-compliance.sh web
+
+  python:
+    name: Python - Lint, Type, Test
+    needs: stack-presence
+    if: needs.stack-presence.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: examples/python
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --locked --all-extras
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy src
+      - run: uv run pyright
+      - run: uv run pytest --cov-report=json:coverage/coverage-summary.json
+      - name: Upload python coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-python
+          path: examples/python/coverage/coverage-summary.json
+          if-no-files-found: ignore
+      - name: License compliance (python)
+        working-directory: ${{ github.workspace }}
+        run: bash scripts/check-license-compliance.sh python
+
+  node:
+    name: Node - Lint, Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: examples/node
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: examples/node/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - name: Upload node coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-node
+          path: examples/node/coverage/coverage-summary.json
+          if-no-files-found: ignore
+      - name: License compliance (node)
+        working-directory: ${{ github.workspace }}
+        run: bash scripts/check-license-compliance.sh node
+
+  android-structure:
+    name: Android - Structure Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate FOSS compliance markers
+        run: |
+          if grep -rE "com\.google\.android\.gms|firebase" \
+              examples/android \
+              --include="*.gradle" --include="*.gradle.kts" --include="*.toml" \
+              --include="*.kt" --include="*.kts" --include="*.xml" \
+              | grep -vE '//|/\*|<!--'; then
+            echo "ERROR: Proprietary SDK references found"
+            exit 1
+          fi
+          echo "FOSS compliance check passed"
+      - name: Validate Gradle structure
+        run: |
+          test -f examples/android/settings.gradle.kts
+          test -f examples/android/app/build.gradle.kts
+          test -f examples/android/gradle/wrapper/gradle-wrapper.properties
+          test -f examples/android/gradlew
+          test -f examples/android/gradle/wrapper/gradle-wrapper.jar
+          test -f examples/android/gradle.properties
+          grep -q "SOURCE_DATE_EPOCH" examples/android/README.md
+
+  android-build:
+    name: Android - assembleDebug
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v4
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+      - name: assembleDebug
+        working-directory: examples/android
+        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+
+  android-instrumented:
+    name: Android - connectedDebugAndroidTest
+    runs-on: ubuntu-latest
+    needs: path-changes
+    if: needs.path-changes.outputs.android == 'true'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Enable KVM for emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run instrumented smoke test
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          arch: x86_64
+          target: default
+          disable-animations: true
+          script: cd examples/android && chmod +x gradlew && ./gradlew connectedDebugAndroidTest --no-daemon
+
+  coverage-comment:
+    name: PR Coverage Summary
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'pull_request' && !failure() && !cancelled()
+    needs: [web, python, node]
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: coverage-*
+          merge-multiple: true
+          path: coverage-artifacts
+      - name: Post coverage summary
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const dir = 'coverage-artifacts';
+            const lines = ['## Coverage summary', ''];
+            if (!fs.existsSync(dir)) {
+              lines.push('_No coverage artifacts uploaded._');
+            } else {
+              for (const file of fs.readdirSync(dir)) {
+                if (!file.endsWith('.json')) continue;
+                const label = file.replace('coverage-summary.json', '').replace(/-$/, '') || 'root';
+                let data;
+                try {
+                  data = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
+                } catch (err) {
+                  lines.push(`- **${label}**: coverage artifact parse failed (${file})`);
+                  continue;
+                }
+                if (data.total && data.total.lines) {
+                  const pct = data.total.lines.pct;
+                  lines.push(`- **${label}**: ${pct}% lines`);
+                } else if (data.totals) {
+                  lines.push(`- **${label}**: ${data.totals.percent_covered_display} lines`);
+                } else {
+                  lines.push(`- **${label}**: see artifact \`${file}\``);
+                }
+              }
+              if (lines.length === 2) lines.push('_Coverage JSON present but format not recognized._');
+            }
+            lines.push('', '_Codecov integration optional; artifacts retained for 90 days._');
+            const body = lines.join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.user.type === 'Bot' && c.body.includes('## Coverage summary'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  upgrade-simulation:
+    name: Template Upgrade Simulation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Simulate child-repo upgrade path
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/simulate-template-upgrade.sh
+
+  upgrade-simulation-windows:
+    name: Template Upgrade Simulation (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Simulate child-repo upgrade path
+        shell: bash
+        env:
+          PYTHON_BASIC_REPL: "1"
+          PYTHONUNBUFFERED: "1"
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: "1"
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/simulate-template-upgrade.sh
+
+  template-update-check:
+    name: Template Update Check
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check for upstream template updates
+        run: bash scripts/check-template-updates.sh --verbose
+  pr-title:
+    name: Conventional Commits PR Title
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v5.5.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  android-release:
+    name: Android - assembleRelease
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v4
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+      - name: FOSS compliance grep
+        run: |
+          if grep -rE "com\.google\.android\.gms|firebase" \
+              examples/android \
+              --include="*.gradle" --include="*.gradle.kts" --include="*.toml" \
+              --include="*.kt" --include="*.kts" --include="*.xml" \
+              | grep -vE '//|/\*|<!--'; then
+            echo "ERROR: Proprietary SDK references found"
+            exit 1
+          fi
+      - name: assembleRelease with SOURCE_DATE_EPOCH
+        working-directory: examples/android
+        env:
+          SOURCE_DATE_EPOCH: "1700000000"
+        run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
+      - name: Compare APK hashes (flake tolerance)
+        working-directory: examples/android
+        env:
+          SOURCE_DATE_EPOCH: "1700000000"
+        run: |
+          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
+          HASH1=$(sha256sum "$APK" | awk '{print $1}')
+          ./gradlew clean assembleRelease --no-daemon -q
+          APK2=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
+          HASH2=$(sha256sum "$APK2" | awk '{print $1}')
+          if [ "$HASH1" != "$HASH2" ]; then
+            echo "FAIL: APK hashes differ between builds (reproducibility regression)"
+            echo "  Run 1: $HASH1"
+            echo "  Run 2: $HASH2"
+            exit 1
+          else
+            echo "OK   Reproducible APK hash: $HASH1"
+          fi
+
+  lightroom:
+    name: Lightroom - SDK Namespace Check
+    runs-on: ubuntu-latest
+    needs: path-changes
+    if: needs.path-changes.outputs.lightroom == 'true'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate Lr* SDK compliance
+        run: |
+          set -euo pipefail
+          test -f examples/lightroom/Info.lua
+          grep -q 'LrSdkVersion' examples/lightroom/Info.lua
+          while IFS= read -r -d '' f; do
+            if grep -nE "require\s*\(\s*['\"]" "$f" | grep -vE '^[[:space:]]*--'; then
+              echo "ERROR: Generic Lua require() forbidden in $f (use Lr* SDK only)"
+              exit 1
+            fi
+          done < <(find examples/lightroom -name '*.lua' -print0)
+          echo "Lightroom SDK namespace check passed"
+
+  rust:
+    name: Rust - Fmt, Clippy, Test
+    runs-on: ubuntu-latest
+    needs: path-changes
+    if: needs.path-changes.outputs.rust == 'true'
+    defaults:
+      run:
+        working-directory: examples/rust
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo fmt --check
+      - run: cargo clippy -- -D warnings
+      - run: cargo test
+
+  go:
+    name: Go - Vet, Fmt, Test
+    runs-on: ubuntu-latest
+    needs: path-changes
+    if: needs.path-changes.outputs.go == 'true'
+    defaults:
+      run:
+        working-directory: examples/go
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.22"
+          cache-dependency-path: examples/go/go.mod
+      - run: go mod tidy
+      - run: go vet ./...
+      - run: test -z "$(gofmt -l .)"
+      - run: go test ./...
+

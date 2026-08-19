@@ -1,0 +1,33 @@
+---
+description: Prefer local PC parallelism over Cloud when working on This Computer
+alwaysApply: true
+---
+
+# Local Compute First
+
+When the session runs on **This Computer** (local IDE / local CLI), maximize the machine before paying for Cloud Agents.
+
+## Prefer (local)
+
+1. **Parallel Task subagents** after Sequential lock — `/scope` with `agent_count >= 2`, one message, concurrent `gate-fixer` / `explorer` tasks (non-overlapping scopes)
+2. **Native worktrees** — `/worktree` for isolated installs/tests; `/best-of-n` to compare models on hard/flaky fixes (each run uses a local worktree)
+3. **Side chats** (`/side`, `/btw`) for parallel research while the main Agent keeps coding
+4. **Local gates** via `python3 scripts/agent-run.py …` (bootstrap checks run with multi-core jobs when supported)
+5. **Local Cursor CLI** for headless loops — see `docs/CURSOR_CLI.md`
+
+## Avoid by default (local sessions)
+
+- Handing work to **Cloud Agents** when the laptop/desktop can run Agent + terminals + worktrees
+- Serializing independent Parallel BUILD_PLAN rows on one agent
+- Waiting on commercial Automations/Bugbot Autofix for tasks `/fix` + local CI can finish
+
+## When Cloud is appropriate
+
+- Machine unavailable / Remote Control away from desk
+- Commercial Autofix / Automations explicitly enabled
+- Multi-repo Cloud environment required (see commercial activation)
+
+## Env knobs
+
+- `BOOTSTRAP_CHECK_JOBS` — override parallel gate worker count (default: CPU count)
+- Stack tests: prefer tool-native parallelism (`pytest -n auto` when xdist present; Vitest/Gradle defaults)

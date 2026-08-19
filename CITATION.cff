@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: agent-project-bootstrap
+message: If you use this template, please cite it using these metadata.
+type: software
+authors:
+  - name: Edward L. Thompson
+repository-code: https://github.com/edwardlthompson/agent-project-bootstrap
+url: https://github.com/edwardlthompson/agent-project-bootstrap
+abstract: >-
+  GitHub Template for FOSS projects with coding-agent scaffolding, CI
+  guardrails, and Golden Path examples.
+keywords:
+  - foss
+  - github-template
+  - agents
+  - cursor
+  - bootstrap
+license: MIT
+version: 0.21.0
+date-released: 2026-08-17T00:00:00.000Z

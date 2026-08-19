@@ -1,0 +1,31 @@
+---
+description: Post-push CI poll protocol and gate ordering
+globs:
+  - ".github/workflows/**"
+  - "scripts/check-github-ci.*"
+  - "BUILD_PLAN.md"
+---
+
+# CI Gates
+
+## Post-Push Poll (required)
+
+After push to `main` or before release sign-off:
+
+```bash
+python3 scripts/agent-run.py check-github-ci --wait 300
+```
+
+## Gate Order (local)
+
+1. `scripts/watch-agent-gates.sh --once --autofix` (after each AGENT feature step)
+2. `scripts/feature-gate.sh --json` (same gate, manual)
+3. `pre-commit run --all-files` (optional if hooks installed)
+4. Push → `scripts/check-github-ci.sh --wait 300`
+
+**Autonomous rule:** On gate failure, agent auto-fixes from JSON output within feature scope; re-run until pass or 3-strike. Push still requires human approval.
+
+## Do Not Mark Complete
+
+- BUILD_PLAN `[AUTO]` items while CI / Security Scan / CodeQL red
+- Sprint sign-off without `scripts/pre-release-gate.sh` on template releases

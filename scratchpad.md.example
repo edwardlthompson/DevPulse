@@ -1,0 +1,30 @@
+# Scratchpad
+
+> Working memory for the **current** sprint or phase. Copy to `scratchpad.md` (gitignored).
+> **Reset** on sprint/phase change. Do **not** replace `AGENT_MEMORY.md` or `DECISION_LOG.md`.
+
+## Phase
+
+- Current sprint:
+- Cursor mode:
+- Sequential lock: open / done
+
+## Now
+
+-
+
+## Do not forget
+
+-
+
+## Parked (not BUILD_PLAN)
+
+-
+
+## Reset checklist
+
+When Sprint 0 ends or Sequential lock completes:
+
+1. Copy durable facts to `AGENT_MEMORY.md` / `DECISION_LOG.md` if they survived the phase
+2. Replace `scratchpad.md` with a fresh copy of this example
+3. Stop re-reading `docs/INITIALIZATION_PROMPT.md` as the daily driver; use `/feature` for Sprint 2+

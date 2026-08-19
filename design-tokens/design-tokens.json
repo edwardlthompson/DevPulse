@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "name": "GoldenPath",
+    "themeColorLight": "#F5F5FA",
+    "themeColorDark": "#1a1a2e"
+  },
+  "color": {
+    "primary": { "light": "#B3263E", "dark": "#e94560" },
+    "onPrimary": { "light": "#FFFFFF", "dark": "#FFFFFF" },
+    "primaryContainer": { "light": "#FFDAD6", "dark": "#8B1A35" },
+    "onPrimaryContainer": { "light": "#410009", "dark": "#FFDAD6" },
+    "secondary": { "light": "#4A5F82", "dark": "#9BB8E8" },
+    "onSecondary": { "light": "#FFFFFF", "dark": "#1a1a2e" },
+    "secondaryContainer": { "light": "#D8E3FF", "dark": "#2a3a5c" },
+    "onSecondaryContainer": { "light": "#1a1a2e", "dark": "#D8E3FF" },
+    "tertiary": { "light": "#6B5778", "dark": "#D4BEE8" },
+    "onTertiary": { "light": "#FFFFFF", "dark": "#1a1a2e" },
+    "error": { "light": "#BA1A1A", "dark": "#FFB4AB" },
+    "onError": { "light": "#FFFFFF", "dark": "#690005" },
+    "background": { "light": "#FFFFFF", "dark": "#12121f" },
+    "onBackground": { "light": "#1a1a2e", "dark": "#E6E6F0" },
+    "surface": { "light": "#F5F5FA", "dark": "#1a1a2e" },
+    "onSurface": { "light": "#1a1a2e", "dark": "#E6E6F0" },
+    "surfaceVariant": { "light": "#E2E2EC", "dark": "#2a2a42" },
+    "onSurfaceVariant": { "light": "#45465A", "dark": "#C4C4D4" },
+    "outline": { "light": "#767680", "dark": "#8E8EA0" }
+  },
+  "typography": {
+    "fontFamily": { "sans": "system-ui, -apple-system, sans-serif" },
+    "scale": {
+      "titleLarge": { "sizeSp": 22, "sizeRem": 1.375, "lineHeight": 1.27, "weight": 400 },
+      "headlineMedium": { "sizeSp": 28, "sizeRem": 1.75, "lineHeight": 1.2, "weight": 400 },
+      "bodyLarge": { "sizeSp": 16, "sizeRem": 1.0, "lineHeight": 1.5, "weight": 400 },
+      "bodyMedium": { "sizeSp": 14, "sizeRem": 0.875, "lineHeight": 1.43, "weight": 400 },
+      "labelLarge": { "sizeSp": 14, "sizeRem": 0.875, "lineHeight": 1.43, "weight": 500 }
+    }
+  },
+  "spacing": { "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 32 },
+  "radius": { "sm": 4, "md": 8, "lg": 16 },
+  "elevation": { "level0": 0, "level1": 1, "level2": 3 }
+}

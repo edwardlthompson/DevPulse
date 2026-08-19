@@ -1,0 +1,29 @@
+{
+  "distribution_tier": "foss",
+  "enabled": [
+    "rules",
+    "commands",
+    "hooks",
+    "skills",
+    "subagents",
+    "modes",
+    "worktrees",
+    "permissions",
+    "parallel_scope",
+    "build_automation",
+    "feature_radar",
+    "plugin_pack",
+    "cli_example",
+    "codex_review_example",
+    "mcp_foss_example"
+  ],
+  "hidden": [
+    "cloud_agents",
+    "bugbot",
+    "automations",
+    "approval_agents",
+    "mcp_commercial_example",
+    "android_commercial_patterns"
+  ],
+  "generated_at": "2026-08-17T02:59:53+00:00"
+}

@@ -1,0 +1,1 @@
+Golden Path FOSS Android stub for agent-project-bootstrap template.

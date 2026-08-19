@@ -1,0 +1,40 @@
+---
+description: Require inspecting types and interfaces before code changes
+alwaysApply: true
+---
+
+# Read-Before-Write Rule
+
+Before modifying any file:
+
+1. Identify boundaries — interfaces, types, schemas
+2. Read upstream via @filename
+3. State signatures in plan
+4. Then edit
+
+## Critique Checklist
+
+In every plan’s `### Critique` table, cover each item below as **Resolved** (mitigation + artifact) or **N/A** (one-line why). Do not leave open risks.
+
+- Null/empty values
+- Network timeouts
+- Race conditions
+- Unhandled exceptions
+
+Format:
+
+```markdown
+### Critique
+
+| Issue | Resolution |
+|-------|------------|
+| Null/empty at boundary | Validate with schema X; typed error Y; test Z |
+| Network timeout | N/A — no network I/O in this change |
+```
+
+## UTF-8 & Verification
+
+- Write all text files as UTF-8 without BOM (never UTF-16)
+- Never mark BUILD_PLAN tasks complete without running validate scripts
+- Run `scripts/validate-bootstrap.sh` after creating Sprint 0 artifacts
+- Sprint 0 sign-off (canonical): `validate-bootstrap.sh --quick`, `feature-gate.sh --stack <active>`, `check-github-ci.sh --wait 300`, `check-license-compliance.sh` — see `BUILD_PLAN.md` Child Repo Playbook

@@ -1,0 +1,1 @@
+FOSS Android skeleton for agent-project-bootstrap

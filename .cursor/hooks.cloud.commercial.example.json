@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "_comment": "Commercial Cloud Agent conversation hooks example. Merge carefully with project .cursor/hooks.json — do not replace FOSS shell/encoding hooks. Local beforeSubmitPrompt stays rejected. See docs/CURSOR_COMMERCIAL_ACTIVATION.md",
+  "hooks": {
+    "afterAgentResponse": [
+      {
+        "command": "python3 scripts/agent-run.py watch-agent-gates --once"
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 scripts/agent-run.py watch-agent-gates --once"
+      }
+    ]
+  }
+}

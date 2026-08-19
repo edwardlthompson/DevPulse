@@ -1,0 +1,6 @@
+{
+  "install": "python3 scripts/agent-run.py validate-bootstrap --quick || true; if [ -f examples/web/package.json ]; then (cd examples/web && npm ci); fi; if [ -f examples/python/pyproject.toml ] && command -v uv >/dev/null; then (cd examples/python && uv sync); fi",
+  "start": "echo 'Cloud Agent environment ready — use agent-run.py for gates'",
+  "terminals": [],
+  "_comment": "Commercial Cloud Agents environment stub. Multi-repo / Slack: create a named multi-repo environment in the Cursor dashboard and select it from Slack or the Cloud picker (docs only — no Slack app wiring in this template). Secrets stay in the Cursor dashboard — never commit .env."
+}

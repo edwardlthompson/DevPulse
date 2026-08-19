@@ -1,0 +1,93 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.py[cod]
+.uv/
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.coverage
+htmlcov/
+coverage/
+examples/web/dist/
+examples/android/.gradle/
+examples/android/build/
+examples/android/local.properties
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/extensions.json
+*.swp
+.cursor-session-state
+.cursor/agent-progress.json
+.cursor/last-feature-gate.json
+.cursor/parallel-scope-lock.json
+.cursor/worktrees/
+.cursor/mcp.json
+.cursor/mcp-audit.log
+.cursor/environment.json
+.cursor/sandbox.json
+CURSOR_RADAR_REPORT.md
+CURSOR_RADAR_BACKLOG.md
+
+# Cursor plugin pack output (see scripts/pack-cursor-plugin.sh)
+dist/cursor-plugin/
+
+# Test artifacts
+test-results/
+playwright-report/
+.lighthouseci/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Live user configs (examples committed; copies from init)
+.app-update.json
+donations.json
+examples/web/public/app-update.json
+examples/web/public/donations.json
+examples/android/app/src/main/assets/app-update.json
+examples/android/app/src/main/assets/donations.json
+
+# Rust / Go
+target/
+examples/rust/target/
+
+# Python caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Android extras
+examples/android/.cxx/
+examples/android/captures/
+*.apk
+*.aab
+
+# Node / tooling
+.turbo/
+.parcel-cache/
+*.tsbuildinfo
+
+# OS / editor extras
+*.tmp
+*.temp
+
+# Logs
+*.log
+
+# Ephemeral agent outputs (examples tracked)
+CODE_REVIEW.md
+RELEASE_NOTES.md
+scratchpad.md
+.cursor/handoff-*.md

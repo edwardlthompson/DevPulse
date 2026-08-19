@@ -1,0 +1,32 @@
+name: Feature Request
+description: Suggest an improvement — we read every one
+title: "[feat]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for the idea. Template-wide changes use the Template Improvement issue when that fits better."
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this solve for a human or an agent?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+    validations:
+      required: true
+  - type: dropdown
+    id: owner
+    attributes:
+      label: Primary Owner Label
+      options:
+        - AGENT
+        - HUMAN
+        - ADB
+        - AUTO
+    validations:
+      required: true

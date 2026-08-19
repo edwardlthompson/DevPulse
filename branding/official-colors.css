@@ -1,0 +1,64 @@
+/* GENERATED — do not edit; run scripts/sync-design-tokens.py */
+/* source-hash: 2110b67bfb84 */
+/* Official brand colors — prefer --gp-* in app UI; use --brand-* in docs/marketing */
+
+:root {
+  --brand-name: "GoldenPath";
+  --brand-theme-light: #F5F5FA;
+  --brand-theme-dark: #1a1a2e;
+  --brand-primary: #B3263E;
+  --brand-primary-dark: #e94560;
+  --brand-on-primary: #FFFFFF;
+  --brand-on-primary-dark: #FFFFFF;
+  --brand-primary-container: #FFDAD6;
+  --brand-primary-container-dark: #8B1A35;
+  --brand-on-primary-container: #410009;
+  --brand-on-primary-container-dark: #FFDAD6;
+  --brand-secondary: #4A5F82;
+  --brand-secondary-dark: #9BB8E8;
+  --brand-on-secondary: #FFFFFF;
+  --brand-on-secondary-dark: #1a1a2e;
+  --brand-secondary-container: #D8E3FF;
+  --brand-secondary-container-dark: #2a3a5c;
+  --brand-on-secondary-container: #1a1a2e;
+  --brand-on-secondary-container-dark: #D8E3FF;
+  --brand-tertiary: #6B5778;
+  --brand-tertiary-dark: #D4BEE8;
+  --brand-on-tertiary: #FFFFFF;
+  --brand-on-tertiary-dark: #1a1a2e;
+  --brand-error: #BA1A1A;
+  --brand-error-dark: #FFB4AB;
+  --brand-on-error: #FFFFFF;
+  --brand-on-error-dark: #690005;
+  --brand-background: #FFFFFF;
+  --brand-background-dark: #12121f;
+  --brand-on-background: #1a1a2e;
+  --brand-on-background-dark: #E6E6F0;
+  --brand-surface: #F5F5FA;
+  --brand-surface-dark: #1a1a2e;
+  --brand-on-surface: #1a1a2e;
+  --brand-on-surface-dark: #E6E6F0;
+  --brand-surface-variant: #E2E2EC;
+  --brand-surface-variant-dark: #2a2a42;
+  --brand-on-surface-variant: #45465A;
+  --brand-on-surface-variant-dark: #C4C4D4;
+  --brand-outline: #767680;
+  --brand-outline-dark: #8E8EA0;
+
+  /* Convenience aliases (light) */
+  --brand-accent: #B3263E;
+  --brand-accent-secondary: #4A5F82;
+  --brand-canvas: #FFFFFF;
+  --brand-panel: #F5F5FA;
+  --brand-ink: #1a1a2e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-accent: #e94560;
+    --brand-accent-secondary: #9BB8E8;
+    --brand-canvas: #12121f;
+    --brand-panel: #1a1a2e;
+    --brand-ink: #E6E6F0;
+  }
+}

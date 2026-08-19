@@ -1,0 +1,28 @@
+# Normalize line endings (critical for Windows contributors)
+* text=auto eol=lf
+
+# Shell scripts always LF
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Binary assets
+*.png binary
+*.gif binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.jar binary
+*.apk binary
+*.aab binary
+*.woff binary
+*.woff2 binary
+
+# Generated / lockfiles (exclude from language stats)
+package-lock.json linguist-generated=true
+**/package-lock.json linguist-generated=true
+uv.lock linguist-generated=true
+examples/web/src/design-tokens.css linguist-generated=true
+examples/android/app/src/main/res/values/design_tokens.xml linguist-generated=true

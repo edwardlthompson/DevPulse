@@ -1,0 +1,16 @@
+# Optional DX. CI runs the same commands via uv.
+# https://github.com/casey/just
+
+qa: lint test
+
+test:
+    uv run pytest
+
+lint:
+    uv run ruff check .
+    uv run ruff format --check .
+    uv run mypy src
+
+fmt:
+    uv run ruff format .
+    uv run ruff check --fix .

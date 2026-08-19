@@ -1,0 +1,47 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /examples/web
+    schedule:
+      interval: weekly
+    groups:
+      web-dependencies:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /examples/node
+    schedule:
+      interval: weekly
+    groups:
+      node-dependencies:
+        patterns: ["*"]
+
+  - package-ecosystem: pip
+    directory: /examples/python
+    schedule:
+      interval: weekly
+    groups:
+      python-dependencies:
+        patterns: ["*"]
+
+  - package-ecosystem: gradle
+    directory: /examples/android
+    schedule:
+      interval: weekly
+    groups:
+      android-dependencies:
+        patterns: ["*"]
+    ignore:
+      # CodeQL java-kotlin extractor supports Kotlin below 2.3.30 (see codeql.yml)
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
+        versions: [">=2.3.30"]
+      - dependency-name: "org.jetbrains.kotlin:*"
+        versions: [">=2.3.30"]

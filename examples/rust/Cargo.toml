@@ -1,0 +1,14 @@
+[package]
+name = "hello"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Golden Path Rust hello stub for agent-project-bootstrap"
+
+[[bin]]
+name = "hello"
+path = "src/main.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1

@@ -1,0 +1,11 @@
+# Optional DX. CI runs the same npm scripts.
+
+test:
+    npm test
+
+lint:
+    npm run lint
+    npm run format:check
+
+build:
+    npm run build

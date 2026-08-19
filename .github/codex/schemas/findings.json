@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agent-project-bootstrap/codex-findings.schema.json",
+  "title": "CodexCodeReviewFindings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "summary", "findings"],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": ["codex-ci", "codex-local", "audit"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One paragraph: overall health, top risks, recommended focus."
+    },
+    "head_sha": {
+      "type": ["string", "null"],
+      "description": "Git HEAD SHA reviewed (CI should set this)."
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "severity", "area", "finding", "recommendation"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^F-[0-9]{3}$"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["Critical", "High", "Medium", "Low", "Deferred"]
+          },
+          "area": {
+            "type": "string",
+            "minLength": 1
+          },
+          "finding": {
+            "type": "string",
+            "minLength": 1
+          },
+          "recommendation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": ["string", "null"]
+          },
+          "line": {
+            "type": ["integer", "null"],
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}

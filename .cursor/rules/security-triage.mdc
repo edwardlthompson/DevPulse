@@ -1,0 +1,25 @@
+---
+description: Weekly security triage and Dependabot expectations for template maintainers
+alwaysApply: false
+globs:
+  - "BUILD_PLAN.md"
+  - "docs/SECURITY_TRIAGE.md"
+  - "scripts/check-security-triage.sh"
+---
+
+# Security Triage (Weekly)
+
+## Cadence
+
+- Run `python3 scripts/agent-run.py check-security-triage --wait-ci 300` weekly (or `run-maintainer-gates.sh` full cycle)
+- Triage OpenSSF Scorecard SARIF findings into BUILD_PLAN `[AGENT]` rows when not green
+
+## Gates
+
+- Zero open Critical/High Dependabot alerts before release (`pre-release-gate.sh`)
+- Required workflows green: **CI**, **Security Scan**, **CodeQL**
+- Scorecard workflow latest run should be `success` after `scorecard.yml` fix is on `main`
+
+## gh auth
+
+Dependabot API requires `gh` auth with access to repository security alerts. See `docs/SECURITY_TRIAGE.md`.

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agent-project-bootstrap/design-tokens.schema.json",
+  "title": "GoldenPathDesignTokens",
+  "type": "object",
+  "required": ["meta", "color", "typography", "spacing", "radius", "elevation"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["name", "themeColorLight", "themeColorDark"],
+      "properties": {
+        "name": { "type": "string" },
+        "themeColorLight": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "themeColorDark": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+      }
+    },
+    "color": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["light", "dark"],
+        "properties": {
+          "light": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "dark": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+        }
+      }
+    },
+    "typography": { "type": "object" },
+    "spacing": { "type": "object", "additionalProperties": { "type": "number" } },
+    "radius": { "type": "object", "additionalProperties": { "type": "number" } },
+    "elevation": { "type": "object", "additionalProperties": { "type": "number" } }
+  }
+}

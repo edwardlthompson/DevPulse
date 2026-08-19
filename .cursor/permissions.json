@@ -1,0 +1,19 @@
+{
+  "autoRun": {
+    "allow_instructions": [
+      "Allow running python3 scripts/agent-run.py validate-bootstrap and related local gate checks without extra approval.",
+      "Allow running python3 scripts/agent-run.py check-repo-hygiene without extra approval.",
+      "Allow running python3 scripts/agent-run.py feature-gate without extra approval.",
+      "Allow running python3 scripts/agent-run.py watch-agent-gates without extra approval.",
+      "Allow running python3 scripts/agent-run.py check-cursor-integrations and check-cursor-hooks without extra approval.",
+      "Allow running python3 scripts/agent-run.py check-file-encoding without extra approval."
+    ],
+    "block_instructions": [
+      "Every git push or git push --force should go through approval first.",
+      "Every production deploy, terraform apply, or infrastructure apply should go through approval first.",
+      "Every DROP TABLE or DELETE without a WHERE clause should go through approval first.",
+      "Every command that disables CI gates, pre-commit hooks, or security checks should go through approval first.",
+      "Every command that commits secrets, .env files, or credentials should go through approval first."
+    ]
+  }
+}

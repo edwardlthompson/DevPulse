@@ -1,0 +1,11 @@
+# One pattern per line (case-insensitive substring match). Synced with destructive-ops.mdc.
+git push
+git push --force
+terraform apply
+DROP TABLE
+DELETE FROM
+rm -rf /
+rm -rf ~
+--no-verify
+--no-gpg-sign
+skip hooks

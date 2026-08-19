@@ -1,0 +1,24 @@
+{
+  "$comment": "Copy to .cursor-session-state.json to restore agent context after clearing chat.",
+  "version": 1,
+  "saved_at": "2026-06-13T12:00:00Z",
+  "mode": "bootstrap",
+  "$comment_mode": "Repo mode (bootstrap|reference) — not Cursor Ask/Plan/Agent/Debug; see docs/CURSOR_MODES.md",
+  "stack": "web",
+  "active_sprint": "0",
+  "sequential_step": 8,
+  "parallel_tasks_in_flight": [],
+  "agent_count_target": null,
+  "parallel_steps_completed": [],
+  "last_files_touched": [
+    "BUILD_PLAN.md",
+    "examples/web/src/main.ts"
+  ],
+  "build_plan_lane": "sequential",
+  "autonomous_mode": true,
+  "current_feature": null,
+  "last_gate_exit": null,
+  "strikes": 0,
+  "destructive_ops_approved": [],
+  "notes": "Optional free-text checkpoint. Mirror .cursor/agent-progress.json when running watch-agent-gates. parallel_tasks_in_flight: [{ id, task, scope, branch, status }]. destructive_ops_approved: set by /push or /ship via /compact (e.g. [\"git push\"])."
+}

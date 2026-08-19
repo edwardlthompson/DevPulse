@@ -1,0 +1,35 @@
+---
+description: FOSS compliance, privacy, and telemetry constraints
+alwaysApply: true
+---
+
+# FOSS & Privacy Compliance
+
+## License
+
+- Pure FOSS under MIT license
+- No proprietary closed-source SDKs in production path
+- Android: no Google Play Services, Firebase, or closed telemetry trackers
+
+## Distribution
+
+- GitHub Releases as primary channel
+- Platform-appropriate: F-Droid, Winget, GitHub Pages, package indexes
+
+## Privacy & Telemetry
+
+- Opt-in only telemetry — never enabled by default
+- GDPR/CCPA compliant data handling
+- No PII in logs without explicit user consent
+
+## Security
+
+- Secrets never committed (Gitleaks pre-commit enforced)
+- Dependency scanning via CodeQL and Trivy
+- Input validation at all data boundaries
+
+## Android FOSS (when Module A active)
+
+- Use UnifiedPush or native OS providers instead of proprietary push
+- Reproducible builds with SOURCE_DATE_EPOCH
+- Lock compiler toolchains with cryptographic hashes

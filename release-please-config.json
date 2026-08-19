@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        ".template-version",
+        "TEMPLATE_INDEX.json",
+        {
+          "type": "yaml",
+          "path": "CITATION.cff",
+          "jsonpath": "$.version"
+        }
+      ],
+      "include-component-in-tag": false,
+      "include-v-in-tag": true
+    }
+  },
+  "changelog-sections": [
+    { "type": "feat", "section": "Added" },
+    { "type": "fix", "section": "Fixed" },
+    { "type": "perf", "section": "Changed" },
+    { "type": "revert", "section": "Changed" },
+    { "type": "docs", "section": "Documentation" },
+    { "type": "chore", "section": "Changed" }
+  ]
+}

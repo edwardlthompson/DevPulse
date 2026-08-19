@@ -1,0 +1,45 @@
+name: Template Improvement
+description: Feedback to optimize the template for agents and humans
+title: "[template]: "
+labels: ["template-improvement"]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - agent-confusion
+        - token-waste
+        - ci-gap
+        - module-request
+        - documentation
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened or what's missing?
+      description: Describe the confusion, waste, gap, or improvement idea
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Fix
+      description: How should the template be improved?
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Usage Mode
+      options:
+        - Bootstrap (new project from template)
+        - Reference (agent pointed at repo URL)
+        - Maintainer (editing the template itself)
+    validations:
+      required: true
+  - type: input
+    id: template-version
+    attributes:
+      label: Template Version
+      placeholder: "0.4.0"

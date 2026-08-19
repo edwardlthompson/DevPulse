@@ -1,0 +1,63 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  release-please:
+    name: Changelog and release PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Sync template version files on release PR
+        if: steps.release.outputs.release_created != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_JSON: ${{ steps.release.outputs.pr }}
+        run: |
+          set -euo pipefail
+          PR_NUMBER=""
+          if [ -n "${PR_JSON:-}" ]; then
+            PR_NUMBER="$(python3 -c "import json,os; print(json.loads(os.environ['PR_JSON']).get('number',''))" 2>/dev/null || true)"
+          fi
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "None" ]; then
+            PR_NUMBER="$(gh pr list --head release-please--branches--main --state open --json number -q '.[0].number' 2>/dev/null || true)"
+          fi
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            echo "No open Release Please PR; skipping version sync"
+            exit 0
+          fi
+          echo "Syncing template version files on PR #${PR_NUMBER}"
+          gh pr checkout "$PR_NUMBER"
+          bash scripts/sync-template-version.sh
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .template-version TEMPLATE_INDEX.json README.md AGENT_MEMORY.md
+            git commit -m "chore: sync template version files for release PR"
+            git push origin HEAD
+          fi
+
+      - name: Trigger SBOM asset upload
+        if: steps.release.outputs.release_created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run release.yml --ref main -f "tag=${{ steps.release.outputs.tag_name }}"

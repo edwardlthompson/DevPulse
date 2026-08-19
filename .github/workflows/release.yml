@@ -1,0 +1,177 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag for SBOM upload (e.g. v0.9.0); defaults to v.template-version
+        required: false
+        type: string
+  release:
+    types: [published]
+
+permissions: read-all
+
+jobs:
+  tag-gate:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    name: Tag gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify tag matches .template-version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          VERSION=$(tr -d '[:space:]' < .template-version)
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag v$TAG does not match .template-version ($VERSION)"
+            exit 1
+          fi
+
+      - name: Poll required CI checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/check-github-ci.sh HEAD --wait 300
+
+  sbom-assets:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    name: SBOM and release assets
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ inputs.tag }}" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          # SBOM backfill (workflow_dispatch + tag input): build from main, upload to existing tag
+          ref: ${{ inputs.tag != '' && github.ref || steps.tag.outputs.tag || github.ref }}
+
+      - name: Finalize release tag from .template-version
+        if: steps.tag.outputs.tag == ''
+        id: tag_ver
+        run: echo "tag=v$(tr -d '[:space:]' < .template-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Verify tag matches .template-version
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            EFFECTIVE="${{ inputs.tag }}"
+          else
+            EFFECTIVE="${{ steps.tag.outputs.tag || steps.tag_ver.outputs.tag }}"
+          fi
+          TAG="${EFFECTIVE#v}"
+          VERSION=$(tr -d '[:space:]' < .template-version)
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "Tag v$TAG does not match .template-version ($VERSION)"
+            exit 1
+          fi
+          echo "EFFECTIVE_TAG=v${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Poll post-merge CI before SBOM upload
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/check-github-ci.sh HEAD --wait 3600
+
+      - name: Pre-release gate (workflow_dispatch dry-run)
+        if: github.event_name == 'workflow_dispatch' && inputs.tag == ''
+        run: bash scripts/pre-release-gate.sh
+
+      - name: Generate root SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: sbom.cyclonedx.json
+
+      - name: Generate web stack SBOM slice
+        if: hashFiles('examples/web/package.json') != ''
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        with:
+          path: examples/web
+          format: cyclonedx-json
+          output-file: sbom-web.cyclonedx.json
+
+      - name: Generate python stack SBOM slice
+        if: hashFiles('examples/python/pyproject.toml') != ''
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        with:
+          path: examples/python
+          format: cyclonedx-json
+          output-file: sbom-python.cyclonedx.json
+
+      - name: Generate node stack SBOM slice
+        if: hashFiles('examples/node/package.json') != ''
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        with:
+          path: examples/node
+          format: cyclonedx-json
+          output-file: sbom-node.cyclonedx.json
+
+      - name: Generate android stack SBOM slice
+        if: hashFiles('examples/android/app/build.gradle.kts') != ''
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        with:
+          path: examples/android
+          format: cyclonedx-json
+          output-file: sbom-android.cyclonedx.json
+
+      - name: Generate rust stack SBOM slice
+        if: hashFiles('examples/rust/Cargo.lock') != ''
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        with:
+          path: examples/rust
+          format: cyclonedx-json
+          output-file: sbom-rust.cyclonedx.json
+
+      - name: Generate go stack SBOM slice
+        if: hashFiles('examples/go/go.sum') != ''
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.20.6
+        with:
+          path: examples/go
+          format: cyclonedx-json
+          output-file: sbom-go.cyclonedx.json
+
+      - name: Generate Winget manifest stub
+        run: bash scripts/generate-winget-manifest.sh "AgentProjectBootstrap.Template" "$(cat .template-version | tr -d '[:space:]')"
+
+      - name: Generate provenance attestation
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v2.2.0
+        with:
+          subject-path: sbom.cyclonedx.json
+
+      - name: Upload SBOM assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${EFFECTIVE_TAG:-${{ steps.tag.outputs.tag || steps.tag_ver.outputs.tag }}}"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            echo "FAIL: release $TAG not found (merge Release Please PR first)"
+            exit 1
+          fi
+          FILES="packaging/winget/manifest.stub.yaml sbom.cyclonedx.json"
+          [ -f sbom-web.cyclonedx.json ] && FILES="$FILES sbom-web.cyclonedx.json"
+          [ -f sbom-python.cyclonedx.json ] && FILES="$FILES sbom-python.cyclonedx.json"
+          [ -f sbom-node.cyclonedx.json ] && FILES="$FILES sbom-node.cyclonedx.json"
+          [ -f sbom-android.cyclonedx.json ] && FILES="$FILES sbom-android.cyclonedx.json"
+          [ -f sbom-rust.cyclonedx.json ] && FILES="$FILES sbom-rust.cyclonedx.json"
+          [ -f sbom-go.cyclonedx.json ] && FILES="$FILES sbom-go.cyclonedx.json"
+          gh release upload "$TAG" $FILES --clobber

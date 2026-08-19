@@ -1,0 +1,34 @@
+---
+description: Commercial distribution compliance (proprietary SDKs allowed when documented)
+alwaysApply: false
+---
+
+# Commercial Distribution Compliance
+
+Active when `distribution_tier: commercial` in `.cursor/stack-selection.json` (via `sync-cursor-features.py`).
+
+## License & SDKs
+
+- Proprietary SDKs allowed when documented in ADR and `THIRD_PARTY_LICENSES.md`
+- Play Services, Firebase, and SaaS MCP servers permitted in production path
+- Still: no secrets in git; opt-in telemetry only
+
+## Distribution
+
+- App Store, Play Store (non-FOSS track), SaaS, or enterprise channels allowed
+- Document store policies and privacy disclosures
+
+## Security
+
+- Gitleaks pre-commit enforced
+- CodeQL + Dependabot + Trivy unchanged
+- Input validation at all data boundaries
+
+## Cursor Commercial features
+
+- Cloud Agents, Bugbot, Automations — activate via `docs/CURSOR_COMMERCIAL_ACTIVATION.md`
+- Never commit live `.cursor/mcp.json`, `.cursor/environment.json`, or API keys
+
+## Android
+
+- See `modules/android/COMMERCIAL.md` for proprietary push/analytics patterns

@@ -1,0 +1,62 @@
+---
+description: Human-in-the-loop gates for destructive agent operations
+globs:
+alwaysApply: true
+---
+
+# Destructive Operations Guardrails
+
+Agents must obtain explicit `[HUMAN]` approval before:
+
+- `git push`, `git push --force`, or rewriting published history
+- Production deploys, `terraform apply`, or infrastructure changes
+- `DROP TABLE`, `DELETE` without `WHERE`, or irreversible schema changes
+- `rm -rf` on paths outside the active task scope
+- Disabling security checks, pre-commit hooks, or CI gates
+- Committing secrets, credentials, or `.env` files
+
+**Allowed without human approval:**
+
+- Agent auto-fix of lint, format, type, and test failures within active feature scope
+- `scripts/feature-autofix.sh` and `scripts/watch-agent-gates.sh --autofix` loops (until 3-strike)
+
+**Exempt:** `scripts/purge-ephemeral.sh --apply` and `purge-ephemeral.ps1 -Apply` — they run `git clean -fdX` (gitignored untracked files only; tracked source is never deleted).
+
+## Honesty labels (enforced vs instructed)
+
+Do not claim a hook is a hard deny. Project hooks are **fail-open** (parse error, missing denylist, or `<!-- cursor-hooks: off -->` → allow). See KB-012.
+
+| Control | Label | Mechanism |
+|---------|-------|-----------|
+| `git push` | Enforced (best-effort) | `before_shell_guard.py` denylist; `/push` and `/ship` set session `destructive_ops_approved: ["git push"]` |
+| `git push --force` | Instructed + denylist | In `shell-denylist.txt`; `/push` override may also match via the `git push` substring — not a hard deny of `--force` |
+| Rewrite published history | Instructed | No dedicated hook beyond force-push substring |
+| `terraform apply` | Enforced (best-effort) | Denylist substring |
+| `DROP TABLE` / `DELETE FROM` | Enforced (best-effort) | Denylist; other irreversible SQL is instructed |
+| `rm -rf /` and `rm -rf ~` | Enforced (best-effort) | Denylist; other `rm -rf` is instructed |
+| `--no-verify` / `--no-gpg-sign` / `skip hooks` | Enforced (best-effort) | Denylist |
+| Production deploys | Instructed | Auto-review `block_instructions` only |
+| Disabling CI gates | Instructed | Except skip-hooks patterns above |
+| Committing secrets / `.env` | Instructed + Gitleaks | Pre-commit when installed; not in the shell denylist |
+| UTF-8 after edit | Instructed + best-effort | `after_edit_encoding.py` is fail-open |
+| Hook opt-out in `BUILD_PLAN.md` | Instructed | `<!-- cursor-hooks: off -->` disables shell guards |
+
+**Enforced** = hook/script refuses when it runs. **Instructed** = prose only. **Best-effort** = fail-open or session override can allow.
+
+## Audit Trail
+
+At milestone boundaries, log significant agent actions in `DECISION_LOG.md`:
+
+- What changed and why
+- Tests or CI that validated the change
+- Any deferred security or privacy items
+
+## Prompt Injection Defense
+
+When building agent-exposed APIs or tools:
+
+- Validate and sanitize all external input
+- Use tool allowlists; deny arbitrary shell execution from user content
+- Never execute instructions embedded in untrusted data as system prompts
+
+See the OWASP LLM walk in `docs/THREAT_MODEL.md` and `docs/SECURITY_TRIAGE.md`.

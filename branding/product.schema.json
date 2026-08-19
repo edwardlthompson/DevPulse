@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agent-project-bootstrap/branding.product.schema.json",
+  "title": "BrandingProduct",
+  "type": "object",
+  "required": [
+    "mode",
+    "name",
+    "short_name",
+    "tagline",
+    "pitch",
+    "features",
+    "quick_start",
+    "install",
+    "usage",
+    "urls",
+    "badge"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "template",
+        "product"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "short_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tagline": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pitch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "features": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "quick_start": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "install": {
+      "type": "string",
+      "minLength": 1
+    },
+    "usage": {
+      "type": "string",
+      "minLength": 1
+    },
+    "urls": {
+      "type": "object",
+      "required": [
+        "docs",
+        "contributing",
+        "security",
+        "license"
+      ],
+      "properties": {
+        "docs": {
+          "type": "string"
+        },
+        "contributing": {
+          "type": "string"
+        },
+        "security": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "design": {
+          "type": "string"
+        },
+        "branding": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "badge": {
+      "type": "object",
+      "required": [
+        "primary",
+        "secondary",
+        "license",
+        "foss"
+      ],
+      "properties": {
+        "primary": {
+          "type": "string",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "secondary": {
+          "type": "string",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "license": {
+          "type": "string",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "foss": {
+          "type": "string",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "stacks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,32 @@
+---
+description: Track source only; purge gitignored caches; automated hygiene gates
+globs:
+alwaysApply: true
+---
+
+# Repo Hygiene
+
+## Track in git
+
+- Source, tests, docs, CI workflows, `*.example` configs, lockfiles
+- Generated design-token outputs only when committed intentionally (prefer CI regen)
+
+## Never track
+
+- `node_modules/`, `.venv/`, `dist/`, `build/`, `target/`, `coverage/`, `.gradle/`, caches
+- `.env` (keep `.env.example`)
+- Live copies: `.app-update.json`, `donations.json` (use `.example` in repo)
+- OS junk: `.DS_Store`, `Thumbs.db`
+
+## Agent commit discipline
+
+1. Review `git status` before every commit
+2. Stage **explicit paths** — avoid blind `git add -A`
+3. Run `python3 scripts/agent-run.py check-repo-hygiene` before push (CI runs the same gate)
+4. Reclaim disk: `python3 scripts/agent-run.py purge-ephemeral` (dry-run); `--apply` uses `git clean -fdX` (ignored only)
+
+## Policies
+
+- **No Git LFS** or **submodules** without `[HUMAN]` approval
+- Build outputs publish via CI artifacts (GitHub Pages, Releases) — not git history
+- See `docs/REPO_HYGIENE.md` for full automation map

@@ -1,0 +1,1918 @@
+{
+  "template_version": "0.21.0",
+  "entry_points": {
+    "bootstrap": "docs/START_HERE.md",
+    "reference": "docs/FOR_AGENTS.md",
+    "initialization_prompt": "docs/INITIALIZATION_PROMPT.md",
+    "cursor_modes": "docs/CURSOR_MODES.md",
+    "batch_commands_help": "docs/help/BATCH_COMMANDS.md",
+    "batch_commands_catalog": "docs/BATCH_COMMANDS.md",
+    "tour": "docs/help/TOUR.md",
+    "ideas": "docs/help/IDEAS.md",
+    "glossary": "docs/help/GLOSSARY.md",
+    "coach": "docs/help/COACH.md",
+    "agent_portability": "docs/AGENT_PORTABILITY.md"
+  },
+  "files": [
+    {
+      "path": "docs/START_HERE.md",
+      "purpose": "Single entry point; bootstrap vs reference decision tree",
+      "read_when": "session_start",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/CURSOR_MODES.md",
+      "purpose": "Cursor Ask/Plan/Agent/Debug mode router",
+      "read_when": "session_start",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/cursor-modes.mdc",
+      "purpose": "alwaysApply Cursor mode routing rule; pairs with docs/CURSOR_MODES.md",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/help/BATCH_COMMANDS.md",
+      "purpose": "Human cheat sheet for Cursor slash commands (bootstrap onboarding)",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/BATCH_COMMANDS.md",
+      "purpose": "Agent registry for 26 batch slash commands and super chains",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/batch-commands.mdc",
+      "purpose": "alwaysApply bare-word expansion to .cursor/commands/*.md",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "CODE_REVIEW.md.example",
+      "purpose": "Ephemeral audit/Codex review output structure (Source: audit|codex-local|codex-ci)",
+      "read_when": "audit",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scratchpad.md.example",
+      "purpose": "Working-memory stub; copy to gitignored scratchpad.md; reset on phase change",
+      "read_when": "session_start",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/CODEX_REVIEW.md",
+      "purpose": "Codex third-party review enablement and /prerelease handoff",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflow-examples/codex-review.yml",
+      "purpose": "Opt-in Codex PR review workflow (not auto-run by GHA)",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/codex/prompts/review.md",
+      "purpose": "Codex read-only review prompt",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/codex/schemas/findings.json",
+      "purpose": "Structured Codex findings JSON schema",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "RELEASE_NOTES.md.example",
+      "purpose": "Ephemeral release draft structure for /push command",
+      "read_when": "release",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-batch-commands.sh",
+      "purpose": "Validate batch command registry matches .cursor/commands/*.md",
+      "read_when": "validation",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/CURSOR_INTEGRATIONS.md",
+      "purpose": "Cursor FOSS vs Commercial feature matrix and activation",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/local-compute.mdc",
+      "purpose": "Prefer local parallel Agent/worktrees over Cloud on This Computer",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/run_checks_parallel.py",
+      "purpose": "Multi-core runner for independent bootstrap checks",
+      "read_when": "validation",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/worktrees.json",
+      "purpose": "Cursor native worktree setup manifest",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/permissions.json",
+      "purpose": "Auto-review allow/block instructions (dual layer with hooks)",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/sandbox.json.example",
+      "purpose": "Optional sandbox network policy example",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor-plugin/plugin.json",
+      "purpose": "FOSS Cursor plugin manifest for pack/local install",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/pack-cursor-plugin.sh",
+      "purpose": "Pack FOSS Cursor components to dist/cursor-plugin",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/CURSOR_CLI.md",
+      "purpose": "Cursor CLI and opt-in GHA headless recipe",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflow-examples/cursor-agent.yml",
+      "purpose": "Opt-in Cursor CLI workflow (not auto-run by GHA)",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/hooks.cloud.commercial.example.json",
+      "purpose": "Commercial cloud conversation hooks example",
+      "read_when": "cursor_setup",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/CURSOR_FEATURE_REGISTRY.json",
+      "purpose": "Cursor feature inventory for weekly radar",
+      "read_when": "maintainer",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/CURSOR_FEATURE_RADAR.md",
+      "purpose": "Feature radar scoring rubric",
+      "read_when": "maintainer",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/hooks.json",
+      "purpose": "Cursor project hooks (enforcement layer)",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-cursor-hooks.sh",
+      "purpose": "Validate hooks.json schema and optional smoke tests",
+      "read_when": "validation",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-cursor-integrations.sh",
+      "purpose": "Validate skills, subagents, hooks, tier compliance",
+      "read_when": "validation",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/sync-cursor-features.py",
+      "purpose": "Sync distribution tier manifest and tier-filtered help",
+      "read_when": "init",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/cursor-feature-radar.sh",
+      "purpose": "Weekly Cursor docs diff vs registry (soft-fail)",
+      "read_when": "maintainer",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/merge-release-please-pr.sh",
+      "purpose": "Auto-merge Release Please PR (--auto then --admin fallback)",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/release-please-automerge.yml",
+      "purpose": "Queue auto-merge for release-please PR branches",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-template-version-sync.sh",
+      "purpose": "Fail when .template-version drifts from release-please manifest",
+      "read_when": "validation",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/sync-template-version.sh",
+      "purpose": "Sync version files from .release-please-manifest.json",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/INITIALIZATION_PROMPT.md",
+      "purpose": "Verbatim project initialization prompt for Cursor agents",
+      "read_when": "bootstrap_session_start",
+      "update_when": "project_customization",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/FOR_AGENTS.md",
+      "purpose": "Agent read-order, token budget, parallel guardrails",
+      "read_when": "reference_session_start",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "AGENTS.md",
+      "purpose": "Canonical agent spec: router, architecture, test-first, security",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/spec.md",
+      "purpose": "Product spec stub (requirements, NFRs, architecture)",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/BEST_PRACTICES.md",
+      "purpose": "Why catalog for conventions (coach layer)",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/FIRST_30_DAYS.md",
+      "purpose": "First-month playbook after /bootstrap",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": ".cursor/commands/coach.md",
+      "purpose": "Coach slash command: health + next action + why",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/project-health.sh",
+      "purpose": "Offline-first project health snapshot for /coach",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/init_extras.py",
+      "purpose": "FUNDING.yml and GitHub topics writers",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "justfile",
+      "purpose": "Optional root just recipes (verify, gates, health)",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/python/justfile",
+      "purpose": "Optional Python Golden Path just recipes",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/web/justfile",
+      "purpose": "Optional Web Golden Path just recipes",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/android/justfile",
+      "purpose": "Optional Android Golden Path just recipes",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "tests/test_init_extras.py",
+      "purpose": "Unit tests for FUNDING.yml and topics",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/plan.md",
+      "purpose": "Milestone task-breakdown stub; BUILD_PLAN is the live board",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "bootstrap.config.json.example",
+      "purpose": "Init manifest schema example",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "bootstrap.config.json",
+      "purpose": "Live init manifest for this repo (child values after init)",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "PROJECT_CHECKLIST.md",
+      "purpose": "Post-init Definition of Done checklist",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "CLAUDE.md",
+      "purpose": "Claude Code adapter generated from AGENTS.md",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "purpose": "GitHub Copilot adapter generated from AGENTS.md",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/main.mdc",
+      "purpose": "alwaysApply Cursor adapter pointing at AGENTS.md",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "templates/licenses/Apache-2.0.txt",
+      "purpose": "Apache-2.0 LICENSE template for child init --license",
+      "read_when": "bootstrap_session_start",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/bootstrap-lifecycle.sh",
+      "purpose": "Pre/post bootstrap hooks, adapters, checklist, manifest",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "env.schema.json",
+      "purpose": "Stack-agnostic env key schema for .env.example",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-env.sh",
+      "purpose": "Validate env.schema.json vs .env.example",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-conventional-commit.sh",
+      "purpose": "Conventional Commits commit-msg check",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify.sh",
+      "purpose": "Unified local verification harness",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/env_schema.py",
+      "purpose": "Parse and validate env schema",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/check_conventional_commit.py",
+      "purpose": "Conventional Commits subject parser",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/stamp_project.py",
+      "purpose": "Stamp AGENTS.md project card at init",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/bootstrap_post.py",
+      "purpose": "Optional git init / install / test post hooks",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".devcontainer/Dockerfile",
+      "purpose": "Devcontainer image scaffold",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".devcontainer/devcontainer.json",
+      "purpose": "Codespaces / Cursor devcontainer",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".agent/memory/decisions.md",
+      "purpose": "Index to DECISION_LOG.md (not a second log)",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".agent/memory/pitfalls.md",
+      "purpose": "Index to KNOWLEDGE_BASE.md",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".agent/skills/README.md",
+      "purpose": "Index to .cursor/skills/",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "tests/test_env_schema.py",
+      "purpose": "Env schema unit tests",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "tests/test_conventional_commit.py",
+      "purpose": "Conventional Commits unit tests",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "tests/test_stamp_and_post.py",
+      "purpose": "AGENTS.md stamp and post-hook unit tests",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-bootstrap-engine.sh",
+      "purpose": "Unit tests for bootstrap lifecycle engine",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/bootstrap_engine.py",
+      "purpose": "Manifest, preflight, license application",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/agent_adapters.py",
+      "purpose": "Write and drift-check thin adapters from AGENTS.md",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/adapter_templates.py",
+      "purpose": "Generated adapter bodies (pointer-only for non-Cursor tools)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/gate_hints.json",
+      "purpose": "Stage hint table for feature-gate and verify.sh",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/gate_hints.py",
+      "purpose": "Plain-English feature-gate failure hints",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-agent-adapters.sh",
+      "purpose": "Fail if generated adapters drifted from templates",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/AGENT_PORTABILITY.md",
+      "purpose": "First-time map of agent IDEs to AGENTS.md adapters",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/help/COACH.md",
+      "purpose": "Tool-agnostic /coach recipe (next action and why)",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/help/GLOSSARY.md",
+      "purpose": "First-timer glossary (Sacred, Canon, AGENT labels, status)",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/help/TOUR.md",
+      "purpose": "Tool-agnostic 10-minute first-run tour",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/commands/tour.md",
+      "purpose": "Cursor /tour slash command (10-minute walk)",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/help/IDEAS.md",
+      "purpose": "Tool-agnostic in-scope backlog recipe",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/commands/ideas.md",
+      "purpose": "Cursor /ideas slash command (ranked backlog, do not implement)",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "SUPPORT.md",
+      "purpose": "Questions vs bugs vs vulns vs template improvements",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "CITATION.cff",
+      "purpose": "Software citation metadata for the template",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "purpose": "Verify, Feature gate, and Project health tasks",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".vscode/extensions.json",
+      "purpose": "Recommended VS Code / Cursor / Windsurf extensions",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "tests/test_agent_adapters.py",
+      "purpose": "Adapter write, disable-flag, and drift unit tests",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "tests/test_gate_hints.py",
+      "purpose": "Plain-English gate hint unit tests",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/project_checklist.py",
+      "purpose": "Generate PROJECT_CHECKLIST.md",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/bootstrap_cli.py",
+      "purpose": "CLI for bootstrap-lifecycle.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "tests/test_bootstrap_engine.py",
+      "purpose": "Stdlib unittest coverage for bootstrap engine",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "AGENT_MEMORY.md",
+      "purpose": "Tech stack, threat model, retrospectives index",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "BUILD_PLAN.md",
+      "purpose": "Sprint task board with AGENT/HUMAN/ADB/AUTO labels",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "COMPLETED_TASKS.md",
+      "purpose": "Archive of finished BUILD_PLAN items",
+      "read_when": "session_start",
+      "update_when": "task_completion",
+      "owner": "agent"
+    },
+    {
+      "path": "DECISION_LOG.md",
+      "purpose": "Append-only decision register",
+      "read_when": "architectural_decision",
+      "update_when": "architectural_decision",
+      "owner": "agent+human"
+    },
+    {
+      "path": "KNOWLEDGE_BASE.md",
+      "purpose": "Stack-specific edge cases and resolved bugs",
+      "read_when": "debugging",
+      "update_when": "bug_resolved",
+      "owner": "agent"
+    },
+    {
+      "path": "PROMPT_LIBRARY.md",
+      "purpose": "Effective prompt strategies for this repo",
+      "read_when": "prompt_needed",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "README.md",
+      "purpose": "Project overview, quick start, BUILD_PLAN labels, update checker, security",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "purpose": "Contribution guidelines and PR expectations",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/SECURITY_TRIAGE.md",
+      "purpose": "Dependabot alerts setup, weekly CVE triage, OWASP LLM walk, release security gate",
+      "read_when": "security_triage",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/MAINTAINING_THE_TEMPLATE.md",
+      "purpose": "Template maintainer semver, release checklist, badge conventions",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/UPGRADING_FROM_TEMPLATE.md",
+      "purpose": "Child-repo cherry-pick guide with Canon/Mixed/Sacred re-run policy",
+      "read_when": "template_upgrade",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "SECURITY.md",
+      "purpose": "Vulnerability reporting policy and supported versions",
+      "read_when": "security_report",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "purpose": "Community standards (Contributor Covenant)",
+      "read_when": "contributing",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "THIRD_PARTY_LICENSES.md",
+      "purpose": "Dependency license attribution and audit reference",
+      "read_when": "release",
+      "update_when": "release",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/THREAT_MODEL.md",
+      "purpose": "STRIDE threat model, trust boundaries, abuse cases, OWASP LLM Top 10 walk",
+      "read_when": "architectural_decision",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/PRIVACY.md",
+      "purpose": "Privacy policy draft, data minimization, DPIA checklist",
+      "read_when": "privacy_review",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/RUNBOOK.md",
+      "purpose": "Deploy, rollback, health checks, SLOs, escalation",
+      "read_when": "operations",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "purpose": "Critical path ownership for PR review routing",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "human"
+    },
+    {
+      "path": ".template-version",
+      "purpose": "Semver of template version baked into clone",
+      "read_when": "update_check",
+      "update_when": "template_upgrade",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".template-update.json",
+      "purpose": "Update checker interval and last-checked timestamp",
+      "read_when": "update_check",
+      "update_when": "user_preference",
+      "owner": "human"
+    },
+    {
+      "path": "LICENSE",
+      "purpose": "MIT license for template and child projects",
+      "read_when": "contributing",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".env.example",
+      "purpose": "Documented environment variable stub; copy to .env locally",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": "scripts/validate-bootstrap.sh",
+      "purpose": "Sprint 0 artifact verification with encoding, index, and lockfile gates",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-license-compliance.sh",
+      "purpose": "Fail on disallowed dependency licenses after locked installs",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-file-encoding.sh",
+      "purpose": "Reject UTF-16 or NUL-byte corruption in tracked text files",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/dependency-review.yml",
+      "purpose": "PR dependency review — fail on new High/Critical vulnerabilities",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/destructive-ops.mdc",
+      "purpose": "Human-in-the-loop gates for destructive agent operations",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/validate-workflow-actions.sh",
+      "purpose": "Verify GitHub Actions workflow refs resolve before push",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-github-ci.sh",
+      "purpose": "Poll GitHub Actions CI/Security/CodeQL status for a commit",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-github-ci.ps1",
+      "purpose": "Windows wrapper to poll GitHub Actions workflow status",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-workflow-action-ref-format.sh",
+      "purpose": "Pre-commit guard against bare-semver GitHub Action refs in workflows",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/weekly-health-check.yml",
+      "purpose": "Weekly CI poll, template upgrade sim, npm/uv audit, Android instrumented smoke",
+      "read_when": "security_triage",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "purpose": "SBOM, provenance attestation, and GitHub Release on version tags",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/setup-github-repo.sh",
+      "purpose": "Idempotent gh api: Dependabot alerts, private reporting, branch protection",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/setup-github-repo.ps1",
+      "purpose": "Windows wrapper for setup-github-repo.sh",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/setup-automerge-token.sh",
+      "purpose": "Set AUTOMERGE_TOKEN repo secret from env or gh auth token so automerges trigger push CI",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/setup-automerge-token.ps1",
+      "purpose": "Windows wrapper for setup-automerge-token.sh",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/pre-release-gate.sh",
+      "purpose": "Pre-release gate: CI poll, Dependabot alerts, template version, release reminder",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/pre-release-gate.ps1",
+      "purpose": "Windows wrapper for pre-release-gate.sh",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-file-encoding.py",
+      "purpose": "Cross-platform UTF-8/UTF-16 BOM validation",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/windows-encoding.mdc",
+      "purpose": "Windows UTF-8 write rule for agents",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor-session-state.example.json",
+      "purpose": "Session restore schema for agents after chat clear",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/adr/0000-template-baseline.md",
+      "purpose": "Template-repo baseline architecture ADR (maintainer)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/adr/0001-core-architecture.md",
+      "purpose": "Child repo MVVM/Clean/Hexagonal architecture choice template",
+      "read_when": "architectural_decision",
+      "update_when": "project_customization",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/PARALLEL_AGENT_SCOPES.md",
+      "purpose": "Isolated scopes for BUILD_PLAN Parallel agents",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/testing.mdc",
+      "purpose": "Coverage budgets and snapshot conventions",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/ci-gates.mdc",
+      "purpose": "Post-push CI poll protocol",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-parallel-scope.sh",
+      "purpose": "Detect overlapping Parallel scopes in BUILD_PLAN",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/build-sprint-status.sh",
+      "purpose": "Next BUILD_PLAN row for autonomous /build sprint loop",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/build_sprint.py",
+      "purpose": "BUILD_PLAN sprint phase parser for build-sprint-status",
+      "read_when": "reference",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/attempt-build-plan-row.sh",
+      "purpose": "Attempt HUMAN/ADB BUILD_PLAN rows via automation catalog during /build",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/human_task_automation.py",
+      "purpose": "Pattern registry and handlers for HUMAN/ADB build automation",
+      "read_when": "reference",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/build-backlog.sh",
+      "purpose": "Append failed HUMAN/ADB automation to HUMAN_BACKLOG.md",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/build_backlog.py",
+      "purpose": "HUMAN_BACKLOG.md dedupe and list helpers",
+      "read_when": "reference",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "HUMAN_BACKLOG.md.example",
+      "purpose": "Template for /build failure backlog (child repos copy to HUMAN_BACKLOG.md)",
+      "read_when": "bootstrap_session_start",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/plan-parallel-dispatch.sh",
+      "purpose": "Build parallel agent manifest and agent_count from BUILD_PLAN",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-build-plan-parallel.sh",
+      "purpose": "Gate: every sprint has Parallel table with >= 2 AGENT rows or exception",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/setup-agent-worktrees.sh",
+      "purpose": "Optional git worktrees for parallel agent branches",
+      "read_when": "reference",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/parallel_scope.py",
+      "purpose": "Shared BUILD_PLAN Parallel table parser and overlap detection",
+      "read_when": "reference",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-bundle-size.sh",
+      "purpose": "Vite dist JS gzip bundle budget gate",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/init-stack-sync.py",
+      "purpose": "Sync AGENT_MEMORY modules and stack-selection.json on init",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/sync-stack-config.py",
+      "purpose": "Propagate release_repo and donation URLs to web public and Android assets on init",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/sync-exemplar-config.sh",
+      "purpose": "Copy .example config stubs to live JSON when missing (validate-bootstrap, feature-gate)",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/scorecard.yml",
+      "purpose": "Weekly OpenSSF Scorecard analysis",
+      "read_when": "security_triage",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/OPTIONAL_STACKS.md",
+      "purpose": "Optional stack modules (Lightroom, Rust, Go, Node) not in default init picker",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "modules/node/MODULE.md",
+      "purpose": "Node.js API module guide (Hono Golden Path)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/node/",
+      "purpose": "Hono + TypeScript + Vitest API stub",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "action.yml",
+      "purpose": "Composite GitHub Action wrapping validate-bootstrap --quick",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/simulate-template-upgrade.sh",
+      "purpose": "Simulate child-repo upgrade; assert bootstrap validation",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/generate-winget-manifest.sh",
+      "purpose": "Generate Winget manifest YAML stub",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "purpose": "Deploy examples/web to GitHub Pages (no tracking)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/dependabot-automerge.yml",
+      "purpose": "Auto-merge Dependabot patch/minor when CI + dependency-review pass",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/release-please.yml",
+      "purpose": "Conventional Commits changelog and release PR automation",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/stale.yml",
+      "purpose": "Mark stale issues/PRs; exempt template-improvement",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "release-please-config.json",
+      "purpose": "Release Please package configuration",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".release-please-manifest.json",
+      "purpose": "Release Please version manifest",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/lightroom/Info.lua",
+      "purpose": "Lightroom plugin Info.lua stub",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/lightroom/README.md",
+      "purpose": "Lightroom SDK version and compliance notes",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "modules/rust/MODULE.md",
+      "purpose": "Optional Rust module guide",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/rust/Cargo.toml",
+      "purpose": "Rust hello-world stub manifest",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "modules/go/MODULE.md",
+      "purpose": "Optional Go module guide",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "examples/go/go.mod",
+      "purpose": "Go hello-world stub module",
+      "read_when": "stack_selection",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "design-tokens/design-tokens.json",
+      "purpose": "Canonical color, typography, spacing tokens",
+      "read_when": "ui_work",
+      "update_when": "design_change",
+      "owner": "agent+human"
+    },
+    {
+      "path": "design-tokens/schema.json",
+      "purpose": "JSON Schema for design-tokens.json",
+      "read_when": "design_change",
+      "update_when": "design_change",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/sync-design-tokens.py",
+      "purpose": "Generate web CSS, Android theme Kotlin, branding official-colors.css, and distribute brand assets",
+      "read_when": "design_change",
+      "update_when": "design_change",
+      "owner": "maintainer"
+    },
+    {
+      "path": "branding/BRANDING.md",
+      "purpose": "Branding kit guide: logos, official colors, rebrand checklist, README modes",
+      "read_when": "ui_work",
+      "update_when": "design_change",
+      "owner": "agent+human"
+    },
+    {
+      "path": "branding/product.json",
+      "purpose": "Product identity and pitch copy for README generation (mode template|product)",
+      "read_when": "ui_work",
+      "update_when": "design_change",
+      "owner": "agent+human"
+    },
+    {
+      "path": "branding/product.schema.json",
+      "purpose": "JSON Schema for branding/product.json",
+      "read_when": "design_change",
+      "update_when": "design_change",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/generate-project-readme.py",
+      "purpose": "Generate pitch README preview; write root README.md only in product mode",
+      "read_when": "design_change",
+      "update_when": "design_change",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-design-cohesion.sh",
+      "purpose": "Fail on hardcoded colors and UI string literals",
+      "read_when": "ci_failure",
+      "update_when": "design_change",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-design-cohesion.ps1",
+      "purpose": "Windows wrapper for design cohesion check",
+      "read_when": "ci_failure",
+      "update_when": "design_change",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/DESIGN_GUIDE.md",
+      "purpose": "Cross-stack design system, theme toggle, i18n rules",
+      "read_when": "ui_work",
+      "update_when": "design_change",
+      "owner": "agent+human"
+    },
+    {
+      "path": "docs/WEB_PROJECT_LAYOUT.md",
+      "purpose": "Website folder roles, GitHub Pages deploy path, i18n vs styles layout",
+      "read_when": "web_hosting",
+      "update_when": "layout_change",
+      "owner": "agent+human"
+    },
+    {
+      "path": "examples/web/src/panelDialog.ts",
+      "purpose": "Modal a11y: role=dialog, focus trap, Escape, focus restore",
+      "read_when": "ui_work",
+      "update_when": "milestone_boundary",
+      "owner": "agent"
+    },
+    {
+      "path": "examples/web/src/appBootstrap.ts",
+      "purpose": "Web composition root: theme, donations, update check, SW register",
+      "read_when": "ui_work",
+      "update_when": "milestone_boundary",
+      "owner": "agent"
+    },
+    {
+      "path": "examples/web/public/sw.js",
+      "purpose": "PWA service worker; CACHE_NAME stamped from package version at build",
+      "read_when": "web_hosting",
+      "update_when": "milestone_boundary",
+      "owner": "agent"
+    },
+    {
+      "path": ".cursor/rules/design-system.mdc",
+      "purpose": "Agent guardrails for tokens, themes, localization",
+      "read_when": "ui_work",
+      "update_when": "design_change",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".app-update.json.example",
+      "purpose": "App release update checker config example",
+      "read_when": "bootstrap_session_start",
+      "update_when": "user_preference",
+      "owner": "human+agent"
+    },
+    {
+      "path": "donations.json.example",
+      "purpose": "Donation links config example for in-app About",
+      "read_when": "bootstrap_session_start",
+      "update_when": "user_preference",
+      "owner": "human+agent"
+    },
+    {
+      "path": ".gitattributes",
+      "purpose": "Line endings, binary files, linguist-generated markers",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".editorconfig",
+      "purpose": "Cross-editor charset, indent, and whitespace rules",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursorignore",
+      "purpose": "Exclude ephemeral paths from agent indexing",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/REPO_HYGIENE.md",
+      "purpose": "Track vs ephemeral policy and automation map",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "agent+human"
+    },
+    {
+      "path": ".cursor/rules/repo-hygiene.mdc",
+      "purpose": "Agent guardrails for git track discipline and purge",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-repo-hygiene.sh",
+      "purpose": "Orchestrate tracked-artifact and config hygiene checks",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-repo-hygiene.ps1",
+      "purpose": "Windows wrapper for check-repo-hygiene.sh",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/purge-ephemeral.sh",
+      "purpose": "Safe dry-run purge of gitignored untracked files",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "human+agent"
+    },
+    {
+      "path": "scripts/purge-ephemeral.ps1",
+      "purpose": "Windows wrapper for purge-ephemeral.sh",
+      "read_when": "contributing",
+      "update_when": "milestone_boundary",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/FEATURE_MODULES.md",
+      "purpose": "Vertical-slice feature container contract, DoD, autonomous agent protocol",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".cursor/rules/feature-modules.mdc",
+      "purpose": "One feature per task; watch-agent-gates after each AGENT step",
+      "read_when": "session_start",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/feature-gate.sh",
+      "purpose": "Hygiene + encoding + stack lint/test/build smoke gate",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/feature-gate.ps1",
+      "purpose": "Windows wrapper for feature-gate.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/feature-autofix.sh",
+      "purpose": "Mechanical multi-stack lint/format auto-fix (ruff, Biome, cargo fmt, gofmt)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/feature-autofix.ps1",
+      "purpose": "Windows wrapper for feature-autofix.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/apply-suggested-gate-fixes.sh",
+      "purpose": "Allowlisted feature-gate failed_stage mechanical fixers",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/prerelease-autofix.sh",
+      "purpose": "Pre-release mechanical autofix + one watch-agent-gates pass",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/run-codex-review.sh",
+      "purpose": "Local Codex CLI review → CODE_REVIEW.md",
+      "read_when": "audit",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/codex-findings-to-markdown.py",
+      "purpose": "Validate Codex findings JSON and render CODE_REVIEW.md",
+      "read_when": "audit",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/agent-progress.sh",
+      "purpose": "Read/write .cursor/agent-progress.json for autonomous sessions",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/agent-progress.ps1",
+      "purpose": "Windows wrapper for agent-progress.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/watch-agent-gates.sh",
+      "purpose": "Gate loop with autofix, progress tracking, 3-strike escalation",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/watch-agent-gates.ps1",
+      "purpose": "Windows wrapper for watch-agent-gates.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/smoke-stack.sh",
+      "purpose": "Back-compat wrapper calling feature-gate.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/smoke-stack.ps1",
+      "purpose": "Windows wrapper for smoke-stack.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-about-feature-gate.sh",
+      "purpose": "About add/remove lego verification for feature-gate",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-about-feature-gate.ps1",
+      "purpose": "Windows wrapper for verify-about-feature-gate.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-security-triage.sh",
+      "purpose": "Weekly Dependabot Critical/High + required workflow triage",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-security-triage.ps1",
+      "purpose": "Windows wrapper for check-security-triage.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/check_doc_links.py",
+      "purpose": "Relative-link checker for docs/** markdown",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-doc-links.sh",
+      "purpose": "Gate wrapper for docs/** and root markdown relative links",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-readme-health.sh",
+      "purpose": "README link/table/encoding health check",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-readme-health.ps1",
+      "purpose": "Windows wrapper for check-readme-health.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-fdroid-metadata.sh",
+      "purpose": "Validate F-Droid/Fastlane metadata scaffold before ADB submit",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-fdroid-metadata.ps1",
+      "purpose": "Windows wrapper for verify-fdroid-metadata.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/fdroid-device-dry-run.sh",
+      "purpose": "ADB device smoke test for F-Droid dry-run (install debug APK, logcat scan)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-android-insets.sh",
+      "purpose": "ADB nav-mode switch + NavBarInsetUiTest for system bar inset verification",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/fdroid-device-dry-run.ps1",
+      "purpose": "Windows wrapper for fdroid-device-dry-run.sh (preserves wireless ADB)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-branch-protection.sh",
+      "purpose": "Verify GitHub branch protection required checks match template defaults",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-branch-protection.ps1",
+      "purpose": "Windows wrapper for verify-branch-protection.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-reproducible-apk.sh",
+      "purpose": "Local double-build APK hash check (SOURCE_DATE_EPOCH parity with CI)",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-reproducible-apk.ps1",
+      "purpose": "Windows wrapper for verify-reproducible-apk.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/run-maintainer-gates.sh",
+      "purpose": "Orchestrate weekly/monthly template maintainer AUTO gates",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/run-maintainer-gates.ps1",
+      "purpose": "Windows wrapper for run-maintainer-gates.sh",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "docs/features/settings.md",
+      "purpose": "Settings vertical slice acceptance criteria (Sprint 2 exemplar)",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/_template.md",
+      "purpose": "Per-feature acceptance criteria stub for Sprint 2+",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/_handoff.md",
+      "purpose": "Parallel-agent handoff stub (from/to, scope, acceptance); live copies gitignored",
+      "read_when": "feature_work",
+      "update_when": "never",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/resolve-python.sh",
+      "purpose": "Resolve PY for bash gates; skip Windows Store python3 stub; prefer py -3",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/lib/resolve-tools.sh",
+      "purpose": "Prepend Windows gh/Git/node on Git Bash PATH; unset inherited PYTHONPATH",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/init-project.sh",
+      "purpose": "Post-template clone customization and stack picker",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "human+agent"
+    },
+    {
+      "path": "scripts/init-project.ps1",
+      "purpose": "Windows wrapper for init-project.sh",
+      "read_when": "bootstrap_session_start",
+      "update_when": "milestone_boundary",
+      "owner": "human+agent"
+    },
+    {
+      "path": "scripts/validate-template-index.sh",
+      "purpose": "Validate TEMPLATE_INDEX.json paths and reverse inventory scan",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-python-pytest-workflow.sh",
+      "purpose": "Require pytest in deps, pyproject config, CI, and feature-gate when Python example present",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-file-limits.sh",
+      "purpose": "Enforce 300-line static data and 150-line pure logic file limits",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-changelog-unreleased.sh",
+      "purpose": "Ensure CHANGELOG.md has exactly one [Unreleased] section",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-markdown-tables.sh",
+      "purpose": "Lint markdown table formatting",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-template-updates.sh",
+      "purpose": "Poll upstream template for updates",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-tracked-artifacts.sh",
+      "purpose": "Detect forbidden tracked build artifacts",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-large-tracked-files.sh",
+      "purpose": "Warn on large tracked files in git",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/count-critical-high-dependabot.sh",
+      "purpose": "Paginated Critical/High Dependabot alert count",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/verify-agent-strikes.sh",
+      "purpose": "Regression test for 3-strike agent gate logic",
+      "read_when": "milestone_boundary",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "purpose": "Primary CI matrix: lint, test, build, hygiene, feature gate",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/security.yml",
+      "purpose": "Trivy and gitleaks security scan",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/codeql.yml",
+      "purpose": "CodeQL static analysis",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    }
+  ],
+  "modules": {
+    "android": {
+      "guide": "modules/android/MODULE.md",
+      "example": "examples/android",
+      "activate_when": "stack includes Android or F-Droid"
+    },
+    "web": {
+      "guide": "modules/web/MODULE.md",
+      "example": "examples/web",
+      "activate_when": "stack includes PWA, web, or static site"
+    },
+    "python": {
+      "guide": "modules/python/MODULE.md",
+      "example": "examples/python",
+      "activate_when": "stack includes Python application"
+    },
+    "lightroom": {
+      "guide": "modules/lightroom/MODULE.md",
+      "example": "examples/lightroom",
+      "activate_when": "stack includes Adobe Lightroom Classic plugin"
+    },
+    "rust": {
+      "guide": "modules/rust/MODULE.md",
+      "example": "examples/rust",
+      "activate_when": "optional stack; see docs/OPTIONAL_STACKS.md"
+    },
+    "go": {
+      "guide": "modules/go/MODULE.md",
+      "example": "examples/go",
+      "activate_when": "optional stack; see docs/OPTIONAL_STACKS.md"
+    },
+    "node": {
+      "guide": "modules/node/MODULE.md",
+      "example": "examples/node",
+      "activate_when": "stack includes Node.js HTTP API"
+    }
+  },
+  "roadmap": {
+    "active": "BUILD_PLAN.md — maintenance + human open items",
+    "completed_archive": "COMPLETED_TASKS.md",
+    "batch_commands": [
+      ".cursor/commands/audit.md",
+      ".cursor/commands/debug.md",
+      ".cursor/commands/gates.md",
+      ".cursor/commands/triage.md",
+      ".cursor/commands/dependabot.md",
+      ".cursor/commands/push.md",
+      ".cursor/commands/prerelease.md",
+      ".cursor/commands/regress.md",
+      ".cursor/commands/feature.md",
+      ".cursor/commands/fix.md",
+      ".cursor/commands/init.md",
+      ".cursor/commands/prune.md",
+      ".cursor/commands/ci.md",
+      ".cursor/commands/docs.md",
+      ".cursor/commands/upgrade.md",
+      ".cursor/commands/setup.md",
+      ".cursor/commands/plan.md",
+      ".cursor/commands/restore.md",
+      ".cursor/commands/compact.md",
+      ".cursor/commands/scope.md",
+      ".cursor/commands/bootstrap.md",
+      ".cursor/commands/verify.md",
+      ".cursor/commands/build.md",
+      ".cursor/commands/ship.md",
+      ".cursor/commands/maintain.md"
+    ],
+    "key_exemplars": [
+      "examples/web/src/panelDialog.ts",
+      "examples/web/src/appBootstrap.ts",
+      "examples/web/public/sw.js"
+    ]
+  }
+}

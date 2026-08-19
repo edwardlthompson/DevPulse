@@ -1,0 +1,22 @@
+# Bugbot review rules (Commercial example)
+
+> Requires Cursor Bugbot on the repository. The template works without Bugbot.
+
+When Bugbot is enabled, customize review focus:
+
+- Security: input validation at API boundaries
+- FOSS/commercial compliance per active `.cursor/rules/*-compliance.mdc`
+- No secrets in diffs (Gitleaks patterns)
+- Prefer Autofix only for lint/type/test nits that map to local `/fix` scope
+
+## Autofix vs FOSS `/fix`
+
+| Path | Use |
+|------|-----|
+| **Bugbot Autofix** (Cloud Agent credits) | Commercial PR findings that need an isolated fix branch |
+| **Local `/fix`** → `watch-gates-autofix` skill | FOSS default after AGENT steps; `scripts/watch-agent-gates.sh --once --autofix` |
+| **CI only** | FOSS repos without Bugbot — keep GitHub Actions green |
+
+Do not disable project hooks or Auto-review `block_instructions` for Autofix.
+
+Copy to `.cursor/BUGBOT.md` after `--distribution-tier commercial`.

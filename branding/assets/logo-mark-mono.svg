@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Golden Path mark monochrome">
+  <rect width="64" height="64" rx="12" fill="none" stroke="#1a1a2e" stroke-width="2"/>
+  <path d="M16 40 L32 16 L48 40 Z" fill="#1a1a2e"/>
+</svg>

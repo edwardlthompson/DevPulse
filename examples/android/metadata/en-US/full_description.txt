@@ -1,0 +1,5 @@
+Golden Path Android is a minimal FOSS application stub shipped with agent-project-bootstrap.
+
+It demonstrates Gradle structure, assembleDebug CI, and Fastlane metadata patterns without proprietary SDKs.
+
+Replace this text with your application description before F-Droid submission.

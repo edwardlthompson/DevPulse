@@ -1,0 +1,9 @@
+{
+  "release_repo": "OWNER/REPO",
+  "manifest_url": null,
+  "check_interval": "weekly",
+  "last_checked": null,
+  "installed_artifact_format": null,
+  "notify_method": "about_screen",
+  "restart_guard_key": "gp-update-restart-pending"
+}

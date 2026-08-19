@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "project_name": "my-app",
+  "purpose": "One-line product purpose",
+  "stack": "web",
+  "license": "MIT",
+  "distribution_tier": "foss",
+  "agent_adapters": {
+    "cursor_rules": true,
+    "claude": true,
+    "copilot": true,
+    "gemini": true,
+    "windsurf": true,
+    "cline": true,
+    "aider": true,
+    "continue": true
+  },
+  "security": {
+    "dependabot": true,
+    "code_scanning": true,
+    "secret_detection": true
+  },
+  "hooks": {
+    "preflight": true,
+    "post_sync_adapters": true,
+    "post_checklist": true,
+    "post_git_init": false,
+    "post_git_commit": false,
+    "post_install_deps": false,
+    "post_run_tests": false,
+    "post_welcome_issue": false
+  }
+}

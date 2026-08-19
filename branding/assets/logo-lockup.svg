@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" role="img" aria-label="Golden Path">
+  <rect x="0" y="4" width="64" height="64" rx="12" fill="#1a1a2e"/>
+  <path d="M16 44 L32 20 L48 44 Z" fill="#e94560"/>
+  <text x="80" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#1a1a2e">Golden Path</text>
+</svg>

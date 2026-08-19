@@ -1,0 +1,69 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-case-conflict
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  - repo: local
+    hooks:
+      - id: file-encoding
+        name: Check UTF-8 file encoding
+        entry: bash scripts/check-file-encoding.sh
+        language: system
+        pass_filenames: true
+        files: (\.(md|json|yml|yaml|sh|ps1|mdc|ts|tsx|toml|html|css|properties|kts|kt|xml)$|^\.gitignore$|^\.gitattributes$|^\.editorconfig$|^\.cursorignore$)
+      - id: check-doc-links
+        name: Check markdown relative links
+        entry: bash scripts/check-doc-links.sh
+        language: system
+        pass_filenames: false
+        files: '\.md$'
+      - id: workflow-action-refs
+        name: Check workflow action ref format
+        entry: bash scripts/check-workflow-action-ref-format.sh
+        language: system
+        pass_filenames: false
+        files: ^\.github/workflows/.*\.ya?ml$
+      - id: file-limits
+        name: Check file line limits
+        entry: bash scripts/check-file-limits.sh
+        language: system
+        pass_filenames: false
+      - id: check-repo-hygiene
+        name: Repo hygiene checks
+        entry: bash scripts/check-repo-hygiene.sh
+        language: system
+        pass_filenames: false
+      - id: validate-bootstrap-quick
+        name: Quick bootstrap validation
+        entry: bash scripts/validate-bootstrap.sh --quick
+        language: system
+        pass_filenames: false
+      - id: conventional-commit
+        name: Conventional Commits
+        entry: bash scripts/check-conventional-commit.sh
+        language: system
+        stages: [commit-msg]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      - id: ruff
+        files: ^examples/python/
+      - id: ruff-format
+        files: ^examples/python/

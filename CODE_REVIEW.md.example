@@ -1,0 +1,39 @@
+# Code Review — YYYY-MM-DD
+
+> Ephemeral audit output. Copy from this example; do not commit `CODE_REVIEW.md` (gitignored).
+
+**Source:** `audit` | `codex-local` | `codex-ci`
+
+## Summary
+
+One paragraph: overall health, top risks, recommended sprint focus.
+
+## Findings
+
+| ID | Severity | Area | Finding | Recommendation |
+|----|----------|------|---------|----------------|
+| F-001 | Critical | | | |
+| F-002 | High | | | |
+| F-003 | Medium | | | |
+| F-004 | Low | | | |
+| F-005 | Deferred | | | |
+
+**Severity:** Critical · High · Medium · Low · Deferred
+
+## Gate results
+
+| Check | Result | Notes |
+|-------|--------|-------|
+| validate-bootstrap.sh --quick | | |
+| feature-gate.sh | | |
+| check-repo-hygiene.sh | | |
+| check-readme-health.sh | | |
+| Dependabot / CodeQL (if gh auth) | | |
+
+## BUILD_PLAN links
+
+Map finding IDs to sprint rows in `BUILD_PLAN.md` (e.g. M27 🔲 [AGENT] Fix F-002 …).
+
+## Out of scope
+
+Items intentionally deferred with rationale.

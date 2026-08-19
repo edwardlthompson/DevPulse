@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Golden Path</string>
+    <string name="app_title">Golden Path</string>
+    <string name="app_greeting">Hello, FOSS!</string>
+    <string name="app_status_online">Online — Golden Path PWA stub</string>
+    <string name="app_status_offline">Offline — Golden Path PWA stub</string>
+    <string name="theme_toggle_label">Switch theme</string>
+    <string name="theme_mode_system">System theme</string>
+    <string name="theme_mode_light">Light theme</string>
+    <string name="theme_mode_dark">Dark theme</string>
+    <string name="about_title">About</string>
+    <string name="about_open">About</string>
+    <string name="about_close">Close</string>
+    <string name="about_version">Version: %1$s</string>
+    <string name="about_format">Installed format: %1$s</string>
+    <string name="about_donations_message">If this project helps you, consider supporting development.</string>
+    <string name="about_update_current">You are on the latest version.</string>
+    <string name="about_update_available">Update available: %1$s</string>
+    <string name="about_update_no_compatible">No compatible update for your install format.</string>
+    <string name="about_update_restarting">Restarting to apply update…</string>
+    <string name="about_update_apply">Apply update</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_open">Settings</string>
+    <string name="settings_close">Close settings</string>
+    <string name="settings_theme_label">Theme</string>
+    <string name="settings_theme_mode_system">System theme</string>
+    <string name="settings_theme_mode_light">Light theme</string>
+    <string name="settings_theme_mode_dark">Dark theme</string>
+    <string name="settings_update_check_label">Check for updates</string>
+    <string name="about_debug_navigation_mode">Navigation: %1$s (inset %2$ddp)</string>
+    <string name="nav_mode_three_button">3-button</string>
+    <string name="nav_mode_two_button">2-button</string>
+    <string name="nav_mode_gesture">Gesture</string>
+    <string name="nav_mode_unknown">Unknown</string>
+    <string name="snackbar_update_available">Update available — open About to apply</string>
+</resources>

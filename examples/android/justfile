@@ -1,0 +1,7 @@
+# Optional DX. Requires a local Android SDK. CI validates structure only.
+
+test:
+    ./gradlew test
+
+assemble:
+    ./gradlew assembleDebug

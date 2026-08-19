@@ -1,0 +1,26 @@
+name: Release Please auto-merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  automerge:
+    name: Queue Release Please merge
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    if: startsWith(github.head_ref, 'release-please--')
+    steps:
+      - name: Enable auto-merge when checks pass
+        env:
+          GH_TOKEN: ${{ secrets.AUTOMERGE_TOKEN || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr merge "$PR_NUMBER" --auto --merge
+          echo "Auto-merge queued for PR #${PR_NUMBER} (merges when required checks pass)."
+          echo "Prefer AUTOMERGE_TOKEN (PAT) so the merge push triggers CI on main."

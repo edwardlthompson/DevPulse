@@ -1,0 +1,44 @@
+---
+description: Core agent directives — plan-first, read-before-write, 3-strike rule
+alwaysApply: true
+---
+
+# Core Directives
+
+On session start, read docs/START_HERE.md, pick Cursor mode via docs/CURSOR_MODES.md, then edit.
+
+## Plan First, Code Second
+
+- Cursor mode routing: see cursor-modes.mdc and docs/CURSOR_MODES.md
+- Plan Mode for non-trivial tasks; Ask for read-only exploration
+- Include mandatory `### Critique` in every plan as an **Issue → Resolution** table
+- Every critique must have a concrete resolution (file, test, gate, BUILD_PLAN step, or `[HUMAN]` destructive-ops item) baked into the plan body — not open risks or “ask later”
+- Pick a single best approach; do not dump unresolved alternatives on the human
+- Bare “defer” / “monitor” / “optional later” is forbidden unless the resolution names a tracked follow-up and why shipping without it is safe now
+- Ask the human only for `[HUMAN]` destructive-ops or facts undiscoverable from the codebase
+
+## Read-Before-Write
+
+- Inspect types/interfaces via @filename before altering code
+
+## BUILD_PLAN Protocol
+
+- Sequential lane before Parallel lane
+- Respect AGENT, HUMAN, ADB, AUTO labels
+- Status markers: 🔲 open · ✅ done · ❌ blocked (emoji, not `- [ ]` checkboxes — repo-wide; see `BUILD_PLAN.md` legend)
+
+## 3-Strike Rule
+
+Halt after 3 consecutive failed fix attempts; escalate to human.
+
+## Memory Files
+
+Update only at session start, milestone boundary, or architectural pivot.
+
+## Token Economy
+
+Max 300 lines static data (UI + i18n), 150 lines pure logic. Read active module/example only.
+
+## Local Compute
+
+On This Computer, prefer parallel Task/worktrees/`/best-of-n` and multi-core local gates over Cloud Agents — see `local-compute.mdc`.
