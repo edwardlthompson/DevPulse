@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0](https://github.com/edwardlthompson/DevPulse/compare/v0.21.0...v0.22.0) (2026-08-20)
+
 ### Added
 
 - DevPulse Android scanner: installed apps across Google Play, F-Droid (official, Archive, IzzyOnDroid, Guardian, Calyx), optional Aptoide, and GitHub
@@ -20,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Skip CodeQL JavaScript after pruning web and node stacks
 - Skip web/node CI jobs when those stacks are pruned
 - Donation asset tests no longer depend on the gitignored live `donations.json`
 - Skip the web About add/remove gate when `examples/web` is pruned
