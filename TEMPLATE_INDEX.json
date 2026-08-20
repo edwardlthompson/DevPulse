@@ -863,7 +863,7 @@
     },
     {
       "path": ".github/workflows/dependency-review.yml",
-      "purpose": "PR dependency review \u2014 fail on new High/Critical vulnerabilities",
+      "purpose": "PR dependency review — fail on new High/Critical vulnerabilities",
       "read_when": "contributing",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
@@ -1423,7 +1423,7 @@
     },
     {
       "path": "scripts/run-codex-review.sh",
-      "purpose": "Local Codex CLI review \u2192 CODE_REVIEW.md",
+      "purpose": "Local Codex CLI review → CODE_REVIEW.md",
       "read_when": "audit",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
@@ -1815,7 +1815,7 @@
     }
   },
   "roadmap": {
-    "active": "BUILD_PLAN.md \u2014 maintenance + human open items",
+    "active": "BUILD_PLAN.md — maintenance + human open items",
     "completed_archive": "COMPLETED_TASKS.md",
     "batch_commands": [
       ".cursor/commands/audit.md",
