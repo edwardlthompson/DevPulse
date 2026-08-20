@@ -26,7 +26,7 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 - ✅ Settings opt-in, default off; Refresh batches enabled dump sites
 - ✅ Offline/error: inventory stays local; unknown not red
 - ✅ i18n: `dump_store_*`, `apkmirror_enable`, `apkpure_enable`, `inventory_source_apkmirror`, `inventory_source_apkpure`
-- ✅ Listing taps still open the public page; APKPure file download is Sprint 12 (`asset.url`)
+- ✅ Listing taps open the APKPure app when installed (`com.apkpure.aegon` via `market://details?id=`); website is fallback. APKPure file download uses `asset.url` on Refresh and on Update
 
 ## Smoke scenario
 

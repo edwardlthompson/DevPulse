@@ -50,5 +50,5 @@ Fixture parser tests required. Fallback: `bash scripts/feature-gate.sh --stack a
 ## Notes
 
 - Date is last-seen-on-Aptoide, not Play. Refresh always probes Aptoide in the bounded parallel pool when the outlet is enabled; an F-Droid hit does not skip it.
-- Listing taps open `cm.aptoide.pt` when installed (`aptoidesearch://package`). HTTPS uname pages are the web fallback only. `en.aptoide.com` without a uname host is Aptoide home, not an app page.
+- Listing taps open `cm.aptoide.pt` when installed (`https://en.aptoide.com/app?package_name=`). Aptoide Games does not handle `aptoidesearch://`. Official Store APK: `https://en.aptoide.com/download`. HTTPS uname pages are the web fallback only.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

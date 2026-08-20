@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Settings is a glanceable hub with Appearance, Inventory, Updates, Scan sources, Store apps, and About subpages
+
+### Added
+
+- Inventory Update all downloads every direct APK (F-Droid, GitHub, Aptoide, APKPure) then installs them one by one
+- Settings → Store apps lists Play, F-Droid, Droid-ify, Izzy/Guardian/Calyx repo pages, Aptoide Store, APKMirror, APKPure, and GitHub with every available install link
+- APKPure Update downloads `asset.url` on demand (same get_app_update path as APKUpdater) and only opens the APKPure app when there is no file
+
+### Fixed
+
+- APKPure listing taps open the installed APKPure app via `market://details?id=` (https search pages are not handled by that app)
+- Aptoide listing taps use `https://en.aptoide.com/app?package_name=` so Aptoide Games and Aptoide Store both resolve; Settings flags Games and links to the official Store APK
+
 ## [0.24.0](https://github.com/edwardlthompson/DevPulse/compare/v0.23.0...v0.24.0) (2026-08-20)
 
 ### Added

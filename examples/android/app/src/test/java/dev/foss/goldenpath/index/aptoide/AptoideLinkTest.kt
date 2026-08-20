@@ -21,9 +21,9 @@ class AptoideLinkTest {
     }
 
     @Test
-    fun appOpenPrefersPackageSearch() {
+    fun appOpenPrefersOfficialAppPath() {
         assertEquals(
-            "aptoidesearch://uk.org.platitudes.wipefiles",
+            "https://en.aptoide.com/app?package_name=uk.org.platitudes.wipefiles",
             AptoideLink.appOpenUri("https://wipefiles.en.aptoide.com/", "uk.org.platitudes.wipefiles"),
         )
     }
@@ -35,9 +35,9 @@ class AptoideLinkTest {
     }
 
     @Test
-    fun appOpenSearchesWhenOnlyPackageQuery() {
+    fun appOpenUsesPackageQueryOnOfficialHost() {
         assertEquals(
-            "aptoidesearch://app.x",
+            "https://en.aptoide.com/app?package_name=app.x",
             AptoideLink.appOpenUri("https://en.aptoide.com/app?package_name=app.x"),
         )
     }

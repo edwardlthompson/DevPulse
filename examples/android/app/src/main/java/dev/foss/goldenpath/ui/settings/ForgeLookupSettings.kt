@@ -3,16 +3,21 @@ package dev.foss.goldenpath.ui.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.index.forge.DataStoreForgeTokenStore
 import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import kotlinx.coroutines.launch
@@ -38,5 +43,17 @@ fun ForgeLookupSettings(modifier: Modifier = Modifier) {
             checked = searchUnknowns,
             onCheckedChange = { value -> scope.launch { prefs.setForgeLookupSearchUnknowns(value) } },
         )
+        val store = remember { DataStoreForgeTokenStore(context) }
+        var token by remember { mutableStateOf(store.getToken().orEmpty()) }
+        OutlinedTextField(
+            value = token,
+            onValueChange = { value ->
+                token = value
+                store.setToken(value)
+            },
+            label = { Text(stringResource(R.string.forge_token)) },
+            visualTransformation = PasswordVisualTransformation(),
+        )
+        Text(text = stringResource(R.string.forge_token_never_log), style = MaterialTheme.typography.bodySmall)
     }
 }

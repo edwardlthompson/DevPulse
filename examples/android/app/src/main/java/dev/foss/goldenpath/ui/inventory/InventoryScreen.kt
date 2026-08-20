@@ -80,6 +80,7 @@ fun InventoryScreen(
                 onOpenUsageAccess = model.onOpenUsageAccess,
             )
         }
+        UpdateAllButton(apps = model.apps)
         if (model.showUsageWalkthrough) {
             Text(text = stringResource(R.string.inventory_usage_title), style = MaterialTheme.typography.titleSmall)
             Text(text = stringResource(R.string.inventory_usage_body))

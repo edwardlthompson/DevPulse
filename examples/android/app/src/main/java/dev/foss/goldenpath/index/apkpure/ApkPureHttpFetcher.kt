@@ -12,7 +12,7 @@ object ApkPureHttpFetcher : ApkPureBatchFetcher {
             """{"package_name":"${pkg.replace("\"", "")}","version_code":0,"is_system":false}"""
         }
         val header = """{"device_info":{"abis":["arm64-v8a","armeabi-v7a"],"android_id":"$androidId","os_ver":"${Build.VERSION.SDK_INT}","os_ver_name":"${Build.VERSION.RELEASE}","platform":1,"screen_height":1920,"screen_width":1080}}"""
-        val body = """{"app_info_for_update":[$apps],"android_id":"$androidId","application_id":"com.apkpure.aegon","cached_size":-1}"""
+        val body = """{"app_info_for_update":[$apps],"android_id":"$androidId","application_id":"${ApkPureLink.STORE_PACKAGE}","cached_size":-1}"""
         val conn = URL(ApkPureFetchPolicy.UPDATE_URL).openConnection() as HttpURLConnection
         try {
             conn.requestMethod = "POST"

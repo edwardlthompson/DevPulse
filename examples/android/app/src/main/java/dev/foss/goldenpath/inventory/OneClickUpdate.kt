@@ -5,12 +5,14 @@ import java.io.File
 sealed class OneClickKind {
     data class Direct(val artifact: UpdateArtifact) : OneClickKind()
     data class Play(val packageName: String) : OneClickKind()
+    data class ApkPure(val packageName: String) : OneClickKind()
     data object None : OneClickKind()
 }
 
 sealed class OneClickResult {
     data object Installed : OneClickResult()
     data object PlayOpened : OneClickResult()
+    data object ApkPureOpened : OneClickResult()
     data object FailedDownload : OneClickResult()
     data object FailedInstall : OneClickResult()
     data object None : OneClickResult()
@@ -21,6 +23,9 @@ object OneClickUpdate {
         UpdateArtifactMemory.best(packageName)?.let { return OneClickKind.Direct(it) }
         if (listings.any { it.source == RemoteReleasedSource.Play && it.listed }) {
             return OneClickKind.Play(packageName)
+        }
+        if (listings.any { it.source == RemoteReleasedSource.ApkPure && it.listed }) {
+            return OneClickKind.ApkPure(packageName)
         }
         return OneClickKind.None
     }
@@ -33,11 +38,22 @@ object OneClickUpdate {
         openPlay: (String) -> Unit,
         inspect: (File) -> ApkInspect,
         installed: InstalledIdentity,
+        openApkPure: (String) -> Unit = {},
+        resolveApkPure: (String) -> UpdateArtifact? = { null },
     ): OneClickResult = when (kind) {
         is OneClickKind.None -> OneClickResult.None
         is OneClickKind.Play -> {
             openPlay(kind.packageName)
             OneClickResult.PlayOpened
+        }
+        is OneClickKind.ApkPure -> {
+            val artifact = resolveApkPure(kind.packageName)
+            if (artifact != null) {
+                applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
+            } else {
+                openApkPure(kind.packageName)
+                OneClickResult.ApkPureOpened
+            }
         }
         is OneClickKind.Direct -> applyDirect(kind.artifact, cacheDir, fetch, install, inspect, installed)
     }

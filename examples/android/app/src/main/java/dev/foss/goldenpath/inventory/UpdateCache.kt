@@ -12,11 +12,12 @@ object UpdateCache {
         bytes: ByteArray,
         inspect: (File) -> ApkInspect,
         installed: InstalledIdentity,
+        maxFiles: Int = MAX_FILES,
     ): Result<File> = runCatching {
         if (bytes.isEmpty()) error("empty apk")
         val sha = ApkIdentity.digest(bytes)
         if (!ApkIdentity.hashesMatch(artifact.sha256, sha)) error("sha256")
-        evict(dir)
+        evict(dir, maxFiles = maxFiles)
         val file = ApkFileStore.write(ApkFileStore.fileFor(dir, artifact), bytes)
         val info = inspect(file)
         if (!ApkIdentity.identityReady(artifact, info, installed)) {

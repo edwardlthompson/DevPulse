@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.settings
 
+import dev.foss.goldenpath.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -24,5 +25,15 @@ class SettingsLogicTest {
     @Test
     fun enablingPreservesCurrentInterval() {
         assertEquals("monthly", SettingsLogic.intervalForToggle(true, "monthly"))
+    }
+
+    @Test
+    fun hubListsGlanceableSectionsThenAbout() {
+        val rows = SettingsNav.hubRows()
+        assertEquals(6, rows.size)
+        assertEquals(SettingsPage.Appearance, rows[0].page)
+        assertEquals(SettingsPage.Stores, rows[4].page)
+        assertEquals(null, rows[5].page)
+        assertEquals(R.string.about_title, rows[5].titleRes)
     }
 }

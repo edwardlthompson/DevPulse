@@ -3,6 +3,8 @@ package dev.foss.goldenpath.index.aptoide
 /** Aptoide listing URLs. `{uname}.en.aptoide.com` is an app view; `en.aptoide.com` is home. */
 object AptoideLink {
     const val STORE_PACKAGE = "cm.aptoide.pt"
+    const val INSTALL_PAGE = "https://en.aptoide.com/download"
+    const val GAMES_ACTIVITY = "aptoidegames"
     private val slug = Regex("^[A-Za-z0-9][A-Za-z0-9_-]{0,80}$")
 
     fun webPage(packageName: String, uname: String? = null): String {
@@ -14,15 +16,12 @@ object AptoideLink {
     fun appOpenUri(listingUrl: String, packageName: String? = null): String {
         val pkg = packageName?.trim()?.takeIf { it.isNotEmpty() }
             ?: queryValue(listingUrl, "package_name")
-        if (pkg != null) return "aptoidesearch://$pkg"
+        if (pkg != null) return "https://en.aptoide.com/app?package_name=$pkg"
         return listingUrl
     }
 
-    private fun hostOf(url: String): String? {
-        val after = url.substringAfter("://", missingDelimiterValue = "")
-        if (after.isEmpty()) return null
-        return after.substringBefore('/').substringBefore('?').lowercase()
-    }
+    fun isGamesClient(activityClass: String?): Boolean =
+        activityClass?.contains(GAMES_ACTIVITY, ignoreCase = true) == true
 
     private fun queryValue(url: String, key: String): String? =
         url.substringAfter('?', "")

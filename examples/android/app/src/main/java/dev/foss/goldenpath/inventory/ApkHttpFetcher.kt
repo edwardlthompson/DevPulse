@@ -15,6 +15,9 @@ object ApkHttpFetcher : ApkBytesFetcher {
         try {
             conn.instanceFollowRedirects = true
             conn.setRequestProperty("User-Agent", USER_AGENT)
+            if (safe.contains("apkpure", ignoreCase = true)) {
+                conn.setRequestProperty("Referer", "https://apkpure.com/")
+            }
             conn.connectTimeout = CONNECT_TIMEOUT_MS
             conn.readTimeout = READ_TIMEOUT_MS
             if (conn.responseCode !in 200..299) error("apk ${conn.responseCode}")

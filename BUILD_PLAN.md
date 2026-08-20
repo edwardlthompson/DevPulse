@@ -94,6 +94,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 | Sprint 11 — Inventory sort and honest dates | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
 | Sprint 12 — Prefetch updates and notes | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
 | Sprint 13 — Play HTML recovery | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
+| Sprint 14 — Store clients and settings hub | 2026-08-20 | COMPLETED_TASKS.md |
 > **Sprint 11** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 12** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 13** archived in COMPLETED_TASKS.md @ `fd20edd`.
@@ -103,6 +104,8 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **Sprint 10** screenshots archived in COMPLETED_TASKS.md.
 
 ---
+
+> **Sprint 14** archived in COMPLETED_TASKS.md (v0.25.0 prepare).
 
 ## Ongoing Maintenance (recurring)
 

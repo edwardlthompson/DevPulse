@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.apkpure
 
+import dev.foss.goldenpath.inventory.ApkDownloadUrl
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.UpdateArtifact
@@ -39,7 +40,7 @@ object ApkPureMetaParser {
         UpdateNotesText.take(whatsNew.find(chunk)?.groupValues?.get(1))?.let {
             UpdateNotesMemory.putIfAbsent(name, UpdateNotes(it, RemoteReleasedSource.ApkPure))
         }
-        val url = assetUrl.find(chunk)?.groupValues?.get(1) ?: return
+        val url = ApkDownloadUrl.httpsFile(assetUrl.find(chunk)?.groupValues?.get(1)) ?: return
         UpdateArtifactMemory.add(
             UpdateArtifact(
                 packageName = name,

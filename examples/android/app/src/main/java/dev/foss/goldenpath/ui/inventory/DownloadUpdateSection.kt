@@ -27,10 +27,13 @@ import dev.foss.goldenpath.inventory.InstalledIdentity
 import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.InventoryPreferences
+import dev.foss.goldenpath.index.apkpure.ApkPureDirect
+import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
 import dev.foss.goldenpath.inventory.OneClickKind
 import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.OneClickUpdate
 import dev.foss.goldenpath.inventory.PlayStoreIntent
+import dev.foss.goldenpath.inventory.StoreListingIntent
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import dev.foss.goldenpath.ui.theme.SpacingSm
 import java.io.File
@@ -55,12 +58,14 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
         when {
             busy -> R.string.update_one_click_busy
             kind is OneClickKind.Play -> R.string.update_one_click_play
+            kind is OneClickKind.ApkPure -> R.string.update_one_click_apkpure
             else -> R.string.update_one_click
         },
     )
     val from = when (kind) {
         is OneClickKind.Direct -> stringResource(InventoryCopy.sourceRes(kind.artifact.source))
         is OneClickKind.Play -> stringResource(R.string.inventory_source_play)
+        is OneClickKind.ApkPure -> stringResource(R.string.inventory_source_apkpure)
         OneClickKind.None -> ""
     }
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(SpacingSm)) {
@@ -79,6 +84,8 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
                             fetch = ApkHttpFetcher,
                             install = { file -> ApkInstall.apply(context, file, method) },
                             openPlay = { PlayStoreIntent.open(context, it) },
+                            openApkPure = { StoreListingIntent.openApkPure(context, it) },
+                            resolveApkPure = { pkg -> ApkPureDirect.resolve(pkg, ApkPureHttpFetcher) },
                             inspect = { file -> ApkArchiveIdentity.inspect(context.packageManager, file) },
                             installed = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
                                 ?: InstalledIdentity(app.packageName, emptySet()),

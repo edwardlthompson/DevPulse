@@ -2,6 +2,21 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 14 — Store clients and APKPure files (2026-08-20)
+
+- ✅ [AGENT] Settings store-install links; APKPure `asset.url` download; Aptoide Games vs Store
+- ✅ [AGENT] Update all stages direct APKs then installs one by one
+- ✅ [AGENT] Settings hub with Appearance, Inventory, Updates, Scan sources, Store apps, and About
+
+### Parallel (safe after Sequential lock)
+
+<!-- agent_count_target: 2 -->
+
+| Task | Owner | Isolated scope |
+|------|-------|----------------|
+| ✅ [AGENT] APKPure, Aptoide, Update all logic + tests | AGENT | `examples/android/app/src/main/java/dev/foss/goldenpath/inventory/` |
+| ✅ [AGENT] Settings hub and store-client UI | AGENT | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
+
 ## v0.24.0 ship (2026-08-20)
 
 - ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)

@@ -95,7 +95,17 @@ fun GoldenPathScreen(
         snackbarHostState = snackbarHostState,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_title)) },
+                title = {
+                    Text(
+                        stringResource(
+                            when {
+                                showAbout -> R.string.about_title
+                                showSettings -> R.string.settings_title
+                                else -> R.string.app_title
+                            },
+                        ),
+                    )
+                },
                 actions = {
                     val onInventory = !showAbout && !showSettings && !scan.visible &&
                         scan.selected == null && inventory.selectedApp == null
