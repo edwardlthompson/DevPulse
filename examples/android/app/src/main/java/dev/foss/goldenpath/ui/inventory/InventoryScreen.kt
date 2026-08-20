@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
 @Composable
@@ -91,7 +92,7 @@ fun InventoryScreen(
         if (model.apps.isEmpty()) {
             Text(text = stringResource(R.string.inventory_empty))
         } else {
-            LazyColumn(modifier = Modifier.weight(1f), state = listState) {
+            LazyColumn(modifier = Modifier.weight(1f).highRefreshScroll(), state = listState) {
                 items(model.apps, key = { it.packageName }) { app ->
                     InventoryRow(
                         app = app,
@@ -118,6 +119,7 @@ private fun InventoryRationale(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .highRefreshScroll()
             .padding(SpacingMd),
         verticalArrangement = Arrangement.spacedBy(SpacingMd),
     ) {

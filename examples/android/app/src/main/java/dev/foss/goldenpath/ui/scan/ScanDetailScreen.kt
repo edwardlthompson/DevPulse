@@ -25,6 +25,7 @@ import dev.foss.goldenpath.index.play.PlayLookupStatus
 import dev.foss.goldenpath.scan.ScanDetail
 import dev.foss.goldenpath.ui.detail.PlayStatusRow
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import java.text.DateFormat
 import java.util.Date
@@ -43,6 +44,7 @@ fun ScanDetailScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .highRefreshScroll()
             .padding(SpacingMd),
         verticalArrangement = Arrangement.spacedBy(SpacingMd),
     ) {

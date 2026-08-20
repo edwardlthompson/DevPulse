@@ -20,6 +20,21 @@ class StoreClientsTest {
     }
 
     @Test
+    fun actionPrefersOpenWhenInstalledOrSiteOnly() {
+        assertEquals(StoreClientAction.Open, StoreClients.action(installed = true, games = false, hasPackage = true))
+        assertEquals(StoreClientAction.Open, StoreClients.action(installed = false, games = false, hasPackage = false))
+        assertEquals(StoreClientAction.Install, StoreClients.action(installed = false, games = false, hasPackage = true))
+        assertEquals(StoreClientAction.ReplaceAptoide, StoreClients.action(installed = true, games = true, hasPackage = true))
+    }
+
+    @Test
+    fun aptoideOfficialApkIsNotASecondWebsiteChip() {
+        val aptoide = StoreClients.all().first { it.id == StoreClientId.Aptoide }
+        assertEquals(0, aptoide.urls.count { it.kind == StoreUrlKind.Web })
+        assertTrue(aptoide.urls.any { it.kind == StoreUrlKind.Apk && it.url == AptoideLink.INSTALL_PAGE })
+    }
+
+    @Test
     fun aptoideGamesUsesOfficialActivityHint() {
         assertTrue(AptoideLink.isGamesClient("com.aptoide.android.aptoidegames.MainActivity"))
         assertFalse(AptoideLink.isGamesClient("cm.aptoide.pt.view.MainActivity"))

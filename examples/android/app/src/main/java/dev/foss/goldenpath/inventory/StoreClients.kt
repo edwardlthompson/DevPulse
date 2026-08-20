@@ -13,6 +13,8 @@ enum class StoreClientId {
 
 enum class StoreUrlKind { Play, Fdroid, Apk, Web, Repo }
 
+enum class StoreClientAction { Open, Install, ReplaceAptoide }
+
 data class StoreUrl(val kind: StoreUrlKind, val url: String)
 
 data class StoreClient(
@@ -67,9 +69,8 @@ object StoreClients {
             StoreClientId.Aptoide,
             AptoideLink.STORE_PACKAGE,
             listOf(
-                StoreUrl(StoreUrlKind.Web, AptoideLink.INSTALL_PAGE),
+                StoreUrl(StoreUrlKind.Apk, AptoideLink.INSTALL_PAGE),
                 StoreUrl(StoreUrlKind.Play, PlayStoreIntent.marketUri(AptoideLink.STORE_PACKAGE)),
-                StoreUrl(StoreUrlKind.Web, "https://play.google.com/store/apps/details?id=${AptoideLink.STORE_PACKAGE}"),
             ),
         ),
         StoreClient(
@@ -77,7 +78,7 @@ object StoreClients {
             "com.apkmirror.helper.prod",
             listOf(
                 StoreUrl(StoreUrlKind.Web, "https://www.apkmirror.com/"),
-                StoreUrl(StoreUrlKind.Web, "https://www.apkmirror.com/apk/apkmirror/apkmirror-installer/"),
+                StoreUrl(StoreUrlKind.Apk, "https://www.apkmirror.com/apk/apkmirror/apkmirror-installer/"),
             ),
         ),
         StoreClient(
@@ -97,6 +98,12 @@ object StoreClients {
     fun isAptoideGames(pm: PackageManager): Boolean {
         val launch = pm.getLaunchIntentForPackage(AptoideLink.STORE_PACKAGE) ?: return false
         return AptoideLink.isGamesClient(launch.component?.className)
+    }
+
+    fun action(installed: Boolean, games: Boolean, hasPackage: Boolean): StoreClientAction = when {
+        games -> StoreClientAction.ReplaceAptoide
+        !hasPackage || installed -> StoreClientAction.Open
+        else -> StoreClientAction.Install
     }
 
     fun installed(pm: PackageManager, packageName: String?): Boolean {

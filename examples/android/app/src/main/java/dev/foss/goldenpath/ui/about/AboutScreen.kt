@@ -19,6 +19,7 @@ import dev.foss.goldenpath.ui.insets.LocalNavigationMode
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
 import dev.foss.goldenpath.ui.insets.navigationBarInsetBottomDp
 import dev.foss.goldenpath.ui.insets.navigationModeLabelRes
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
 @Composable
@@ -38,6 +39,7 @@ fun AboutScreen(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
+            .highRefreshScroll()
             .padding(SpacingMd),
         verticalArrangement = Arrangement.spacedBy(SpacingMd),
     ) {

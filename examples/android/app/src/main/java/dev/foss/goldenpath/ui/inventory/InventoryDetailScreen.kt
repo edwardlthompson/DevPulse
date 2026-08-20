@@ -36,6 +36,7 @@ import dev.foss.goldenpath.inventory.UpdateInventory
 import dev.foss.goldenpath.inventory.UpdateLink
 import dev.foss.goldenpath.staleness.Staleness
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.SpacingSm
 import java.text.DateFormat
@@ -55,6 +56,7 @@ fun InventoryDetailScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .highRefreshScroll()
             .padding(SpacingMd),
         verticalArrangement = Arrangement.spacedBy(SpacingMd),
     ) {

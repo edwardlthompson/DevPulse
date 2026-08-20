@@ -24,6 +24,7 @@ import dev.foss.goldenpath.scan.ScanPhase
 import dev.foss.goldenpath.scan.ScanProgress
 import dev.foss.goldenpath.staleness.Badge
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.SpacingSm
 
@@ -63,7 +64,7 @@ fun ScanScreen(
                 else -> Button(onClick = onStart) { Text(stringResource(R.string.scan_start)) }
             }
         }
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(modifier = Modifier.weight(1f).highRefreshScroll()) {
             items(visible, key = { it.app.packageName }) { item ->
                 ScanResultRow(item = item, onClick = { onSelect(item) })
             }

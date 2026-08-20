@@ -34,6 +34,7 @@ import dev.foss.goldenpath.settings.SettingsHubRow
 import dev.foss.goldenpath.settings.SettingsNav
 import dev.foss.goldenpath.settings.SettingsPage
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
 @Composable
@@ -46,6 +47,7 @@ fun SettingsHub(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
+            .highRefreshScroll()
             .padding(SpacingMd)
             .bottomInsetPadding(),
         verticalArrangement = Arrangement.spacedBy(SpacingMd),

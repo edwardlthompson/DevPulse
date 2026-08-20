@@ -231,10 +231,15 @@
     <string name="update_prefetch_body">Off by default. On Wi-Fi, cache direct APKs after Refresh. A file is ready only when the package, signing cert, and sha256 match. Play and APKMirror stay page-only. DevPulse never auto-installs.</string>
     <string name="update_prefetch_enable">Prefetch trusted APKs on Wi-Fi</string>
     <string name="store_clients_title">Store apps</string>
-    <string name="store_clients_body">Install the client for each source DevPulse scans. Open an installed app, or use Play, F-Droid, the official APK, or the website. Aptoide Games cannot open store listings the way Aptoide Store does.</string>
+    <string name="store_clients_body">Open a store you already have, or install it from Play, F-Droid, or the official site.</string>
     <string name="store_client_open">Open</string>
     <string name="store_client_install">Install</string>
+    <string name="store_client_install_store">Install Store</string>
     <string name="store_client_wrong_aptoide">Install Aptoide Store (this is Games)</string>
+    <string name="store_client_status_installed">Installed</string>
+    <string name="store_client_status_missing">Not installed</string>
+    <string name="store_client_status_site">Website and repo links</string>
+    <string name="store_client_status_games">Aptoide Games cannot open Store listings</string>
     <string name="store_client_droidify">Droid-ify</string>
     <string name="store_client_via_play">Play</string>
     <string name="store_client_via_fdroid">F-Droid</string>

@@ -10,6 +10,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 
 @Composable
 fun GoldenPathScaffold(
@@ -19,7 +20,7 @@ fun GoldenPathScaffold(
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().highRefreshScroll(),
         contentWindowInsets = WindowInsets.safeDrawing,
         snackbarHost = {
             SnackbarHost(

@@ -10,6 +10,7 @@ import dev.foss.goldenpath.about.AppUpdatePreferences
 import dev.foss.goldenpath.inventory.RefreshLaunch
 import dev.foss.goldenpath.network.NetworkStatusMonitor
 import dev.foss.goldenpath.ui.GoldenPathApp
+import dev.foss.goldenpath.ui.refresh.DisplayRefresh
 import dev.foss.goldenpath.ui.theme.ThemePreferences
 import kotlinx.coroutines.launch
 
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        DisplayRefresh.apply(this)
         val themePreferences = ThemePreferences(applicationContext)
         val appUpdatePreferences = AppUpdatePreferences(applicationContext)
         networkStatusMonitor = NetworkStatusMonitor(applicationContext).also { it.start() }
@@ -38,6 +40,11 @@ class MainActivity : ComponentActivity() {
             )
         }
         RefreshLaunch.maybeStart(this, intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        DisplayRefresh.apply(this)
     }
 
     override fun onNewIntent(intent: Intent) {

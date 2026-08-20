@@ -15,6 +15,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
 @Composable
@@ -28,6 +29,7 @@ fun SettingsPane(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
+            .highRefreshScroll()
             .padding(SpacingMd)
             .bottomInsetPadding(),
         verticalArrangement = Arrangement.spacedBy(SpacingMd),
