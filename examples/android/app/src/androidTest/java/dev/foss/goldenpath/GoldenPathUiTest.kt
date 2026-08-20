@@ -16,13 +16,19 @@ class GoldenPathUiTest {
     @Test
     fun opensSettingsPanelWithThemeAndUpdateControls() {
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
-        composeTestRule.onNodeWithText("Settings").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Appearance").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Appearance").performClick()
         composeTestRule.onNodeWithText("Theme").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Dark theme").performScrollTo().performClick()
+        composeTestRule.onNodeWithContentDescription("Back to settings").performClick()
+        composeTestRule.onNodeWithText("Updates").performScrollTo().performClick()
         composeTestRule.onNodeWithText("Check for updates").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Back to settings").performClick()
+        composeTestRule.onNodeWithText("Inventory").performScrollTo().performClick()
         composeTestRule.onNodeWithText("Include system apps").performScrollTo().assertIsDisplayed()
         composeTestRule.onNodeWithText("On demand").performScrollTo().assertIsDisplayed()
         composeTestRule.onNodeWithText("Once a week").performScrollTo().assertIsDisplayed()
-        composeTestRule.onNodeWithText("Dark theme").performScrollTo().performClick()
+        composeTestRule.onNodeWithContentDescription("Back to settings").performClick()
         composeTestRule.onNodeWithText("Close settings").performScrollTo().performClick()
     }
 
