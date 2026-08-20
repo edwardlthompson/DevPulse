@@ -203,6 +203,14 @@
 | **Cause** | Unreleased notes contain `→`. Python stdout on Windows is cp1252 |
 | **Fix** | Set `PYTHONIOENCODING=utf-8` before the merge script |
 | **Prevention** | Keep ASCII bullets in Unreleased, or export UTF-8 before any fold that prints notes |
+### KB-026 — High refresh uses display mode + Compose High, not Window.setFrameRate
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `Window.setFrameRate` does not compile; the app stays at 60 Hz on a 120 Hz panel |
+| **Cause** | Frame rate is not a Window method. Many OEMs keep apps at 60 unless `preferredDisplayModeId` selects the fastest same-resolution mode |
+| **Fix** | `DisplayRefresh` sets `preferredDisplayModeId` / `preferredRefreshRate`. Scrollables use `Modifier.preferredFrameRate(FrameRateCategory.High)` |
+| **Prevention** | Do not disable ARR (`setFrameRatePowerSavingsBalanced(false)`) to fake smoothness; let High votes ramp during fling |
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |

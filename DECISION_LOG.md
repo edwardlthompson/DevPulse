@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — Ship v0.26.0 on GitHub Releases
+- **Status:** Accepted
+- **Context:** `/ship` after Store apps cards and high-refresh scrolling. Actions still cannot open PRs.
+- **Decision:** Use a `feat:` prepare commit so Release Please proposes 0.26.0. Open PR #7 with `gh`, fold Unreleased on the RP branch, admin-merge. Leave recurring "next tag" and November radar HUMAN rows open.
+- **Alternatives considered:** `chore(release):` prepare (rejected: last chore cut became 0.22.1). Disable ARR to lock 120 Hz (rejected: Compose High + preferredDisplayModeId is the official adaptive path).
+- **Consequences:** Tag `v0.26.0` published on merge. Signed APK and SBOM attach via `release.yml`. A system 60 Hz lock still caps the panel.
+
 ### 2026-08-20 — Ship v0.25.0 on GitHub Releases
 - **Status:** Accepted
 - **Context:** `/ship` after Update all, APKPure file download, store-install links, Aptoide Games vs Store, and the Settings hub. Actions still cannot open PRs. Instrumented Settings smoke failed because the hub and top bar both say Settings.

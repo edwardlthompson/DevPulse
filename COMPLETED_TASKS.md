@@ -2,6 +2,10 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## v0.26.0 ship (2026-08-20)
+
+- ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)
+
 ## v0.25.0 ship (2026-08-20)
 
 - ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)

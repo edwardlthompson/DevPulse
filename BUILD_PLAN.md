@@ -76,6 +76,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **v0.22.0** tag archived in COMPLETED_TASKS.md @ `e53283a`.
 > **v0.24.0** tag archived in COMPLETED_TASKS.md @ `36d12cc`.
 > **v0.25.0** tag archived in COMPLETED_TASKS.md @ `90b6249`.
+> **v0.26.0** tag archived in COMPLETED_TASKS.md @ `a8f2c44`.
 
 ### Archived Sprints
 
