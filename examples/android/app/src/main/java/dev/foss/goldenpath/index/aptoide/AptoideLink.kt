@@ -11,11 +11,11 @@ object AptoideLink {
         return "https://en.aptoide.com/app?package_name=$packageName"
     }
 
-    fun appOpenUri(listingUrl: String): String {
-        val host = hostOf(listingUrl) ?: return listingUrl
-        if (host.endsWith(".aptoide.com") && host.split('.').size >= 4) return listingUrl
-        val pkg = queryValue(listingUrl, "package_name") ?: return listingUrl
-        return "aptoidesearch://$pkg"
+    fun appOpenUri(listingUrl: String, packageName: String? = null): String {
+        val pkg = packageName?.trim()?.takeIf { it.isNotEmpty() }
+            ?: queryValue(listingUrl, "package_name")
+        if (pkg != null) return "aptoidesearch://$pkg"
+        return listingUrl
     }
 
     private fun hostOf(url: String): String? {

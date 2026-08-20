@@ -14,6 +14,7 @@ object AptoideMetaParser {
     private val added = Regex(""""added"\s*:\s*"([^"]+)"""")
     private val vername = Regex(""""vername"\s*:\s*"([^"]+)"""")
     private val uname = Regex(""""uname"\s*:\s*"([^"]+)"""")
+    private val filePath = Regex(""""path"\s*:\s*"(https://[^"]+)"""")
     private val dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
     fun parse(json: String, nowMs: Long = System.currentTimeMillis()): AptoideLookup {
@@ -31,7 +32,7 @@ object AptoideMetaParser {
         return if (ms == null) {
             unknown(version)
         } else {
-            AptoideLookup(ms, version, AptoideLookupStatus.Ok, slug)
+            AptoideLookup(ms, version, AptoideLookupStatus.Ok, slug, filePath.find(json)?.groupValues?.get(1))
         }
     }
 

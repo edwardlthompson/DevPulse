@@ -42,6 +42,8 @@ class InventoryPreferencesTest {
         assertFalse(prefs.forgeLookupSearchUnknowns.first())
         assertEquals(ScanInterval.OnDemand, prefs.scanInterval.first())
         assertEquals(null, prefs.lastScanAtMs.first())
+        assertEquals(InstallMethod.System, prefs.installMethod.first())
+        assertFalse(prefs.updatePrefetchEnabled.first())
     }
 
     @Test
@@ -62,6 +64,8 @@ class InventoryPreferencesTest {
         prefs.setForgeLookupSearchUnknowns(true)
         prefs.setScanInterval(ScanInterval.Weekly)
         prefs.setLastScanAtMs(99L)
+        prefs.setInstallMethod(InstallMethod.Root)
+        prefs.setUpdatePrefetchEnabled(true)
         assertTrue(prefs.queryAllPackagesAcknowledged.first())
         assertTrue(prefs.includeSystemApps.first())
         assertEquals(UsageStatsConsent.WalkthroughSeen, prefs.usageStatsConsent.first())
@@ -77,5 +81,7 @@ class InventoryPreferencesTest {
         assertTrue(prefs.forgeLookupSearchUnknowns.first())
         assertEquals(ScanInterval.Weekly, prefs.scanInterval.first())
         assertEquals(99L, prefs.lastScanAtMs.first())
+        assertEquals(InstallMethod.Root, prefs.installMethod.first())
+        assertTrue(prefs.updatePrefetchEnabled.first())
     }
 }

@@ -41,6 +41,8 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-20 | HUMAN/ADB device close-out | Date smoke: 0 epoch-1970 rows; Aegis F-Droid APK cached via `download_url`; README `device-inventory.jpg`; first-tag ack via published `v0.23.0` | Recurring maintenance HUMAN (next tag, Nov radar) stay 🔲; keep `human_task_android.py` thin — smoke lives in `device_smoke_run.py` |
+| 2026-08-20 | /build Sprints 11–13 | Prefetch opt-in + cert/sha256 gate; Wayback recovers Play `datePublished` only on live Missing; ADB rows later completed on CPH2583 | Host-resolve F-Droid package API; skip on-device index files >2MB; do not mix adb 39/41 |
 | 2026-08-20 | v0.23.0 /ship | Dump-store batches worked on device (Mirror 143/385, Pure 315/385); RP #4 opened by hand after Actions PR deny; tag+release created with `gh` after RP missed the 0.23.0 tag | Enable Actions "create pull requests"; use `feat:` not `chore(release):` if the cut is a minor; RP still leaves a phantom next-version branch |
 | 2026-08-20 | v0.22.0 /ship | Pruned-stack CI + donation + About-gate + inset tests fixed; RP #3 opened by hand after Actions PR deny; admin-merge; SBOM on the tag | Enable Actions "create pull requests"; fold Unreleased on the RP branch before merge; Settings Close is below the fold on emulator |
 | 2026-08-19 | DevPulse Sprint 6 | Package-id-first forge matcher + paste/token UI; no live HTTP | EncryptedSharedPreferences adapter still to swap in with live client |

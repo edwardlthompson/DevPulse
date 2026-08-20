@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- App detail expands F-Droid what'sNew or GitHub release notes when Refresh already has that text
+- About and GitHub Sponsors point to Venmo
+- App detail can download an APK from APKPure (`asset.url`), F-Droid/Izzy, GitHub, or Aptoide without opening a website
+- Settings install methods: System confirm, PackageInstaller session, and silent Root `pm install`
+- One-tap Update downloads and installs a direct APK, or opens the Play Store app for Play-only rows (no Aurora)
+- Settings opt-in prefetch caches direct APKs on Wi-Fi after Refresh; a file is ready only when package, signing cert, and sha256 match
+- Session install can skip the confirm dialog on Android 12+ when updating an app DevPulse already installed
+- README includes a device inventory screenshot from the OnePlus smoke device
+- Delisted Play listings can recover `datePublished` from a Wayback snapshot (still shown as not listed)
+
+### Fixed
+
+- Aptoide listing taps open the installed Aptoide app (`aptoidesearch://`) instead of the website
+- Oldest/Newest sort puts Last release: unknown at the bottom; dated rows use remote dates, unknowns use install date
+
 ## [0.23.0](https://github.com/edwardlthompson/DevPulse/compare/v0.22.0...v0.23.0) (2026-08-20)
 
 ### Added

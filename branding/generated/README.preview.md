@@ -32,6 +32,9 @@ DevPulse is a local-only Android app that checks whether the software you alread
 <p align="center">
   <img src="../assets/splash.png" alt="DevPulse splash" width="480" />
 </p>
+<p align="center">
+  <img src="../assets/device-inventory.jpg" alt="DevPulse inventory" width="360" />
+</p>
 
 ## Features
 

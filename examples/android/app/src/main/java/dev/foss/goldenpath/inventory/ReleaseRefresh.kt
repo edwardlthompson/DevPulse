@@ -6,6 +6,7 @@ import dev.foss.goldenpath.index.aptoide.AptoideMetaFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidAppRecord
 import dev.foss.goldenpath.index.fdroid.FdroidIndexFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidIndexStore
+import dev.foss.goldenpath.index.fdroid.FdroidNotes
 import dev.foss.goldenpath.index.fdroid.FdroidRepo
 import dev.foss.goldenpath.index.forge.FdroidGithubHints
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
@@ -20,6 +21,7 @@ object ReleaseRefresh {
         wanted: Set<String>,
     ): Map<String, List<RemoteReleaseOffer>> {
         val hits = records.filter { it.packageName in wanted }
+        FdroidNotes.remember(hits, wanted)
         return hits.groupBy { it.packageName }.mapValues { (_, group) ->
             group.map { rec ->
                 val source = ListingChannels.sourceForRepo(rec.repoId)

@@ -90,25 +90,16 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 | Sprint 8 — Opportunity | 2026-08-19 | COMPLETED_TASKS.md @ `0b047aa` |
 | Sprint 9 — Alternatives and sources | 2026-08-19 | COMPLETED_TASKS.md @ `0b047aa` |
 | Sprint 10 — Polish and ship (AGENT) | 2026-08-19 | COMPLETED_TASKS.md @ `0b047aa` |
-### Sprint 11 — Inventory sort and honest dates
+| Sprint 11 — Inventory sort and honest dates | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
+| Sprint 12 — Prefetch updates and notes | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
+| Sprint 13 — Play HTML recovery | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
+> **Sprint 11** archived in COMPLETED_TASKS.md @ `fd20edd`.
+> **Sprint 12** archived in COMPLETED_TASKS.md @ `fd20edd`.
+> **Sprint 13** archived in COMPLETED_TASKS.md @ `fd20edd`.
 
-<!-- parallel_exception: sequential AGENT follow-up only; ADB smoke remains -->
-
-1. ✅ [AGENT] InstalledDateResolver + Aptoide parser + RemoteRelease + sort/filter/pulse tests
-2. ✅ [AGENT] Inventory sort bar, unknown dates, F-Droid Archive toggle, Aptoide opt-in
-3. 🔲 [ADB] Device smoke: no 1970/1971 rows; optional Usage Access + Aptoide scan
-4. 🔲 [AGENT] Follow-up: Wayback Play HTML recovery after delisting (not this sprint)
-5. ✅ [AGENT] Verbose refresh: count every location; GitHub repo search per package
-6. ✅ [AGENT] APKMirror + APKPure opt-in batch listing lookup
-
-### Sprint 10 — Ship follow-up
-
-<!-- parallel_exception: AGENT polish archived; HUMAN release follow-up only -->
-
-#### Human & device (after automation)
-
-1. ❌ [ADB] F-Droid submission dry-run — out of scope; GitHub Releases only
-2. 🔲 [HUMAN] Optional GitHub README / release screenshots
+> **Sprint 11** ADB date smoke archived in COMPLETED_TASKS.md.
+> **Sprint 12** ADB download smoke archived in COMPLETED_TASKS.md.
+> **Sprint 10** screenshots archived in COMPLETED_TASKS.md.
 
 ---
 

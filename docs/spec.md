@@ -29,7 +29,7 @@
 
 ## Non-goals
 
-- Not an automatic updater or installer of other apps' APKs. Linking to stores and releases is fine. Silent install is not.
+- Not a silent updater by default. The user triggers each install. Root `pm install` is silent only when the user picks that method and `su` is granted. Session can skip the confirm dialog on Android 12+ only when updating an app DevPulse already installed (`UPDATE_PACKAGES_WITHOUT_USER_ACTION`). Play has no FOSS file URL.
 - Not a Play Store client, paid-app license checker, or Play review scraper.
 - No accounts, cloud sync, or social features.
 - No proprietary SDKs, crash reporters, or ads.
@@ -99,7 +99,8 @@
 | ID | Story | Acceptance |
 |----|-------|------------|
 | FR-29 | As a user I see Alternatives | Cached F-Droid plus Izzy and other enabled repos by category, name similarity, tags; only maintained matches with dates and links |
-| FR-30 | As a user I see Sources | Every known download location found; no auto-download or auto-install |
+| FR-30 | As a user I see Sources | Every known location; opt-in prefetch of direct APK URLs; user confirms install; never open a website to fetch a file we already have |
+| FR-36 | As a user I keep a Play date after delisting | Wayback HTML `datePublished` only; never invent a date from the capture timestamp |
 ### Polish (later sprints)
 
 | ID | Story | Acceptance |

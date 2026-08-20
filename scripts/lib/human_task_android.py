@@ -6,6 +6,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from device_smoke_run import run_date_smoke, run_download_smoke
 from human_task_core import AttemptResult, run_cmd
 
 
@@ -61,6 +62,7 @@ def adb_authorized(root: Path) -> bool:
             return True
     return False
 
+
 def automate_adb_instrumented(root: Path, _cfg: dict) -> AttemptResult:
     if adb_authorized(root):
         verify = root / "scripts/verify-android-insets.sh"
@@ -98,6 +100,24 @@ def automate_fdroid_dry_run(root: Path, _cfg: dict) -> AttemptResult:
     if code == 0:
         return AttemptResult(0, "fdroid-dry-run", "F-Droid device dry-run passed", False)
     return AttemptResult(1, "fdroid-dry-run", tail or f"exit {code}", True)
+
+
+def automate_device_date_smoke(root: Path, _cfg: dict) -> AttemptResult:
+    if not adb_authorized(root):
+        return AttemptResult(1, "adb-unavailable", "no_authorized_device for 1970/1971 inventory smoke", True)
+    err = run_date_smoke(resolve_adb())
+    if err:
+        return AttemptResult(1, "device-date-smoke", err, True)
+    return AttemptResult(0, "device-date-smoke", "store+UI have no 1970/1971 dates", False)
+
+
+def automate_apk_cache_smoke(root: Path, _cfg: dict) -> AttemptResult:
+    if not adb_authorized(root):
+        return AttemptResult(1, "adb-unavailable", "no_authorized_device for APK download smoke", True)
+    err = run_download_smoke(resolve_adb())
+    if err:
+        return AttemptResult(1, "apk-download-smoke", err, True)
+    return AttemptResult(0, "apk-download-smoke", "cached F-Droid APK; Play stays page-only", False)
 
 
 def automate_android_sdk_smoke(root: Path, _cfg: dict) -> AttemptResult:

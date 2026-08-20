@@ -133,6 +133,14 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         hero_path = "branding/assets/readme-hero.svg"
         lockup_path = "branding/assets/logo-lockup.svg"
         splash_path = "branding/assets/splash.png"
+    device_rel = "branding/assets/device-inventory.jpg"
+    if (root / device_rel).is_file():
+        device_src = "../assets/device-inventory.jpg" if for_preview else device_rel
+        device_shots = (
+            f'<p align="center">\n  <img src="{device_src}" alt="{product["name"]} inventory" width="360" />\n</p>\n'
+        )
+    else:
+        device_shots = ""
 
     replacements = {
         "{{name}}": product["name"],
@@ -145,6 +153,7 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         "{{hero_path}}": hero_path,
         "{{lockup_path}}": lockup_path,
         "{{splash_path}}": splash_path,
+        "{{device_shots}}": device_shots,
         "{{badge_license}}": badge["license"],
         "{{badge_foss}}": badge["foss"],
         "{{badge_primary}}": badge["primary"],

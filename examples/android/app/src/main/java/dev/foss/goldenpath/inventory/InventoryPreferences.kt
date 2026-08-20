@@ -24,6 +24,8 @@ private val FORGE_LOOKUP = booleanPreferencesKey("forge_lookup_enabled")
 private val FORGE_LOOKUP_SEARCH_UNKNOWNS = booleanPreferencesKey("forge_lookup_search_unknowns")
 private val SCAN_INTERVAL = stringPreferencesKey("scan_interval")
 private val LAST_SCAN_AT = longPreferencesKey("last_scan_at_ms")
+private val INSTALL_METHOD = stringPreferencesKey("install_method")
+private val UPDATE_PREFETCH = booleanPreferencesKey("update_prefetch_enabled")
 
 class InventoryPreferences(private val context: Context) {
     private val store get() = context.inventoryDataStore
@@ -61,6 +63,12 @@ class InventoryPreferences(private val context: Context) {
     val lastScanAtMs: Flow<Long?> = store.data.map { prefs ->
         prefs[LAST_SCAN_AT]?.takeIf { it > 0L }
     }
+
+    val installMethod: Flow<InstallMethod> = store.data.map { prefs ->
+        InstallMethod.parse(prefs[INSTALL_METHOD])
+    }
+
+    val updatePrefetchEnabled: Flow<Boolean> = store.booleanPref(UPDATE_PREFETCH, false)
 
     suspend fun setQueryAllPackagesAcknowledged(value: Boolean) {
         store.writeBoolean(QUERY_ALL_PACKAGES_ACK, value)
@@ -123,5 +131,13 @@ class InventoryPreferences(private val context: Context) {
 
     suspend fun setLastScanAtMs(value: Long) {
         store.edit { prefs -> prefs[LAST_SCAN_AT] = value }
+    }
+
+    suspend fun setInstallMethod(value: InstallMethod) {
+        store.edit { prefs -> prefs[INSTALL_METHOD] = value.name }
+    }
+
+    suspend fun setUpdatePrefetchEnabled(value: Boolean) {
+        store.writeBoolean(UPDATE_PREFETCH, value)
     }
 }

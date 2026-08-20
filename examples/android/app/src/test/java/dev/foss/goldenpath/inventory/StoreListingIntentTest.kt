@@ -18,10 +18,11 @@ class StoreListingIntentTest {
             "https://wipefiles.en.aptoide.com/",
             RemoteReleasedSource.Aptoide,
             aptoideInstalled = true,
+            packageName = "uk.org.platitudes.wipefiles",
         )
         assertEquals(Intent.ACTION_VIEW, intent?.action)
         assertEquals(AptoideLink.STORE_PACKAGE, intent?.`package`)
-        assertEquals("https://wipefiles.en.aptoide.com/", intent?.dataString)
+        assertEquals("aptoidesearch://uk.org.platitudes.wipefiles", intent?.dataString)
     }
 
     @Test

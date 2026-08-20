@@ -31,6 +31,7 @@
 <p align="center">
   <img src="{{splash_path}}" alt="{{name}} splash" width="480" />
 </p>
+{{device_shots}}
 
 ## Features
 

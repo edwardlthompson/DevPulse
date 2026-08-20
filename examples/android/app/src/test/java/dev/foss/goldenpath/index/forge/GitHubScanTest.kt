@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.forge
 
+import dev.foss.goldenpath.inventory.UpdateNotesMemory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -52,11 +53,13 @@ class GitHubScanTest {
             GitHubSearchPage(200, """{"items":[{"full_name":"platitudes/WipeFiles","name":"Wipe Files","archived":false}]}""")
         }
         val releases = GitHubReleaseClient {
-            GitHubSearchPage(200, """[{"name":"0.3","tag_name":"v0.3","assets":[{"name":"uk.org.platitudes.wipefiles_0.3.apk"}]}]""")
+            GitHubSearchPage(200, """[{"name":"0.3","tag_name":"v0.3","body":"Fixed crash","assets":[{"name":"uk.org.platitudes.wipefiles_0.3.apk"}]}]""")
         }
+        UpdateNotesMemory.clear()
         val offer = GitHubScan.toOffer("uk.org.platitudes.wipefiles", "Wipe Files", search, releases, searchUnknowns = true)
         assertTrue(offer.listed)
         assertEquals("https://github.com/platitudes/WipeFiles/releases", offer.pageUrl)
+        assertEquals("Fixed crash", UpdateNotesMemory.get("uk.org.platitudes.wipefiles")?.text)
     }
 
     @Test

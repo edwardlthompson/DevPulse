@@ -34,6 +34,16 @@ class RemoteReleaseRollupTest {
     }
 
     @Test
+    fun delistedPlayDateUsedWhenNothingListed() {
+        val pick = RemoteReleaseRollup.from(
+            listOf(RemoteReleaseOffer(RemoteReleasedSource.Play, 400L, "1.2", UpdateUrls.play("app.x"), listed = false)),
+        )
+        assertEquals(400L, pick.ms)
+        assertEquals(RemoteReleasedSource.Play, pick.source)
+        assertEquals("1.2", pick.versionName)
+    }
+
+    @Test
     fun emptyUsableOffersAreNone() {
         val pick = RemoteReleaseRollup.from(
             listOf(RemoteReleaseOffer(RemoteReleasedSource.Play, listed = false)),

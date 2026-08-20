@@ -22,9 +22,25 @@ object PlayScan {
                 pageUrl = UpdateUrls.play(packageName),
                 listed = true,
             )
-            PlayPresence.Missing -> RemoteReleaseOffer(source = RemoteReleasedSource.Play, listed = false)
+            PlayPresence.Missing -> recovered(packageName) ?: RemoteReleaseOffer(
+                source = RemoteReleasedSource.Play,
+                listed = false,
+            )
             PlayPresence.Unknown -> unknown()
         }
+    }
+
+    private fun recovered(packageName: String): RemoteReleaseOffer? {
+        val lookup = WaybackPlay.client?.recover(packageName) ?: return null
+        val ms = lookup.updatedOnMs ?: return null
+        RefreshTrace.line("play $packageName wayback recovered")
+        return RemoteReleaseOffer(
+            source = RemoteReleasedSource.Play,
+            ms = ms,
+            versionName = lookup.publishedVersion,
+            pageUrl = UpdateUrls.play(packageName),
+            listed = false,
+        )
     }
 
     private fun unknown(): RemoteReleaseOffer =

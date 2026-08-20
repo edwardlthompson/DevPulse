@@ -13,6 +13,9 @@ import dev.foss.goldenpath.index.forge.DataStoreForgeTokenStore
 import dev.foss.goldenpath.index.forge.FileGithubVerifiedStore
 import dev.foss.goldenpath.index.forge.GitHubSearchHttp
 import dev.foss.goldenpath.index.play.PlayHttpFetcher
+import dev.foss.goldenpath.index.play.WaybackHttpFetcher
+import dev.foss.goldenpath.index.play.WaybackPlay
+import dev.foss.goldenpath.network.NetworkUnmetered
 import java.io.File
 import kotlinx.coroutines.flow.first
 
@@ -23,6 +26,8 @@ object ReleaseRefreshRunner {
         val playOn = prefs.playLookupEnabled.first()
         val forgeOn = prefs.forgeLookupEnabled.first()
         val searchUnknowns = prefs.forgeLookupSearchUnknowns.first()
+        WaybackPlay.client = WaybackHttpFetcher.takeIf { playOn }
+        return try {
         val result = ReleaseRefresh.run(
             apps = PackageManagerPackageCatalog(context.packageManager).listInstalled(),
             repos = FdroidEnabledRepos.list(FdroidRepoPreferences(context)),
@@ -42,6 +47,20 @@ object ReleaseRefreshRunner {
             onProgress = onProgress,
         )
         prefs.setLastScanAtMs(System.currentTimeMillis())
-        return result.size
+        if (prefs.updatePrefetchEnabled.first()) {
+            UpdatePrefetch.run(
+                enabled = true,
+                unmetered = NetworkUnmetered.isUnmetered(context),
+                cacheDir = File(context.cacheDir, "updates"),
+                artifacts = UpdateArtifactMemory.byPackage.values.flatten(),
+                fetch = ApkHttpFetcher,
+                inspect = { file -> ApkArchiveIdentity.inspect(context.packageManager, file) },
+                installed = { pkg -> ApkArchiveIdentity.installed(context.packageManager, pkg) },
+            )
+        }
+        result.size
+        } finally {
+            WaybackPlay.client = null
+        }
     }
 }

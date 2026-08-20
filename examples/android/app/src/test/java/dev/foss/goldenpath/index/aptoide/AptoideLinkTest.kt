@@ -21,7 +21,15 @@ class AptoideLinkTest {
     }
 
     @Test
-    fun appOpenKeepsUnameListing() {
+    fun appOpenPrefersPackageSearch() {
+        assertEquals(
+            "aptoidesearch://uk.org.platitudes.wipefiles",
+            AptoideLink.appOpenUri("https://wipefiles.en.aptoide.com/", "uk.org.platitudes.wipefiles"),
+        )
+    }
+
+    @Test
+    fun appOpenKeepsUnameListingWithoutPackage() {
         val page = "https://wipefiles.en.aptoide.com/"
         assertEquals(page, AptoideLink.appOpenUri(page))
     }

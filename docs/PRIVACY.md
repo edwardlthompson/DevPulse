@@ -17,6 +17,7 @@ Local notifications are device-only (scan progress and â€œrelease dates updatedâ
 | Optional GitHub token | Higher forge API limits | Consent | EncryptedSharedPreferences until user removes it |
 | Scan cache and history | Degraded/offline results; history | User request | Until user clears cache |
 | Pins and private notes | Keep-anyway and Develop-next | User request | Until user deletes them |
+| Release notes from F-Droid what'sNew or GitHub release body | Show what changed on app detail | User request (Refresh) | Until process ends or next Refresh |
 | Update-check prefs (`last_checked`, format, interval) | F-Droid-safe About stub | Legitimate interest | Local until cleared |
 ## Network
 
@@ -29,6 +30,8 @@ Network runs only when the user scans, or when they opt into later lookups or th
 - Forges: documented GitHub / optional GitLab / Codeberg APIs
 - About update check: GitHub Releases or configured manifest only
 - User-Agent: `DevPulse/0.1` plus the public GitHub URL. No browser impersonation
+- Optional APK file download (user tap): APKPure `asset.url`, F-Droid/Izzy repo APK, GitHub release asset, or Aptoide `file.path`. Files stay in app cache until the user installs or clears cache.
+- Optional Root install: local `su` / `pm install` only. No install traffic leaves the device.
 
 No PII is transmitted. The optional token is an Authorization header to GitHub only and is never logged.
 
@@ -38,6 +41,7 @@ No PII is transmitted. The optional token is an Authorization header to GitHub o
 - No cloud sync or social features
 - No sale of personal data
 - No FCM or other proprietary push
+- Donation taps open Venmo in the browser; DevPulse does not collect payment data
 
 ## User Rights (GDPR / CCPA)
 

@@ -1,5 +1,10 @@
 {
-  "enabled": false,
+  "enabled": true,
   "message": "If this project helps you, consider supporting development.",
-  "links": []
+  "links": [
+    {
+      "label": "Venmo",
+      "url": "https://venmo.com/code?user_id=1857304970395648420"
+    }
+  ]
 }

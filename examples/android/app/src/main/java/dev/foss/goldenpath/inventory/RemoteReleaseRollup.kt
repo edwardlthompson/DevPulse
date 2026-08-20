@@ -3,8 +3,21 @@ package dev.foss.goldenpath.inventory
 object RemoteReleaseRollup {
     fun from(offers: List<RemoteReleaseOffer>): RemoteReleasePick {
         val usable = offers.filter { it.listed }
+        val recovered = offers.filter { !it.listed && it.known && (it.ms ?: 0L) > 0L }
+            .maxByOrNull { it.ms ?: 0L }
         if (usable.isEmpty()) {
-            return RemoteReleasePick(null, RemoteReleasedSource.None, offers = offers)
+            return if (recovered == null) {
+                RemoteReleasePick(null, RemoteReleasedSource.None, offers = offers)
+            } else {
+                RemoteReleasePick(
+                    ms = recovered.ms,
+                    source = recovered.source,
+                    versionName = recovered.versionName,
+                    pageUrl = recovered.pageUrl,
+                    versionSource = recovered.source,
+                    offers = offers,
+                )
+            }
         }
         val newest = usable.filter { (it.ms ?: 0L) > 0L }.maxByOrNull { it.ms ?: 0L }
         val versions = usable.mapNotNull { it.versionName?.trim()?.takeIf(String::isNotEmpty) }

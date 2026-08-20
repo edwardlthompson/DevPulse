@@ -1,10 +1,16 @@
 package dev.foss.goldenpath.index.apkpure
 
+import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class ApkPureScanTest {
+    @Before
+    fun reset() {
+        UpdateArtifactMemory.clear()
+    }
     @Test
     fun listedAndUnknownStayHonest() {
         val json = checkNotNull(javaClass.classLoader?.getResourceAsStream("apkpure/update-ok.json"))

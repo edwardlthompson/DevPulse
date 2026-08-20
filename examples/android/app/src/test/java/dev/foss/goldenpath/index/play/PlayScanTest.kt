@@ -36,6 +36,36 @@ class PlayScanTest {
     }
 
     @Test
+    fun missingRecoversDateFromWaybackHtml() {
+        WaybackPlay.client = WaybackPlayClient {
+            PlayHtmlParser.parse(readFixture("play/updated-ok.html"))
+        }
+        try {
+            val offer = PlayScan.toOffer("app.gone", PlayPageClient { PlayPageResponse(404, "") })
+            assertFalse(offer.listed)
+            assertTrue(offer.known)
+            assertEquals(PlayHtmlParser.parse(readFixture("play/updated-ok.html")).updatedOnMs, offer.ms)
+            assertEquals("2.3.1", offer.versionName)
+        } finally {
+            WaybackPlay.client = null
+        }
+    }
+
+    @Test
+    fun listedDoesNotCallWayback() {
+        var hits = 0
+        WaybackPlay.client = WaybackPlayClient { hits += 1; null }
+        try {
+            val html = readFixture("play/updated-ok.html")
+            val offer = PlayScan.toOffer("app.x", PlayPageClient { PlayPageResponse(200, html) })
+            assertTrue(offer.listed)
+            assertEquals(0, hits)
+        } finally {
+            WaybackPlay.client = null
+        }
+    }
+
+    @Test
     fun botWallIsUnknownNotDelisted() {
         val html = readFixture("play/bot-wall.html")
         val offer = PlayScan.toOffer("com.instagram.android", PlayPageClient { PlayPageResponse(200, html) })

@@ -13,14 +13,12 @@ Types in `dev.foss.goldenpath.index.play`. No live network in unit tests. Never 
 | `PlayLookupStatus` | enum | `Ok`, `UnknownCheckManually` |
 | `PlayLookup` | data class | `updatedOnMs`, `publishedVersion`, `status` |
 | `PlayCachePolicy` | object | 24h TTL |
-
 ### Functions
 
 | Name | Contract |
 |------|----------|
 | `PlayHtmlParser.parse(html)` | Reads `itemprop="datePublished"` and `itemprop="softwareVersion"` only |
 | Missing or unparseable date | `status = UnknownCheckManually`, `updatedOnMs = null` — never invent a day |
-
 ### Rate limit (types only)
 
 `PlayFetchPolicy.minIntervalMs = 1_500` — serial/modest. Fetcher interface is unused in tests.
@@ -50,7 +48,6 @@ Types in `dev.foss.goldenpath.index.play`. No live network in unit tests. Never 
 | View | detail source row |
 | Tests | `examples/android/app/src/test/.../index/play/` plus HTML fixtures |
 | Wiring | scan orchestrator ≤10 lines |
-
 ## Definition of Done
 
 Isolated parser tests with fixtures are mandatory. Fallback for live Play: manual unknown-check, not a CI live scrape.
@@ -59,4 +56,5 @@ Isolated parser tests with fixtures are mandatory. Fallback for live Play: manua
 
 - Honest User-Agent. Do not impersonate a browser
 - Refresh probes the public details page. HTTP 404/410 or a not-found page without version/date is not listed and never becomes an update link
+- After delisting, `docs/features/play-wayback.md` may recover `datePublished` from archived HTML. The listing stays unlisted.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

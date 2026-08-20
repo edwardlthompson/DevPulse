@@ -2,6 +2,38 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 12 — Device download smoke (2026-08-20)
+
+- ✅ [ADB] Device: Download one APKPure or F-Droid file; Play still has no file URL
+
+## Sprint 11 — Device date smoke (2026-08-20)
+
+- ✅ [ADB] Device smoke: no 1970/1971 rows; optional Usage Access + Aptoide scan
+
+## Sprint 10 — README screenshots (2026-08-20)
+
+- ✅ [HUMAN] Optional GitHub README / release screenshots
+
+## Sprint 13 — Play HTML recovery (2026-08-20)
+
+- ✅ [AGENT] Wayback Play HTML recovery after delisting
+
+## Sprint 12 — Prefetch updates and notes (2026-08-20)
+
+- ✅ [AGENT] UpdateNotes + F-Droid what'sNew + GitHub body parsers and expandable detail
+- ✅ [AGENT] Direct APK files like APKUpdater: APKPure `asset.url`, F-Droid/Izzy `apkName`, GitHub `.apk` asset, Aptoide `file.path`; Download on detail (no website)
+- ✅ [AGENT] Settings opt-in prefetch of those URLs; identity + sha256 before a file is marked ready
+- ✅ [AGENT] Install from cache via existing APK installer intent
+- ✅ [AGENT] Install methods: System confirm, PackageInstaller session, Root silent `pm install`
+- ✅ [AGENT] One-tap Update: direct APK download+install, or open Play Store app (no Aurora/gplayapi)
+
+## Sprint 11 — Inventory sort and honest dates (2026-08-20)
+
+- ✅ [AGENT] InstalledDateResolver + Aptoide parser + RemoteRelease + sort/filter/pulse tests
+- ✅ [AGENT] Inventory sort bar, unknown dates, F-Droid Archive toggle, Aptoide opt-in
+- ✅ [AGENT] Verbose refresh: count every location; GitHub repo search per package
+- ✅ [AGENT] APKMirror + APKPure opt-in batch listing lookup
+
 ## v0.22.0 ship (2026-08-20)
 
 - ✅ [HUMAN] Approve first GitHub Release tag when product-ready

@@ -14,7 +14,6 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 | `ApkPureBatchFetcher` | fun interface | same |
 | `ApkMirrorScan.offersFor` | function | Chunk 100; exists+version+`publish_date` when present |
 | `ApkPureScan.offersFor` | function | Chunk 200; version only; date stays null |
-
 ### Functions
 
 | Name | Contract |
@@ -22,13 +21,12 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 | `ApkMirrorMetaParser.parseMany` | Missing/unparseable date → `ms = null`; never invent a day |
 | Failed HTTP | `listed = false`, `known = false` |
 | Successful miss | `listed = false`, `known = true` |
-
 ## Acceptance criteria
 
 - ✅ Settings opt-in, default off; Refresh batches enabled dump sites
 - ✅ Offline/error: inventory stays local; unknown not red
 - ✅ i18n: `dump_store_*`, `apkmirror_enable`, `apkpure_enable`, `inventory_source_apkmirror`, `inventory_source_apkpure`
-- ✅ Never download or install APKs; listing taps open the public web page
+- ✅ Listing taps still open the public page; APKPure file download is Sprint 12 (`asset.url`)
 
 ## Smoke scenario
 

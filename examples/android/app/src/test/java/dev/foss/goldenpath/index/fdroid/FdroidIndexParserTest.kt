@@ -23,6 +23,13 @@ class FdroidIndexParserTest {
     }
 
     @Test
+    fun parsesWhatsNew() {
+        val raw = """{"apps":[{"packageName":"org.ver","localized":{"en-US":{"whatsNew":"Crash fix"}},"lastUpdated":1700000000000}]}"""
+        val hit = FdroidLookupEngine.lookup("org.ver", FdroidIndexParser.parse(raw, "official"))
+        assertEquals("Crash fix", hit?.whatsNew)
+    }
+
+    @Test
     fun parsesSuggestedVersionName() {
         val raw = """{"apps":[{"packageName":"org.ver","suggestedVersionName":"2.4.1","lastUpdated":1700000000000}]}"""
         val hit = FdroidLookupEngine.lookup("org.ver", FdroidIndexParser.parse(raw, "official"))

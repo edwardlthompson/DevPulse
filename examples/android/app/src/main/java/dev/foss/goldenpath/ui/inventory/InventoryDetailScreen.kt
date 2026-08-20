@@ -99,9 +99,11 @@ fun InventoryDetailScreen(
             Text(text = stringResource(R.string.inventory_no_listings))
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(SpacingSm)) {
-                listings.forEach { StoreListingRow(it) }
+                listings.forEach { StoreListingRow(it, app.packageName) }
             }
         }
+        UpdateNotesSection(app.packageName)
+        DownloadUpdateSection(app)
         TextButton(onClick = onBack, modifier = Modifier.bottomInsetPadding()) {
             Text(stringResource(R.string.inventory_detail_back))
         }
@@ -121,7 +123,7 @@ private fun DetailCallout(label: String, value: String, warn: Boolean = false) {
 }
 
 @Composable
-private fun StoreListingRow(link: UpdateLink) {
+private fun StoreListingRow(link: UpdateLink, packageName: String) {
     val context = LocalContext.current
     val mark = InventoryCopy.listingMark(link.listed, link.known)
     val sourceName = stringResource(InventoryCopy.sourceRes(link.source))
@@ -158,7 +160,7 @@ private fun StoreListingRow(link: UpdateLink) {
             color = tone,
             modifier = if (canOpen) {
                 Modifier.clickable(role = Role.Button) {
-                    link.url?.let { StoreListingIntent.open(context, it, link.source) }
+                    link.url?.let { StoreListingIntent.open(context, it, link.source, packageName) }
                 }
             } else {
                 Modifier

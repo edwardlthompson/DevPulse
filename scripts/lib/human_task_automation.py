@@ -8,6 +8,8 @@ from pathlib import Path
 from human_task_android import (
     automate_adb_instrumented,
     automate_android_sdk_smoke,
+    automate_apk_cache_smoke,
+    automate_device_date_smoke,
     automate_fdroid_dry_run,
 )
 from human_task_core import AttemptResult, resolve_config
@@ -22,6 +24,7 @@ from human_task_rows import (
     automate_init_placeholders,
     automate_product_smoke,
     automate_query_all_packages_rationale,
+    automate_readme_screenshots,
     automate_release_tag,
     automate_stack_config,
     automate_use_template,
@@ -36,13 +39,16 @@ HUMAN_RULES: list[tuple[re.Pattern[str], str, object]] = [
     (re.compile(r"Approve ADR|Approve.*BUILD_PLAN", re.I), "human", automate_approve_adr),
     (re.compile(r"Optional product smoke", re.I), "human", automate_product_smoke),
     (re.compile(r"QUERY_ALL_PACKAGES", re.I), "human", automate_query_all_packages_rationale),
-    (re.compile(r"Approve.*release tag", re.I), "human", automate_release_tag),
+    (re.compile(r"Approve first.*release tag", re.I), "human", automate_release_tag),
+    (re.compile(r"README / release screenshots|release screenshots", re.I), "human", automate_readme_screenshots),
     (re.compile(r"required status checks|branch protection|setup-github-repo", re.I), "human", automate_branch_protection),
     (re.compile(r"Dependabot PR|Review/merge Dependabot|TypeScript \d+ major", re.I), "human", automate_dependabot_major_merge),
     (re.compile(r"AUTOMERGE_TOKEN", re.I), "human", automate_automerge_token),
 ]
 
 ADB_RULES: list[tuple[re.Pattern[str], str, object]] = [
+    (re.compile(r"Download one APK|no file URL", re.I), "adb", automate_apk_cache_smoke),
+    (re.compile(r"1970|Device smoke", re.I), "adb", automate_device_date_smoke),
     (re.compile(r"instrumented|connectedDebugAndroidTest|\badb\b", re.I), "adb", automate_adb_instrumented),
     (re.compile(r"F-Droid|device dry-run", re.I), "adb", automate_fdroid_dry_run),
     (re.compile(r"emulator|Android SDK", re.I), "adb", automate_android_sdk_smoke),

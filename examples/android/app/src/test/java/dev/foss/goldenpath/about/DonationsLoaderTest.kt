@@ -28,10 +28,11 @@ class DonationsLoaderTest {
     }
 
     @Test
-    fun loadAssetsUsesDisabledProductDefault() {
+    fun loadAssetsUsesVenmoProductDefault() {
         val cfg = DonationsLoader.load(context)
+        assertTrue(cfg.enabled)
         assertEquals("If this project helps you, consider supporting development.", cfg.message)
-        assertTrue(!cfg.enabled)
-        assertEquals(0, cfg.links.size)
+        assertEquals("Venmo", cfg.links.single().label)
+        assertEquals("https://venmo.com/code?user_id=1857304970395648420", cfg.links.single().url)
     }
 }

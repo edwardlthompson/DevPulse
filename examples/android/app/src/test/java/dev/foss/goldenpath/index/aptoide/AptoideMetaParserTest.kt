@@ -18,6 +18,7 @@ class AptoideMetaParserTest {
         assertEquals(expected, lookup.updatedOnMs)
         assertEquals("2.1.0", lookup.publishedVersion)
         assertEquals("example-app", lookup.uname)
+        assertEquals("https://pool.apk.aptoide.com/example/app.example.apk", lookup.fileUrl)
     }
 
     @Test

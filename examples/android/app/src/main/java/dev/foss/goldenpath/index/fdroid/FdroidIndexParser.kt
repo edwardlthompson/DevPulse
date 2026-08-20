@@ -16,7 +16,8 @@ object FdroidIndexParser {
         } else {
             FdroidPackageVersions.highestFor(raw, wanted)
         }
-        return extract(raw, repoId, wanted, highest)
+        val apks = FdroidApkFiles.namesFor(raw, wanted)
+        return extract(raw, repoId, wanted, highest, apks)
     }
 
     private fun extract(
@@ -24,6 +25,7 @@ object FdroidIndexParser {
         repoId: String,
         wanted: Set<String>,
         highest: Map<String, String>,
+        apks: Map<String, FdroidApkHint>,
     ): List<FdroidAppRecord> {
         val found = LinkedHashMap<String, FdroidAppRecord>()
         var from = 0
@@ -35,7 +37,7 @@ object FdroidIndexParser {
             if (name.isEmpty() || '.' !in name) continue
             if (wanted.isNotEmpty() && (name !in wanted || name in found)) continue
             if (wanted.isEmpty() && name in found) continue
-            found[name] = recordFrom(name, FdroidIndexBytes.objectSlice(raw, at), repoId, highest[name])
+            found[name] = recordFrom(name, FdroidIndexBytes.objectSlice(raw, at), repoId, highest[name], apks[name])
         }
         return if (wanted.isEmpty()) found.values.toList() else wanted.mapNotNull { found[it] }
     }
@@ -45,6 +47,7 @@ object FdroidIndexParser {
         chunk: String,
         repoId: String,
         highest: String?,
+        hint: FdroidApkHint?,
     ): FdroidAppRecord {
         val suggested = suggestedName.find(chunk)?.groupValues?.get(1)?.trim()?.ifEmpty { null }
             ?: suggestedCode.find(chunk)?.groupValues?.get(1)
@@ -54,6 +57,10 @@ object FdroidIndexParser {
             sourceCode = sourceCode.find(chunk)?.groupValues?.get(1)?.trim()?.ifEmpty { null },
             repoId = repoId,
             suggestedVersionName = highest ?: suggested,
+            whatsNew = FdroidWhatsNew.parse(chunk),
+            apkName = hint?.apkName,
+            apkSha256 = hint?.sha256,
+            nativeCodes = hint?.nativeCodes.orEmpty(),
         )
     }
 }

@@ -5,6 +5,8 @@ import dev.foss.goldenpath.inventory.RemoteReleaseOffer
 import dev.foss.goldenpath.inventory.RemoteReleasePick
 import dev.foss.goldenpath.inventory.RemoteReleaseRollup
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
+import dev.foss.goldenpath.inventory.UpdateArtifact
+import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import dev.foss.goldenpath.inventory.UpdateUrls
 
 object AptoideScan {
@@ -17,6 +19,11 @@ object AptoideScan {
             versionName = lookup.publishedVersion,
             pageUrl = packageName.takeIf { it.isNotEmpty() }?.let { UpdateUrls.aptoide(it, lookup.uname) },
         )
+        if (packageName.isNotEmpty() && lookup.fileUrl != null) {
+            UpdateArtifactMemory.add(
+                UpdateArtifact(packageName, RemoteReleasedSource.Aptoide, lookup.fileUrl, lookup.publishedVersion),
+            )
+        }
         return RemoteReleaseRollup.from(listOf(offer))
     }
 

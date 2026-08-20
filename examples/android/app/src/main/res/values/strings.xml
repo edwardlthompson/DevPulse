@@ -193,4 +193,26 @@
     <string name="opportunity_gap">%1$s: %2$d quiet apps</string>
     <string name="sources_title">Sources</string>
     <string name="sources_no_install">Links only. DevPulse never auto-installs.</string>
+    <string name="update_notes_title">What changed</string>
+    <string name="update_notes_expand">Show full notes</string>
+    <string name="update_notes_collapse">Hide notes</string>
+    <string name="update_notes_from">From %1$s</string>
+    <string name="update_cache_title">Update file</string>
+    <string name="update_cache_from">Direct download from %1$s</string>
+    <string name="update_cache_download">Download APK</string>
+    <string name="update_cache_busy">Downloading…</string>
+    <string name="update_cache_install">Install downloaded APK</string>
+    <string name="update_one_click">Update</string>
+    <string name="update_one_click_play">Update in Play</string>
+    <string name="update_one_click_busy">Updating…</string>
+    <string name="update_cache_failed">Download failed. DevPulse does not open a website for this file.</string>
+    <string name="install_method_title">Install method</string>
+    <string name="install_method_body">System asks you to confirm. Session uses the Android installer; on Android 12+ it can skip the prompt only when updating an app DevPulse already installed. Root runs pm install with no prompt when su is granted.</string>
+    <string name="install_method_system">System</string>
+    <string name="install_method_session">Session</string>
+    <string name="install_method_root">Root silent</string>
+    <string name="install_method_failed">Install failed. Try System if this device is not rooted.</string>
+    <string name="update_prefetch_title">Prefetch update files</string>
+    <string name="update_prefetch_body">Off by default. On Wi-Fi, cache direct APKs after Refresh. A file is ready only when the package, signing cert, and sha256 match. Play and APKMirror stay page-only. DevPulse never auto-installs.</string>
+    <string name="update_prefetch_enable">Prefetch trusted APKs on Wi-Fi</string>
 </resources>

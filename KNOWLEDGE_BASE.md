@@ -153,7 +153,7 @@
 |-------|--------|
 | **Symptom** | `DonationsLoaderTest` passes locally (live `donations.json` disabled) and fails in CI (`enabled: true`, placeholder link) |
 | **Cause** | Live file is gitignored. `sync-exemplar-config.sh` copies `donations.json.example` before `./gradlew test` |
-| **Fix** | Keep the example disabled for this child. Test `DonationsLoader.parse` with fixtures, not only assets |
+| **Fix** | Assert the tracked `donations.json.example`, not a gitignored live copy. Test `DonationsLoader.parse` with fixtures too |
 | **Prevention** | Do not assert live gitignored About config in unit tests |
 ### KB-020 — Actions cannot open Release Please PRs
 

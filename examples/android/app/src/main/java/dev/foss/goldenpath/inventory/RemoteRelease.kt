@@ -62,6 +62,12 @@ object RemoteRelease {
 
     fun ageMs(app: InstalledApp): Long? = app.remoteReleasedAtMs ?: app.installedAtMs
 
+    fun lastReleaseMs(app: InstalledApp): Long? {
+        val ms = app.remoteReleasedAtMs
+        if (ms == null || app.remoteReleasedSource == RemoteReleasedSource.None) return null
+        return ms
+    }
+
     fun apply(app: InstalledApp, pick: RemoteReleasePick): InstalledApp {
         val listings = UpdateInventory.listingsFor(pick)
         return app.copy(

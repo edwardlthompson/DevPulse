@@ -18,6 +18,8 @@ class ReleaseRefreshForgeTest {
     @Before
     fun reset() {
         RemoteReleaseMemory.clear()
+        UpdateNotesMemory.clear()
+        UpdateArtifactMemory.clear()
         RefreshTrace.emit = {}
     }
 
@@ -27,6 +29,14 @@ class ReleaseRefreshForgeTest {
         val offers = ReleaseRefresh.fdroidOffers(listOf(rec), setOf(rec.packageName)).getValue(rec.packageName)
         assertTrue(offers.none { it.source == RemoteReleasedSource.Forge })
         assertTrue(offers.none { it.pageUrl.orEmpty().contains("WiseTimer") })
+    }
+
+    @Test
+    fun fdroidWhatsNewFillsNotes() {
+        val rec = FdroidAppRecord("app.one", 1L, null, "official", whatsNew = "Crash fix")
+        ReleaseRefresh.fdroidOffers(listOf(rec), setOf(rec.packageName))
+        assertEquals("Crash fix", UpdateNotesMemory.get("app.one")?.text)
+        assertEquals(RemoteReleasedSource.Fdroid, UpdateNotesMemory.get("app.one")?.source)
     }
 
     @Test

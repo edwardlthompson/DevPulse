@@ -79,6 +79,8 @@ fun SettingsScreen(
         }
         IncludeSystemSettings()
         ScanIntervalSettings()
+        InstallMethodSettings()
+        UpdatePrefetchSettings()
         PlayLookupSettings()
         FdroidRepoSettings()
         AptoideLookupSettings()

@@ -22,6 +22,10 @@ data class FdroidAppRecord(
     val sourceCode: String?,
     val repoId: String,
     val suggestedVersionName: String? = null,
+    val whatsNew: String? = null,
+    val apkName: String? = null,
+    val apkSha256: String? = null,
+    val nativeCodes: Set<String> = emptySet(),
 )
 
 data class CachedIndex(

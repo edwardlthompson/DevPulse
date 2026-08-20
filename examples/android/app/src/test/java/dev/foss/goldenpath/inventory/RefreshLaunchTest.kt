@@ -32,4 +32,18 @@ class RefreshLaunchTest {
             RefreshLaunch.EXTRA_APK_PURE,
         ))
     }
+
+    @Test
+    fun downloadPackageReadsExtra() {
+        assertEquals(null, DownloadLaunch.packageName(null))
+        assertEquals(null, DownloadLaunch.packageName(Intent()))
+        assertEquals(
+            "org.example.app",
+            DownloadLaunch.packageName(Intent().putExtra(DownloadLaunch.EXTRA, " org.example.app ")),
+        )
+        assertEquals(
+            "https://f-droid.org/repo/app.apk",
+            DownloadLaunch.urlOverride(Intent().putExtra(DownloadLaunch.EXTRA_URL, "https://f-droid.org/repo/app.apk")),
+        )
+    }
 }

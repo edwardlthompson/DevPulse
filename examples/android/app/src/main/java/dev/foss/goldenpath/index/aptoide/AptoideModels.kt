@@ -10,6 +10,7 @@ data class AptoideLookup(
     val publishedVersion: String?,
     val status: AptoideLookupStatus,
     val uname: String? = null,
+    val fileUrl: String? = null,
 )
 
 object AptoideCachePolicy {

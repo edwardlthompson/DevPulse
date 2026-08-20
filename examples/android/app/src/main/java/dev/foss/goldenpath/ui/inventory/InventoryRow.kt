@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SystemUpdate
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,11 +56,7 @@ fun InventoryRow(
             Text(text = dateText, style = MaterialTheme.typography.bodySmall)
         }
         if (hasUpdate) {
-            Icon(
-                imageVector = Icons.Filled.SystemUpdate,
-                contentDescription = stringResource(R.string.inventory_update_available),
-                tint = MaterialTheme.colorScheme.error,
-            )
+            OneClickUpdateIcon(app)
         }
     }
 }
