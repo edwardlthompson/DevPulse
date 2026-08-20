@@ -171,6 +171,38 @@
 | **Cause** | A PowerShell-quoted `python3 -c` passed `newline='\\n'` into `Path.write_text`. `open(mode='w')` truncated the file, then `io.open` raised `ValueError: illegal newline value` |
 | **Fix** | Restore from git. Write a small UTF-8 helper script and call `Path.write_text(text, encoding='utf-8')` with no `newline` argument |
 | **Prevention** | Do not pass `newline=` through PowerShell string escaping; keep fold helpers in `scripts/lib` |
+### KB-022 — APKPure app opens `market://details`, not https search
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Tapping an APKPure listing opens DuckDuckGo or a browser search instead of the APKPure app |
+| **Cause** | Installed APKPure (`com.apkpure.aegon`) handles `market://details?id={pkg}` (`AppDetailV2Activity`). `https://apkpure.com/search?q=` is not an app intent |
+| **Fix** | Listing/page-only: `market://details?id=` + `setPackage(com.apkpure.aegon)`. Update uses `get_app_update` `asset.url` when it is an APK |
+| **Prevention** | Do not treat a store website URL as an in-app listing deep link |
+### KB-023 — Device Aptoide is Games, not Store
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `aptoidesearch://` does nothing; listing taps miss the installed Aptoide client |
+| **Cause** | Device package `cm.aptoide.pt` 10.0.0 is Aptoide Games. It does not handle Store search URIs |
+| **Fix** | Open `https://en.aptoide.com/app?package_name=` (Games and Store both resolve). Settings flags Games and links official Store at `https://en.aptoide.com/download` |
+| **Prevention** | Probe the installed launcher, not just the package id |
+### KB-024 — Settings hub duplicates the word Settings
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `GoldenPathUiTest.opensSettingsPanelWithThemeAndUpdateControls` fails: expected at most 1 node matching text `Settings` |
+| **Cause** | Top bar title and hub headline both use `settings_title`. Theme / update / inventory controls live on subpages |
+| **Fix** | Instrumented test opens Appearance, Updates, and Inventory, then Close settings |
+| **Prevention** | After a Settings IA change, walk the hub in `androidTest` instead of asserting one-page labels |
+### KB-025 — Fold print crashes on Windows cp1252
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `merge-release-please-pr` dies in `changelog_unreleased.py` `print(notes)` with `charmap` / `\u2192` |
+| **Cause** | Unreleased notes contain `→`. Python stdout on Windows is cp1252 |
+| **Fix** | Set `PYTHONIOENCODING=utf-8` before the merge script |
+| **Prevention** | Keep ASCII bullets in Unreleased, or export UTF-8 before any fold that prints notes |
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |

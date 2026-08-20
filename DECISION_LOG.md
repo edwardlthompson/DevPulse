@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — Ship v0.25.0 on GitHub Releases
+- **Status:** Accepted
+- **Context:** `/ship` after Update all, APKPure file download, store-install links, Aptoide Games vs Store, and the Settings hub. Actions still cannot open PRs. Instrumented Settings smoke failed because the hub and top bar both say Settings.
+- **Decision:** Use a `feat:` prepare commit so Release Please proposes 0.25.0. Open PR #6 with `gh`, fold Unreleased on the RP branch after RP rewrote it for the test fix, merge when CI is green. Leave recurring "next tag" and November radar HUMAN rows open.
+- **Alternatives considered:** `chore(release):` prepare (rejected: last chore cut became 0.22.1). Flatten Settings back to one scroll (rejected: the hub is the product change).
+- **Consequences:** Tag `v0.25.0` published on merge. Signed APK and SBOM attach via `release.yml`. APKPure listings use `market://details?id=`; Aptoide listings use `https://en.aptoide.com/app?package_name=`.
+
 ### 2026-08-20 — Ship v0.24.0 on GitHub Releases
 - **Status:** Accepted
 - **Context:** `/ship` after prefetch, Wayback Play dates, session update-ownership, and HUMAN/ADB device close-out. Actions still cannot open PRs.

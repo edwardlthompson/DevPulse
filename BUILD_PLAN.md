@@ -75,6 +75,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **Sprint 10** AGENT/AUTO archived in COMPLETED_TASKS.md @ `0b047aa`.
 > **v0.22.0** tag archived in COMPLETED_TASKS.md @ `e53283a`.
 > **v0.24.0** tag archived in COMPLETED_TASKS.md @ `36d12cc`.
+> **v0.25.0** tag archived in COMPLETED_TASKS.md @ `90b6249`.
 
 ### Archived Sprints
 
@@ -94,7 +95,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 | Sprint 11 — Inventory sort and honest dates | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
 | Sprint 12 — Prefetch updates and notes | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
 | Sprint 13 — Play HTML recovery | 2026-08-20 | COMPLETED_TASKS.md @ `fd20edd` |
-| Sprint 14 — Store clients and settings hub | 2026-08-20 | COMPLETED_TASKS.md |
+| Sprint 14 — Store clients and settings hub | 2026-08-20 | COMPLETED_TASKS.md @ `90b6249` |
 > **Sprint 11** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 12** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 13** archived in COMPLETED_TASKS.md @ `fd20edd`.

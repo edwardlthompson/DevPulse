@@ -2,6 +2,10 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## v0.25.0 ship (2026-08-20)
+
+- ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)
+
 ## Sprint 14 — Store clients and APKPure files (2026-08-20)
 
 - ✅ [AGENT] Settings store-install links; APKPure `asset.url` download; Aptoide Games vs Store
