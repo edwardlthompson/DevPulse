@@ -1,5 +1,7 @@
-Golden Path Android is a minimal FOSS application stub shipped with agent-project-bootstrap.
+DevPulse checks whether the Android apps you already installed still have a heartbeat.
 
-It demonstrates Gradle structure, assembleDebug CI, and Fastlane metadata patterns without proprietary SDKs.
+It looks at Google Play public update dates, the official F-Droid index plus extra repos such as IzzyOnDroid, and public forges. Then it surfaces software that looks stale or abandoned so you can find a living replacement, another sideload source, or a repo worth forking.
 
-Replace this text with your application description before F-Droid submission.
+The app is completely local. No accounts, analytics, or telemetry. Network is used only when you scan or opt into later lookups. Distributed via GitHub Releases only (not listed on F-Droid). License: GPL-3.0-or-later. applicationId: app.devpulse.
+
+DevPulse does not auto-install other apps and does not claim an app is safe or malware. Staleness is not a security audit.

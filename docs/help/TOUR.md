@@ -26,11 +26,11 @@ Read [`docs/BEST_PRACTICES.md`](../BEST_PRACTICES.md) — only these three:
 
 ## 3. Golden Path (3 min)
 
-Open the README for your stack under `examples/{stack}/`. If you have not chosen a stack yet, start with [`examples/web/README.md`](../../examples/web/README.md).
+Open the README for your stack under `examples/{stack}/`. This child repo is Android-only — start with [`examples/android/README.md`](../../examples/android/README.md).
 
 That folder is the runnable slice you copy for the next feature.
 
-**Paste prompt:** `Read the active examples/{stack}/README.md (or examples/web) and summarize how I run tests.`
+**Paste prompt:** `Read examples/android/README.md and summarize how I run tests.`
 
 ## 4. Week 1 (2 min)
 

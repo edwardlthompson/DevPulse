@@ -1,9 +1,9 @@
 /* GENERATED — do not edit; run scripts/sync-design-tokens.py */
-/* source-hash: 2110b67bfb84 */
+/* source-hash: b64ebb301206 */
 /* Official brand colors — prefer --gp-* in app UI; use --brand-* in docs/marketing */
 
 :root {
-  --brand-name: "GoldenPath";
+  --brand-name: "DevPulse";
   --brand-theme-light: #F5F5FA;
   --brand-theme-dark: #1a1a2e;
   --brand-primary: #B3263E;

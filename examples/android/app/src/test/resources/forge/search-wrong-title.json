@@ -1,0 +1,4 @@
+{"candidates":[
+  {"host":"GitHub","ownerRepo":"other/wrong","packageId":"com.other.app","title":"DevPulse","latestCommitMs":1,"latestReleaseMs":1,"archived":false},
+  {"host":"GitHub","ownerRepo":"edwardlthompson/DevPulse","packageId":"app.devpulse","title":"Something Else","latestCommitMs":2,"latestReleaseMs":2,"archived":false}
+]}

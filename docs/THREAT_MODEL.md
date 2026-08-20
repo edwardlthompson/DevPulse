@@ -1,64 +1,72 @@
 # Threat Model
 
-> Draft during Sprint 1 before Golden Path ships. Link security tasks in `BUILD_PLAN.md`.
+> MASVS-minded model for DevPulse. Link security tasks in `BUILD_PLAN.md`.
 
 ## Scope
 
 | Item | Value |
 |------|-------|
-| Project | [PROJECT_NAME] |
-| Stack | [INSERT PLATFORM / TECH STACK HERE] |
-| Methodology | STRIDE (adapt per stack: OWASP ASVS for web, MASVS for mobile) + OWASP LLM Top 10 for agent-exposed APIs |
+| Project | DevPulse |
+| Stack | Android (Kotlin, Jetpack Compose) |
+| Methodology | STRIDE + MASVS for mobile. OWASP LLM Top 10 only for agent-exposed repo tooling |
 ## Trust Boundaries
 
 ```text
-[User] --> [Client App / PWA] --> [API / Backend] --> [Data Store]
-                |                      |
-           Local storage          External services
+[User] --> [DevPulse app]
+              |-- PackageManager / optional usage stats (device)
+              |-- EncryptedSharedPreferences (optional GitHub token)
+              |-- Room cache (indexes, scan results)
+              |-- HTTPS: F-Droid indexes, Play public HTML, forge APIs
+         No backend. F-Droid build server is an operator, not a runtime host.
 
 ```
-
-Document your actual boundaries after architecture is defined.
 
 ## STRIDE Summary
 
 | Threat | Example | Mitigation | Owner |
 |--------|---------|------------|-------|
-| Spoofing | Fake API client | Auth tokens, TLS | AGENT |
-| Tampering | Modified local state | Integrity checks, signed updates | AGENT |
-| Repudiation | Denied user action | Audit logs (no PII without consent) | AGENT |
-| Information disclosure | PII in logs | Data minimization, redaction | AGENT |
-| Denial of service | Oversized payloads | Input limits, rate limiting | AGENT |
-| Elevation of privilege | Bypass auth | Least privilege, boundary validation | AGENT |
+| Spoofing | Fake GitHub or index host | HTTPS; verify F-Droid signature when feasible; else checksum plus documented limit | AGENT |
+| Tampering | Poisoned extra-repo index or HTML | Signature/checksum; fixture tests; unknown on parse fail; never guess dates | AGENT |
+| Repudiation | User denies a scan | Local scan history only; no remote audit log | AGENT |
+| Information disclosure | Token in logcat; inventory uploaded | EncryptedSharedPreferences; never log token; no analytics | AGENT |
+| Denial of service | Play/forge 429; huge index | Token bucket, persisted backoff, degrade to cache | AGENT |
+| Elevation of privilege | Abuse QUERY_ALL_PACKAGES or usage stats | Explain-before-ask; usage stats optional; no export off-device by default | AGENT |
+## MASVS-minded controls
+
+- **QUERY_ALL_PACKAGES:** sensitive. In-app rationale before scan (FR-4). Used only to build inventory.
+- **Optional usage stats:** settings walkthrough; never required (FR-5).
+- **Token storage:** EncryptedSharedPreferences only. Never log (FR-13).
+- **Scrape or API abuse by us:** honest User-Agent, serial-ish Play, honour 403/429, persist backoff. Do not impersonate a browser.
+- **Scrape or API abuse against us:** no backend; local cache only. Widget and notify stay on-device.
+- **Cache poisoning:** treat extra-repo and Play HTML as untrusted. Failed or unsigned parse → unknown. Room is not a trust root.
+
 ## Top Abuse Cases
 
-1. _Define after Golden Path — e.g., unauthorized data access_
-2. _Supply-chain compromise via malicious dependency_
-3. _Secret leakage via committed credentials_
-4. _Prompt injection (if agent-exposed APIs)_
-5. _Telemetry opt-out bypass_
+1. A malicious extra-repo index paints a malware APK as freshly maintained
+2. Play HTML change or 403 silently becomes a guessed "updated" date
+3. GitHub title search binds the wrong repo and a dead app looks green
+4. A leaked GitHub token in logs or backups
+5. QUERY_ALL_PACKAGES used without an honest rationale, failing store review
 
 ## OWASP LLM Top 10
 
-Walk agent-exposed surfaces against [OWASP LLM Top 10 (2025)](https://owasp.org/www-project-top-10-for-large-language-model-applications/). No extra scanner — map to existing gates. Prompt injection: [`.cursor/rules/destructive-ops.mdc`](../.cursor/rules/destructive-ops.mdc).
+Walk agent-exposed surfaces against [OWASP LLM Top 10 (2025)](https://owasp.org/www-project-top-10-for-large-language-model-applications/). The Android app has no LLM runtime. Controls below apply to repo agents only.
 
 | ID | Risk | Template control |
 |----|------|------------------|
 | LLM01 Prompt Injection | Untrusted text steers tools | Validate at boundaries; never execute untrusted text as system prompts |
-| LLM02 Sensitive Information Disclosure | Secrets/PII in prompts or logs | No secrets in git; opt-in telemetry; `docs/PRIVACY.md` |
-| LLM03 Supply Chain | Malicious model, plugin, or dep | Dependabot, CodeQL, Trivy; no default marketplace install |
-| LLM04 Data/Model Poisoning | Tampered training or RAG | Treat uploads as untrusted; N/A until child adds RAG |
-| LLM05 Improper Output Handling | Model output executed as code | Never eval LLM output; tool allowlists only |
-| LLM06 Excessive Agency | Agent can push, deploy, or drop | Honesty labels; hooks denylist; `[HUMAN]` for destructive-ops |
+| LLM02 Sensitive Information Disclosure | Token or inventory in prompts | No secrets in git; token never logged; `docs/PRIVACY.md` |
+| LLM03 Supply Chain | Malicious dep | Dependabot, CodeQL, Trivy; FOSS Gradle/TOML grep |
+| LLM04 Data/Model Poisoning | Tampered index treated as truth | Unknown on verify fail; fixtures for Play HTML |
+| LLM05 Improper Output Handling | Model output executed as code | Never eval LLM output |
+| LLM06 Excessive Agency | Agent can push or deploy | Honesty labels; `[HUMAN]` for destructive-ops |
 | LLM07 System Prompt Leakage | Rules or secrets in prompts | Keep credentials out of rules and `AGENTS.md` |
-| LLM08 Vector/Embedding | Retrieval injection | N/A until child adds a vector store |
-| LLM09 Misinformation | Over-trust of model output | Critique table; gates; regression tests on bug fixes |
-| LLM10 Unbounded Consumption | Token or cost DoS | Token economy 300/150; no 80k playbooks |
-Weekly walk: `docs/SECURITY_TRIAGE.md`.
-
+| LLM08 Vector/Embedding | Retrieval injection | N/A |
+| LLM09 Misinformation | Over-trust of model output | Critique table; gates; fixture tests |
+| LLM10 Unbounded Consumption | Token or cost DoS | File budgets 300/150 |
 ## Security Tasks
 
-Link mitigations to `BUILD_PLAN.md` and `docs/SECURITY_TRIAGE.md` weekly triage.
+Mitigations land in Sprints 2–6 feature files and `docs/SECURITY_TRIAGE.md` weekly triage. `[HUMAN]` enables Dependabot alerts and private reporting.
 
 ## Review Cadence
 

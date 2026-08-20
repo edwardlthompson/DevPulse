@@ -337,20 +337,6 @@
       "owner": "maintainer"
     },
     {
-      "path": "examples/python/justfile",
-      "purpose": "Optional Python Golden Path just recipes",
-      "read_when": "stack_selection",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "examples/web/justfile",
-      "purpose": "Optional Web Golden Path just recipes",
-      "read_when": "stack_selection",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
       "path": "examples/android/justfile",
       "purpose": "Optional Android Golden Path just recipes",
       "read_when": "stack_selection",
@@ -877,7 +863,7 @@
     },
     {
       "path": ".github/workflows/dependency-review.yml",
-      "purpose": "PR dependency review — fail on new High/Critical vulnerabilities",
+      "purpose": "PR dependency review \u2014 fail on new High/Critical vulnerabilities",
       "read_when": "contributing",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
@@ -1156,20 +1142,6 @@
       "owner": "maintainer"
     },
     {
-      "path": "modules/node/MODULE.md",
-      "purpose": "Node.js API module guide (Hono Golden Path)",
-      "read_when": "milestone_boundary",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "examples/node/",
-      "purpose": "Hono + TypeScript + Vitest API stub",
-      "read_when": "milestone_boundary",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
       "path": "action.yml",
       "purpose": "Composite GitHub Action wrapping validate-bootstrap --quick",
       "read_when": "milestone_boundary",
@@ -1229,48 +1201,6 @@
       "path": ".release-please-manifest.json",
       "purpose": "Release Please version manifest",
       "read_when": "milestone_boundary",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "examples/lightroom/Info.lua",
-      "purpose": "Lightroom plugin Info.lua stub",
-      "read_when": "stack_selection",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "examples/lightroom/README.md",
-      "purpose": "Lightroom SDK version and compliance notes",
-      "read_when": "stack_selection",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "modules/rust/MODULE.md",
-      "purpose": "Optional Rust module guide",
-      "read_when": "stack_selection",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "examples/rust/Cargo.toml",
-      "purpose": "Rust hello-world stub manifest",
-      "read_when": "stack_selection",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "modules/go/MODULE.md",
-      "purpose": "Optional Go module guide",
-      "read_when": "stack_selection",
-      "update_when": "milestone_boundary",
-      "owner": "maintainer"
-    },
-    {
-      "path": "examples/go/go.mod",
-      "purpose": "Go hello-world stub module",
-      "read_when": "stack_selection",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
     },
@@ -1350,27 +1280,6 @@
       "read_when": "web_hosting",
       "update_when": "layout_change",
       "owner": "agent+human"
-    },
-    {
-      "path": "examples/web/src/panelDialog.ts",
-      "purpose": "Modal a11y: role=dialog, focus trap, Escape, focus restore",
-      "read_when": "ui_work",
-      "update_when": "milestone_boundary",
-      "owner": "agent"
-    },
-    {
-      "path": "examples/web/src/appBootstrap.ts",
-      "purpose": "Web composition root: theme, donations, update check, SW register",
-      "read_when": "ui_work",
-      "update_when": "milestone_boundary",
-      "owner": "agent"
-    },
-    {
-      "path": "examples/web/public/sw.js",
-      "purpose": "PWA service worker; CACHE_NAME stamped from package version at build",
-      "read_when": "web_hosting",
-      "update_when": "milestone_boundary",
-      "owner": "agent"
     },
     {
       "path": ".cursor/rules/design-system.mdc",
@@ -1514,7 +1423,7 @@
     },
     {
       "path": "scripts/run-codex-review.sh",
-      "purpose": "Local Codex CLI review → CODE_REVIEW.md",
+      "purpose": "Local Codex CLI review \u2192 CODE_REVIEW.md",
       "read_when": "audit",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
@@ -1840,6 +1749,62 @@
       "read_when": "release",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
+    },
+    {
+      "path": "docs/features/inventory.md",
+      "purpose": "DevPulse inventory slice FR-1 to FR-5",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/scan-orchestrator.md",
+      "purpose": "DevPulse scan shell FR-18 to FR-20",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/staleness.md",
+      "purpose": "DevPulse staleness model FR-15 to FR-17",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/fdroid-index.md",
+      "purpose": "DevPulse F-Droid and extra-repo index FR-7 FR-8",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/play-lookup.md",
+      "purpose": "DevPulse Play public HTML lookup FR-6",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/forge-lookup.md",
+      "purpose": "DevPulse forge lookup FR-9 to FR-13",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/opportunity.md",
+      "purpose": "DevPulse Opportunity slice FR-25 to FR-28",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
+    },
+    {
+      "path": "docs/features/alternatives.md",
+      "purpose": "DevPulse alternatives and sources FR-29 FR-30",
+      "read_when": "feature_work",
+      "update_when": "feature_work",
+      "owner": "human+agent"
     }
   ],
   "modules": {
@@ -1847,40 +1812,10 @@
       "guide": "modules/android/MODULE.md",
       "example": "examples/android",
       "activate_when": "stack includes Android or F-Droid"
-    },
-    "web": {
-      "guide": "modules/web/MODULE.md",
-      "example": "examples/web",
-      "activate_when": "stack includes PWA, web, or static site"
-    },
-    "python": {
-      "guide": "modules/python/MODULE.md",
-      "example": "examples/python",
-      "activate_when": "stack includes Python application"
-    },
-    "lightroom": {
-      "guide": "modules/lightroom/MODULE.md",
-      "example": "examples/lightroom",
-      "activate_when": "stack includes Adobe Lightroom Classic plugin"
-    },
-    "rust": {
-      "guide": "modules/rust/MODULE.md",
-      "example": "examples/rust",
-      "activate_when": "optional stack; see docs/OPTIONAL_STACKS.md"
-    },
-    "go": {
-      "guide": "modules/go/MODULE.md",
-      "example": "examples/go",
-      "activate_when": "optional stack; see docs/OPTIONAL_STACKS.md"
-    },
-    "node": {
-      "guide": "modules/node/MODULE.md",
-      "example": "examples/node",
-      "activate_when": "stack includes Node.js HTTP API"
     }
   },
   "roadmap": {
-    "active": "BUILD_PLAN.md — maintenance + human open items",
+    "active": "BUILD_PLAN.md \u2014 maintenance + human open items",
     "completed_archive": "COMPLETED_TASKS.md",
     "batch_commands": [
       ".cursor/commands/audit.md",

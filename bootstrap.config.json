@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "project_name": "agent-project-bootstrap",
-  "purpose": "GitHub Template for FOSS coding-agent projects",
-  "stack": "multi",
-  "license": "MIT",
+  "project_name": "DevPulse",
+  "purpose": "Scan installed Android apps across Google Play, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.",
+  "stack": "android",
+  "license": "GPL-3.0-or-later",
   "distribution_tier": "foss",
   "agent_adapters": {
     "cursor_rules": true,

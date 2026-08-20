@@ -1,23 +1,23 @@
 {
-  "mode": "template",
-  "name": "Golden Path",
-  "short_name": "GoldenPath",
-  "tagline": "FOSS apps with a clear path from idea to release",
-  "pitch": "Golden Path is the reference product identity shipped with agent-project-bootstrap: a privacy-respecting FOSS stack with design tokens, CI guardrails, and agent-ready sprints so you can go from template to a shippable app without reinventing the foundation.",
+  "mode": "product",
+  "name": "DevPulse",
+  "short_name": "DevPulse",
+  "tagline": "See which of your apps still have a heartbeat.",
+  "pitch": "DevPulse is a local-only Android app that checks whether the software you already installed still has a heartbeat. It scans Google Play, F-Droid official, F-Droid Archive, IzzyOnDroid, Guardian Project, CalyxOS F-Droid repo, opt-in Aptoide, and GitHub (discover by app name; listed only if the package appears on that repo's releases), then surfaces apps that look stale so you can find a living replacement, another sideload source, or a repo worth forking.",
   "features": [
-    "Cross-stack design tokens with light, dark, and system themes",
-    "Labeled BUILD_PLAN sprints for humans, agents, and CI",
-    "Web PWA and Android FOSS golden-path stubs ready to prune or extend",
-    "Security defaults: Dependabot, CodeQL, gitleaks, and weekly triage docs",
-    "Replaceable branding kit — swap logos and colors when your identity is ready"
+    "Scans Google Play, F-Droid official, F-Droid Archive, IzzyOnDroid, Guardian Project, CalyxOS F-Droid repo, opt-in Aptoide, and GitHub (by app name; listed only if the package appears on that repo's releases)",
+    "Honest ✅ available / ❌ missing / ❓ unknown marks per source, plus an On GitHub filter",
+    "HTML, CSV, and XML export of the current list",
+    "Completely local: no accounts, analytics, or telemetry",
+    "Distributed from GitHub Releases as a FOSS APK"
   ],
   "quick_start": [
-    "Clone the repo and run `./scripts/init-project.sh` (or `.\\scripts\\init-project.ps1` on Windows).",
-    "Open your coding agent and follow `docs/START_HERE.md`. First-time walk: `docs/help/TOUR.md` (Cursor: `/tour`).",
-    "Set `branding/product.json` `mode` to `product`, fill name/tagline/pitch, then run `python3 scripts/generate-project-readme.py`."
+    "Download the latest APK from GitHub Releases (https://github.com/edwardlthompson/DevPulse/releases) and sideload it on Android 8 or later.",
+    "Grant the installed-apps permission when asked, then run a scan. Aptoide is opt-in in Settings; GitHub rows appear only when the package is on that repo's releases.",
+    "Building from source: JDK 17+ and the Android SDK, then cd examples/android && ./gradlew test assembleDebug."
   ],
-  "install": "Requirements depend on your active stack (Node 20+, Python 3.11+, Android SDK). See the active `modules/{stack}/MODULE.md` and `examples/{stack}/README.md`.",
-  "usage": "Use `/bootstrap` for Sprint 0, `/build` for features, and `/verify` before merge. Edit colors in `design-tokens/design-tokens.json` and logos in `branding/assets/`, then run `python3 scripts/sync-design-tokens.py`.",
+  "install": "Sideload the latest APK from GitHub Releases: https://github.com/edwardlthompson/DevPulse/releases. Android 8 or later (minSdk 26). Building from source needs JDK 17+ and the Android SDK; the app lives in examples/android/. applicationId is app.devpulse.",
+  "usage": "Open DevPulse, scan installed apps, then sort or filter the list (including On GitHub). Export the current list as HTML, CSV, or XML when you want a snapshot. Staleness marks are not a security audit. Maintainers: edit colors in design-tokens/design-tokens.json and logos in branding/assets/, then run python3 scripts/sync-design-tokens.py.",
   "urls": {
     "docs": "docs/START_HERE.md",
     "contributing": "CONTRIBUTING.md",
@@ -25,17 +25,15 @@
     "license": "LICENSE",
     "design": "docs/DESIGN_GUIDE.md",
     "branding": "branding/BRANDING.md",
-    "github_repo": "edwardlthompson/agent-project-bootstrap"
+    "github_repo": "edwardlthompson/DevPulse"
   },
   "badge": {
-    "primary": "e94560",
+    "primary": "39FF14",
     "secondary": "4A5F82",
     "license": "2ea043",
     "foss": "656d76"
   },
   "stacks": [
-    "web",
-    "python",
     "android"
   ]
 }

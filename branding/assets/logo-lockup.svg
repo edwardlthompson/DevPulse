@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" role="img" aria-label="Golden Path">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" role="img" aria-label="DevPulse">
   <rect x="0" y="4" width="64" height="64" rx="12" fill="#1a1a2e"/>
-  <path d="M16 44 L32 20 L48 44 Z" fill="#e94560"/>
-  <text x="80" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#1a1a2e">Golden Path</text>
+  <path d="M6.00 35.80 L15.01 35.80 L17.20 32.23 L19.39 35.80 L27.48 35.80 L30.52 12.30 L34.66 52.29 L40.58 35.80 L58.00 35.80 L58.00 32.20 L37.82 32.20 L34.94 48.71 L30.68 8.70 L24.52 32.20 L21.41 32.20 L17.20 25.37 L12.99 32.20 L6.00 32.20 Z" fill="#39FF14" transform="translate(0,4)"/>
+  <text x="80" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#1a1a2e">DevPulse</text>
 </svg>

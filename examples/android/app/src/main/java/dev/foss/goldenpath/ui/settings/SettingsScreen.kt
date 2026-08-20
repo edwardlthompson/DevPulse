@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.inventory.InventoryExportFormat
+import dev.foss.goldenpath.ui.forge.ForgePasteScreen
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.ThemeMode
@@ -28,6 +30,8 @@ fun SettingsScreen(
     updateCheckEnabled: Boolean,
     onThemeModeSelect: (ThemeMode) -> Unit,
     onUpdateCheckChange: (Boolean) -> Unit,
+    onExport: (InventoryExportFormat) -> Unit,
+    onAboutOpen: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -59,6 +63,10 @@ fun SettingsScreen(
                 )
             }
         }
+        SettingsExportSection(onExport = onExport)
+        Button(onClick = onAboutOpen) {
+            Text(stringResource(R.string.about_open))
+        }
         androidx.compose.foundation.layout.Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SpacingMd),
@@ -69,6 +77,20 @@ fun SettingsScreen(
             )
             Switch(checked = updateCheckEnabled, onCheckedChange = onUpdateCheckChange)
         }
+        IncludeSystemSettings()
+        ScanIntervalSettings()
+        PlayLookupSettings()
+        FdroidRepoSettings()
+        AptoideLookupSettings()
+        ForgeLookupSettings()
+        ForgePasteScreen(
+            packageName = "",
+            repoUrl = "",
+            token = "",
+            onPackageNameChange = {},
+            onRepoUrlChange = {},
+            onTokenChange = {},
+        )
         Button(
             onClick = onBack,
             modifier = Modifier.bottomInsetPadding(),

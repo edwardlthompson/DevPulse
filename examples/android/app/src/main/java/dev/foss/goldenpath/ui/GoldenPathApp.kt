@@ -25,8 +25,9 @@ import androidx.compose.material3.SnackbarHostState
 import dev.foss.goldenpath.ui.insets.NavigationModeProvider
 import dev.foss.goldenpath.ui.theme.ThemeMode
 import dev.foss.goldenpath.ui.theme.ThemePreferences
-import dev.foss.goldenpath.ui.theme.next
 import kotlinx.coroutines.CoroutineScope
+import dev.foss.goldenpath.ui.inventory.rememberInventoryUiModel
+import dev.foss.goldenpath.ui.scan.rememberScanSession
 import dev.foss.goldenpath.ui.theme.GoldenPathTheme
 import kotlinx.coroutines.launch
 
@@ -85,6 +86,8 @@ fun GoldenPathApp(
 
     val canApplyUpdate = applyAsset != null
     val snackbarHostState = remember { SnackbarHostState() }
+    val inventory = rememberInventoryUiModel(context, scope)
+    val scan = rememberScanSession(inventory.apps)
 
     LaunchedEffect(canApplyUpdate) {
         if (canApplyUpdate) {
@@ -106,11 +109,12 @@ fun GoldenPathApp(
                 updateStatus = updateStatus,
                 donations = donations,
                 canApplyUpdate = canApplyUpdate,
-                onThemeToggle = { scope.launch { themePreferences.setThemeMode(themeMode.next()) } },
+                inventory = inventory,
+                scan = scan,
                 onThemeModeSelect = { mode -> scope.launch { themePreferences.setThemeMode(mode) } },
-                onAboutOpen = { showAbout = !showAbout; if (showAbout) showSettings = false },
+                onAboutOpen = { showAbout = true },
                 onAboutClose = { showAbout = false },
-                onSettingsOpen = { showSettings = !showSettings; if (showSettings) showAbout = false },
+                onSettingsOpen = { showSettings = !showSettings },
                 onSettingsClose = { showSettings = false },
                 onUpdateCheckChange = { enabled ->
                     scope.launch {

@@ -1,11 +1,13 @@
 package dev.foss.goldenpath
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import dev.foss.goldenpath.about.AppUpdatePreferences
+import dev.foss.goldenpath.inventory.RefreshLaunch
 import dev.foss.goldenpath.network.NetworkStatusMonitor
 import dev.foss.goldenpath.ui.GoldenPathApp
 import dev.foss.goldenpath.ui.theme.ThemePreferences
@@ -35,6 +37,13 @@ class MainActivity : ComponentActivity() {
                 networkStatusMonitor = networkStatusMonitor!!,
             )
         }
+        RefreshLaunch.maybeStart(this, intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        RefreshLaunch.maybeStart(this, intent)
     }
 
     override fun onDestroy() {

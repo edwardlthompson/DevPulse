@@ -24,7 +24,6 @@
 | View | `examples/web/src/components/SettingsPanel.ts` | `examples/android/.../ui/settings/` |
 | Tests | `settings/*.test.ts` | `src/test/.../settings/` |
 | Wiring | `appBootstrap.ts` + `AppShell.ts` | `GoldenPathApp.kt` (composition root) |
-
 ## Out of scope (Sprint 2)
 
 - Account sync, cloud backup, analytics
@@ -32,5 +31,7 @@
 
 ## Notes
 
+- Theme, About, and Share/Export live in Settings. The inventory top bar is Refresh, Search, Filters, and Settings only
+- About opens on top of Settings; system back closes About first, then Settings, then returns to inventory. Close settings must not finish the activity
 - Reuse `ThemePreferences` patterns from `examples/android/.../ui/theme/` where applicable
 - Gate after each AGENT BUILD_PLAN step: `bash scripts/watch-agent-gates.sh --once --autofix --step <scaffold|tests|wire>`

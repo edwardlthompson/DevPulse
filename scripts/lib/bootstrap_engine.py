@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA_VERSION = 1
-LICENSES = ("MIT", "Apache-2.0")
+LICENSES = ("MIT", "Apache-2.0", "GPL-3.0-or-later")
 STACKS = ("web", "python", "android", "node", "multi", "none")
 REQUIRED_TOOLS = ("git",)
 OPTIONAL_TOOLS = ("docker",)

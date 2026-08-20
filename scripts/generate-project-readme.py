@@ -111,12 +111,28 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
     template = template_path.read_text(encoding="utf-8")
     urls = product["urls"]
     badge = product["badge"]
+    license_id = "MIT"
+    cfg_path = root / "bootstrap.config.json"
+    if cfg_path.is_file():
+        try:
+            license_id = str(load_json(cfg_path).get("license") or "MIT")
+        except (OSError, json.JSONDecodeError, TypeError):
+            license_id = "MIT"
+    license_names = {
+        "MIT": "MIT License",
+        "Apache-2.0": "Apache-2.0",
+        "GPL-3.0-or-later": "GPL-3.0-or-later",
+    }
+    license_name = license_names.get(license_id, license_id)
+    license_badge = license_id.replace("-", "--")
     if for_preview:
         hero_path = "../assets/readme-hero.svg"
         lockup_path = "../assets/logo-lockup.svg"
+        splash_path = "../assets/splash.png"
     else:
         hero_path = "branding/assets/readme-hero.svg"
         lockup_path = "branding/assets/logo-lockup.svg"
+        splash_path = "branding/assets/splash.png"
 
     replacements = {
         "{{name}}": product["name"],
@@ -128,6 +144,7 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         "{{usage}}": product["usage"],
         "{{hero_path}}": hero_path,
         "{{lockup_path}}": lockup_path,
+        "{{splash_path}}": splash_path,
         "{{badge_license}}": badge["license"],
         "{{badge_foss}}": badge["foss"],
         "{{badge_primary}}": badge["primary"],
@@ -155,7 +172,8 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         "{{url_agents}}": _rel_url("AGENTS.md", from_preview=for_preview),
         "{{url_tour}}": _rel_url("docs/help/TOUR.md", from_preview=for_preview),
         "{{ci_repo}}": str(urls.get("github_repo") or "OWNER/REPO"),
-        "{{license_name}}": "MIT License",
+        "{{license_name}}": license_name,
+        "{{license_badge}}": license_badge,
     }
     out = template
     for key, value in replacements.items():

@@ -40,6 +40,11 @@ class ValidateConfigTests(unittest.TestCase):
     def test_empty_object_rejected(self) -> None:
         self.assertTrue(validate_config({}))
 
+    def test_gpl_or_later_accepted_for_child_repos(self) -> None:
+        cfg = default_config(project_name="DevPulse", purpose="Pulse", stack="android")
+        cfg["license"] = "GPL-3.0-or-later"
+        self.assertEqual(validate_config(cfg), [])
+
 
 class PreflightTests(unittest.TestCase):
     def test_missing_optional_is_warning(self) -> None:

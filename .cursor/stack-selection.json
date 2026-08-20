@@ -1,6 +1,12 @@
 {
+  "stack": "android",
+  "pruned": true,
+  "active_modules": [
+    "android"
+  ],
+  "parallel_scope_note": "Sprint 1 Parallel: Android FOSS scope only (`examples/android/**`)",
+  "selected_at": "2026-08-19T13:19:50+00:00",
   "distribution_tier": "foss",
-  "stack": "multi",
   "cursor_features_enabled": [
     "rules",
     "commands",
@@ -26,5 +32,5 @@
     "mcp_commercial_example",
     "android_commercial_patterns"
   ],
-  "cursor_features_synced_at": "2026-08-17T02:59:53+00:00"
+  "cursor_features_synced_at": "2026-08-20T01:41:38+00:00"
 }

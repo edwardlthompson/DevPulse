@@ -1,6 +1,6 @@
 # Brand voice
 
-Placeholder voice for Golden Path / child products. Replace when you have a real brand.
+Voice for DevPulse: local, honest, no hype. Staleness is a heartbeat check, not a security audit.
 
 ## Tone
 

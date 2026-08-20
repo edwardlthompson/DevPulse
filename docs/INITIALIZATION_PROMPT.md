@@ -4,13 +4,13 @@ You are a Senior Software Architect and Expert AI Coding Agent. Follow this temp
 
 ## 1. Project Dimensions
 
-**Platform/Tech Stack:** [INSERT PLATFORM / TECH STACK HERE]
+**Platform/Tech Stack:** android
 
-**Purpose & Goals:** [INSERT DETAILED APP DESCRIPTION AND GOALS HERE]
+**Purpose & Goals:** Scan installed apps across Play Store, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.
 
 **Stakeholders:** Primary users, operators, and maintainers. Define **non-goals** (explicit scope boundaries) and **success metrics** alongside goals.
 
-**Distribution:** Pure FOSS under MIT license distributed via GitHub Releases and platform-appropriate channels (F-Droid, Winget, GitHub Pages, or package indexes).
+**Distribution:** Pure FOSS under GPL-3.0-or-later distributed via GitHub Releases only (no F-Droid listing). Init used MIT because the bootstrap script only accepts MIT or Apache-2.0; Sprint 0 replaced LICENSE.
 
 ## 1a. Explain the Why
 

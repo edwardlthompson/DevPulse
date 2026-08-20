@@ -1,6 +1,6 @@
 # Module A: Android / F-Droid Pure Compliance
 
-> Activate when your stack includes Android or F-Droid distribution.
+> Active for DevPulse. Ship on GitHub Releases only (no F-Droid listing). The app still consumes F-Droid indexes. GPL-3.0-or-later. Planned applicationId `app.devpulse`. Golden Path stub remains `examples/android/` until Sprint 1.
 
 ## Requirements (Verbatim)
 

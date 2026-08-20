@@ -1,0 +1,75 @@
+package dev.foss.goldenpath.inventory
+
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import dev.foss.goldenpath.clearPreferenceDataStores
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [26])
+class InventoryPreferencesTest {
+    private val context: Context = ApplicationProvider.getApplicationContext()
+
+    @Before
+    fun resetDataStore() {
+        context.clearPreferenceDataStores()
+    }
+
+    @Test
+    fun defaultsBlockScanAndHideSystemApps() = runBlocking {
+        val prefs = InventoryPreferences(context)
+        assertFalse(prefs.queryAllPackagesAcknowledged.first())
+        assertFalse(prefs.includeSystemApps.first())
+        assertEquals(UsageStatsConsent.NotOffered, prefs.usageStatsConsent.first())
+        assertEquals(InventorySortMode.Oldest, prefs.sortMode.first())
+        assertFalse(prefs.staleOnly.first())
+        assertFalse(prefs.updatesOnly.first())
+        assertTrue(prefs.sourceFilters.first().isEmpty())
+        assertFalse(prefs.aptoideLookupEnabled.first())
+        assertTrue(prefs.playLookupEnabled.first())
+        assertTrue(prefs.forgeLookupEnabled.first())
+        assertFalse(prefs.forgeLookupSearchUnknowns.first())
+        assertEquals(ScanInterval.OnDemand, prefs.scanInterval.first())
+        assertEquals(null, prefs.lastScanAtMs.first())
+    }
+
+    @Test
+    fun persistsAcknowledgeAndSystemToggle() = runBlocking {
+        val prefs = InventoryPreferences(context)
+        prefs.setQueryAllPackagesAcknowledged(true)
+        prefs.setIncludeSystemApps(true)
+        prefs.setUsageStatsConsent(UsageStatsConsent.WalkthroughSeen)
+        prefs.setSortMode(InventorySortMode.Newest)
+        prefs.setStaleOnly(true)
+        prefs.setUpdatesOnly(true)
+        prefs.setSourceFilters(setOf(RemoteReleasedSource.Guardian, RemoteReleasedSource.Forge))
+        prefs.setAptoideLookupEnabled(true)
+        prefs.setPlayLookupEnabled(false)
+        prefs.setForgeLookupEnabled(false)
+        prefs.setForgeLookupSearchUnknowns(true)
+        prefs.setScanInterval(ScanInterval.Weekly)
+        prefs.setLastScanAtMs(99L)
+        assertTrue(prefs.queryAllPackagesAcknowledged.first())
+        assertTrue(prefs.includeSystemApps.first())
+        assertEquals(UsageStatsConsent.WalkthroughSeen, prefs.usageStatsConsent.first())
+        assertEquals(InventorySortMode.Newest, prefs.sortMode.first())
+        assertTrue(prefs.staleOnly.first())
+        assertTrue(prefs.updatesOnly.first())
+        assertEquals(setOf(RemoteReleasedSource.Guardian, RemoteReleasedSource.Forge), prefs.sourceFilters.first())
+        assertTrue(prefs.aptoideLookupEnabled.first())
+        assertFalse(prefs.playLookupEnabled.first())
+        assertFalse(prefs.forgeLookupEnabled.first())
+        assertTrue(prefs.forgeLookupSearchUnknowns.first())
+        assertEquals(ScanInterval.Weekly, prefs.scanInterval.first())
+        assertEquals(99L, prefs.lastScanAtMs.first())
+    }
+}

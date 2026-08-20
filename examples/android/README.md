@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="../../branding/assets/logo-mark.svg" alt="Golden Path" width="64" />
+  <img src="../../branding/assets/logo-mark.svg" alt="DevPulse" width="64" />
 </p>
 
-# Golden Path Android (FOSS)
+# DevPulse Android (FOSS)
 
-FOSS apps with a clear path from idea to release — FOSS-only Gradle/Kotlin skeleton (no Google Play Services or Firebase). Brand kit: [`branding/BRANDING.md`](../../branding/BRANDING.md).
+See which of your apps still have a heartbeat — FOSS-only Gradle/Kotlin app (no Google Play Services or Firebase). Brand kit: [`branding/BRANDING.md`](../../branding/BRANDING.md).
 
 ## Repository layout
 
@@ -28,7 +28,7 @@ Optional task runner (not required for CI): install [just](https://github.com/ca
 
 ## Why these tools?
 
-Gradle + Kotlin + Compose is the FOSS-friendly Android stack. We pin the wrapper hash and `SOURCE_DATE_EPOCH` so F-Droid-style reproducible builds are possible, and we ban Play Services so the Golden Path stays redistributable.
+Gradle + Kotlin + Compose is the FOSS-friendly Android stack. We pin the wrapper hash and `SOURCE_DATE_EPOCH` so reproducible builds are possible, and we ban Play Services so DevPulse stays redistributable.
 
 ## Structure validation (CI)
 

@@ -18,7 +18,7 @@ class UpdateApplierTest {
 
     @Test
     fun buildInstallIntentTargetsApkMimeType() {
-        val uri = Uri.parse("content://dev.foss.goldenpath.fileprovider/updates/test-update.apk")
+        val uri = Uri.parse("content://app.devpulse.fileprovider/updates/test-update.apk")
         val intent = UpdateApplier.buildInstallIntent(context, uri)
 
         assertEquals(Intent.ACTION_VIEW, intent.action)

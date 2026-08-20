@@ -14,12 +14,11 @@
 ## Project Overview & Architecture
 
 <!-- bootstrap-project-card -->
-**Product:** agent-project-bootstrap
-**Purpose:** GitHub Template for FOSS coding-agent projects
-**Stack:** multi
+**Product:** DevPulse
+**Purpose:** Scan installed Android apps across Google Play, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.
+**Stack:** android
 <!-- /bootstrap-project-card -->
-
-This repository is a **GitHub Template** for FOSS projects with coding agents (Cursor, Windsurf, Antigravity, Claude Code, Copilot, Gemini CLI, Aider, Cline). Child repos start from **Use this template**, then `scripts/init-project.sh` (or `.ps1`). Edit `AGENTS.md`, then `bash scripts/bootstrap-lifecycle.sh --sync-adapters`.
+This repository is the **DevPulse** child app (Android FOSS, GitHub Releases only). It was created from `edwardlthompson/agent-project-bootstrap`. Edit `AGENTS.md`, then `bash scripts/bootstrap-lifecycle.sh --sync-adapters`.
 
 - **Composition:** stack modules (`modules/{stack}/`) + Golden Path examples (`examples/{stack}/`) + agent routing
 - **Lifecycle:** preflight → init (stack, branding, prune) → post hooks (adapters, checklist, manifest)
@@ -62,7 +61,7 @@ Stack tests: web `npm test`; python `uv run pytest`; Android `./gradlew test`. A
 
 ## Architecture Constraints
 
-- Pure FOSS under MIT license; no proprietary closed-source SDKs in production path
+- Pure FOSS under GPL-3.0-or-later; no proprietary closed-source SDKs in production path
 - Max 300 lines per static data file (UI + i18n), 150 lines per pure logic file
 - Strict type safety and runtime validation at all data boundaries
 - Core business logic decoupled from layout framework (MVVM / Clean / Hexagonal)

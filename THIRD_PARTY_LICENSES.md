@@ -4,7 +4,7 @@
 
 ## Project License
 
-This project is licensed under the MIT License. See [`LICENSE`](LICENSE).
+This project is licensed under GPL-3.0-or-later. See [`LICENSE`](LICENSE).
 
 ## Dependencies
 
@@ -17,9 +17,9 @@ cd examples/web && npx license-checker --production --summary
 # Python (pip)
 cd examples/python && uv run pip-licenses --format=markdown
 
-# Rust / Go (optional stacks — MIT stubs; expand when deps are added)
-grep 'license' examples/rust/Cargo.toml
-head -1 examples/go/go.mod
+# Android (Gradle / TOML manifests only)
+# FOSS isolation grep is the Sprint 0/1 path; expand NOTICE at first release.
+
 ```
 
 `[AUTO]` CI runs `scripts/check-license-compliance.sh` on each push.

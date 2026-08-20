@@ -4,19 +4,18 @@
 > Walk this with `/coach` or `/tour` (`docs/help/TOUR.md` in other IDEs). Industry **why** lives in [`BEST_PRACTICES.md`](BEST_PRACTICES.md).
 
 <!-- bootstrap-project-card -->
-**Product:** agent-project-bootstrap
-**Purpose:** GitHub Template for FOSS coding-agent projects
-**Stack:** multi
+**Product:** DevPulse
+**Purpose:** Scan installed apps across Play Store, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.
+**Stack:** android
 <!-- /bootstrap-project-card -->
-
 ## Week 1 — Make it yours
 
-- 🔲 Run `scripts/init-project.sh` (or `.ps1`) if you have not already
-- 🔲 Read `docs/START_HERE.md`, `docs/CURSOR_MODES.md`, and `docs/BEST_PRACTICES.md` (first four conventions)
+- ✅ Run `scripts/init-project.sh` (or `.ps1`) if you have not already
+- ✅ Read `docs/START_HERE.md`, `docs/CURSOR_MODES.md`, and `docs/BEST_PRACTICES.md` (first four conventions)
 - 🔲 Copy `.env.example` → `.env` (never commit `.env`)
 - 🔲 `pip install pre-commit && pre-commit install --hook-type commit-msg`
 - 🔲 `bash scripts/verify.sh` green locally
-- 🔲 Fill `branding/product.json` if this is a product (then regenerate the README)
+- ✅ Fill `branding/product.json` if this is a product (then regenerate the README)
 
 ## Week 2 — Security and GitHub
 

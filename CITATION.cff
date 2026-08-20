@@ -1,20 +1,20 @@
 cff-version: 1.2.0
-title: agent-project-bootstrap
-message: If you use this template, please cite it using these metadata.
+title: DevPulse
+message: If you use DevPulse, please cite it using these metadata.
 type: software
 authors:
   - name: Edward L. Thompson
-repository-code: https://github.com/edwardlthompson/agent-project-bootstrap
-url: https://github.com/edwardlthompson/agent-project-bootstrap
+repository-code: https://github.com/edwardlthompson/DevPulse
+url: https://github.com/edwardlthompson/DevPulse
 abstract: >-
-  GitHub Template for FOSS projects with coding-agent scaffolding, CI
-  guardrails, and Golden Path examples.
+  Local-only Android app that checks whether installed software still has a
+  heartbeat across Play, F-Droid extra repos, and public forges.
 keywords:
+  - android
   - foss
-  - github-template
-  - agents
-  - cursor
-  - bootstrap
-license: MIT
+  - fdroid
+  - privacy
+  - kotlin
+license: GPL-3.0-or-later
 version: 0.21.0
-date-released: 2026-08-17T00:00:00.000Z
+date-released: 2026-08-19T00:00:00.000Z

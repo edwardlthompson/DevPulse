@@ -1,1 +1,1 @@
-FOSS Android skeleton for agent-project-bootstrap
+See which of your Android apps still have a heartbeat.

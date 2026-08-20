@@ -1,15 +1,11 @@
 # GitHub About Block
 
-## Template Repo Description (350 chars max)
+## Draft Description (edit to <=350 chars)
 
-FOSS GitHub Template for coding agents (Cursor, Windsurf, Antigravity, and others). One AGENTS.md, a 10-minute tour, CI and security on by default, labeled sprints, and Golden Path stubs (Web, Python, Android). MIT.
+See which of your Android apps still have a heartbeat. Local-only scan of Play, F-Droid plus extra repos, and public forges to find stale software, replacements, and what to build next.
 
 ## Topics
 
-agents, cursor, windsurf, antigravity, template-repository, foss, mit, github-actions, pwa, python, android
+android, foss, fdroid, privacy, kotlin
 
-Suggested for GitHub discoverability (Settings → About). Prefer 5–10 short topics that match how people search.
-
-## Child Project Draft
-
-[PROJECT_NAME] — [ONE_LINE_PURPOSE]. Built with agent-project-bootstrap. FOSS MIT.
+Suggested for GitHub discoverability (Settings → About).

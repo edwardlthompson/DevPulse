@@ -2,6 +2,79 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 10 — Polish and ship AGENT (2026-08-19)
+
+- ✅ [AGENT] Lock polish APIs: widget, local notifications, compatibility UX, Fastlane (FR-17, FR-33 to FR-35)
+- ✅ [AGENT] Scaffold NotificationManager and WorkManager types only. No FCM
+
+## Sprint 9 — Alternatives and sources (2026-08-19)
+
+- ✅ [AGENT] Lock `docs/features/alternatives.md` public API (FR-29, FR-30)
+- ✅ [AGENT] Scaffold similarity match against cached indexes. No auto-install
+
+## Sprint 8 — Opportunity (2026-08-19)
+
+- ✅ [AGENT] Lock `docs/features/opportunity.md` public API (FR-25 to FR-28)
+- ✅ [AGENT] Scaffold category-gap types. Self-pulse uses configured DevPulse package and repo
+
+## Sprint 7 — Filters, pins, history, export (2026-08-19)
+
+- ✅ [AGENT] Lock filter, pin, history, and export APIs (FR-21, FR-22, FR-31, FR-32)
+- ✅ [AGENT] Scaffold query types against the Room scan cache
+
+## Sprint 6 — Forge lookup (2026-08-19)
+
+- ✅ [AGENT] Lock `docs/features/forge-lookup.md` public API (FR-9 to FR-13)
+- ✅ [AGENT] Scaffold forge clients. Package id first. Token in EncryptedSharedPreferences only
+
+## Sprint 5 — Play lookup (2026-08-19)
+
+- ✅ [AGENT] Lock `docs/features/play-lookup.md` public API (FR-6)
+- ✅ [AGENT] Scaffold rate-limited Play HTML parser types. No date guessing
+
+## Sprint 4 — F-Droid index (2026-08-19)
+
+- ✅ [AGENT] Lock `docs/features/fdroid-index.md` public API (FR-7, FR-8, origin)
+- ✅ [AGENT] Scaffold index.fdroid download, cache, and package-name lookup types
+
+## Sprint 3 — Staleness and scan shell (2026-08-19)
+
+- ✅ [AGENT] Lock `docs/features/staleness.md` and `docs/features/scan-orchestrator.md` APIs (FR-15 to FR-20 local-only)
+- ✅ [AGENT] Scaffold pure staleness functions and scan-shell types. First scan uses installed `lastUpdateTime` only. Remote sources stay unknown
+- ✅ [HUMAN] Optional product smoke after `[AUTO]` gate pass
+
+## Sprint 2 — Inventory (2026-08-19)
+
+- ✅ [AGENT] Lock `docs/features/inventory.md` public API from FR-1 to FR-5
+- ✅ [AGENT] Scaffold inventory package surface only (PackageManager wrapper types). No Play or forge calls
+- ✅ [HUMAN] Review QUERY_ALL_PACKAGES in-app rationale
+- ✅ [ADB] Confirm user-app list on a device or emulator
+
+## Sprint 1 — Golden Path (2026-08-19)
+
+- ✅ [AGENT] Confirm Golden Path About, theme, and navigation compile and tests pass. Composition root stays tiny. No scanner wiring. Optional `applicationId` rename to `app.devpulse` only if the stub stays green
+- ✅ [HUMAN] Approve ADR-0001
+- ✅ [ADB] Emulator smoke: About, theme toggle, Settings
+
+## Sprint 0 — Template customization (2026-08-19)
+
+- ✅ [AGENT] Confirm init: `bootstrap.config.json` exists, stack android, unused stacks pruned
+- ✅ [AGENT] Stamp product, purpose, stack into the AGENTS.md project card; run `bash scripts/bootstrap-lifecycle.sh --sync-adapters`
+- ✅ [AGENT] Replace LICENSE with GPL-3.0-or-later; update license mentions
+- ✅ [AGENT] Fill branding/product.json in product mode; run `sync-design-tokens.py` and `generate-project-readme.py`
+- ✅ [AGENT] Rewrite `docs/spec.md` from Pastes 3–8 (complete, not a stub)
+- ✅ [AGENT] Rewrite `docs/plan.md` as the Sprint 0–10 milestone map
+- ✅ [AGENT] Rewrite BUILD_PLAN.md child playbook for DevPulse; keep legend and parallel protocol
+- ✅ [AGENT] Write `docs/PRIVACY.md` and update `docs/THREAT_MODEL.md` (MASVS-minded)
+- ✅ [AGENT] Lock Golden Path shared types only: About, theme, navigation. No scanners
+- ✅ [AGENT] Create feature files from `_template.md` for inventory, scan-orchestrator, staleness, fdroid-index, play-lookup, forge-lookup, opportunity, alternatives
+- ✅ [AUTO] Sprint 0 sign-off: `validate-bootstrap.sh --quick`, `feature-gate.sh --stack android`, `check-github-ci.sh --wait 300` after first push
+- ✅ [HUMAN] Enable Dependabot alerts, private vulnerability reporting, and branch protection for CI, Security Scan, and CodeQL
+- ✅ [HUMAN] Approve ADR-0001 and confirm GPL-3.0-or-later
+- ✅ [HUMAN] Paste `docs/GITHUB_ABOUT.md` into GitHub → Settings → General → About; apply topics `android,foss,fdroid,privacy,kotlin`
+- ✅ [HUMAN] Donation URL in `donations.json` if any
+- ✅ [ADB] SDK and emulator smoke for GitHub sideload
+
 ## Sprint M39 — /ideas Windows PATH + ship hygiene (2026-08-18)
 
 - ✅ [AGENT] Shared resolver prepends `gh` / Git to Git Bash PATH

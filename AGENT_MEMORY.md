@@ -7,18 +7,13 @@
 
 | Layer | Technology | Version | Notes |
 |-------|-----------|---------|-------|
-| Platform | Multi-stack template (Web, Python, Android, Node, optional Lightroom/Rust/Go) | 0.21.0 | Template maintainer repo |
-| License | MIT | - | Pure FOSS |
-| Distribution | GitHub Releases + GitHub Pages demo | - | F-Droid/Winget stubs for child repos |
+| Platform | Android only (Kotlin, Compose, Material 3) | Golden Path stub 0.1.0 | Child of agent-project-bootstrap 0.21.0 |
+| License | GPL-3.0-or-later | - | Init wrote MIT; Sprint 0 replaced it |
+| Distribution | GitHub Releases only | - | Not listed on F-Droid; app still queries F-Droid indexes for other apps |
 ## Active Modules
 
-- ✅ Web / PWA (`modules/web/MODULE.md`)
-- ✅ Python (`modules/python/MODULE.md`)
 - ✅ Android / F-Droid (`modules/android/MODULE.md`)
-- ✅ Node API (`modules/node/MODULE.md`)
-- ✅ Lightroom Classic (`modules/lightroom/MODULE.md`)
-- ✅ Rust (`modules/rust/MODULE.md`)
-- ✅ Go (`modules/go/MODULE.md`)
+- Unused stacks pruned at init (web, python, node, rust, go, lightroom)
 
 ## Threat Model Checklist
 
@@ -34,7 +29,7 @@
 
 ### Project Purpose
 
-FOSS coding-agent bootstrap template: labeled BUILD_PLAN sprints, Golden Path examples, CI guardrails, workspace memory, and design-system cohesion across Web and Android.
+DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid (official, Archive, Izzy, Guardian, Calyx), optional Aptoide, and GitHub. GitHub listings come from same-object F-Droid `sourceCode` (no token). Leftover GitHub name-search is opt-in.
 
 ### Key Constraints
 
@@ -46,6 +41,11 @@ FOSS coding-agent bootstrap template: labeled BUILD_PLAN sprints, Golden Path ex
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-19 | DevPulse Sprint 6 | Package-id-first forge matcher + paste/token UI; no live HTTP | EncryptedSharedPreferences adapter still to swap in with live client |
+| 2026-08-19 | DevPulse Sprint 3 | Local-only scan + honest badges; remotes stay unknown | Do not add Play/forge HTTP until their sprints |
+| 2026-08-19 | DevPulse Sprint 2 | Inventory list, QUERY_ALL_PACKAGES gate, PackageManager catalog | Screenshots stay HUMAN; do not push without `/push` |
+| 2026-08-19 | DevPulse Sprint 1 | `applicationId` `app.devpulse`; About/theme/nav green; Windows `gradlew.bat` ADB smoke | Screenshots stay HUMAN; do not push without `/push` |
+| 2026-08-19 | DevPulse Sprint 0 | Init confirmed; GPL stamp; spec/plan/BUILD_PLAN; feature files; Golden Path types locked in spec | HUMAN must approve ADR-0001 and license; do not rename applicationId until Sprint 1 tests stay green |
 | 2026-08-18 | v0.21.0 /ship | CI + Windows upgrade-sim green on feat and fix; RP #69 admin-merge; fold comments leftover notes | Fold is local-only — commit empty Unreleased before push or RP leaves leftovers under the version heading |
 | 2026-08-17 | M39 /ideas Windows PATH + ship hygiene | Shared PATH resolver; agent-run drops PYTHONPATH; fold Unreleased onto RP; Q&A GraphQL + HUMAN line | Do not attach Environments to required-check workflows; keep Unreleased empty only after fold+comment |
 | 2026-08-17 | M38 /ideas ship-hardening | Branch protection now includes Windows upgrade-sim; Python TEMPLATE_INDEX; RP wait skip; lib files ≤150 | `gh` is not on Git Bash PATH unless Program Files is exported |
@@ -76,6 +76,6 @@ FOSS coding-agent bootstrap template: labeled BUILD_PLAN sprints, Golden Path ex
 | 2026-06-30 | Autonomous /build + HUMAN automation | Grouped human section keeps board readable; automation router backlogs failures only | Release Please PR #20 for 0.12.0 needs human merge |
 ## Template Provenance
 
-- **Source template:** `edwardlthompson/agent-project-bootstrap` (self-maintained)
+- **Source template:** `edwardlthompson/agent-project-bootstrap` (child: `edwardlthompson/DevPulse`)
 - **Template version:** `0.21.0` (see `.template-version`)
 - **Last update check:** See `.template-update.json`

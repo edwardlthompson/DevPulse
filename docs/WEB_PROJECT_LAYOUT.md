@@ -7,7 +7,7 @@
 | Path | Purpose | Publish to GitHub Pages? |
 |------|---------|----------------------------|
 | `docs/` | Agent prompts, security playbooks, design guide, ADRs | **No** |
-| [`examples/web/`](../examples/web/) | PWA/app **source** (Vite, TypeScript, tests) | **No** (source only) |
+| `examples/web/` (pruned from this child) | PWA/app **source** (Vite, TypeScript, tests) | **No** (source only) |
 | `examples/web/dist/` | Production **build output** | **Yes** (via GitHub Actions artifact) |
 | `site/` or `website/` | Optional static/markdown site (no Vite bundler) | Only with a separate workflow |
 | [`design-tokens/`](../design-tokens/) | Colors, spacing, typography tokens | **No** |
@@ -87,5 +87,4 @@ If `init-project` removes the web stack:
 
 - [`docs/DESIGN_GUIDE.md`](DESIGN_GUIDE.md) — tokens, themes, Android `strings.xml`, web `t()`
 - [`docs/REPO_HYGIENE.md`](REPO_HYGIENE.md) — track vs ephemeral, purge, CI gates
-- [`modules/web/MODULE.md`](../modules/web/MODULE.md) — PWA requirements and activation checklist
-- [`examples/web/README.md`](../examples/web/README.md) — local commands and `src/` layout
+- Web PWA module and `examples/web/` were pruned from this Android child repo. See [`docs/DESIGN_GUIDE.md`](DESIGN_GUIDE.md) and [`examples/android/README.md`](../examples/android/README.md).

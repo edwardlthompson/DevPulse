@@ -1,13 +1,13 @@
 # Project Checklist
 
 > Generated after `scripts/init-project`. Status: 🔲 open · ✅ done · ❌ blocked.
-> Project: **agent-project-bootstrap** · Stack: `multi` · License: `MIT`
+> Project: **DevPulse** · Stack: `android` · License: `GPL-3.0-or-later`
 
 ## Setup
 
-- 🔲 README updated with value proposition and quickstart
+- ✅ README updated with value proposition and quickstart
 - 🔲 Environment variables configured (`.env.example` mirrored; `.env` not committed)
-- 🔲 `docs/spec.md` and `docs/plan.md` filled for the first milestone
+- ✅ `docs/spec.md` and `docs/plan.md` filled for the first milestone
 - 🔲 Initial tests passing in the local environment
 - 🔲 Pre-commit hooks installed (`pre-commit install`)
 
@@ -21,8 +21,8 @@
 
 ## Agent adapters
 
-- 🔲 `AGENTS.md` reviewed for this product
-- 🔲 Adapters current (`bash scripts/bootstrap-lifecycle.sh --sync-adapters`)
+- ✅ `AGENTS.md` reviewed for this product
+- ✅ Adapters current (`bash scripts/bootstrap-lifecycle.sh --sync-adapters`)
   - `.cursor/rules/main.mdc`
   - `CLAUDE.md`
   - `.github/copilot-instructions.md`
@@ -30,5 +30,5 @@
 ## Next
 
 1. `python3 scripts/agent-run.py validate-bootstrap --quick`
-2. `python3 scripts/agent-run.py feature-gate --stack multi`
+2. `python3 scripts/agent-run.py feature-gate --stack android`
 3. `scripts/setup-github-repo.sh` (or `.ps1`) for alerts and branch protection

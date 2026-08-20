@@ -1,0 +1,103 @@
+package dev.foss.goldenpath.index.forge
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class GitHubScanTest {
+    @Test
+    fun pickRejectsOwnerTailWithoutFullPackage() {
+        val candidates = listOf(
+            ForgeCandidate(ForgeHost.GitHub, "other/notes", null, "Notes", null, null, false),
+            ForgeCandidate(ForgeHost.GitHub, "TeamNewPipe/NewPipe", null, "NewPipe", 2L, null, false),
+        )
+        assertNull(GitHubScan.pick("org.schabi.newpipe", "NewPipe", candidates))
+    }
+
+    @Test
+    fun pickRejectsWiseTimerForWipeFiles() {
+        val candidates = listOf(
+            ForgeCandidate(ForgeHost.GitHub, "someone/WiseTimer", null, "WiseTimer", 2L, null, false),
+        )
+        assertNull(GitHubScan.pick("com.example.wipefiles", "Wipe Files", candidates))
+    }
+
+    @Test
+    fun pickDoesNotGuessFirstNonArchived() {
+        val candidates = listOf(
+            ForgeCandidate(ForgeHost.GitHub, "someone/android-notes", null, "Notes", null, null, false),
+            ForgeCandidate(ForgeHost.GitHub, "other/foo", null, "Foo", 1L, null, false),
+        )
+        assertNull(GitHubScan.pick("com.instagram.android", "Instagram", candidates))
+    }
+
+    @Test
+    fun wiseTimerReleasesWithoutPackageNotListed() {
+        val search = GitHubSearchClient {
+            GitHubSearchPage(200, """{"items":[{"full_name":"someone/WiseTimer","name":"WiseTimer","archived":false}]}""")
+        }
+        val releases = GitHubReleaseClient {
+            GitHubSearchPage(200, """[{"name":"1.0","tag_name":"v1.0","assets":[{"name":"WiseTimer.apk"}]}]""")
+        }
+        val offer = GitHubScan.toOffer("com.example.wipefiles", "Wipe Files", search, releases, searchUnknowns = true)
+        assertFalse(offer.listed)
+        assertTrue(offer.known)
+    }
+
+    @Test
+    fun releaseAssetWithPackageIsListed() {
+        val search = GitHubSearchClient {
+            GitHubSearchPage(200, """{"items":[{"full_name":"platitudes/WipeFiles","name":"Wipe Files","archived":false}]}""")
+        }
+        val releases = GitHubReleaseClient {
+            GitHubSearchPage(200, """[{"name":"0.3","tag_name":"v0.3","assets":[{"name":"uk.org.platitudes.wipefiles_0.3.apk"}]}]""")
+        }
+        val offer = GitHubScan.toOffer("uk.org.platitudes.wipefiles", "Wipe Files", search, releases, searchUnknowns = true)
+        assertTrue(offer.listed)
+        assertEquals("https://github.com/platitudes/WipeFiles/releases", offer.pageUrl)
+    }
+
+    @Test
+    fun descriptionPackageWithoutReleaseAssetNotListed() {
+        val client = GitHubSearchClient {
+            GitHubSearchPage(200, """{"items":[{"full_name":"TeamNewPipe/NewPipe","description":"org.schabi.newpipe"}]}""")
+        }
+        val offer = GitHubScan.toOffer("org.schabi.newpipe", "NewPipe", client, searchUnknowns = true)
+        assertFalse(offer.listed)
+        assertTrue(offer.known)
+        assertNull(offer.pageUrl)
+    }
+
+    @Test
+    fun rateLimitUnknownEmptySearchKnownMiss() {
+        val limited = GitHubScan.toOffer("app.x", "X", GitHubSearchClient { GitHubSearchPage(403, "") }, searchUnknowns = true)
+        val empty = GitHubScan.toOffer("app.x", "X", GitHubSearchClient { GitHubSearchPage(200, """{"items":[]}""") }, searchUnknowns = true)
+        assertFalse(limited.listed)
+        assertFalse(limited.known)
+        assertFalse(empty.listed)
+        assertTrue(empty.known)
+        assertNull(GitHubScan.pick("app.x", "X", emptyList()))
+    }
+
+    @Test
+    fun releaseFetch429Unknown() {
+        val search = GitHubSearchClient {
+            GitHubSearchPage(200, """{"items":[{"full_name":"someone/WiseTimer","name":"WiseTimer","archived":false}]}""")
+        }
+        val offer = GitHubScan.toOffer("com.example.wipefiles", "Wipe Files", search, GitHubReleaseClient { GitHubSearchPage(429, "") }, searchUnknowns = true)
+        assertFalse(offer.listed)
+        assertFalse(offer.known)
+    }
+
+    @Test
+    fun retriesOnceOn403ThenStaysUnknown() {
+        var calls = 0
+        val client = GitHubSearchClient { calls += 1; GitHubSearchPage(403, "") }
+        val offer = GitHubScan.toOffer("app.x", "X", client, searchUnknowns = true) { }
+        assertEquals(2, calls)
+        assertFalse(offer.listed)
+        assertFalse(offer.known)
+    }
+}

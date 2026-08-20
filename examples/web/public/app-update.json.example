@@ -1,6 +1,0 @@
-{
-  "release_repo": "OWNER/REPO",
-  "check_interval": "weekly",
-  "installed_artifact_format": "pwa",
-  "restart_guard_key": "gp-update-restart-pending"
-}
