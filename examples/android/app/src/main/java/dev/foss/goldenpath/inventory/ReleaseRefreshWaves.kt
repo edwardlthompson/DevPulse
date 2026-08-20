@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.inventory
 
+import dev.foss.goldenpath.index.apkmirror.ApkMirrorBatchFetcher
+import dev.foss.goldenpath.index.apkpure.ApkPureBatchFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideMetaFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidRepo
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
@@ -28,9 +30,22 @@ object ReleaseRefreshWaves {
         knownRepos: Map<String, GithubHint> = emptyMap(),
         verifiedStore: GithubVerifiedStore? = null,
         searchUnknowns: Boolean = false,
+        apkMirrorEnabled: Boolean = false,
+        apkPureEnabled: Boolean = false,
+        apkMirrorFetcher: ApkMirrorBatchFetcher = ApkMirrorBatchFetcher { Result.success("") },
+        apkPureFetcher: ApkPureBatchFetcher = ApkPureBatchFetcher { Result.success("") },
     ) {
         val bags = ConcurrentHashMap<String, MutableList<RemoteReleaseOffer>>()
         seed.forEach { (pkg, offers) -> bags[pkg] = syncList(offers) }
+        ReleaseRefreshDump.apply(
+            apps = apps,
+            apkMirrorEnabled = apkMirrorEnabled,
+            apkPureEnabled = apkPureEnabled,
+            apkMirrorFetcher = apkMirrorFetcher,
+            apkPureFetcher = apkPureFetcher,
+            nowMs = nowMs,
+            clock = clock,
+        ) { pkg, offer -> commit(bags, pkg, offer) }
         val jobs = buildList {
             apps.forEach { app ->
                 if (playOn) add(OutletJob(app, Kind.Play))
@@ -44,7 +59,13 @@ object ReleaseRefreshWaves {
                 knownRepos, verifiedStore, searchUnknowns,
             )
         }
-        finalize(apps, bags, repos, playOn, aptoideEnabled, forgeOn)
+        ReleaseRefreshComplete.write(
+            apps,
+            { pkg -> bag(bags, pkg) },
+            ReleaseRefreshComplete.searched(
+                repos, playOn, aptoideEnabled, forgeOn, apkMirrorEnabled, apkPureEnabled,
+            ),
+        )
     }
 
     private enum class Kind { Play, Aptoide, GitHub }
@@ -119,24 +140,5 @@ object ReleaseRefreshWaves {
         if (extra == null) return
         into.removeAll { it.source == extra.source }
         into += extra
-    }
-
-    private fun finalize(
-        apps: List<InstalledApp>,
-        bags: ConcurrentHashMap<String, MutableList<RemoteReleaseOffer>>,
-        repos: List<FdroidRepo>,
-        playOn: Boolean,
-        aptoideEnabled: Boolean,
-        forgeOn: Boolean,
-    ) {
-        apps.forEach { app ->
-            val pkg = app.packageName
-            val offers = bag(bags, pkg)
-            val searched = repos.map { ListingChannels.sourceForRepo(it.id) }.toMutableSet()
-            if (playOn) searched += RemoteReleasedSource.Play
-            if (aptoideEnabled) searched += RemoteReleasedSource.Aptoide
-            if (forgeOn) searched += RemoteReleasedSource.Forge
-            RemoteReleaseMemory.putAll(mapOf(pkg to RemoteReleaseRollup.from(ListingChannels.complete(offers, searched))))
-        }
     }
 }

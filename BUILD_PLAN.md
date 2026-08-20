@@ -99,6 +99,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 3. 🔲 [ADB] Device smoke: no 1970/1971 rows; optional Usage Access + Aptoide scan
 4. 🔲 [AGENT] Follow-up: Wayback Play HTML recovery after delisting (not this sprint)
 5. ✅ [AGENT] Verbose refresh: count every location; GitHub repo search per package
+6. ✅ [AGENT] APKMirror + APKPure opt-in batch listing lookup
 
 ### Sprint 10 — Ship follow-up
 

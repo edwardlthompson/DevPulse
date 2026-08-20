@@ -27,5 +27,16 @@ class AptoideScanTest {
         )
         assertEquals(1, picks.size)
         assertEquals(dev.foss.goldenpath.inventory.RemoteReleasedSource.Aptoide, picks.getValue("app.one").source)
+        assertEquals("https://en.aptoide.com/app?package_name=app.one", picks.getValue("app.one").pageUrl)
+    }
+
+    @Test
+    fun unameBecomesAppViewListing() {
+        val json = """{"data":{"uname":"wipefiles","updated":"2024-01-02 00:00:00","file":{"vername":"1"}}}"""
+        val pick = AptoideScan.toPick(
+            AptoideMetaParser.parse(json, 1_720_000_000_000L),
+            "uk.org.platitudes.wipefiles",
+        )
+        assertEquals("https://wipefiles.en.aptoide.com/", pick?.pageUrl)
     }
 }

@@ -14,7 +14,8 @@ Shared types live in `dev.foss.goldenpath.inventory`. Compose adapters must not 
 | `AppOrigin` | enum | `Unknown` (Sprint 2 default), `Play`, `Fdroid`, `ExtraRepo`, `SideloadedUnknown` |
 | `UsageStatsConsent` | enum | `NotOffered`, `WalkthroughSeen`, `Granted`, `Declined` |
 | `PackageCatalog` | fun interface | `listInstalled(): List<InstalledApp>` — PackageManager adapter only; no network |
-
+| `PackageChange` | object | `shouldReload(action, package, replacing, self)` — install/uninstall/replace only |
+| `InstalledAppsRevision` | object | Bumped by `PackageChangeListen` and on resume so the list re-queries PackageManager |
 ### Functions
 
 | Name | Contract |
@@ -26,7 +27,6 @@ Shared types live in `dev.foss.goldenpath.inventory`. Compose adapters must not 
 | `QueryAllPackagesGate.canScan(acknowledged, sdkInt)` | scan allowed only after acknowledge when explanation is required |
 | `UsageStatsGate.isRequiredForInventory()` | always false |
 | `UsageStatsGate.canRankByUsage(consent)` | true only when `Granted` |
-
 ### Persistence (`InventoryPreferences`)
 
 | Flow / setter | Default | Meaning |
@@ -34,7 +34,6 @@ Shared types live in `dev.foss.goldenpath.inventory`. Compose adapters must not 
 | `queryAllPackagesAcknowledged` | false | FR-4 gate |
 | `includeSystemApps` | false | FR-1 Settings toggle |
 | `usageStatsConsent` | `NotOffered` | FR-5 walkthrough; never required |
-
 ### Out of scope this sprint
 
 - Play, F-Droid, extra-repo, or forge HTTP
@@ -67,7 +66,6 @@ Shared types live in `dev.foss.goldenpath.inventory`. Compose adapters must not 
 | View | `examples/android/.../ui/inventory/` |
 | Tests | `examples/android/app/src/test/.../inventory/` |
 | Wiring | `GoldenPathApp.kt` ≤10 lines |
-
 ## Definition of Done
 
 See `docs/FEATURE_MODULES.md`. Tests: PackageManager wrapper unit tests with fakes. Fallback: `bash scripts/feature-gate.sh --stack android`.
@@ -80,6 +78,7 @@ After Sequential API lock: unit tests live under `examples/android/app/src/test/
 
 - No Play, F-Droid, or forge calls in this slice
 - Include-system lives in Settings. Top-bar Refresh probes every enabled outlet in parallel and counts each F-Droid index plus apps × enabled Play/Aptoide/GitHub probes. Search and sort chips stay behind icons.
+- The visible list reloads when a package is installed, uninstalled, or replaced (and again on resume). Store dates for a new app stay unknown until the next Refresh.
 - Origin comes from the installer package, then last-release source. targetSdk more than 3 levels behind the device SDK is shown in red.
 - Scan interval: on demand, weekly, or monthly (`ScanSchedule` + WorkManager).
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

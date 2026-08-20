@@ -41,11 +41,24 @@ class RefreshProgressClock(
 }
 
 object RefreshLocations {
-    fun probesPerApp(play: Boolean, aptoide: Boolean, forge: Boolean): Int =
-        listOf(play, aptoide, forge).count { it }
+    fun probesPerApp(
+        play: Boolean,
+        aptoide: Boolean,
+        forge: Boolean,
+        apkMirror: Boolean = false,
+        apkPure: Boolean = false,
+    ): Int = listOf(play, aptoide, forge, apkMirror, apkPure).count { it }
 
-    fun total(repos: Int, apps: Int, play: Boolean, aptoide: Boolean, forge: Boolean): Int =
-        repos.coerceAtLeast(0) + apps.coerceAtLeast(0) * probesPerApp(play, aptoide, forge)
+    fun total(
+        repos: Int,
+        apps: Int,
+        play: Boolean,
+        aptoide: Boolean,
+        forge: Boolean,
+        apkMirror: Boolean = false,
+        apkPure: Boolean = false,
+    ): Int = repos.coerceAtLeast(0) +
+        apps.coerceAtLeast(0) * probesPerApp(play, aptoide, forge, apkMirror, apkPure)
 
     fun storeProbes(apps: Int, play: Boolean, aptoide: Boolean): Int =
         apps.coerceAtLeast(0) * listOf(play, aptoide).count { it }

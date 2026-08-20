@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Inventory list updates when apps are installed, uninstalled, or replaced (and again when DevPulse resumes)
+- Signed `DevPulse-{version}.apk` on GitHub Releases when release signing secrets are present
+- Optional APKMirror and APKPure listing scans (default off; batch lookup; never downloads APKs)
+
+### Fixed
+
+- Aptoide listing taps open the Aptoide app or the app’s Aptoide web page, not the Aptoide home screen
+
 ## [0.22.0](https://github.com/edwardlthompson/DevPulse/compare/v0.21.0...v0.22.0) (2026-08-20)
 
 ### Added
@@ -30,16 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0](https://github.com/edwardlthompson/agent-project-bootstrap/compare/v0.20.0...v0.21.0) (2026-08-18)
 
-
 ### Added
 
 * harden Windows PATH, Unreleased fold, and ship gates ([8eab392](https://github.com/edwardlthompson/agent-project-bootstrap/commit/8eab392edff967bbc0cfabb89aff0902a6b8ac0e))
 
-
 ### Fixed
 
 * import rp_merge_status from cwd-relative scripts/lib ([df322af](https://github.com/edwardlthompson/agent-project-bootstrap/commit/df322af79d3302457f6dad26fac0d2e424544a15))
-
 
 ### Documentation
 

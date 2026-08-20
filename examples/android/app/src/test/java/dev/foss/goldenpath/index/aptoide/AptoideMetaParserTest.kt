@@ -17,6 +17,7 @@ class AptoideMetaParserTest {
         assertEquals(AptoideLookupStatus.Ok, lookup.status)
         assertEquals(expected, lookup.updatedOnMs)
         assertEquals("2.1.0", lookup.publishedVersion)
+        assertEquals("example-app", lookup.uname)
     }
 
     @Test

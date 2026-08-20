@@ -15,7 +15,7 @@ object AptoideScan {
             source = RemoteReleasedSource.Aptoide,
             ms = ms,
             versionName = lookup.publishedVersion,
-            pageUrl = packageName.takeIf { it.isNotEmpty() }?.let(UpdateUrls::aptoide),
+            pageUrl = packageName.takeIf { it.isNotEmpty() }?.let { UpdateUrls.aptoide(it, lookup.uname) },
         )
         return RemoteReleaseRollup.from(listOf(offer))
     }

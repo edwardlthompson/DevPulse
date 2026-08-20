@@ -10,7 +10,6 @@ For services and APIs, expose:
 |----------|---------|----------|
 | `/health` | Liveness | `200` when process is up |
 | `/ready` | Readiness | `200` when dependencies are reachable |
-
 Static PWAs and CLIs may skip HTTP endpoints; document stack-specific checks instead.
 
 ## Structured Logging
@@ -25,7 +24,10 @@ Static PWAs and CLIs may skip HTTP endpoints; document stack-specific checks ins
 1. `[AUTO]` CI green on `main`
 2. `[HUMAN]` Approve release (Milestone Gates in `BUILD_PLAN.md`)
 3. `[AUTO]` Tag and publish via GitHub Release workflow
-4. `[HUMAN]` Verify deployment on target platform
+4. `[AUTO]` Release assets: SBOMs plus `DevPulse-{version}.apk` when `DEVPULSE_KEYSTORE_BASE64` is set
+5. `[HUMAN]` Verify the APK installs over the previous release (same signing key)
+
+Release signing lives outside git. Local: `%USERPROFILE%\.android\devpulse-release.env`. GitHub: `DEVPULSE_KEYSTORE_BASE64`, `DEVPULSE_STORE_PASSWORD`, `DEVPULSE_KEY_ALIAS`, `DEVPULSE_KEY_PASSWORD`. Do not fall back to the debug keystore for GitHub Release APKs.
 
 ## Rollback
 
@@ -40,21 +42,18 @@ Static PWAs and CLIs may skip HTTP endpoints; document stack-specific checks ins
 | CI failing on lint | Local `pre-commit run --all-files` | Fix and push |
 | Dependabot alert | `docs/SECURITY_TRIAGE.md` | Merge bump PR |
 | State lost after upgrade | Migration tests | Fix schema migration |
-
 ## Backup & Restore
 
 | Target | RPO | RTO | Procedure |
 |--------|-----|-----|-----------|
 | User data | _Define_ | _Define_ | _Document per stack_ |
 | Repository | N/A (git) | Immediate | `git clone` |
-
 ## SLOs (`[HUMAN]` defines)
 
 | Service | SLI | Target |
 |---------|-----|--------|
 | _Example: API availability_ | Uptime | _99.9%_ |
 | _Example: page load_ | p95 latency | _< 2s_ |
-
 ## Escalation
 
 1. Check `BUILD_PLAN.md` Ongoing Maintenance

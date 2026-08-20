@@ -1,19 +1,12 @@
 package dev.foss.goldenpath.inventory
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-
-private val Context.inventoryDataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "inventory_preferences",
-)
 
 private val QUERY_ALL_PACKAGES_ACK = booleanPreferencesKey("query_all_packages_ack")
 private val INCLUDE_SYSTEM_APPS = booleanPreferencesKey("include_system_apps")
@@ -24,6 +17,8 @@ private val UPDATES_ONLY = booleanPreferencesKey("inventory_updates_only")
 private val GITHUB_ONLY = booleanPreferencesKey("inventory_github_only")
 private val SOURCE_FILTERS = stringPreferencesKey("inventory_source_filters")
 private val APTOIDE_LOOKUP = booleanPreferencesKey("aptoide_lookup_enabled")
+private val APKMIRROR_LOOKUP = booleanPreferencesKey("apkmirror_lookup_enabled")
+private val APKPURE_LOOKUP = booleanPreferencesKey("apkpure_lookup_enabled")
 private val PLAY_LOOKUP = booleanPreferencesKey("play_lookup_enabled")
 private val FORGE_LOOKUP = booleanPreferencesKey("forge_lookup_enabled")
 private val FORGE_LOOKUP_SEARCH_UNKNOWNS = booleanPreferencesKey("forge_lookup_search_unknowns")
@@ -31,119 +26,102 @@ private val SCAN_INTERVAL = stringPreferencesKey("scan_interval")
 private val LAST_SCAN_AT = longPreferencesKey("last_scan_at_ms")
 
 class InventoryPreferences(private val context: Context) {
-    val queryAllPackagesAcknowledged: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[QUERY_ALL_PACKAGES_ACK] ?: false
-    }
+    private val store get() = context.inventoryDataStore
 
-    val includeSystemApps: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[INCLUDE_SYSTEM_APPS] ?: false
-    }
+    val queryAllPackagesAcknowledged: Flow<Boolean> = store.booleanPref(QUERY_ALL_PACKAGES_ACK, false)
+    val includeSystemApps: Flow<Boolean> = store.booleanPref(INCLUDE_SYSTEM_APPS, false)
+    val staleOnly: Flow<Boolean> = store.booleanPref(STALE_ONLY, false)
+    val updatesOnly: Flow<Boolean> = store.booleanPref(UPDATES_ONLY, false)
+    val aptoideLookupEnabled: Flow<Boolean> = store.booleanPref(APTOIDE_LOOKUP, false)
+    val apkMirrorLookupEnabled: Flow<Boolean> = store.booleanPref(APKMIRROR_LOOKUP, false)
+    val apkPureLookupEnabled: Flow<Boolean> = store.booleanPref(APKPURE_LOOKUP, false)
+    val playLookupEnabled: Flow<Boolean> = store.booleanPref(PLAY_LOOKUP, true)
+    val forgeLookupEnabled: Flow<Boolean> = store.booleanPref(FORGE_LOOKUP, true)
+    val forgeLookupSearchUnknowns: Flow<Boolean> = store.booleanPref(FORGE_LOOKUP_SEARCH_UNKNOWNS, false)
 
-    val usageStatsConsent: Flow<UsageStatsConsent> = context.inventoryDataStore.data.map { prefs ->
+    val usageStatsConsent: Flow<UsageStatsConsent> = store.data.map { prefs ->
         runCatching { UsageStatsConsent.valueOf(prefs[USAGE_STATS_CONSENT] ?: "") }
             .getOrDefault(UsageStatsConsent.NotOffered)
     }
 
-    val sortMode: Flow<InventorySortMode> = context.inventoryDataStore.data.map { prefs ->
+    val sortMode: Flow<InventorySortMode> = store.data.map { prefs ->
         runCatching { InventorySortMode.valueOf(prefs[SORT_MODE] ?: "") }
             .getOrDefault(InventorySortMode.Oldest)
     }
 
-    val staleOnly: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[STALE_ONLY] ?: false
-    }
-
-    val updatesOnly: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[UPDATES_ONLY] ?: false
-    }
-
-    val sourceFilters: Flow<Set<RemoteReleasedSource>> = context.inventoryDataStore.data.map { prefs ->
+    val sourceFilters: Flow<Set<RemoteReleasedSource>> = store.data.map { prefs ->
         InventorySourceFilter.decode(prefs[SOURCE_FILTERS], prefs[GITHUB_ONLY] == true)
     }
 
-    val aptoideLookupEnabled: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[APTOIDE_LOOKUP] ?: false
-    }
-
-    val playLookupEnabled: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[PLAY_LOOKUP] ?: true
-    }
-
-    val forgeLookupEnabled: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[FORGE_LOOKUP] ?: true
-    }
-
-    val forgeLookupSearchUnknowns: Flow<Boolean> = context.inventoryDataStore.data.map { prefs ->
-        prefs[FORGE_LOOKUP_SEARCH_UNKNOWNS] ?: false
-    }
-
-    val scanInterval: Flow<ScanInterval> = context.inventoryDataStore.data.map { prefs ->
+    val scanInterval: Flow<ScanInterval> = store.data.map { prefs ->
         runCatching { ScanInterval.valueOf(prefs[SCAN_INTERVAL] ?: "") }
             .getOrDefault(ScanInterval.OnDemand)
     }
 
-    val lastScanAtMs: Flow<Long?> = context.inventoryDataStore.data.map { prefs ->
+    val lastScanAtMs: Flow<Long?> = store.data.map { prefs ->
         prefs[LAST_SCAN_AT]?.takeIf { it > 0L }
     }
 
     suspend fun setQueryAllPackagesAcknowledged(value: Boolean) {
-        context.inventoryDataStore.edit { prefs ->
-            prefs[QUERY_ALL_PACKAGES_ACK] = value
-        }
+        store.writeBoolean(QUERY_ALL_PACKAGES_ACK, value)
     }
 
     suspend fun setIncludeSystemApps(value: Boolean) {
-        context.inventoryDataStore.edit { prefs ->
-            prefs[INCLUDE_SYSTEM_APPS] = value
-        }
-    }
-
-    suspend fun setUsageStatsConsent(value: UsageStatsConsent) {
-        context.inventoryDataStore.edit { prefs ->
-            prefs[USAGE_STATS_CONSENT] = value.name
-        }
-    }
-
-    suspend fun setSortMode(value: InventorySortMode) {
-        context.inventoryDataStore.edit { prefs -> prefs[SORT_MODE] = value.name }
+        store.writeBoolean(INCLUDE_SYSTEM_APPS, value)
     }
 
     suspend fun setStaleOnly(value: Boolean) {
-        context.inventoryDataStore.edit { prefs -> prefs[STALE_ONLY] = value }
+        store.writeBoolean(STALE_ONLY, value)
     }
 
     suspend fun setUpdatesOnly(value: Boolean) {
-        context.inventoryDataStore.edit { prefs -> prefs[UPDATES_ONLY] = value }
+        store.writeBoolean(UPDATES_ONLY, value)
+    }
+
+    suspend fun setAptoideLookupEnabled(value: Boolean) {
+        store.writeBoolean(APTOIDE_LOOKUP, value)
+    }
+
+    suspend fun setApkMirrorLookupEnabled(value: Boolean) {
+        store.writeBoolean(APKMIRROR_LOOKUP, value)
+    }
+
+    suspend fun setApkPureLookupEnabled(value: Boolean) {
+        store.writeBoolean(APKPURE_LOOKUP, value)
+    }
+
+    suspend fun setPlayLookupEnabled(value: Boolean) {
+        store.writeBoolean(PLAY_LOOKUP, value)
+    }
+
+    suspend fun setForgeLookupEnabled(value: Boolean) {
+        store.writeBoolean(FORGE_LOOKUP, value)
+    }
+
+    suspend fun setForgeLookupSearchUnknowns(value: Boolean) {
+        store.writeBoolean(FORGE_LOOKUP_SEARCH_UNKNOWNS, value)
+    }
+
+    suspend fun setUsageStatsConsent(value: UsageStatsConsent) {
+        store.edit { prefs -> prefs[USAGE_STATS_CONSENT] = value.name }
+    }
+
+    suspend fun setSortMode(value: InventorySortMode) {
+        store.edit { prefs -> prefs[SORT_MODE] = value.name }
     }
 
     suspend fun setSourceFilters(value: Set<RemoteReleasedSource>) {
-        context.inventoryDataStore.edit { prefs ->
+        store.edit { prefs ->
             prefs[SOURCE_FILTERS] = InventorySourceFilter.encode(value)
             prefs[GITHUB_ONLY] = RemoteReleasedSource.Forge in value
         }
     }
 
-    suspend fun setAptoideLookupEnabled(value: Boolean) {
-        context.inventoryDataStore.edit { prefs -> prefs[APTOIDE_LOOKUP] = value }
-    }
-
-    suspend fun setPlayLookupEnabled(value: Boolean) {
-        context.inventoryDataStore.edit { prefs -> prefs[PLAY_LOOKUP] = value }
-    }
-
-    suspend fun setForgeLookupEnabled(value: Boolean) {
-        context.inventoryDataStore.edit { prefs -> prefs[FORGE_LOOKUP] = value }
-    }
-
-    suspend fun setForgeLookupSearchUnknowns(value: Boolean) {
-        context.inventoryDataStore.edit { prefs -> prefs[FORGE_LOOKUP_SEARCH_UNKNOWNS] = value }
-    }
-
     suspend fun setScanInterval(value: ScanInterval) {
-        context.inventoryDataStore.edit { prefs -> prefs[SCAN_INTERVAL] = value.name }
+        store.edit { prefs -> prefs[SCAN_INTERVAL] = value.name }
     }
 
     suspend fun setLastScanAtMs(value: Long) {
-        context.inventoryDataStore.edit { prefs -> prefs[LAST_SCAN_AT] = value }
+        store.edit { prefs -> prefs[LAST_SCAN_AT] = value }
     }
 }

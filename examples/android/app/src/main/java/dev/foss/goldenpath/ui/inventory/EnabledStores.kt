@@ -17,6 +17,8 @@ fun rememberEnabledSources(): Set<RemoteReleasedSource> {
     val repos = remember { FdroidRepoPreferences(context) }
     val play by inventory.playLookupEnabled.collectAsStateWithLifecycle(true)
     val aptoide by inventory.aptoideLookupEnabled.collectAsStateWithLifecycle(false)
+    val apkMirror by inventory.apkMirrorLookupEnabled.collectAsStateWithLifecycle(false)
+    val apkPure by inventory.apkPureLookupEnabled.collectAsStateWithLifecycle(false)
     val forge by inventory.forgeLookupEnabled.collectAsStateWithLifecycle(true)
     val official by repos.repoEnabled("official").collectAsStateWithLifecycle(true)
     val archive by repos.repoEnabled("archive").collectAsStateWithLifecycle(false)
@@ -24,10 +26,12 @@ fun rememberEnabledSources(): Set<RemoteReleasedSource> {
     val guardian by repos.repoEnabled("guardian").collectAsStateWithLifecycle(false)
     val calyx by repos.repoEnabled("calyx").collectAsStateWithLifecycle(false)
     val custom by repos.customIndexUrl.collectAsStateWithLifecycle("")
-    return remember(play, aptoide, forge, official, archive, izzy, guardian, calyx, custom) {
+    return remember(play, aptoide, apkMirror, apkPure, forge, official, archive, izzy, guardian, calyx, custom) {
         StoreSelection.sources(
             play = play,
             aptoide = aptoide,
+            apkMirror = apkMirror,
+            apkPure = apkPure,
             forge = forge,
             repoIds = buildSet {
                 if (official) add("official")

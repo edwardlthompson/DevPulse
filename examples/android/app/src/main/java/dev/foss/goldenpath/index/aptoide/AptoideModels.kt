@@ -9,6 +9,7 @@ data class AptoideLookup(
     val updatedOnMs: Long?,
     val publishedVersion: String?,
     val status: AptoideLookupStatus,
+    val uname: String? = null,
 )
 
 object AptoideCachePolicy {

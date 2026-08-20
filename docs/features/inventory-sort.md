@@ -11,12 +11,11 @@ Types in `dev.foss.goldenpath.inventory`. Compose adapters must not redefine the
 | Name | Kind | Values / fields |
 |------|------|-----------------|
 | `InstalledDateSource` | enum | `LastUpdate`, `FirstInstall`, `ApkMtime`, `Unknown` |
-| `RemoteReleasedSource` | enum | `Play`, `Fdroid`, `ExtraRepo`, `Izzy`, `Guardian`, `Calyx`, `Archive`, `Aptoide`, `Forge`, `None` |
+| `RemoteReleasedSource` | enum | `Play`, `Fdroid`, `ExtraRepo`, `Izzy`, `Guardian`, `Calyx`, `Archive`, `Aptoide`, `ApkMirror`, `ApkPure`, `Forge`, `None` |
 | `InventorySortMode` | enum | `Oldest`, `Newest`, `Name`, `UsedAndStale` |
 | `UsageSnapshot` | data class | `packageName`, `lastTimeUsedMs`, `totalTimeInForegroundMs` |
 | `RemoteDate` | data class | `ms`, `source` |
 | `RemoteReleasePick` | data class | `ms`, `source` |
-
 ### Functions
 
 | Name | Contract |
@@ -27,11 +26,10 @@ Types in `dev.foss.goldenpath.inventory`. Compose adapters must not redefine the
 | `InventoryFilter.matchesQuery` | Blank query returns all |
 | `InventoryFilter.olderThan` | Uses `ageMs`; unknown excluded |
 | `InventoryFilter.onAnyListedSource` | Empty set shows all; otherwise `listed && known` on any selected source (OR) |
-| `InventorySourceFilter` | Persistable chip set: Play, F-Droid, Archive, Izzy, Guardian, Calyx, Aptoide, GitHub |
+| `InventorySourceFilter` | Persistable chip set: Play, F-Droid, Archive, Izzy, Guardian, Calyx, Aptoide, APKMirror, APKPure, GitHub |
 | `InventorySort.apply` | Unknown last on Oldest/Newest; UsedAndStale without usage ≡ Oldest |
 | `UsagePulse.score` | `foregroundHours30d * ageDays`; unknown age = 0 |
 | `UsageStatsAccess.isGranted` | AppOps only; catch SecurityException |
-
 ## Acceptance criteria
 
 - ✅ User-visible behavior: sort Oldest/Newest/Name/Used+stale; search; older-than-180d; never show 1971
@@ -53,7 +51,6 @@ Types in `dev.foss.goldenpath.inventory`. Compose adapters must not redefine the
 | View | `examples/android/.../ui/inventory/` |
 | Tests | `examples/android/app/src/test/.../inventory/` |
 | Wiring | `GoldenPathApp.kt` 0 new lines |
-
 ## Definition of Done
 
 Unit tests for resolver, sort, pulse, filters. Fallback: `bash scripts/feature-gate.sh --stack android`.
@@ -61,6 +58,7 @@ Unit tests for resolver, sort, pulse, filters. Fallback: `bash scripts/feature-g
 ## Notes
 
 - Aptoide fetch is opt-in and Refresh probes it for every user app when enabled. See `docs/features/aptoide.md`.
+- APKMirror and APKPure are opt-in batch lookups (default off). See `docs/features/apk-mirrors.md`.
 - Refresh draws a determinate full-width bar (no animation APIs) so it still fills when animator duration scale is 0.
 - Refresh runs in `ReleaseRefreshService` so Settings, About, and app switches do not cancel it. A local notification fires when it finishes.
 - The main list is name, last-release date, and an update icon when a newer remote version exists. The app card uses an information icon for Android app details. Store rows are one line (version · date) under the store name; a live row opens that download page. The card always shows Play, F-Droid, Archive, Izzy, Guardian, Calyx, and Aptoide (Delisted until a live hit). F-Droid versions come from the newest APK in `packages`, not `suggestedVersionName`. Forge links are only real repo release pages and do not inherit the F-Droid version.

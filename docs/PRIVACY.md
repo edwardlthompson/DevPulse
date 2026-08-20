@@ -13,6 +13,7 @@ Local notifications are device-only (scan progress and â€œrelease dates updatedâ
 | Installed-app inventory (package, version, timestamps, SDK levels) | Staleness picture | Legitimate interest / user request | Until uninstall or user clears cache |
 | Optional usage stats (if granted) | Rank by real use; Opportunity | Consent | Until permission revoked or data cleared |
 | Optional Aptoide package lookups | Last-release date when F-Droid has no record | Consent (Settings, default off) | 24h cache until cleared |
+| Optional APKMirror / APKPure package lookups | Listing, version, and dump-site date when enabled | Consent (Settings, default off) | Until next Refresh |
 | Optional GitHub token | Higher forge API limits | Consent | EncryptedSharedPreferences until user removes it |
 | Scan cache and history | Degraded/offline results; history | User request | Until user clears cache |
 | Pins and private notes | Keep-anyway and Develop-next | User request | Until user deletes them |
@@ -24,6 +25,7 @@ Network runs only when the user scans, or when they opt into later lookups or th
 - Play: public details HTML, on demand or during a user-started scan
 - F-Droid and extra-repo indexes: official client-style index download
 - Aptoide `app/getMeta` by package name, only if the user enables it and starts Refresh
+- APKMirror `app_exists` and APKPure `get_app_update` in batches, only if the user enables those outlets and starts Refresh
 - Forges: documented GitHub / optional GitLab / Codeberg APIs
 - About update check: GitHub Releases or configured manifest only
 - User-Agent: `DevPulse/0.1` plus the public GitHub URL. No browser impersonation
@@ -41,7 +43,7 @@ No PII is transmitted. The optional token is an Authorization header to GitHub o
 
 - **Access:** Export scan reports (CSV/JSON) when that feature ships
 - **Deletion:** Clear cache, revoke usage-stats, delete the token, or uninstall
-- **Opt-out:** Usage stats, Aptoide lookup, notifications, Play/forge lookups, and the GitHub token are opt-in
+- **Opt-out:** Usage stats, Aptoide / APKMirror / APKPure lookups, notifications, Play/forge lookups, and the GitHub token are opt-in
 - **Portability:** Full-scan and focused Opportunity exports
 
 ## Data Minimization

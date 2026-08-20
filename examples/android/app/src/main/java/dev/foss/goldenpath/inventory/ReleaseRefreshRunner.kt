@@ -2,6 +2,8 @@ package dev.foss.goldenpath.inventory
 
 import android.content.Context
 import android.util.Log
+import dev.foss.goldenpath.index.apkmirror.ApkMirrorHttpFetcher
+import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideHttpFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidEnabledRepos
 import dev.foss.goldenpath.index.fdroid.FdroidIndexHttpFetcher
@@ -33,6 +35,10 @@ object ReleaseRefreshRunner {
             indexStore = FdroidIndexStore(File(context.filesDir, "fdroid-index")),
             verifiedStore = FileGithubVerifiedStore(File(context.filesDir, "github_verified.tsv")),
             searchUnknowns = searchUnknowns,
+            apkMirrorEnabled = prefs.apkMirrorLookupEnabled.first(),
+            apkPureEnabled = prefs.apkPureLookupEnabled.first(),
+            apkMirrorFetcher = ApkMirrorHttpFetcher,
+            apkPureFetcher = ApkPureHttpFetcher,
             onProgress = onProgress,
         )
         prefs.setLastScanAtMs(System.currentTimeMillis())

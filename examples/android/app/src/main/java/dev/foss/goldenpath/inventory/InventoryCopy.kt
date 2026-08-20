@@ -24,6 +24,8 @@ object InventoryCopy {
         RemoteReleasedSource.Calyx -> R.string.inventory_source_calyx
         RemoteReleasedSource.Archive -> R.string.inventory_source_archive
         RemoteReleasedSource.Aptoide -> R.string.inventory_source_aptoide
+        RemoteReleasedSource.ApkMirror -> R.string.inventory_source_apkmirror
+        RemoteReleasedSource.ApkPure -> R.string.inventory_source_apkpure
         RemoteReleasedSource.Forge -> R.string.inventory_source_forge
         RemoteReleasedSource.None -> R.string.inventory_source_unknown
     }

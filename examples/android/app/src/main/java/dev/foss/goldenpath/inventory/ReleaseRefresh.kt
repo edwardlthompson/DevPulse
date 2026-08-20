@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.inventory
 
+import dev.foss.goldenpath.index.apkmirror.ApkMirrorBatchFetcher
+import dev.foss.goldenpath.index.apkpure.ApkPureBatchFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideMetaFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidAppRecord
 import dev.foss.goldenpath.index.fdroid.FdroidIndexFetcher
@@ -56,18 +58,26 @@ object ReleaseRefresh {
         hostGate: RefreshHostGate? = null,
         verifiedStore: GithubVerifiedStore? = null,
         searchUnknowns: Boolean = false,
+        apkMirrorEnabled: Boolean = false,
+        apkPureEnabled: Boolean = false,
+        apkMirrorFetcher: ApkMirrorBatchFetcher = ApkMirrorBatchFetcher { Result.success("") },
+        apkPureFetcher: ApkPureBatchFetcher = ApkPureBatchFetcher { Result.success("") },
     ): Map<String, RemoteReleasePick> {
         val userApps = apps.filter { !it.isSystemApp }
         val wantedSet = userApps.map { it.packageName }.toSet()
         val playOn = playClient != null
         val forgeOn = gitHubClient != null
-        val noRemote = !playOn && !aptoideEnabled && !forgeOn
+        val noRemote = !playOn && !aptoideEnabled && !forgeOn && !apkMirrorEnabled && !apkPureEnabled
         if (repos.isEmpty() && (userApps.isEmpty() || noRemote)) {
             onProgress(RefreshProgress(1, 1, "idle"))
             return emptyMap()
         }
         val clock = RefreshProgressClock(onProgress)
-        clock.addWork(RefreshLocations.total(repos.size, userApps.size, playOn, aptoideEnabled, forgeOn))
+        clock.addWork(
+            RefreshLocations.total(
+                repos.size, userApps.size, playOn, aptoideEnabled, forgeOn, apkMirrorEnabled, apkPureEnabled,
+            ),
+        )
         clock.begin("refresh start repos=${repos.size} apps=${userApps.size}")
         val loaded = ReleaseRefreshRepos.fetchAll(
             repos, fdroidFetcher, indexStore, nowMs, wantedSet, executor, clock,
@@ -91,6 +101,7 @@ object ReleaseRefresh {
             playClient, aptoideFetcher, gitHubClient, nowMs, repos,
             executor, hostGate ?: RefreshHostGate(), clock,
             knownRepos, verifiedStore, searchUnknowns,
+            apkMirrorEnabled, apkPureEnabled, apkMirrorFetcher, apkPureFetcher,
         )
         RefreshTrace.line("refresh done locations=${clock.done}/${clock.total}")
         return RemoteReleaseMemory.byPackage.filterKeys { it in wantedSet }

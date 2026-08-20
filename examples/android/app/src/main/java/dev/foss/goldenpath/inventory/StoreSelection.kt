@@ -6,9 +6,13 @@ object StoreSelection {
         aptoide: Boolean,
         forge: Boolean,
         repoIds: Set<String>,
+        apkMirror: Boolean = false,
+        apkPure: Boolean = false,
     ): Set<RemoteReleasedSource> = buildSet {
         if (play) add(RemoteReleasedSource.Play)
         if (aptoide) add(RemoteReleasedSource.Aptoide)
+        if (apkMirror) add(RemoteReleasedSource.ApkMirror)
+        if (apkPure) add(RemoteReleasedSource.ApkPure)
         if (forge) add(RemoteReleasedSource.Forge)
         repoIds.forEach { add(ListingChannels.sourceForRepo(it)) }
     }

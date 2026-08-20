@@ -13,6 +13,7 @@ object AptoideMetaParser {
     private val modified = Regex(""""modified"\s*:\s*"([^"]+)"""")
     private val added = Regex(""""added"\s*:\s*"([^"]+)"""")
     private val vername = Regex(""""vername"\s*:\s*"([^"]+)"""")
+    private val uname = Regex(""""uname"\s*:\s*"([^"]+)"""")
     private val dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
     fun parse(json: String, nowMs: Long = System.currentTimeMillis()): AptoideLookup {
@@ -20,13 +21,18 @@ object AptoideMetaParser {
             return unknown()
         }
         val version = vername.find(json)?.groupValues?.get(1)?.trim()?.ifEmpty { null }
+        val slug = uname.find(json)?.groupValues?.get(1)?.trim()?.ifEmpty { null }
         val stamp = firstStamp(
             updated.find(json)?.groupValues?.get(1),
             modified.find(json)?.groupValues?.get(1),
             added.find(json)?.groupValues?.get(1),
         )
         val ms = stamp?.takeIf { InstalledDateResolver.isPlausible(it, nowMs) }
-        return if (ms == null) unknown(version) else AptoideLookup(ms, version, AptoideLookupStatus.Ok)
+        return if (ms == null) {
+            unknown(version)
+        } else {
+            AptoideLookup(ms, version, AptoideLookupStatus.Ok, slug)
+        }
     }
 
     private fun unknown(version: String? = null) = AptoideLookup(

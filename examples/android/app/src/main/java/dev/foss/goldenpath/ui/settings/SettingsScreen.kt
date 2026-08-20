@@ -82,6 +82,7 @@ fun SettingsScreen(
         PlayLookupSettings()
         FdroidRepoSettings()
         AptoideLookupSettings()
+        DumpStoreLookupSettings()
         ForgeLookupSettings()
         ForgePasteScreen(
             packageName = "",

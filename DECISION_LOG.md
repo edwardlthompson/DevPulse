@@ -17,6 +17,20 @@
 
 ## Entries
 
+### 2026-08-20 — Opt-in APKMirror and APKPure batch listing
+- **Status:** Accepted
+- **Context:** Users want dump-site coverage beyond Play / F-Droid / Aptoide / GitHub. APK Combo is scrape-only.
+- **Decision:** Settings opt-in (default off). Refresh batches APKMirror `app_exists` (chunk 100, version + `publish_date`) and APKPure `get_app_update` (chunk 200, version only, `ms` stays null). Failed HTTP is unknown; a successful miss is not listed but known. Never download or install APKs. Dates are last-seen-on-that-site.
+- **Alternatives considered:** Per-app HTTP (rejected: 385+ calls). Treat dump hits as `AppOrigin.ExtraRepo` (rejected: still sideload). Enable by default (rejected: package names leave the device).
+- **Consequences:** Device smoke (385 apps): Mirror 4 batches / 143 listed; Pure 2 batches / 315 listed; no 401/403. Progress total includes both outlets.
+
+### 2026-08-20 — Signed DevPulse APK on GitHub Releases
+- **Status:** Accepted
+- **Context:** `v0.22.0` shipped SBOM assets only. `release.yml` had no APK job. Gradle still advertised `0.1.0`.
+- **Decision:** Version the APK from `.template-version`. Sign with a keystore kept outside git (`DEVPULSE_STORE_*`). Upload `DevPulse-{version}.apk`. CI uploads the same name only when `DEVPULSE_KEYSTORE_BASE64` is set (no debug-key fallback on the release).
+- **Alternatives considered:** Debug-sign on CI (rejected: future updates would not install over the release key). Leave `app-release.apk` (rejected: not a product name).
+- **Consequences:** First public APK is `DevPulse-0.22.0.apk` on the existing tag. Maintainer must back up the release keystore.
+
 ### 2026-08-20 — Ship v0.22.0 on GitHub Releases
 - **Status:** Accepted
 - **Context:** `/ship` after the GitHub-library product work. First child tag. Actions could not open the Release Please PR.

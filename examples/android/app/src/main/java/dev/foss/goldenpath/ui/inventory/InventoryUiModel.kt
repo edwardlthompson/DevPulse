@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,8 @@ import dev.foss.goldenpath.inventory.InventoryPresent
 import dev.foss.goldenpath.inventory.InventorySortMode
 import dev.foss.goldenpath.inventory.InventorySourceFilter
 import dev.foss.goldenpath.inventory.InstalledApp
+import dev.foss.goldenpath.inventory.InstalledAppsRevision
+import dev.foss.goldenpath.inventory.PackageChangeListen
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.PackageManagerPackageCatalog
 import dev.foss.goldenpath.inventory.QueryAllPackagesGate
@@ -89,6 +92,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     val updatesOnly by prefs.updatesOnly.collectAsStateWithLifecycle(false)
     val sourceFilters by prefs.sourceFilters.collectAsStateWithLifecycle(emptySet())
     val revision by RemoteReleaseMemory.revision.collectAsStateWithLifecycle(0)
+    val catalogEpoch by InstalledAppsRevision.revision.collectAsStateWithLifecycle(0)
     val refreshing by ReleaseRefreshRuntime.running.collectAsStateWithLifecycle(false)
     val refreshProgress by ReleaseRefreshRuntime.progress.collectAsStateWithLifecycle(RefreshProgress(0, 0))
     val scanInterval by prefs.scanInterval.collectAsStateWithLifecycle(ScanInterval.OnDemand)
@@ -99,7 +103,12 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     var showFilters by remember { mutableStateOf(false) }
     var selectedPackage by remember { mutableStateOf<String?>(null) }
     var grantedNow by remember { mutableStateOf(UsageStatsAccess.isGranted(context)) }
+    DisposableEffect(context.applicationContext) {
+        val stop = PackageChangeListen.start(context)
+        onDispose(stop)
+    }
     LifecycleResumeEffect(Unit) {
+        InstalledAppsRevision.bump()
         grantedNow = UsageStatsAccess.isGranted(context)
         if (grantedNow) scope.launch { prefs.setUsageStatsConsent(UsageStatsConsent.Granted) }
         onPauseOrDispose { }
@@ -119,7 +128,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
             .usageSince(nowMs - UsagePulse.WINDOW_MS, nowMs)
             .associateBy { it.packageName }
     }
-    val installed = remember(canScan, revision) {
+    val installed = remember(canScan, revision, catalogEpoch) {
         if (!canScan) emptyList()
         else catalog.listInstalled().map(RemoteReleaseMemory::merge)
     }

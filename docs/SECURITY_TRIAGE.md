@@ -97,8 +97,8 @@ Before any version bump or GitHub Release:
 | Trigger | Gate / action |
 |---------|----------------|
 | `workflow_dispatch` (no tag input) | Full `pre-release-gate.sh` dry-run before next release |
-| `workflow_dispatch` (with `tag` input) | SBOM upload only — backfill assets on an existing release |
-| `release` published | Polls full CI rollup (`check-github-ci.sh --wait 3600`) then SBOM + Winget stub upload |
+| `workflow_dispatch` (with `tag` input) | SBOM upload; signed `DevPulse-{version}.apk` when `DEVPULSE_KEYSTORE_BASE64` is set |
+| `release` published | Polls full CI rollup (`check-github-ci.sh --wait 3600`) then SBOM + Winget stub; signed APK when signing secrets are set |
 | Tag push `v*` | Lightweight gate only: tag must match `.template-version`; polls **Repo Hygiene** + **Feature Gate** via `check-github-ci.sh --skip-workflows` (does **not** wait on CI/CodeQL rollup or emulator jobs) |
 Release Please publishes the GitHub Release; the `release` published event attaches SBOM assets. Use `workflow_dispatch` (no tag input) for maintainer dry-runs before merging the Release Please PR.
 

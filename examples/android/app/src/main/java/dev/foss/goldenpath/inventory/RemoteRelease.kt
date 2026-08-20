@@ -13,6 +13,8 @@ enum class RemoteReleasedSource {
     Calyx,
     Archive,
     Aptoide,
+    ApkMirror,
+    ApkPure,
     Forge,
     None,
 }

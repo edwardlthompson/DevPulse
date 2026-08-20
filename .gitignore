@@ -73,6 +73,8 @@ examples/android/.cxx/
 examples/android/captures/
 *.apk
 *.aab
+*.jks
+*.keystore
 
 # Node / tooling
 .turbo/

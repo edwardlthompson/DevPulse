@@ -175,3 +175,67 @@ jobs:
           [ -f sbom-rust.cyclonedx.json ] && FILES="$FILES sbom-rust.cyclonedx.json"
           [ -f sbom-go.cyclonedx.json ] && FILES="$FILES sbom-go.cyclonedx.json"
           gh release upload "$TAG" $FILES --clobber
+
+  apk-asset:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    name: Signed APK release asset
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check signing secrets
+        id: sign
+        env:
+          DEVPULSE_KEYSTORE_BASE64: ${{ secrets.DEVPULSE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "${DEVPULSE_KEYSTORE_BASE64}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping APK upload (DEVPULSE_KEYSTORE_BASE64 not set)"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.sign.outputs.present == 'true'
+        with:
+          ref: ${{ inputs.tag || github.event.release.tag_name || github.ref }}
+
+      - uses: actions/setup-java@v5
+        if: steps.sign.outputs.present == 'true'
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v4
+        if: steps.sign.outputs.present == 'true'
+
+      - name: Accept Android SDK licenses
+        if: steps.sign.outputs.present == 'true'
+        run: yes | sdkmanager --licenses
+
+      - name: Assemble and upload signed APK
+        if: steps.sign.outputs.present == 'true'
+        working-directory: examples/android
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_DATE_EPOCH: "1700000000"
+          DEVPULSE_KEYSTORE_BASE64: ${{ secrets.DEVPULSE_KEYSTORE_BASE64 }}
+          DEVPULSE_STORE_PASSWORD: ${{ secrets.DEVPULSE_STORE_PASSWORD }}
+          DEVPULSE_KEY_ALIAS: ${{ secrets.DEVPULSE_KEY_ALIAS }}
+          DEVPULSE_KEY_PASSWORD: ${{ secrets.DEVPULSE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          TAG="${{ inputs.tag || github.event.release.tag_name }}"
+          if [ -z "$TAG" ]; then
+            TAG="v$(tr -d '[:space:]' < ../../.template-version)"
+          fi
+          VERSION="${TAG#v}"
+          STORE="$HOME/devpulse-release.jks"
+          printf '%s' "$DEVPULSE_KEYSTORE_BASE64" | base64 -d > "$STORE"
+          export DEVPULSE_STORE_FILE="$STORE"
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          SRC="$(find app/build/outputs/apk/release -name '*.apk' | head -1)"
+          DEST="$HOME/DevPulse-${VERSION}.apk"
+          cp "$SRC" "$DEST"
+          gh release upload "$TAG" "$DEST" --clobber

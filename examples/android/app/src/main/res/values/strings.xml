@@ -103,6 +103,8 @@
     <string name="inventory_listing_line">%1$s · %2$s</string>
     <string name="inventory_source_archive">F-Droid Archive</string>
     <string name="inventory_source_aptoide">Aptoide</string>
+    <string name="inventory_source_apkmirror">APKMirror</string>
+    <string name="inventory_source_apkpure">APKPure</string>
     <string name="inventory_source_forge">GitHub</string>
     <string name="inventory_source_unknown">unknown</string>
     <string name="inventory_search">Search apps</string>
@@ -145,6 +147,10 @@
     <string name="aptoide_title">Aptoide last-release lookup</string>
     <string name="aptoide_body">Optional. Refresh may send unmatched package names to Aptoide. Off by default. Never downloads APKs.</string>
     <string name="aptoide_enable">Look up last release on Aptoide</string>
+    <string name="dump_store_title">APKMirror and APKPure</string>
+    <string name="dump_store_body">Optional. Refresh may send package names to these dump sites. Dates are last seen there, not maintainer activity. Off by default. Never downloads APKs.</string>
+    <string name="apkmirror_enable">Look up listings on APKMirror</string>
+    <string name="apkpure_enable">Look up listings on APKPure</string>
     <string name="scan_open">Scan</string>
     <string name="scan_title">Local scan</string>
     <string name="scan_start">Start scan</string>

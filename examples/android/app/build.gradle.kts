@@ -3,6 +3,24 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val pulseVersion = rootProject.projectDir.resolve("../../.template-version")
+    .takeIf { it.isFile }
+    ?.readText()
+    ?.trim()
+    .orEmpty()
+    .ifEmpty { "0.1.0" }
+val pulseVersionCode = run {
+    val parts = pulseVersion.substringBefore('-').substringBefore('+').split('.')
+    val major = parts.getOrNull(0)?.toIntOrNull() ?: 0
+    val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
+    val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
+    major * 10000 + minor * 100 + patch
+}
+val pulseStore = System.getenv("DEVPULSE_STORE_FILE")
+    ?.takeIf { it.isNotBlank() }
+    ?.let { file(it) }
+    ?.takeIf { it.isFile }
+
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
@@ -17,14 +35,29 @@ android {
         applicationId = "app.devpulse"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = pulseVersionCode
+        versionName = pulseVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    if (pulseStore != null) {
+        signingConfigs {
+            create("release") {
+                storeFile = pulseStore
+                storePassword = System.getenv("DEVPULSE_STORE_PASSWORD").orEmpty()
+                keyAlias = System.getenv("DEVPULSE_KEY_ALIAS")?.ifBlank { null } ?: "devpulse"
+                keyPassword = System.getenv("DEVPULSE_KEY_PASSWORD")
+                    ?: System.getenv("DEVPULSE_STORE_PASSWORD").orEmpty()
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (pulseStore != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

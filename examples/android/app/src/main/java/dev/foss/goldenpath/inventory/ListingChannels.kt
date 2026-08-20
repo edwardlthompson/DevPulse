@@ -9,6 +9,8 @@ object ListingChannels {
         RemoteReleasedSource.Guardian,
         RemoteReleasedSource.Calyx,
         RemoteReleasedSource.Aptoide,
+        RemoteReleasedSource.ApkMirror,
+        RemoteReleasedSource.ApkPure,
         RemoteReleasedSource.Forge,
     )
 

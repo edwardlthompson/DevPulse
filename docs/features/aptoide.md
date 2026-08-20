@@ -14,7 +14,6 @@ Types in `dev.foss.goldenpath.index.aptoide`. No live network in unit tests. Nev
 | `AptoideLookup` | data class | `updatedOnMs`, `publishedVersion`, `status` |
 | `AptoideCachePolicy` | object | 24h TTL |
 | `AptoideFetchPolicy` | object | honest User-Agent; Refresh uses bounded parallel getMeta (no serial 1500 ms sleep) |
-
 ### Functions
 
 | Name | Contract |
@@ -22,7 +21,6 @@ Types in `dev.foss.goldenpath.index.aptoide`. No live network in unit tests. Nev
 | `AptoideMetaParser.parse(json)` | Reads `data.updated` or `data.modified` or `data.file.added` |
 | Missing or unparseable date | `UnknownCheckManually`, `updatedOnMs = null` |
 | `AptoideScan.toPick` | Ok + plausible ms → `RemoteReleasedSource.Aptoide` |
-
 ## Acceptance criteria
 
 - ✅ User-visible behavior: Settings opt-in (default off); Refresh queries Aptoide for every user app when the outlet is enabled
@@ -45,7 +43,6 @@ Types in `dev.foss.goldenpath.index.aptoide`. No live network in unit tests. Nev
 | View | Settings toggle |
 | Tests | `src/test/.../index/aptoide/` plus JSON fixtures |
 | Wiring | `rememberScanSession` starts fetch when opted in |
-
 ## Definition of Done
 
 Fixture parser tests required. Fallback: `bash scripts/feature-gate.sh --stack android`.
@@ -53,4 +50,5 @@ Fixture parser tests required. Fallback: `bash scripts/feature-gate.sh --stack a
 ## Notes
 
 - Date is last-seen-on-Aptoide, not Play. Refresh always probes Aptoide in the bounded parallel pool when the outlet is enabled; an F-Droid hit does not skip it.
+- Listing taps open `cm.aptoide.pt` when installed (`{uname}.en.aptoide.com` or `aptoidesearch://package`). Otherwise they open the Aptoide web listing. `en.aptoide.com` without a uname host is Aptoide home, not an app page.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

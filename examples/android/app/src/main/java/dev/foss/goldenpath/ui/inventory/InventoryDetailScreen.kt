@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -29,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.AppDetailsIntent
 import dev.foss.goldenpath.inventory.InstalledApp
+import dev.foss.goldenpath.inventory.StoreListingIntent
 import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.StoreSelection
@@ -122,7 +122,7 @@ private fun DetailCallout(label: String, value: String, warn: Boolean = false) {
 
 @Composable
 private fun StoreListingRow(link: UpdateLink) {
-    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
     val mark = InventoryCopy.listingMark(link.listed, link.known)
     val sourceName = stringResource(InventoryCopy.sourceRes(link.source))
     val source = InventoryCopy.listingMarkPrefix(mark) + sourceName
@@ -158,7 +158,7 @@ private fun StoreListingRow(link: UpdateLink) {
             color = tone,
             modifier = if (canOpen) {
                 Modifier.clickable(role = Role.Button) {
-                    link.url?.let { runCatching { uriHandler.openUri(it) } }
+                    link.url?.let { StoreListingIntent.open(context, it, link.source) }
                 }
             } else {
                 Modifier
