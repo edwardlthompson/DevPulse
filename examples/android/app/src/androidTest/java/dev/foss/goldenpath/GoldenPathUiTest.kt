@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import org.junit.Rule
 import org.junit.Test
 
@@ -22,13 +23,13 @@ class GoldenPathUiTest {
         composeTestRule.onNodeWithText("On demand").assertIsDisplayed()
         composeTestRule.onNodeWithText("Once a week").assertIsDisplayed()
         composeTestRule.onNodeWithText("Dark theme").performClick()
-        composeTestRule.onNodeWithText("Close settings").performClick()
+        composeTestRule.onNodeWithText("Close settings").performScrollTo().performClick()
     }
 
     @Test
     fun systemBackFromSettingsReturnsToMain() {
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
-        composeTestRule.onNodeWithText("Close settings").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Close settings").performScrollTo().assertIsDisplayed()
         composeTestRule.runOnIdle {
             composeTestRule.activity.onBackPressedDispatcher.onBackPressed()
         }

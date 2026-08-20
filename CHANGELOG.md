@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Skip web/node CI jobs when those stacks are pruned
 - Donation asset tests no longer depend on the gitignored live `donations.json`
+- Skip the web About add/remove gate when `examples/web` is pruned
+- Scroll to Close settings in instrumented inset tests after Settings grew
 
 ## [0.21.0](https://github.com/edwardlthompson/agent-project-bootstrap/compare/v0.20.0...v0.21.0) (2026-08-18)
 
