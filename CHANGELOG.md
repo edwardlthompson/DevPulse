@@ -6,22 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.22.0](https://github.com/edwardlthompson/DevPulse/compare/v0.21.0...v0.22.0) (2026-08-20)
-
-
-### Added
-
-* prepare v0.22.0 DevPulse product release ([8943815](https://github.com/edwardlthompson/DevPulse/commit/89438154641d45d56b7062ee6352e78b7f4c36ef))
-
-
-### Fixed
-
-* make instrumented settings and About tests match the grown UI ([4b818af](https://github.com/edwardlthompson/DevPulse/commit/4b818afaaf8f3e9b17b462aeddd91b21ab31bf4c))
-* skip CodeQL JS after pruning web and node stacks ([8fbe9ae](https://github.com/edwardlthompson/DevPulse/commit/8fbe9aef85193d4777751bcb1ec835c2561de3e5))
-* skip pruned stack CI and stabilize donation tests ([7884f61](https://github.com/edwardlthompson/DevPulse/commit/7884f617a366163622d13afd604705c0210e8d8e))
-* skip web About gate and scroll settings inset tests ([f8b8ebe](https://github.com/edwardlthompson/DevPulse/commit/f8b8ebe20adb5632ba0734202d76eb2f90298a30))
-
 ## [Unreleased]
+
+## [0.22.0](https://github.com/edwardlthompson/DevPulse/compare/v0.21.0...v0.22.0) (2026-08-20)
 
 ### Added
 
@@ -35,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Skip CodeQL JavaScript after pruning web and node stacks
 - Skip web/node CI jobs when those stacks are pruned
 - Donation asset tests no longer depend on the gitignored live `donations.json`
 - Skip the web About add/remove gate when `examples/web` is pruned
