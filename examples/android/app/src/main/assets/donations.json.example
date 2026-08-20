@@ -1,10 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
   "message": "If this project helps you, consider supporting development.",
-  "links": [
-    {
-      "label": "[INSERT METHOD]",
-      "url": "https://example.com/donate"
-    }
-  ]
+  "links": []
 }

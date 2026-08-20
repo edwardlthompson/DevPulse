@@ -15,10 +15,23 @@ class DonationsLoaderTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test
-    fun loadsDonationsFromAssets() {
+    fun parseDisabledAndEnabled() {
+        val off = DonationsLoader.parse("""{"enabled":false,"message":"Hi","links":[]}""")
+        assertTrue(!off.enabled)
+        assertEquals("Hi", off.message)
+        assertEquals(0, off.links.size)
+        val on = DonationsLoader.parse(
+            """{"enabled":true,"message":"Hi","links":[{"label":"Ko-fi","url":"https://example.com/donate"}]}""",
+        )
+        assertTrue(on.enabled)
+        assertEquals("Ko-fi", on.links.single().label)
+    }
+
+    @Test
+    fun loadAssetsUsesDisabledProductDefault() {
         val cfg = DonationsLoader.load(context)
-        assertTrue(!cfg.enabled)
         assertEquals("If this project helps you, consider supporting development.", cfg.message)
+        assertTrue(!cfg.enabled)
         assertEquals(0, cfg.links.size)
     }
 }

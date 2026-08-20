@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Pruned unused stacks; this child repo is Android FOSS / GitHub Releases only
 
+### Fixed
+
+- Skip web/node CI jobs when those stacks are pruned
+- Donation asset tests no longer depend on the gitignored live `donations.json`
+
 ## [0.21.0](https://github.com/edwardlthompson/agent-project-bootstrap/compare/v0.20.0...v0.21.0) (2026-08-18)
 
 

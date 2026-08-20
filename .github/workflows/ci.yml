@@ -190,6 +190,8 @@ jobs:
 
   web:
     name: Web - Lint, Test, Build
+    needs: stack-presence
+    if: needs.stack-presence.outputs.web == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -254,6 +256,8 @@ jobs:
 
   node:
     name: Node - Lint, Test
+    needs: stack-presence
+    if: needs.stack-presence.outputs.node == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
