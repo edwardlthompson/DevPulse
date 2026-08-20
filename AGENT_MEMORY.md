@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-20 | v0.24.0 /ship | `feat:` prepare commit made RP propose 0.24.0; tag published on merge; SBOM dispatched; PR #5 opened with `gh` after Actions PR deny | Enable Actions "create pull requests"; do not pass `newline='\\n'` to `Path.write_text` from PowerShell (truncates the file) |
 | 2026-08-20 | HUMAN/ADB device close-out | Date smoke: 0 epoch-1970 rows; Aegis F-Droid APK cached via `download_url`; README `device-inventory.jpg`; first-tag ack via published `v0.23.0` | Recurring maintenance HUMAN (next tag, Nov radar) stay 🔲; keep `human_task_android.py` thin — smoke lives in `device_smoke_run.py` |
 | 2026-08-20 | /build Sprints 11–13 | Prefetch opt-in + cert/sha256 gate; Wayback recovers Play `datePublished` only on live Missing; ADB rows later completed on CPH2583 | Host-resolve F-Droid package API; skip on-device index files >2MB; do not mix adb 39/41 |
 | 2026-08-20 | v0.23.0 /ship | Dump-store batches worked on device (Mirror 143/385, Pure 315/385); RP #4 opened by hand after Actions PR deny; tag+release created with `gh` after RP missed the 0.23.0 tag | Enable Actions "create pull requests"; use `feat:` not `chore(release):` if the cut is a minor; RP still leaves a phantom next-version branch |

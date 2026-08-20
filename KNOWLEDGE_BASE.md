@@ -163,6 +163,14 @@
 | **Cause** | Repo setting "Allow GitHub Actions to create and approve pull requests" is off. `GITHUB_TOKEN` can push the branch but not open the PR |
 | **Fix** | `gh pr create --head release-please--branches--main` with a human-auth `gh`, then `merge-release-please-pr` |
 | **Prevention** | Enable that Actions permission, or keep creating the PR from `/ship` when the workflow errors |
+### KB-021 — PowerShell `Path.write_text(..., newline=)` truncates files
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `CHANGELOG.md` becomes 0 bytes during a `/ship` fold; later checks report zero `[Unreleased]` headings |
+| **Cause** | A PowerShell-quoted `python3 -c` passed `newline='\\n'` into `Path.write_text`. `open(mode='w')` truncated the file, then `io.open` raised `ValueError: illegal newline value` |
+| **Fix** | Restore from git. Write a small UTF-8 helper script and call `Path.write_text(text, encoding='utf-8')` with no `newline` argument |
+| **Prevention** | Do not pass `newline=` through PowerShell string escaping; keep fold helpers in `scripts/lib` |
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |

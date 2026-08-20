@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — Ship v0.24.0 on GitHub Releases
+- **Status:** Accepted
+- **Context:** `/ship` after prefetch, Wayback Play dates, session update-ownership, and HUMAN/ADB device close-out. Actions still cannot open PRs.
+- **Decision:** Use a `feat:` prepare commit so Release Please proposes 0.24.0. Open PR #5 with `gh`, fold Unreleased on the RP branch, admin-merge. Leave recurring "next tag" and November radar HUMAN rows open.
+- **Alternatives considered:** `chore(release):` prepare (rejected: last cut became 0.22.1). Wait for org "create pull requests" (rejected: blocks this ship).
+- **Consequences:** Tag `v0.24.0` published on merge. Signed APK and SBOM attach via `release.yml` dispatch. Debug installs still will not overlay the signed APK.
+
 ### 2026-08-20 — Ship v0.23.0 on GitHub Releases
 - **Status:** Accepted
 - **Context:** `/ship` after APKMirror/APKPure. Release Please could not open PRs. A `chore(release):` prepare commit made RP propose 0.22.1.

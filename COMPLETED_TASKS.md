@@ -2,6 +2,10 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## v0.24.0 ship (2026-08-20)
+
+- ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)
+
 ## Sprint 12 — Device download smoke (2026-08-20)
 
 - ✅ [ADB] Device: Download one APKPure or F-Droid file; Play still has no file URL
