@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-20 | v0.22.0 /ship | Pruned-stack CI + donation + About-gate + inset tests fixed; RP #3 opened by hand after Actions PR deny; admin-merge; SBOM on the tag | Enable Actions "create pull requests"; fold Unreleased on the RP branch before merge; Settings Close is below the fold on emulator |
 | 2026-08-19 | DevPulse Sprint 6 | Package-id-first forge matcher + paste/token UI; no live HTTP | EncryptedSharedPreferences adapter still to swap in with live client |
 | 2026-08-19 | DevPulse Sprint 3 | Local-only scan + honest badges; remotes stay unknown | Do not add Play/forge HTTP until their sprints |
 | 2026-08-19 | DevPulse Sprint 2 | Inventory list, QUERY_ALL_PACKAGES gate, PackageManager catalog | Screenshots stay HUMAN; do not push without `/push` |

@@ -139,6 +139,30 @@
 | **Cause** | `changelog_unreleased.py --fold` writes the working tree and comments the PR; it does not commit. Release Please copies Unreleased from the last pushed commit |
 | **Fix** | Empty `[Unreleased]` (and keep it first) in a `docs(release)` archive commit after merge, or empty it in the prepare commit before push |
 | **Prevention** | Do not mark `/ship` done until Unreleased is first and empty on `origin/main` |
+### KB-018 — Pruned stacks still run web/node CI and About gate
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | After deleting `examples/web` and `examples/node`, CI fails `setup-node` cache-dependency-path and Feature Gate fails `about-feature-gate` (`pathspec examples/web/src/about`) |
+| **Cause** | `web`/`node` jobs lacked `needs: stack-presence`. Strict multi-stack always ran the web About add/remove script |
+| **Fix** | Gate those jobs on `outputs.web` / `outputs.node`. Skip About gate when `examples/web/package.json` is missing |
+| **Prevention** | Any new stack job must use the same `stack-presence` `if` as Python |
+### KB-019 — Feature Gate syncs gitignored `donations.json`
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `DonationsLoaderTest` passes locally (live `donations.json` disabled) and fails in CI (`enabled: true`, placeholder link) |
+| **Cause** | Live file is gitignored. `sync-exemplar-config.sh` copies `donations.json.example` before `./gradlew test` |
+| **Fix** | Keep the example disabled for this child. Test `DonationsLoader.parse` with fixtures, not only assets |
+| **Prevention** | Do not assert live gitignored About config in unit tests |
+### KB-020 — Actions cannot open Release Please PRs
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | Release Please fails: `GitHub Actions is not permitted to create or approve pull requests`. Branch `release-please--branches--main` exists |
+| **Cause** | Repo setting "Allow GitHub Actions to create and approve pull requests" is off. `GITHUB_TOKEN` can push the branch but not open the PR |
+| **Fix** | `gh pr create --head release-please--branches--main` with a human-auth `gh`, then `merge-release-please-pr` |
+| **Prevention** | Enable that Actions permission, or keep creating the PR from `/ship` when the workflow errors |
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |

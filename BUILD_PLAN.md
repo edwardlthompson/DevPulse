@@ -73,6 +73,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **Sprint 8** archived in COMPLETED_TASKS.md @ `0b047aa`.
 > **Sprint 9** archived in COMPLETED_TASKS.md @ `0b047aa`.
 > **Sprint 10** AGENT/AUTO archived in COMPLETED_TASKS.md @ `0b047aa`.
+> **v0.22.0** tag archived in COMPLETED_TASKS.md @ `e53283a`.
 
 ### Archived Sprints
 
@@ -105,9 +106,8 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 
 #### Human & device (after automation)
 
-1. 🔲 [HUMAN] Approve first GitHub Release tag when product-ready
-2. ❌ [ADB] F-Droid submission dry-run — out of scope; GitHub Releases only
-3. 🔲 [HUMAN] Optional GitHub README / release screenshots
+1. ❌ [ADB] F-Droid submission dry-run — out of scope; GitHub Releases only
+2. 🔲 [HUMAN] Optional GitHub README / release screenshots
 
 ---
 

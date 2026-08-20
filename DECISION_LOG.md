@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — Ship v0.22.0 on GitHub Releases
+- **Status:** Accepted
+- **Context:** `/ship` after the GitHub-library product work. First child tag. Actions could not open the Release Please PR.
+- **Decision:** Push CI fixes to `main`, open RP #3 with `gh`, fold Unreleased into 0.22.0 on the RP branch, admin-merge. Distribution remains GitHub Releases (SBOM assets on the tag).
+- **Alternatives considered:** Wait for the Actions "create pull requests" org setting (rejected: blocks this ship). Force-push RP (rejected: not needed).
+- **Consequences:** `v0.22.0` published. Screenshots and Wayback Play recovery stay open. No APK job on `release.yml` yet.
+
 ### 2026-08-19 — GitHub library from F-Droid indexes, not API search
 - **Status:** Accepted
 - **Context:** Unauthenticated GitHub search 429'd (~387 leftovers). Wipe Files is Izzy-only; `sourceCode` sits before `packageName`. APKUpdater's hardcoded list must not be copied.

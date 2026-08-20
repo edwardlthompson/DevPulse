@@ -2,6 +2,10 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## v0.22.0 ship (2026-08-20)
+
+- ✅ [HUMAN] Approve first GitHub Release tag when product-ready
+
 ## Sprint 10 — Polish and ship AGENT (2026-08-19)
 
 - ✅ [AGENT] Lock polish APIs: widget, local notifications, compatibility UX, Fastlane (FR-17, FR-33 to FR-35)
