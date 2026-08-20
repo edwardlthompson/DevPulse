@@ -6,19 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.22.1](https://github.com/edwardlthompson/DevPulse/compare/v0.22.0...v0.22.1) (2026-08-20)
-
-
-### Changed
-
-* **release:** prepare v0.23.0 release ([ab50ba5](https://github.com/edwardlthompson/DevPulse/commit/ab50ba582b93108e0125e5ae6cd9374048db6b82))
-
-
-### Documentation
-
-* record v0.22.0 ship notes and pruned-stack CI lessons ([2a77e6d](https://github.com/edwardlthompson/DevPulse/commit/2a77e6d4b2c71471ff989e9d206ef1c3d86aa929))
-
 ## [Unreleased]
+
+## [0.23.0](https://github.com/edwardlthompson/DevPulse/compare/v0.22.0...v0.23.0) (2026-08-20)
 
 ### Added
 
