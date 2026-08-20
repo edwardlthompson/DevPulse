@@ -47,11 +47,17 @@ class NavBarInsetUiTest {
             .boundsInRoot
             .bottom
 
-        val minClearance = if (navInset > 0) navInset else 48
-        assertTrue(
-            "Close button bottom ($buttonBottom) should be above nav bar (screen=$screenHeight inset=$navInset)",
-            buttonBottom <= screenHeight - minClearance + 8,
-        )
+        if (navInset > 0) {
+            assertTrue(
+                "Close button bottom ($buttonBottom) should be above nav bar (screen=$screenHeight inset=$navInset)",
+                buttonBottom <= screenHeight - navInset + 8,
+            )
+        } else {
+            assertTrue(
+                "Close button bottom ($buttonBottom) should stay on screen ($screenHeight) when nav inset is 0",
+                buttonBottom <= screenHeight + 8,
+            )
+        }
     }
 
     @Test

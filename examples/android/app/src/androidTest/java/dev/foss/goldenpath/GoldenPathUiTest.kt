@@ -19,10 +19,10 @@ class GoldenPathUiTest {
         composeTestRule.onNodeWithText("Settings").assertIsDisplayed()
         composeTestRule.onNodeWithText("Theme").assertIsDisplayed()
         composeTestRule.onNodeWithText("Check for updates").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Include system apps").assertIsDisplayed()
-        composeTestRule.onNodeWithText("On demand").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Once a week").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Dark theme").performClick()
+        composeTestRule.onNodeWithText("Include system apps").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("On demand").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("Once a week").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("Dark theme").performScrollTo().performClick()
         composeTestRule.onNodeWithText("Close settings").performScrollTo().performClick()
     }
 
@@ -39,8 +39,8 @@ class GoldenPathUiTest {
 
     @Test
     fun opensAboutPanelWithVersion() {
-        composeTestRule.onNodeWithContentDescription("About").performClick()
-        composeTestRule.onNodeWithText("About").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule.onNodeWithText("About").performScrollTo().performClick()
         composeTestRule.onNodeWithText("Installed format: apk").assertIsDisplayed()
     }
 }
