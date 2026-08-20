@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-20 — Ship v0.23.0 on GitHub Releases
+- **Status:** Accepted
+- **Context:** `/ship` after APKMirror/APKPure. Release Please could not open PRs. A `chore(release):` prepare commit made RP propose 0.22.1.
+- **Decision:** Fold Unreleased into 0.23.0 on the RP branch, admin-merge #4, create `v0.23.0` with `gh` when RP did not tag.
+- **Alternatives considered:** Keep 0.22.1 (rejected: this is a feature cut). Wait for org "create pull requests" (rejected: blocks this ship).
+- **Consequences:** Tag `v0.23.0` published. RP may leave a phantom `0.24.0` branch until the next successful run sees the tag.
+
 ### 2026-08-20 — Opt-in APKMirror and APKPure batch listing
 - **Status:** Accepted
 - **Context:** Users want dump-site coverage beyond Play / F-Droid / Aptoide / GitHub. APK Combo is scrape-only.

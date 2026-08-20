@@ -29,7 +29,7 @@
 
 ### Project Purpose
 
-DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid (official, Archive, Izzy, Guardian, Calyx), optional Aptoide, and GitHub. GitHub listings come from same-object F-Droid `sourceCode` (no token). Leftover GitHub name-search is opt-in.
+DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid (official, Archive, Izzy, Guardian, Calyx), optional Aptoide / APKMirror / APKPure, and GitHub. GitHub listings come from same-object F-Droid `sourceCode` (no token). Leftover GitHub name-search and dump-site lookups are opt-in.
 
 ### Key Constraints
 
@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-20 | v0.23.0 /ship | Dump-store batches worked on device (Mirror 143/385, Pure 315/385); RP #4 opened by hand after Actions PR deny; tag+release created with `gh` after RP missed the 0.23.0 tag | Enable Actions "create pull requests"; use `feat:` not `chore(release):` if the cut is a minor; RP still leaves a phantom next-version branch |
 | 2026-08-20 | v0.22.0 /ship | Pruned-stack CI + donation + About-gate + inset tests fixed; RP #3 opened by hand after Actions PR deny; admin-merge; SBOM on the tag | Enable Actions "create pull requests"; fold Unreleased on the RP branch before merge; Settings Close is below the fold on emulator |
 | 2026-08-19 | DevPulse Sprint 6 | Package-id-first forge matcher + paste/token UI; no live HTTP | EncryptedSharedPreferences adapter still to swap in with live client |
 | 2026-08-19 | DevPulse Sprint 3 | Local-only scan + honest badges; remotes stay unknown | Do not add Play/forge HTTP until their sprints |
