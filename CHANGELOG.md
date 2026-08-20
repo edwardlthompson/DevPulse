@@ -6,28 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.25.0](https://github.com/edwardlthompson/DevPulse/compare/v0.24.0...v0.25.0) (2026-08-20)
-
-
-### Added
-
-* prepare v0.25.0 DevPulse product release ([9853d4f](https://github.com/edwardlthompson/DevPulse/commit/9853d4fbf524f93efd5ce303217fbbbe6eff6804))
-
-
-### Fixed
-
-* walk the Settings hub in instrumented smoke tests ([4bf97e9](https://github.com/edwardlthompson/DevPulse/commit/4bf97e9781ef551ac83408572207eb8e20b4b173))
-
-
-### Documentation
-
-* record v0.24.0 ship notes and fold lessons ([5f96a88](https://github.com/edwardlthompson/DevPulse/commit/5f96a88956aa36e915ae81459c4e6cf13401ef26))
-
 ## [Unreleased]
 
-### Changed
-
-- Settings is a glanceable hub with Appearance, Inventory, Updates, Scan sources, Store apps, and About subpages
+## [0.25.0](https://github.com/edwardlthompson/DevPulse/compare/v0.24.0...v0.25.0) (2026-08-20)
 
 ### Added
 
@@ -35,10 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Settings → Store apps lists Play, F-Droid, Droid-ify, Izzy/Guardian/Calyx repo pages, Aptoide Store, APKMirror, APKPure, and GitHub with every available install link
 - APKPure Update downloads `asset.url` on demand (same get_app_update path as APKUpdater) and only opens the APKPure app when there is no file
 
+### Changed
+
+- Settings is a glanceable hub with Appearance, Inventory, Updates, Scan sources, Store apps, and About subpages
+
 ### Fixed
 
 - APKPure listing taps open the installed APKPure app via `market://details?id=` (https search pages are not handled by that app)
 - Aptoide listing taps use `https://en.aptoide.com/app?package_name=` so Aptoide Games and Aptoide Store both resolve; Settings flags Games and links to the official Store APK
+- Instrumented Settings smoke walks Appearance, Updates, and Inventory subpages
 
 ## [0.24.0](https://github.com/edwardlthompson/DevPulse/compare/v0.23.0...v0.24.0) (2026-08-20)
 
