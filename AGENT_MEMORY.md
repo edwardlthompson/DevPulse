@@ -78,5 +78,5 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 ## Template Provenance
 
 - **Source template:** `edwardlthompson/agent-project-bootstrap` (child: `edwardlthompson/DevPulse`)
-- **Template version:** `0.22.0` (see `.template-version`)
+- **Template version:** `0.23.0` (see `.template-version`)
 - **Last update check:** See `.template-update.json`
