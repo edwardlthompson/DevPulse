@@ -31,7 +31,7 @@ object InventoryExport {
         return fmt.format(Date(ms))
     }
 
-    internal fun escapeCsv(value: String): String {
+    fun escapeCsv(value: String): String {
         if (value.none { it == ',' || it == '"' || it == '\n' || it == '\r' }) return value
         return "\"${value.replace("\"", "\"\"")}\""
     }

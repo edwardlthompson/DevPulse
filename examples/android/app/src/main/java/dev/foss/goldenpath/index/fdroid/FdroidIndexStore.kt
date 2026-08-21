@@ -19,6 +19,16 @@ class FdroidIndexStore(private val dir: File) {
         metaFile(repoId).writeText(nowMs.toString())
     }
 
+    fun forget(repoId: String) {
+        dataFile(repoId).delete()
+        metaFile(repoId).delete()
+    }
+
+    fun sizeBytes(repoId: String): Long {
+        val data = dataFile(repoId)
+        return if (data.isFile) data.length() else 0L
+    }
+
     private fun safe(repoId: String): String =
         repoId.replace(Regex("[^A-Za-z0-9._-]"), "_")
 

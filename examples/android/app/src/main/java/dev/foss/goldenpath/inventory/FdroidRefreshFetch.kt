@@ -10,6 +10,7 @@ object FdroidRefreshFetch {
         fetcher: FdroidIndexFetcher,
         store: FdroidIndexStore?,
         nowMs: Long,
+        allowEmpty: Boolean = false,
     ): ByteArray {
         val cached = store?.load(repo.id, nowMs)
         if (cached != null && cached.isNotEmpty()) {
@@ -17,7 +18,10 @@ object FdroidRefreshFetch {
             return cached
         }
         val raw = fetcher.fetch(repo.indexUrl).getOrElse { throw it }
-        if (raw.isEmpty()) error("empty index")
+        if (raw.isEmpty()) {
+            if (allowEmpty) return raw
+            error("empty index")
+        }
         store?.save(repo.id, raw, nowMs)
         RefreshTrace.line("fdroid ${repo.id} downloaded ${raw.size}B")
         return raw

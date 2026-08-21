@@ -6,7 +6,10 @@ object UpdateInventory {
 
     fun withUpdates(apps: List<InstalledApp>): List<InstalledApp> = apps.filter(::hasUpdate)
 
-    fun canOpen(link: UpdateLink): Boolean = link.listed && !link.url.isNullOrBlank()
+    fun canOpen(link: UpdateLink): Boolean =
+        link.listed &&
+            !link.url.isNullOrBlank() &&
+            (link.source == RemoteReleasedSource.Play || link.source == RemoteReleasedSource.ApkMirror)
 
     fun listingsFor(pick: RemoteReleasePick): List<UpdateLink> =
         ListingChannels.complete(pick.offers.map(ListingChannels::relabel), ListingChannels.STANDARD)

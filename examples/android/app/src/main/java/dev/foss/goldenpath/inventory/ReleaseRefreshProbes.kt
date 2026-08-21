@@ -5,6 +5,8 @@ import dev.foss.goldenpath.index.aptoide.AptoideScan
 import dev.foss.goldenpath.index.forge.GitHubScan
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
 import dev.foss.goldenpath.index.forge.GithubHint
+import dev.foss.goldenpath.index.forge.LeftoverForgeScan
+import dev.foss.goldenpath.index.forge.LeftoverSearchClient
 import dev.foss.goldenpath.index.play.PlayPageClient
 import dev.foss.goldenpath.index.play.PlayScan
 
@@ -31,13 +33,18 @@ object ReleaseRefreshProbes {
         client: GitHubSearchClient,
         hint: GithubHint? = null,
         searchUnknowns: Boolean = false,
+        leftover: LeftoverSearchClient? = null,
         onVerified: (String) -> Unit = {},
-    ): RemoteReleaseOffer = GitHubScan.toOffer(
-        packageName,
-        label,
-        client,
-        hint = hint,
-        searchUnknowns = searchUnknowns,
-        onVerified = onVerified,
-    )
+    ): RemoteReleaseOffer {
+        val offer = GitHubScan.toOffer(
+            packageName,
+            label,
+            client,
+            hint = hint,
+            searchUnknowns = searchUnknowns,
+            onVerified = onVerified,
+        )
+        if (offer.listed || leftover == null || hint != null) return offer
+        return LeftoverForgeScan.first(packageName, label, leftover) ?: offer
+    }
 }

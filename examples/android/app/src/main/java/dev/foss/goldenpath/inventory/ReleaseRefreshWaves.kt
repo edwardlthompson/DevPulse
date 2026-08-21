@@ -7,6 +7,7 @@ import dev.foss.goldenpath.index.fdroid.FdroidRepo
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
 import dev.foss.goldenpath.index.forge.GithubHint
 import dev.foss.goldenpath.index.forge.GithubVerifiedStore
+import dev.foss.goldenpath.index.forge.LeftoverSearchClient
 import dev.foss.goldenpath.index.play.PlayPageClient
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
@@ -34,6 +35,7 @@ object ReleaseRefreshWaves {
         apkPureEnabled: Boolean = false,
         apkMirrorFetcher: ApkMirrorBatchFetcher = ApkMirrorBatchFetcher { Result.success("") },
         apkPureFetcher: ApkPureBatchFetcher = ApkPureBatchFetcher { Result.success("") },
+        leftoverClient: LeftoverSearchClient? = null,
     ) {
         val bags = ConcurrentHashMap<String, MutableList<RemoteReleaseOffer>>()
         seed.forEach { (pkg, offers) -> bags[pkg] = syncList(offers) }
@@ -56,7 +58,7 @@ object ReleaseRefreshWaves {
         ReleaseRefreshParallel.map(jobs, RefreshHostGate.APPS, executor) { job ->
             runJob(
                 job, bags, playClient, aptoideFetcher, gitHubClient, nowMs, gate, clock,
-                knownRepos, verifiedStore, searchUnknowns,
+                knownRepos, verifiedStore, searchUnknowns, leftoverClient,
             )
         }
         ReleaseRefreshComplete.write(
@@ -95,6 +97,7 @@ object ReleaseRefreshWaves {
         knownRepos: Map<String, GithubHint>,
         verifiedStore: GithubVerifiedStore?,
         searchUnknowns: Boolean,
+        leftoverClient: LeftoverSearchClient?,
     ) {
         val app = job.app
         val pkg = app.packageName
@@ -106,14 +109,14 @@ object ReleaseRefreshWaves {
                 Kind.Aptoide -> gate.aptoide { ReleaseRefreshProbes.aptoide(pkg, aptoideFetcher, nowMs) }
                 Kind.GitHub -> gate.github {
                     ReleaseRefreshProbes.github(
-                        pkg,
-                        app.label,
-                        gitHubClient!!,
-                        knownRepos[pkg],
-                        searchUnknowns,
-                    ) { ownerRepo ->
-                        verifiedStore?.put(pkg, ownerRepo)
-                    }
+                        packageName = pkg,
+                        label = app.label,
+                        client = gitHubClient!!,
+                        hint = knownRepos[pkg],
+                        searchUnknowns = searchUnknowns,
+                        leftover = leftoverClient,
+                        onVerified = { ownerRepo -> verifiedStore?.put(pkg, ownerRepo) },
+                    )
                 }
             }
         } catch (error: Throwable) {

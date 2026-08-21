@@ -20,7 +20,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.index.fdroid.FdroidRepoCatalog
-import dev.foss.goldenpath.index.fdroid.FdroidRepoKind
 import dev.foss.goldenpath.index.fdroid.FdroidRepoPreferences
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import kotlinx.coroutines.launch
@@ -33,9 +32,10 @@ fun FdroidRepoSettings(modifier: Modifier = Modifier) {
     val customUrl by prefs.customIndexUrl.collectAsStateWithLifecycle("")
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
         Text(text = stringResource(R.string.fdroid_repos_title), style = MaterialTheme.typography.titleMedium)
+        Text(text = stringResource(R.string.repo_help_body), style = MaterialTheme.typography.bodySmall)
         Text(text = stringResource(R.string.fdroid_signature_note), style = MaterialTheme.typography.bodySmall)
         FdroidRepoCatalog.defaults().forEach { repo ->
-            RepoToggle(repoId = repo.id, kind = repo.kind, defaultOn = repo.enabled, prefs = prefs)
+            RepoToggle(repoId = repo.id, defaultOn = repo.enabled, prefs = prefs)
         }
         OutlinedTextField(
             value = customUrl,
@@ -48,13 +48,12 @@ fun FdroidRepoSettings(modifier: Modifier = Modifier) {
 @Composable
 private fun RepoToggle(
     repoId: String,
-    kind: FdroidRepoKind,
     defaultOn: Boolean,
     prefs: FdroidRepoPreferences,
 ) {
     val scope = rememberCoroutineScope()
     val enabled by prefs.repoEnabled(repoId).collectAsStateWithLifecycle(defaultOn)
-    val label = stringResource(labelRes(kind))
+    val label = stringResource(labelRes(repoId))
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = label, modifier = Modifier.weight(1f))
         Switch(
@@ -65,11 +64,17 @@ private fun RepoToggle(
     }
 }
 
-private fun labelRes(kind: FdroidRepoKind): Int = when (kind) {
-    FdroidRepoKind.Official -> R.string.fdroid_repo_official
-    FdroidRepoKind.Archive -> R.string.fdroid_repo_archive
-    FdroidRepoKind.Izzy -> R.string.fdroid_repo_izzy
-    FdroidRepoKind.Guardian -> R.string.fdroid_repo_guardian
-    FdroidRepoKind.Calyx -> R.string.fdroid_repo_calyx
-    FdroidRepoKind.Custom -> R.string.fdroid_custom_url
+private fun labelRes(repoId: String): Int = when (repoId) {
+    "official" -> R.string.fdroid_repo_official
+    "archive" -> R.string.fdroid_repo_archive
+    "izzy" -> R.string.fdroid_repo_izzy
+    "guardian" -> R.string.fdroid_repo_guardian
+    "calyx" -> R.string.fdroid_repo_calyx
+    "microg" -> R.string.fdroid_repo_microg
+    "newpipe" -> R.string.fdroid_repo_newpipe
+    "divest" -> R.string.fdroid_repo_divest
+    "kde" -> R.string.fdroid_repo_kde
+    "cromite" -> R.string.fdroid_repo_cromite
+    "iode" -> R.string.fdroid_repo_iode
+    else -> R.string.fdroid_custom_url
 }

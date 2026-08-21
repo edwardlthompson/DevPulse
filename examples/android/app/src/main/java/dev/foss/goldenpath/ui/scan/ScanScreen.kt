@@ -37,6 +37,7 @@ fun ScanScreen(
     onResume: () -> Unit,
     onSelect: (ScanItem) -> Unit,
     onClose: () -> Unit,
+    quiet: List<String> = emptyList(),
     modifier: Modifier = Modifier,
 ) {
     val visibleCount = when (progress.phase) {
@@ -57,6 +58,9 @@ fun ScanScreen(
             text = progressCd,
             modifier = Modifier.semantics { contentDescription = progressCd },
         )
+        if (quiet.isNotEmpty()) {
+            Text(text = stringResource(R.string.scan_went_quiet, quiet.size))
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(SpacingSm)) {
             when (progress.phase) {
                 ScanPhase.Running -> Button(onClick = onPause) { Text(stringResource(R.string.scan_pause)) }

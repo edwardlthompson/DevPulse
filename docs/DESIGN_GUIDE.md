@@ -139,4 +139,4 @@ Cross-stack in-app About (not GitHub repo About):
 
 **Platform parity:** Web applies updates via `applyUpdate.ts` and shows `about.update.restarting` during the restart guard. Android persists `pending_restart` in DataStore and surfaces `about_update_restarting` in `GoldenPathApp` (UI stub only — no in-app APK apply in the exemplar).
 
-**Donations:** external links only; hide block when `donations.json` disabled or empty.
+**Donations:** quiet **Donate via Venmo** in About and Settings. External browser only. Never on the update dialog. Extra `donations.json` links may still appear.

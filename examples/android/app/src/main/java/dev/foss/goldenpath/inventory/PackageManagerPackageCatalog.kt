@@ -10,7 +10,9 @@ class PackageManagerPackageCatalog(
     private val packageManager: PackageManager,
 ) : PackageCatalog {
     override fun listInstalled(): List<InstalledApp> =
-        installedPackages().mapNotNull { info -> toSnapshot(info)?.let(InstalledAppMapper::fromSnapshot) }
+        runCatching { installedPackages() }.getOrDefault(emptyList()).mapNotNull { info ->
+            runCatching { toSnapshot(info)?.let(InstalledAppMapper::fromSnapshot) }.getOrNull()
+        }
 
     private fun installedPackages(): List<PackageInfo> =
         if (Build.VERSION.SDK_INT >= 33) {

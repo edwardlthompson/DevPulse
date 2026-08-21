@@ -19,16 +19,17 @@ Local notifications are device-only (scan progress and â€œrelease dates updatedâ
 | Pins and private notes | Keep-anyway and Develop-next | User request | Until user deletes them |
 | Release notes from F-Droid what'sNew or GitHub release body | Show what changed on app detail | User request (Refresh) | Until process ends or next Refresh |
 | Update-check prefs (`last_checked`, format, interval) | F-Droid-safe About stub | Legitimate interest | Local until cleared |
+| Product update prefs (`last_check_at`, `last_seen_version`, `dismissed_version`) | Daily GitHub installer check and one donate note per version | Legitimate interest | Device-local SharedPreferences until cleared; not peer-synced |
 ## Network
 
-Network runs only when the user scans, or when they opt into later lookups or the About update-check stub.
+Network runs when the user scans, opts into later lookups, or when the daily GitHub self-update check is due.
 
 - Play: public details HTML, on demand or during a user-started scan
 - F-Droid and extra-repo indexes: official client-style index download
 - Aptoide `app/getMeta` by package name, only if the user enables it and starts Refresh
 - APKMirror `app_exists` and APKPure `get_app_update` in batches, only if the user enables those outlets and starts Refresh
 - Forges: documented GitHub / optional GitLab / Codeberg APIs
-- About update check: GitHub Releases or configured manifest only
+- About / launch update check: GitHub `releases/latest` once per 24 hours; User-Agent `DevPulse/{version}`; 10s timeout; fail stays silent
 - User-Agent: `DevPulse/0.1` plus the public GitHub URL. No browser impersonation
 - Optional APK file download (user tap): APKPure `asset.url`, F-Droid/Izzy repo APK, GitHub release asset, or Aptoide `file.path`. Files stay in app cache until the user installs or clears cache.
 - Optional Root install: local `su` / `pm install` only. No install traffic leaves the device.

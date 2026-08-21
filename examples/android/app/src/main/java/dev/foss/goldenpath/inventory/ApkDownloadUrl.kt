@@ -24,7 +24,17 @@ object ApkDownloadUrl {
             host.contains("izzysoft") ||
             host.contains("guardianproject") ||
             host.contains("calyxos") ||
+            host.contains("microg.org") ||
+            host.contains("newpipe.net") ||
+            host.contains("divestos.org") ||
+            host.contains("kde.org") ||
+            host.contains("cromite.org") ||
+            host.contains("iode.tech") ||
             host.contains("github") ||
-            host.contains("githubusercontent")
+            host.contains("githubusercontent") ||
+            host.endsWith("gvt1.com") ||
+            host.endsWith("googleusercontent.com") ||
+            host.endsWith("play.googleapis.com") ||
+            host.endsWith("android.clients.google.com")
     }
 }

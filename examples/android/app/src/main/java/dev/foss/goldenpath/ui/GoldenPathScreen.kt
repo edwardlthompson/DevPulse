@@ -18,11 +18,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Radar
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -36,6 +42,7 @@ import dev.foss.goldenpath.ui.inventory.InventoryDetailScreen
 import dev.foss.goldenpath.ui.inventory.InventoryScreen
 import dev.foss.goldenpath.ui.inventory.InventoryUiModel
 import dev.foss.goldenpath.ui.inventory.RefreshProgressBar
+import dev.foss.goldenpath.ui.opportunity.OpportunityPane
 import dev.foss.goldenpath.ui.scan.ScanDetailScreen
 import dev.foss.goldenpath.ui.scan.ScanScreen
 import dev.foss.goldenpath.ui.scan.ScanSession
@@ -69,7 +76,8 @@ fun GoldenPathScreen(
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    val overlayOpen = showSettings || showAbout || scan.visible || scan.selected != null ||
+    var showOpportunity by remember { mutableStateOf(false) }
+    val overlayOpen = showSettings || showAbout || showOpportunity || scan.visible || scan.selected != null ||
         inventory.selectedApp != null
     LaunchedEffect(inventory.selectedApp?.packageName) {
         if (inventory.selectedApp != null) {
@@ -86,6 +94,7 @@ fun GoldenPathScreen(
         when {
             scan.selected != null -> scan.clearSelect()
             scan.visible -> scan.close()
+            showOpportunity -> showOpportunity = false
             showAbout -> onAboutClose()
             showSettings -> onSettingsClose()
             inventory.selectedApp != null -> inventory.onClearSelect()
@@ -107,9 +116,21 @@ fun GoldenPathScreen(
                     )
                 },
                 actions = {
-                    val onInventory = !showAbout && !showSettings && !scan.visible &&
+                    val onInventory = !showAbout && !showSettings && !showOpportunity && !scan.visible &&
                         scan.selected == null && inventory.selectedApp == null
                     if (onInventory && inventory.canScan) {
+                        IconButton(onClick = scan.open) {
+                            Icon(
+                                imageVector = Icons.Filled.Radar,
+                                contentDescription = stringResource(R.string.scan_title),
+                            )
+                        }
+                        IconButton(onClick = { showOpportunity = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.Lightbulb,
+                                contentDescription = stringResource(R.string.opportunity_title),
+                            )
+                        }
                         IconButton(onClick = inventory.onRefresh, enabled = !inventory.refreshing) {
                             Icon(
                                 imageVector = Icons.Filled.Refresh,
@@ -159,6 +180,7 @@ fun GoldenPathScreen(
                         InventoryDetailScreen(
                             app = inventory.selectedApp,
                             onBack = inventory.onClearSelect,
+                            inventory = inventory.apps,
                             modifier = Modifier.fillMaxSize(),
                         )
                     }
@@ -173,6 +195,15 @@ fun GoldenPathScreen(
                             onExport = inventory.onExport,
                             onAboutOpen = onAboutOpen,
                             onBack = onSettingsClose,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
+                if (showOpportunity) {
+                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                        OpportunityPane(
+                            apps = inventory.apps,
+                            onBack = { showOpportunity = false },
                             modifier = Modifier.fillMaxSize(),
                         )
                     }
@@ -201,6 +232,7 @@ fun GoldenPathScreen(
                             onResume = scan.resume,
                             onSelect = scan.select,
                             onClose = scan.close,
+                            quiet = scan.quiet,
                             modifier = Modifier.fillMaxSize(),
                         )
                     }

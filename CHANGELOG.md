@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Quiet **Donate via Venmo** in About and Settings; one optional note after a version change
+- Daily GitHub self-update check uses installer filenames (`DevPulse-X.Y.Z.apk`), Install or Later, never mixed with donate
+- Official and Archive F-Droid Refresh uses the per-package API and listing page instead of the huge index jar
+- What to build, pin loved stale apps, scan history for apps that went quiet, and opt-in 6-month/1-year stale reminders
+- GitLab and Codeberg leftover lookup when F-Droid has no GitHub source; GitHub token stored in EncryptedSharedPreferences
+- Store apps and Scan sources explain Izzy/Guardian/Calyx QR and hex as repo fingerprints, not accounts
+- Turning on Izzy, Guardian, or Calyx opens F-Droid or Droid-ify with that repo filled in (one confirm there)
+- Update downloads Izzy and official F-Droid APKs from the package page file name when the huge index is skipped
+- What to build uses stored F-Droid categories, private notes, a focused quiet-title export, and DevPulse self-pulse
+- App detail shows maintained Alternatives and Sources from cached neighbors
+- Pasted forge URLs persist and skip leftover search; Izzy host-resolves when its index is missing or over 2MB
+- Home widget shows the last red stale count from scan history
+- Opt-in Aurora Play downloads (FOSS `gplayapi`) next to Google Play lookup; Update falls back to the Play Store page
+
+### Fixed
+
+- Refresh no longer harvests or caches F-Droid indexes over 2MB (OOM crash on sideloaded GitHub builds)
+- Empty Izzy index falls back to per-package host-resolve instead of failing the repo
+
 ## [0.26.0](https://github.com/edwardlthompson/DevPulse/compare/v0.25.0...v0.26.0) (2026-08-20)
 
 ### Changed

@@ -19,7 +19,11 @@ import dev.foss.goldenpath.scan.ScanDetail
 import dev.foss.goldenpath.scan.ScanItem
 import dev.foss.goldenpath.scan.ScanMachine
 import dev.foss.goldenpath.scan.ScanPhase
+import dev.foss.goldenpath.notify.WidgetRedCount
+import dev.foss.goldenpath.query.ScanHistoryStore
+import dev.foss.goldenpath.query.ScanHistoryWrite
 import dev.foss.goldenpath.scan.ScanProgress
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,6 +34,7 @@ class ScanSession(
     val items: List<ScanItem>,
     val progress: ScanProgress,
     val selected: ScanDetail?,
+    val quiet: List<String>,
     val open: () -> Unit,
     val close: () -> Unit,
     val start: () -> Unit,
@@ -49,6 +54,7 @@ fun rememberScanSession(apps: List<InstalledApp>): ScanSession {
     var progress by remember { mutableStateOf(ScanMachine.idle()) }
     var items by remember { mutableStateOf<List<ScanItem>>(emptyList()) }
     var selected by remember { mutableStateOf<ScanDetail?>(null) }
+    var quiet by remember { mutableStateOf<List<String>>(emptyList()) }
     LaunchedEffect(progress.phase, apps) {
         while (progress.phase == ScanPhase.Running) {
             delay(40)
@@ -60,6 +66,7 @@ fun rememberScanSession(apps: List<InstalledApp>): ScanSession {
         items = items,
         progress = progress,
         selected = selected,
+        quiet = quiet,
         open = { visible = true },
         close = {
             visible = false
@@ -67,15 +74,22 @@ fun rememberScanSession(apps: List<InstalledApp>): ScanSession {
         },
         start = {
             scope.launch {
-                val now = System.currentTimeMillis()
-                if (aptoideOn) {
-                    withContext(Dispatchers.IO) {
-                        AptoideScan.picksFor(apps.map { it.packageName }, AptoideHttpFetcher, now)
+                runCatching {
+                    val now = System.currentTimeMillis()
+                    if (aptoideOn) {
+                        withContext(Dispatchers.IO) {
+                            AptoideScan.picksFor(apps.map { it.packageName }, AptoideHttpFetcher, now)
+                        }
                     }
+                    val merged = apps.map { app -> runCatching { RemoteReleaseMemory.merge(app) }.getOrDefault(app) }
+                    val scanned = LocalScan.run(merged, now)
+                    val dir = File(context.filesDir, "scan-history")
+                    ScanHistoryWrite.afterScan(dir, scanned)
+                    WidgetRedCount.refresh(context)
+                    quiet = ScanHistoryStore(dir).lastQuiet()
+                    items = scanned
+                    progress = ScanMachine.start(items.size)
                 }
-                val merged = apps.map(RemoteReleaseMemory::merge)
-                items = LocalScan.run(merged, now)
-                progress = ScanMachine.start(items.size)
             }
         },
         pause = { progress = ScanMachine.pause(progress) },

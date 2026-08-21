@@ -10,6 +10,7 @@ import java.net.URL
 data class LatestRelease(
     val tag: String?,
     val assets: List<ReleaseAsset>,
+    val publishedAtMs: Long? = null,
 )
 
 object ReleaseTagFetcher {
@@ -54,9 +55,15 @@ object ReleaseTagFetcher {
                     )
                 }
             }
-            LatestRelease(tag, assets)
+            LatestRelease(tag, assets, publishedAtMs(json.optString("published_at", "")))
         } catch (_: Exception) {
             null
         }
+    }
+
+    fun publishedAtMs(raw: String): Long? {
+        val text = raw.trim()
+        if (text.isEmpty()) return null
+        return runCatching { java.time.Instant.parse(text).toEpochMilli() }.getOrNull()
     }
 }

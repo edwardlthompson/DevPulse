@@ -19,7 +19,6 @@ Types in `dev.foss.goldenpath.index.forge`. Unit tests use fixtures only — no 
 | `GitHubSearchClient` | fun interface | `searchRepos(query)` — kept so existing fakes compile |
 | `GitHubReleaseClient` | fun interface | `listReleases(ownerRepo)` — `GitHubSearchHttp` implements both |
 | `GithubHint` | data class | `ownerRepo`, `ms`, `versionName` — winning F-Droid GitHub `sourceCode` (or persisted row) |
-
 ### Functions
 
 | Name | Contract |
@@ -36,10 +35,9 @@ Types in `dev.foss.goldenpath.index.forge`. Unit tests use fixtures only — no 
 | `FdroidGithubHints.mergeLibrary` | Ranked merge of persisted TSV + harvested official/Izzy/Archive/Guardian/Calyx maps. Official wins; Izzy fills Archive/Guardian/Calyx-only gaps |
 | `GithubVerifiedStore` | Persisted TSV `package → owner/repo` grown from the full harvested library (`filesDir/github_verified.tsv`) |
 | `GitHubScan.toOffer` | Hint-first: if a `GithubHint` (F-Droid `sourceCode` ∪ persisted map) is set, **list with zero GitHub HTTP**. `pageUrl` = `ForgeUrl.downloadPage` of that GitHub URL. Dates/version come from the F-Droid record; persisted-only rows may omit them. Success → persist. No hint + `searchUnknowns` false (default) → unknown, log `github $pkg skip search (no hint)`, **do not name-search**. No hint + `searchUnknowns` true → name search + release verify |
-
 ### Token storage
 
-Production target remains EncryptedSharedPreferences (ADR-0001). This sprint locks `ForgeTokenStore` and a DataStore adapter that never writes tokens to logs. Swap the adapter when the live client lands.
+Production uses `EncryptedForgeTokenStore` (EncryptedSharedPreferences, ADR-0001) with a one-way migrate from the DataStore adapter. Tokens are never logged. GitLab/Codeberg leftover search runs after a GitHub miss (`LeftoverForgeScan`).
 
 ## Acceptance criteria
 
@@ -67,7 +65,6 @@ Production target remains EncryptedSharedPreferences (ADR-0001). This sprint loc
 | View | `examples/android/.../ui/forge/` + `ForgeLookupSettings` |
 | Tests | recorded JSON fixtures in `src/test` |
 | Wiring | scan orchestrator ≤10 lines |
-
 ## Definition of Done
 
 Client tests with recorded fixtures. Do not hit live GitHub in unit tests. Fallback: `bash scripts/feature-gate.sh --stack android`.
@@ -75,6 +72,6 @@ Client tests with recorded fixtures. Do not hit live GitHub in unit tests. Fallb
 ## Notes
 
 - Refresh always probes every enabled outlet for each user app: parallel F-Droid indexes, then a bounded pool for Play (~4), Aptoide (~8), and GitHub (~2). An F-Droid or Play hit does not skip later outlets. After each index download, **harvest every GitHub `sourceCode`** on the same app object (official, Izzy, Archive, Guardian, Calyx — not only installed apps) into `github_verified.tsv`. GitHub lookup (one progress tick) is **hint-first**: ranked F-Droid `sourceCode` (official → Izzy → Archive → Guardian → Calyx → other) that `ForgeUrl` accepts as GitHub overwrites a persisted verified `package → owner/repo` row. A hint **lists immediately** — no `GET /repos/{owner}/{repo}/releases`. Persist the `owner/repo`. No hint defaults to GitHub **❓** (`listed=false, known=false`) and skips name search (`github $pkg skip search (no hint)`). Settings opt-in “Search GitHub when F-Droid has no source link” (`forge_lookup_search_unknowns`, default false) restores leftover name search + release verify. Extra HTTP stays inside the existing GitHub probe. A GitHub offer **replaces** any existing Forge offer for that package. Progress total is repos + apps × enabled probes (Play / Aptoide / GitHub).
-- APKUpdater (`rumboalla/apkupdater`) is faster because it uses a curated package→repo map and Aurora Play batch API. DevPulse does **not** import that list or Aurora. We grow our own verified map from F-Droid, IzzyOnDroid, Archive, Guardian, and Calyx `sourceCode` (same-object parse, Wipe Files lesson).
+- APKUpdater (`rumboalla/apkupdater`) is faster because it uses a curated package→repo map. DevPulse does **not** import that list. Opt-in Aurora Play downloads are a separate toggle (`docs/features/aurora-play.md`). We grow our own verified map from F-Droid, IzzyOnDroid, Archive, Guardian, and Calyx `sourceCode` (same-object parse, Wipe Files lesson).
 - Self-pulse for DevPulse uses a configured repo, not this search
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

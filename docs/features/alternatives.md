@@ -4,13 +4,13 @@
 
 ## Acceptance criteria
 
-- 🔲 User-visible behavior: Alternatives search cached F-Droid plus Izzy and other enabled repos by category, name similarity, and tags
-- 🔲 Offline/error behavior: cache only; empty list if no maintained match
-- 🔲 Accessibility: links announced as external destinations
-- 🔲 i18n: keys under `alternatives_*` and `sources_*` in `strings.xml`
-- 🔲 Show only actively maintained matches with last-update dates and links
-- 🔲 List every known download location: official F-Droid, IzzyOnDroid, other enabled repos, and forge Releases if an APK asset exists
-- 🔲 Do not auto-download or auto-install
+- ✅ User-visible behavior: Alternatives search cached F-Droid plus Izzy and other enabled repos by category, name similarity, and tags
+- ✅ Offline/error behavior: cache only; empty list if no maintained match
+- ✅ Accessibility: links announced as external destinations
+- ✅ i18n: keys under `alternatives_*` and `sources_*` in `strings.xml`
+- ✅ Show only actively maintained matches with last-update dates and links
+- ✅ List every known download location: official F-Droid, IzzyOnDroid, other enabled repos, and forge Releases if an APK asset exists
+- ✅ Do not auto-download or auto-install
 
 ## Smoke scenario
 
@@ -26,7 +26,6 @@
 | View | `examples/android/.../ui/sources/` |
 | Tests | `src/test/.../alternatives/` |
 | Wiring | detail screen ≤10 lines |
-
 ## Definition of Done
 
 Similarity tests against cached fixtures. Fallback: `bash scripts/feature-gate.sh --stack android`.

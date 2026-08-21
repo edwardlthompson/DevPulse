@@ -9,9 +9,13 @@ import dev.foss.goldenpath.index.fdroid.FdroidEnabledRepos
 import dev.foss.goldenpath.index.fdroid.FdroidIndexHttpFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidIndexStore
 import dev.foss.goldenpath.index.fdroid.FdroidRepoPreferences
-import dev.foss.goldenpath.index.forge.DataStoreForgeTokenStore
+import dev.foss.goldenpath.index.fdroid.FdroidHostHttp
+import dev.foss.goldenpath.index.fdroid.FileFdroidCategoryStore
+import dev.foss.goldenpath.index.forge.EncryptedForgeTokenStore
 import dev.foss.goldenpath.index.forge.FileGithubVerifiedStore
+import dev.foss.goldenpath.index.forge.FilePastedRepoStore
 import dev.foss.goldenpath.index.forge.GitHubSearchHttp
+import dev.foss.goldenpath.index.forge.LeftoverForgeHttp
 import dev.foss.goldenpath.index.play.PlayHttpFetcher
 import dev.foss.goldenpath.index.play.WaybackHttpFetcher
 import dev.foss.goldenpath.index.play.WaybackPlay
@@ -36,10 +40,14 @@ object ReleaseRefreshRunner {
             aptoideFetcher = AptoideHttpFetcher,
             nowMs = System.currentTimeMillis(),
             playClient = PlayHttpFetcher.takeIf { playOn },
-            gitHubClient = if (forgeOn) GitHubSearchHttp(DataStoreForgeTokenStore(context).getToken()) else null,
+            gitHubClient = if (forgeOn) GitHubSearchHttp(EncryptedForgeTokenStore.wrap(context).getToken()) else null,
             indexStore = FdroidIndexStore(File(context.filesDir, "fdroid-index")),
             verifiedStore = FileGithubVerifiedStore(File(context.filesDir, "github_verified.tsv")),
             searchUnknowns = searchUnknowns,
+            hostResolve = FdroidHostHttp(),
+            leftoverClient = if (forgeOn) LeftoverForgeHttp() else null,
+            categoryStore = FileFdroidCategoryStore(File(context.filesDir, "fdroid_categories.tsv")),
+            pastedStore = FilePastedRepoStore(File(context.filesDir, "pasted_repos.tsv")),
             apkMirrorEnabled = prefs.apkMirrorLookupEnabled.first(),
             apkPureEnabled = prefs.apkPureLookupEnabled.first(),
             apkMirrorFetcher = ApkMirrorHttpFetcher,

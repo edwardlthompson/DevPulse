@@ -23,6 +23,7 @@ fun PlayLookupSettings(modifier: Modifier = Modifier) {
     val prefs = remember { InventoryPreferences(context) }
     val scope = rememberCoroutineScope()
     val enabled by prefs.playLookupEnabled.collectAsStateWithLifecycle(true)
+    val aurora by prefs.auroraPlayEnabled.collectAsStateWithLifecycle(false)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
         Text(text = stringResource(R.string.play_lookup_title), style = MaterialTheme.typography.titleMedium)
         Text(text = stringResource(R.string.play_lookup_body), style = MaterialTheme.typography.bodySmall)
@@ -30,6 +31,12 @@ fun PlayLookupSettings(modifier: Modifier = Modifier) {
             label = stringResource(R.string.play_lookup_enable),
             checked = enabled,
             onCheckedChange = { value -> scope.launch { prefs.setPlayLookupEnabled(value) } },
+        )
+        Text(text = stringResource(R.string.aurora_play_body), style = MaterialTheme.typography.bodySmall)
+        PreferenceSwitch(
+            label = stringResource(R.string.aurora_play_enable),
+            checked = aurora,
+            onCheckedChange = { value -> scope.launch { prefs.setAuroraPlayEnabled(value) } },
         )
     }
 }

@@ -20,6 +20,7 @@ private val APTOIDE_LOOKUP = booleanPreferencesKey("aptoide_lookup_enabled")
 private val APKMIRROR_LOOKUP = booleanPreferencesKey("apkmirror_lookup_enabled")
 private val APKPURE_LOOKUP = booleanPreferencesKey("apkpure_lookup_enabled")
 private val PLAY_LOOKUP = booleanPreferencesKey("play_lookup_enabled")
+private val AURORA_PLAY = booleanPreferencesKey("aurora_play_enabled")
 private val FORGE_LOOKUP = booleanPreferencesKey("forge_lookup_enabled")
 private val FORGE_LOOKUP_SEARCH_UNKNOWNS = booleanPreferencesKey("forge_lookup_search_unknowns")
 private val SCAN_INTERVAL = stringPreferencesKey("scan_interval")
@@ -38,6 +39,7 @@ class InventoryPreferences(private val context: Context) {
     val apkMirrorLookupEnabled: Flow<Boolean> = store.booleanPref(APKMIRROR_LOOKUP, false)
     val apkPureLookupEnabled: Flow<Boolean> = store.booleanPref(APKPURE_LOOKUP, false)
     val playLookupEnabled: Flow<Boolean> = store.booleanPref(PLAY_LOOKUP, true)
+    val auroraPlayEnabled: Flow<Boolean> = store.booleanPref(AURORA_PLAY, false)
     val forgeLookupEnabled: Flow<Boolean> = store.booleanPref(FORGE_LOOKUP, true)
     val forgeLookupSearchUnknowns: Flow<Boolean> = store.booleanPref(FORGE_LOOKUP_SEARCH_UNKNOWNS, false)
 
@@ -100,6 +102,10 @@ class InventoryPreferences(private val context: Context) {
 
     suspend fun setPlayLookupEnabled(value: Boolean) {
         store.writeBoolean(PLAY_LOOKUP, value)
+    }
+
+    suspend fun setAuroraPlayEnabled(value: Boolean) {
+        store.writeBoolean(AURORA_PLAY, value)
     }
 
     suspend fun setForgeLookupEnabled(value: Boolean) {

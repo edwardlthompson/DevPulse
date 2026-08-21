@@ -30,6 +30,42 @@ class OneClickUpdateTest {
     }
 
     @Test
+    fun auroraDownloadThenFallsBackToPlay() {
+        val dir = File.createTempFile("apk", "dir").apply { delete(); mkdirs() }
+        val artifact = UpdateArtifact(
+            "app.one",
+            RemoteReleasedSource.Play,
+            "https://redirector.gvt1.com/edgedl/android/market/app.one",
+        )
+        var installed = ""
+        var opened = ""
+        val hit = OneClickUpdate.apply(
+            OneClickKind.Play("app.one"),
+            dir,
+            fetch = { Result.success(byteArrayOf(1, 2, 3)) },
+            install = { file -> installed = file.name; ApkInstallResult.Ok },
+            openPlay = { opened = it },
+            inspect = { ApkInspect("app.one", setOf("aa")) },
+            installed = InstalledIdentity("app.one", setOf("aa")),
+            resolveAurora = { artifact },
+        )
+        assertEquals(OneClickResult.Installed, hit)
+        assertEquals("", opened)
+        val miss = OneClickUpdate.apply(
+            OneClickKind.Play("app.one"),
+            dir,
+            fetch = { Result.success(byteArrayOf(1, 2, 3)) },
+            install = { ApkInstallResult.Ok },
+            openPlay = { opened = it },
+            inspect = { ApkInspect("app.one", setOf("aa")) },
+            installed = InstalledIdentity("app.one", setOf("aa")),
+            resolveAurora = { null },
+        )
+        assertEquals(OneClickResult.PlayOpened, miss)
+        assertEquals("app.one", opened)
+    }
+
+    @Test
     fun apkPureWhenListedAndNoFileUrl() {
         val pure = UpdateLink(RemoteReleasedSource.ApkPure, "https://apkpure.com/search?q=app.one", listed = true)
         assertEquals(OneClickKind.ApkPure("app.one"), OneClickUpdate.kind("app.one", listOf(pure)))
@@ -44,21 +80,34 @@ class OneClickUpdateTest {
         )
         val dir = File.createTempFile("apk", "dir").apply { delete(); mkdirs() }
         var installed = ""
-        var opened = ""
         val result = OneClickUpdate.apply(
             OneClickKind.ApkPure("app.one"),
             dir,
             fetch = { Result.success(byteArrayOf(1, 2, 3)) },
             install = { file -> installed = file.name; ApkInstallResult.Ok },
             openPlay = {},
-            openApkPure = { opened = it },
             resolveApkPure = { artifact },
             inspect = { ApkInspect("app.one", setOf("aa")) },
             installed = InstalledIdentity("app.one", setOf("aa")),
         )
         assertEquals(OneClickResult.Installed, result)
-        assertEquals("", opened)
         assertTrue(installed.endsWith(".apk"))
+    }
+
+    @Test
+    fun apkPureFailsWhenNoFileUrl() {
+        val dir = File.createTempFile("apk", "dir").apply { delete(); mkdirs() }
+        val result = OneClickUpdate.apply(
+            OneClickKind.ApkPure("app.one"),
+            dir,
+            fetch = { Result.success(byteArrayOf(1, 2, 3)) },
+            install = { ApkInstallResult.Ok },
+            openPlay = {},
+            resolveApkPure = { null },
+            inspect = { ApkInspect("app.one", setOf("aa")) },
+            installed = InstalledIdentity("app.one", setOf("aa")),
+        )
+        assertEquals(OneClickResult.FailedDownload, result)
     }
 
     @Test

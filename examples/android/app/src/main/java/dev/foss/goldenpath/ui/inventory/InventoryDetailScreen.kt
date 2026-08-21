@@ -12,12 +12,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,7 +30,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.query.PinPreferences
 import dev.foss.goldenpath.inventory.AppDetailsIntent
 import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.StoreListingIntent
@@ -41,14 +48,20 @@ import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.SpacingSm
 import java.text.DateFormat
 import java.util.Date
+import kotlinx.coroutines.launch
 
 @Composable
 fun InventoryDetailScreen(
     app: InstalledApp,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    inventory: List<InstalledApp> = emptyList(),
 ) {
     val context = LocalContext.current
+    val pinPrefs = remember { PinPreferences(context) }
+    val scope = rememberCoroutineScope()
+    val pins by pinPrefs.pins.collectAsStateWithLifecycle(emptySet())
+    val pinned = app.packageName in pins
     val version = app.versionName ?: stringResource(R.string.inventory_version_unknown)
     val sdkRisk = Staleness.compatibilityWarning(app.targetSdk, Build.VERSION.SDK_INT)
     val listings = StoreSelection.visible(app.latestListings, rememberEnabledSources())
@@ -75,6 +88,16 @@ fun InventoryDetailScreen(
                     .weight(1f)
                     .padding(start = SpacingMd),
             )
+            IconButton(
+                onClick = { scope.launch { pinPrefs.setPinned(app.packageName, !pinned) } },
+            ) {
+                Icon(
+                    imageVector = if (pinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+                    contentDescription = stringResource(
+                        if (pinned) R.string.inventory_unpin else R.string.inventory_pin,
+                    ),
+                )
+            }
             IconButton(onClick = { AppDetailsIntent.open(context, app.packageName) }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
@@ -106,6 +129,7 @@ fun InventoryDetailScreen(
         }
         UpdateNotesSection(app.packageName)
         DownloadUpdateSection(app)
+        AlternativesSection(app = app, inventory = inventory)
         TextButton(onClick = onBack, modifier = Modifier.bottomInsetPadding()) {
             Text(stringResource(R.string.inventory_detail_back))
         }

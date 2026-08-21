@@ -29,11 +29,12 @@ import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.index.apkpure.ApkPureDirect
 import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
+import dev.foss.goldenpath.index.aurora.AuroraPlayDirect
+import dev.foss.goldenpath.index.aurora.AuroraPlayLive
 import dev.foss.goldenpath.inventory.OneClickKind
 import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.OneClickUpdate
 import dev.foss.goldenpath.inventory.PlayStoreIntent
-import dev.foss.goldenpath.inventory.StoreListingIntent
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import dev.foss.goldenpath.ui.theme.SpacingSm
 import java.io.File
@@ -51,12 +52,14 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val prefs = remember { InventoryPreferences(context) }
     val method by prefs.installMethod.collectAsStateWithLifecycle(InstallMethod.System)
+    val aurora by prefs.auroraPlayEnabled.collectAsStateWithLifecycle(false)
     val scope = rememberCoroutineScope()
     var busy by remember(app.packageName) { mutableStateOf(false) }
     var failRes by remember(app.packageName) { mutableStateOf<Int?>(null) }
     val label = stringResource(
         when {
             busy -> R.string.update_one_click_busy
+            kind is OneClickKind.Play && aurora -> R.string.update_one_click_aurora
             kind is OneClickKind.Play -> R.string.update_one_click_play
             kind is OneClickKind.ApkPure -> R.string.update_one_click_apkpure
             else -> R.string.update_one_click
@@ -84,8 +87,10 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
                             fetch = ApkHttpFetcher,
                             install = { file -> ApkInstall.apply(context, file, method) },
                             openPlay = { PlayStoreIntent.open(context, it) },
-                            openApkPure = { StoreListingIntent.openApkPure(context, it) },
                             resolveApkPure = { pkg -> ApkPureDirect.resolve(pkg, ApkPureHttpFetcher) },
+                            resolveAurora = { pkg ->
+                                if (aurora) AuroraPlayDirect.resolve(pkg, AuroraPlayLive.files(context)) else null
+                            },
                             inspect = { file -> ApkArchiveIdentity.inspect(context.packageManager, file) },
                             installed = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
                                 ?: InstalledIdentity(app.packageName, emptySet()),

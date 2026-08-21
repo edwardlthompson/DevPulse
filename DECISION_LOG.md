@@ -17,6 +17,20 @@
 
 ## Entries
 
+### 2026-08-20 — Continuum donate and self-update method
+- **Status:** Accepted
+- **Context:** Reuse Continuum Calendar’s quiet Venmo + ethical reminder + daily GitHub installer check so DevPulse does not nag or mix donate with updates.
+- **Decision:** Hardcode the public Venmo URL and `edwardlthompson/DevPulse`. Compare `DevPulse-X.Y.Z.apk` / `devpulse-X.Y.Z-foss.apk` filenames, not git tags. Store last-seen, last-check, and dismissed version in device-local `devpulse_updates` SharedPreferences.
+- **Alternatives considered:** Keep the Golden Path tag + interval toggle as the only prompt (rejected: compares template tags and defaults off). Put donate on the install dialog (rejected: dark pattern).
+- **Consequences:** First run is silent. After a version change, one optional donate note. A newer matching APK prompts Install / Later once per version. Failed fetches stay silent.
+
+### 2026-08-20 — Opt-in Aurora gplayapi for Play APKs
+- **Status:** Accepted
+- **Context:** Play HTML has no public APK URL. The user asked for Aurora next to Google Play, with the Play Store page as fallback, so DevPulse can download Play-listed apps in-app.
+- **Decision:** Add FOSS `com.auroraoss:gplayapi` (GPL-3, compatible with DevPulse GPL-3.0-or-later). Opt-in Settings toggle (default off). Anonymous auth via `https://auroraoss.com/api/auth` (same as APKUpdater). Store AuthData JSON in EncryptedSharedPreferences. Never log it. On any failure, open `market://details?id=`. Identity inspect still required before install.
+- **Alternatives considered:** Open the Aurora Store app only (rejected: user wants in-app download). Ship Aurora as the default Play path (rejected: unofficial API, token dispenser, Google ToS). Invent Play file URLs (rejected).
+- **Consequences:** Google or auroraoss.com can break downloads; Play Store fallback stays. APK size grows by the gplayapi AAR.
+
 ### 2026-08-20 — Ship v0.26.0 on GitHub Releases
 - **Status:** Accepted
 - **Context:** `/ship` after Store apps cards and high-refresh scrolling. Actions still cannot open PRs.

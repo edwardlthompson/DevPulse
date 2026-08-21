@@ -26,4 +26,24 @@ class ApkDownloadUrlTest {
             ApkDownloadUrl.httpsFile("https://f-droid.org/repo/org.example_1.apk"),
         )
     }
+
+    @Test
+    fun acceptsVendorFdroidHosts() {
+        assertEquals(
+            "https://microg.org/fdroid/repo/com.google.android.gms_1.apk",
+            ApkDownloadUrl.httpsFile("https://microg.org/fdroid/repo/com.google.android.gms_1.apk"),
+        )
+        assertEquals(
+            "https://fdroid.iode.tech/repo/app_1.apk",
+            ApkDownloadUrl.httpsFile("https://fdroid.iode.tech/repo/app_1.apk"),
+        )
+    }
+
+    @Test
+    fun acceptsPlayCdnWithoutApkSuffix() {
+        assertEquals(
+            "https://redirector.gvt1.com/edgedl/android/market/app.one",
+            ApkDownloadUrl.httpsFile("https://redirector.gvt1.com/edgedl/android/market/app.one"),
+        )
+    }
 }

@@ -4,14 +4,14 @@
 
 ## Acceptance criteria
 
-- 🔲 User-visible behavior: group stale apps by Play or F-Droid category; show how many have gone quiet
-- 🔲 Offline/error behavior: uses cached scan model; no live scrape
-- 🔲 Accessibility: category counts readable by TalkBack
-- 🔲 i18n: keys under `opportunity_*` in `strings.xml`
-- 🔲 Personal Develop-next / Fork-this list with private notes
-- 🔲 Focused export of most-used stale titles plus category gaps as CSV and JSON
-- 🔲 DevPulse shows its own GitHub activity via configured package and repo
-- 🔲 Pinned apps appear only when the user asks
+- ✅ User-visible behavior: group stale apps by stored F-Droid category, then Play or F-Droid origin; show how many have gone quiet
+- ✅ Offline/error behavior: uses cached inventory; no live scrape
+- ✅ Accessibility: category counts readable by TalkBack
+- ✅ i18n: keys under `opportunity_*` in `strings.xml`
+- ✅ Personal Develop-next / Fork-this list with private notes
+- ✅ Focused export of most-used stale titles plus category gaps as CSV and JSON
+- ✅ DevPulse shows its own GitHub activity via configured package and repo
+- ✅ Pinned apps appear only when the user asks
 
 ## Smoke scenario
 
@@ -27,7 +27,6 @@
 | View | `examples/android/.../ui/opportunity/` |
 | Tests | `src/test/.../opportunity/` |
 | Wiring | `GoldenPathApp.kt` ≤10 lines |
-
 ## Definition of Done
 
 Ranking unit tests required. Fallback: `bash scripts/feature-gate.sh --stack android`.

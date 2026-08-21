@@ -6,6 +6,7 @@ enum class FdroidRepoKind {
     Izzy,
     Guardian,
     Calyx,
+    Vendor,
     Custom,
 }
 
@@ -26,6 +27,8 @@ data class FdroidAppRecord(
     val apkName: String? = null,
     val apkSha256: String? = null,
     val nativeCodes: Set<String> = emptySet(),
+    val category: String? = null,
+    val relatedPackages: List<String> = emptyList(),
 )
 
 data class CachedIndex(

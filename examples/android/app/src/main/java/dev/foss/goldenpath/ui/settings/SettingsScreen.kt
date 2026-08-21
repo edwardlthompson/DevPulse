@@ -54,6 +54,7 @@ fun SettingsScreen(
         ) {
             SettingsGroup { IncludeSystemSettings() }
             SettingsGroup { ScanIntervalSettings() }
+            SettingsGroup { StaleNotifySettings() }
             SettingsGroup { SettingsExportSection(onExport = onExport) }
         }
         SettingsPage.Updates -> SettingsPane(
@@ -75,6 +76,7 @@ fun SettingsScreen(
             SettingsGroup { AptoideLookupSettings() }
             SettingsGroup { DumpStoreLookupSettings() }
             SettingsGroup { ForgeLookupSettings() }
+            SettingsGroup { ForgePasteSettings() }
         }
         SettingsPage.Stores -> SettingsPane(
             title = stringResource(R.string.settings_section_stores),

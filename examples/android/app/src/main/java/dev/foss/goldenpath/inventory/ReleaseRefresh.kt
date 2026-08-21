@@ -4,14 +4,19 @@ import dev.foss.goldenpath.index.apkmirror.ApkMirrorBatchFetcher
 import dev.foss.goldenpath.index.apkpure.ApkPureBatchFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideMetaFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidAppRecord
+import dev.foss.goldenpath.index.fdroid.FdroidCategoryStore
+import dev.foss.goldenpath.index.fdroid.FdroidHostResolver
 import dev.foss.goldenpath.index.fdroid.FdroidIndexFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidIndexStore
 import dev.foss.goldenpath.index.fdroid.FdroidNotes
 import dev.foss.goldenpath.index.fdroid.FdroidRepo
 import dev.foss.goldenpath.index.forge.FdroidGithubHints
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
+import dev.foss.goldenpath.index.forge.LeftoverSearchClient
 import dev.foss.goldenpath.index.forge.GithubHint
 import dev.foss.goldenpath.index.forge.GithubVerifiedStore
+import dev.foss.goldenpath.index.forge.PastedRepoCodec
+import dev.foss.goldenpath.index.forge.PastedRepoStore
 import dev.foss.goldenpath.index.play.PlayPageClient
 import java.util.concurrent.ExecutorService
 
@@ -38,9 +43,10 @@ object ReleaseRefresh {
         records: List<FdroidAppRecord>,
         wanted: Set<String>,
         verified: Map<String, String> = emptyMap(),
+        pasted: Map<String, String> = emptyMap(),
     ): Map<String, GithubHint> {
         val fromStore = verified.mapValues { GithubHint(it.value) }
-        return fromStore + FdroidGithubHints.hints(records, wanted)
+        return fromStore + FdroidGithubHints.hints(records, wanted) + PastedRepoCodec.hints(pasted)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -64,6 +70,10 @@ object ReleaseRefresh {
         apkPureEnabled: Boolean = false,
         apkMirrorFetcher: ApkMirrorBatchFetcher = ApkMirrorBatchFetcher { Result.success("") },
         apkPureFetcher: ApkPureBatchFetcher = ApkPureBatchFetcher { Result.success("") },
+        hostResolve: FdroidHostResolver? = null,
+        leftoverClient: LeftoverSearchClient? = null,
+        categoryStore: FdroidCategoryStore? = null,
+        pastedStore: PastedRepoStore? = null,
     ): Map<String, RemoteReleasePick> {
         val userApps = apps.filter { !it.isSystemApp }
         val wantedSet = userApps.map { it.packageName }.toSet()
@@ -82,9 +92,10 @@ object ReleaseRefresh {
         )
         clock.begin("refresh start repos=${repos.size} apps=${userApps.size}")
         val loaded = ReleaseRefreshRepos.fetchAll(
-            repos, fdroidFetcher, indexStore, nowMs, wantedSet, executor, clock,
+            repos, fdroidFetcher, indexStore, nowMs, wantedSet, executor, clock, hostResolve,
         )
         val records = loaded.flatMap { it.records }
+        categoryStore?.putAll(records)
         val okRepos = loaded.filter { it.ok }.map { it.repoId }.toSet()
         val byPackage = FdroidIndexMisses.merge(
             fdroidOffers(records, wantedSet),
@@ -95,7 +106,8 @@ object ReleaseRefresh {
             verifiedStore?.load().orEmpty(),
             loaded.map { it.repoId to it.githubLibrary },
         )
-        val knownRepos = library + FdroidGithubHints.hints(records, wantedSet)
+        val knownRepos = library + FdroidGithubHints.hints(records, wantedSet) +
+            PastedRepoCodec.hints(pastedStore?.load().orEmpty())
         verifiedStore?.save(knownRepos.mapValues { it.value.ownerRepo })
         RefreshTrace.line("github library ${library.size} persisted")
         ReleaseRefreshWaves.storeThenForge(
@@ -104,6 +116,7 @@ object ReleaseRefresh {
             executor, hostGate ?: RefreshHostGate(), clock,
             knownRepos, verifiedStore, searchUnknowns,
             apkMirrorEnabled, apkPureEnabled, apkMirrorFetcher, apkPureFetcher,
+            leftoverClient,
         )
         RefreshTrace.line("refresh done locations=${clock.done}/${clock.total}")
         return RemoteReleaseMemory.byPackage.filterKeys { it in wantedSet }

@@ -17,7 +17,7 @@ class UpdateInventoryTest {
         )
         assertTrue(UpdateInventory.linksFor("1.0", pick).isEmpty())
         assertTrue(UpdateInventory.listingsFor(pick).any { it.source == RemoteReleasedSource.Fdroid })
-        assertEquals(2, UpdateInventory.linksFor("0.9", pick).size)
+        assertTrue(UpdateInventory.linksFor("0.9", pick).isEmpty())
     }
 
     @Test
@@ -39,7 +39,21 @@ class UpdateInventoryTest {
         assertTrue(play.known)
         assertNull(play.url)
         assertFalse(UpdateInventory.canOpen(play))
-        assertTrue(UpdateInventory.canOpen(listings.first()))
+        assertFalse(UpdateInventory.canOpen(listings.first()))
+        val listedPlay = UpdateLink(
+            RemoteReleasedSource.Play,
+            UpdateUrls.play("a"),
+            listed = true,
+            known = true,
+        )
+        assertTrue(UpdateInventory.canOpen(listedPlay))
+        val listedMirror = UpdateLink(
+            RemoteReleasedSource.ApkMirror,
+            "https://www.apkmirror.com/apk/a/",
+            listed = true,
+            known = true,
+        )
+        assertTrue(UpdateInventory.canOpen(listedMirror))
     }
 
     @Test
@@ -52,10 +66,7 @@ class UpdateInventoryTest {
             ),
         )
         val links = UpdateInventory.linksFor("1.0", pick)
-        assertEquals(
-            listOf(RemoteReleasedSource.Fdroid, RemoteReleasedSource.Forge, RemoteReleasedSource.Play),
-            links.map { it.source },
-        )
+        assertEquals(listOf(RemoteReleasedSource.Play), links.map { it.source })
         assertEquals(2L, links.first { it.source == RemoteReleasedSource.Play }.releasedAtMs)
         assertEquals("1.5", links.first { it.source == RemoteReleasedSource.Play }.versionName)
     }
@@ -81,8 +92,7 @@ class UpdateInventoryTest {
             ),
         )
         val links = UpdateInventory.linksFor("1.0", pick)
-        assertEquals(1, links.size)
-        assertEquals(RemoteReleasedSource.Fdroid, links.single().source)
+        assertTrue(links.isEmpty())
         assertTrue(UpdateInventory.listingsFor(pick).size >= ListingChannels.STANDARD.size)
     }
 }

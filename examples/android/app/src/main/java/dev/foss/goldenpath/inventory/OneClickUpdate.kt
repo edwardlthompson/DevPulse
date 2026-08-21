@@ -38,21 +38,25 @@ object OneClickUpdate {
         openPlay: (String) -> Unit,
         inspect: (File) -> ApkInspect,
         installed: InstalledIdentity,
-        openApkPure: (String) -> Unit = {},
         resolveApkPure: (String) -> UpdateArtifact? = { null },
+        resolveAurora: (String) -> UpdateArtifact? = { null },
     ): OneClickResult = when (kind) {
         is OneClickKind.None -> OneClickResult.None
         is OneClickKind.Play -> {
-            openPlay(kind.packageName)
-            OneClickResult.PlayOpened
+            val artifact = resolveAurora(kind.packageName)
+            if (artifact != null) {
+                applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
+            } else {
+                openPlay(kind.packageName)
+                OneClickResult.PlayOpened
+            }
         }
         is OneClickKind.ApkPure -> {
             val artifact = resolveApkPure(kind.packageName)
             if (artifact != null) {
                 applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
             } else {
-                openApkPure(kind.packageName)
-                OneClickResult.ApkPureOpened
+                OneClickResult.FailedDownload
             }
         }
         is OneClickKind.Direct -> applyDirect(kind.artifact, cacheDir, fetch, install, inspect, installed)

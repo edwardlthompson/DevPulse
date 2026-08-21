@@ -5,12 +5,13 @@ import android.util.Log
 import dev.foss.goldenpath.index.fdroid.FdroidApkUrl
 import dev.foss.goldenpath.index.fdroid.FdroidIndexParser
 import dev.foss.goldenpath.index.fdroid.FdroidIndexStore
+import dev.foss.goldenpath.index.fdroid.FdroidRepoCatalog
 import java.io.File
 
 object DownloadLaunch {
     const val EXTRA = "download_package"
     const val EXTRA_URL = "download_url"
-    private val cacheRepos = listOf("official", "izzy", "archive", "guardian", "calyx")
+    private val cacheRepos = FdroidRepoCatalog.defaults().map { it.id }
 
     fun packageName(intent: android.content.Intent?): String? =
         intent?.getStringExtra(EXTRA)?.trim()?.ifEmpty { null }
@@ -25,7 +26,7 @@ object DownloadLaunch {
         val store = FdroidIndexStore(dir)
         cacheRepos.forEach { repoId ->
             val data = File(dir, "$repoId.index")
-            if (!data.isFile || data.length() > 2_000_000L) return@forEach
+            if (!data.isFile) return@forEach
             val raw = store.load(repoId, nowMs) ?: return@forEach
             val rec = FdroidIndexParser.parse(raw, repoId, setOf(packageName)).firstOrNull() ?: return@forEach
             val url = FdroidApkUrl.of(repoId, rec.apkName) ?: return@forEach

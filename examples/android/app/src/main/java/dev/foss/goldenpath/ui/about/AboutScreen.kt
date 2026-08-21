@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.about.DonationsConfig
+import dev.foss.goldenpath.about.ProductUpdate
 import dev.foss.goldenpath.ui.insets.LocalNavigationMode
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
 import dev.foss.goldenpath.ui.insets.navigationBarInsetBottomDp
@@ -64,9 +65,11 @@ fun AboutScreen(
                 Text(stringResource(R.string.about_update_apply))
             }
         }
-        if (donations.enabled && donations.links.isNotEmpty()) {
-            Text(text = donations.message)
-            donations.links.forEach { link ->
+        Button(onClick = { runCatching { uriHandler.openUri(ProductUpdate.VENMO_URL) } }) {
+            Text(stringResource(R.string.about_donate))
+        }
+        if (donations.enabled) {
+            donations.links.filter { it.url != ProductUpdate.VENMO_URL && it.url.isNotBlank() }.forEach { link ->
                 Text(
                     text = link.label,
                     color = MaterialTheme.colorScheme.primary,

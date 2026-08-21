@@ -39,6 +39,7 @@ import dev.foss.goldenpath.inventory.UsagePulse
 import dev.foss.goldenpath.inventory.UsageStatsAccess
 import dev.foss.goldenpath.inventory.UsageStatsConsent
 import dev.foss.goldenpath.inventory.UsageStatsManagerCatalog
+import dev.foss.goldenpath.query.PinPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -80,6 +81,8 @@ class InventoryUiModel(
 @Composable
 fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): InventoryUiModel {
     val prefs = remember { InventoryPreferences(context) }
+    val pinPrefs = remember { PinPreferences(context) }
+    val pins by pinPrefs.pins.collectAsStateWithLifecycle(emptySet())
     val catalog = remember { PackageManagerPackageCatalog(context.packageManager) }
     remember {
         RemoteReleaseMemory.hydrate(FileRemoteReleaseStore(File(context.filesDir, "remote_releases.json")))
@@ -146,7 +149,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         },
         usageByPackage = usage,
         nowMs = nowMs,
-    )
+    ).filter { !staleOnly || it.packageName !in pins }
     return InventoryUiModel(
         apps = if (canScan) visible else emptyList(),
         canScan = canScan,

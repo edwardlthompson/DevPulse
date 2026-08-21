@@ -29,11 +29,11 @@
 
 ## Non-goals
 
-- Not a silent updater by default. The user triggers each install. Root `pm install` is silent only when the user picks that method and `su` is granted. Session can skip the confirm dialog on Android 12+ only when updating an app DevPulse already installed (`UPDATE_PACKAGES_WITHOUT_USER_ACTION`). Play has no FOSS file URL.
-- Not a Play Store client, paid-app license checker, or Play review scraper.
+- Not a silent updater by default. The user triggers each install. Root `pm install` is silent only when the user picks that method and `su` is granted. Session can skip the confirm dialog on Android 12+ only when updating an app DevPulse already installed (`UPDATE_PACKAGES_WITHOUT_USER_ACTION`). Play HTML has no public file URL; opt-in Aurora/`gplayapi` can fetch a Play CDN APK and falls back to the Play Store page.
+- Not a full Play Store client, paid-app license checker, or Play review scraper.
 - No accounts, cloud sync, or social features.
 - No proprietary SDKs, crash reporters, or ads.
-- No exploit of private Play or GitHub APIs. Public pages, official F-Droid indexes, and documented forge APIs only.
+- No exploit of private GitHub APIs. Play dates stay on the public HTML page. Opt-in Aurora uses the unofficial FOSS `gplayapi` (same path as APKUpdater); it can break when Google changes Play. Public F-Droid indexes and documented forge APIs otherwise.
 - Do not attack, scrape-hammer, or bypass rate limits. Back off, cache, and degrade.
 - Do not claim an app is malware or safe. Staleness is not a security audit.
 
@@ -85,7 +85,7 @@
 | FR-21 | As a user I filter and sort | Age, source, has-public-repo, pinned, usage if granted |
 | FR-22 | As a user I keep a loved stale app | Pin hides it from the red list; remains in data; Opportunity only if I ask |
 | FR-23 | As a user I get Material You | System, light, dark; all copy in `strings.xml`; no raw string literals in composables |
-| FR-24 | As a user I open About | Golden Path About: version, license, source, donations stub, F-Droid-safe update-check stub |
+| FR-24 | As a user I open About | Version, quiet Donate via Venmo, and a daily GitHub installer check (filename versions; Install / Later) |
 ### Opportunity (later sprints)
 
 | ID | Story | Acceptance |
@@ -101,7 +101,7 @@
 | FR-29 | As a user I see Alternatives | Cached F-Droid plus Izzy and other enabled repos by category, name similarity, tags; only maintained matches with dates and links |
 | FR-30 | As a user I see Sources | Every known location; opt-in prefetch of direct APK URLs; user confirms install; never open a website to fetch a file we already have |
 | FR-37 | As a user I update every downloadable APK | Update all stages direct files then installs them one by one; Play and APKMirror stay page-only; APKPure downloads `asset.url` when present and opens the APKPure app only when there is no file |
-| FR-38 | As a user I install the store apps DevPulse scans | Settings lists Play, F-Droid, Droid-ify, extra-repo pages, Aptoide Store, APKMirror, APKPure, and GitHub with every available install link |
+| FR-38 | As a user I open the few pages DevPulse cannot download | Settings lists Play Store fallback and APKMirror. F-Droid family APKs install in-app |
 | FR-36 | As a user I keep a Play date after delisting | Wayback HTML `datePublished` only; never invent a date from the capture timestamp |
 ### Polish (later sprints)
 
@@ -157,7 +157,7 @@ User starts a scan. PackageManager builds inventory. F-Droid and extra-repo inde
 Do not implement scanners yet. Lock these existing surfaces:
 
 - Theme: `ThemeMode` (`System`, `Light`, `Dark`), `ThemeMode.next()`, `ThemePreferences`, `GoldenPathTheme`
-- About: `ReleaseAsset`, `ReleaseAssetSelector.select`, `AppUpdatePreferences`, `CheckSchedule`, `DonationsLoader`, `UpdateStatusEvaluator`
+- About: `ProductUpdate`, `ProductUpdatePrefs`, `ProductReleaseFetcher`, `ReleaseAsset`, `ReleaseAssetSelector.select`, `AppUpdatePreferences`, `CheckSchedule`, `DonationsLoader`, `UpdateStatusEvaluator`
 - Navigation: About and Settings toggles in `GoldenPathApp` / `GoldenPathScreen`; `GoldenPathScaffold`; `NavigationModeProvider`
 
 ## Test-first rule

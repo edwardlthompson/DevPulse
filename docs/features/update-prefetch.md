@@ -16,7 +16,6 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 | `UpdatePrefetch` | object | Opt-in, unmetered-only candidate list; never installs |
 | `UpdateNotesMemory` | object | In-memory notes by package for the current process |
 | `UpdateArtifactMemory` | object | Direct file URLs by package; best source first |
-
 ### Functions
 
 | Name | Contract |
@@ -28,7 +27,6 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 | `FdroidApkFiles.namesIn` | Highest `apkName` plus 64-hex `hash` and `nativecode` when present |
 | `AptoideMetaParser` | `file.path` when it is an https APK URL |
 | Failed HTTP | No file on disk; listing stays as today |
-
 ## Acceptance criteria
 
 - ✅ User-visible: detail page expands notes when F-Droid what'sNew or GitHub release body exists
@@ -37,7 +35,7 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 - ✅ i18n: `update_notes_*` (cache strings wait for the APK row)
 - ✅ User never has to open a website to fetch an APK we already have a direct URL for
 - ✅ Prefetch is opt-in. Identity-safe candidate only (same cert + ABI/locale). Silent install is Root-only after the user picks it
-- ✅ Play and APKMirror stay page-only (no FOSS file URL)
+- ✅ APKMirror stays page-only; Play downloads only when the opt-in Aurora toggle is on
 - ✅ i18n: `update_cache_*`
 
 ## Smoke scenario
@@ -48,9 +46,9 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 
 ## Notes
 
-- Play has no FOSS APK URL. One-tap **Update in Play** opens the Play Store app (`market://details?id=`). DevPulse does not use Aurora or `gplayapi`.
+- Play has no public FOSS file URL. Opt-in Aurora (`gplayapi`) can fetch a Play CDN URL; failure opens the Play Store (`market://details?id=`). Off by default. See `docs/features/aurora-play.md`.
 - APKPure uses the same `get_app_update` `asset.url` APKUpdater downloads (https, not XAPK).
-- Also direct: F-Droid/Izzy `apkName` + repo APK base, GitHub `browser_download_url` ending in `.apk`, Aptoide `file.path`.
+- Also direct: F-Droid/Izzy `apkName` from a small index **or** the package HTML we already fetch, plus repo APK base; GitHub `browser_download_url` ending in `.apk`; Aptoide `file.path`.
 - APKMirror stays last-resort web; no partner download in this slice.
 - Settings: `update_prefetch_*`. Prefetch runs after Refresh when the toggle is on and the network is unmetered.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

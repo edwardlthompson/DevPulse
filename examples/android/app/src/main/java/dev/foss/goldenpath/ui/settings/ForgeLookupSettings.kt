@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
-import dev.foss.goldenpath.index.forge.DataStoreForgeTokenStore
+import dev.foss.goldenpath.index.forge.EncryptedForgeTokenStore
 import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import kotlinx.coroutines.launch
@@ -37,13 +37,14 @@ fun ForgeLookupSettings(modifier: Modifier = Modifier) {
             checked = enabled,
             onCheckedChange = { value -> scope.launch { prefs.setForgeLookupEnabled(value) } },
         )
+        Text(text = stringResource(R.string.forge_lookup_leftover_body), style = MaterialTheme.typography.bodySmall)
         Text(text = stringResource(R.string.forge_lookup_search_unknowns_body), style = MaterialTheme.typography.bodySmall)
         PreferenceSwitch(
             label = stringResource(R.string.forge_lookup_search_unknowns),
             checked = searchUnknowns,
             onCheckedChange = { value -> scope.launch { prefs.setForgeLookupSearchUnknowns(value) } },
         )
-        val store = remember { DataStoreForgeTokenStore(context) }
+        val store = remember { EncryptedForgeTokenStore.wrap(context) }
         var token by remember { mutableStateOf(store.getToken().orEmpty()) }
         OutlinedTextField(
             value = token,

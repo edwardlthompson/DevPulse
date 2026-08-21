@@ -25,11 +25,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.about.ProductUpdate
 import dev.foss.goldenpath.settings.SettingsHubRow
 import dev.foss.goldenpath.settings.SettingsNav
 import dev.foss.goldenpath.settings.SettingsPage
@@ -82,6 +84,12 @@ fun SettingsHub(
                 )
             }
         }
+        val uriHandler = LocalUriHandler.current
+        val donate = stringResource(R.string.about_donate)
+        TextButton(
+            onClick = { runCatching { uriHandler.openUri(ProductUpdate.VENMO_URL) } },
+            modifier = Modifier.semantics { contentDescription = donate },
+        ) { Text(donate) }
         val close = stringResource(R.string.settings_close)
         TextButton(
             onClick = onClose,

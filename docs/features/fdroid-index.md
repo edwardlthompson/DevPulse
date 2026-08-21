@@ -12,21 +12,19 @@ Types in `dev.foss.goldenpath.index.fdroid`. No Play or forge clients. Network f
 |------|------|-----------------|
 | `FdroidRepoKind` | enum | `Official`, `Archive`, `Izzy`, `Guardian`, `Calyx`, `Custom` |
 | `FdroidRepo` | data class | `id`, `kind`, `indexUrl`, `enabled` |
-| `FdroidAppRecord` | data class | `packageName`, `lastUpdatedMs`, `sourceCode`, `repoId` |
+| `FdroidAppRecord` | data class | `packageName`, `lastUpdatedMs`, `sourceCode`, `repoId`, optional `category`, `relatedPackages` |
 | `CachedIndex` | data class | `raw`, `fetchedAtMs` |
 | `FdroidIndexError` | enum | `DownloadFailed`, `ParseFailed`, `NotFound` |
 | `FdroidLookup` | data class | `record`, `fromCache`, `error` |
-
 ### Functions
 
 | Name | Contract |
 |------|----------|
-| `FdroidIndexParser.parse(raw, repoId, wanted = emptySet())` | Accepts `String` or `ByteArray`. Refresh keeps UTF-8 bytes (no 2× Java String), extracts only installed packages, and caches each repo under `filesDir/fdroid-index` for 3 days. Unpack rejects JSON over 96MB. |
+| `FdroidIndexParser.parse(raw, repoId, wanted = emptySet())` | Accepts `String` or `ByteArray`. Extra repos parse wanted packages only. Official/Archive host-resolve via `FdroidPackageParser` + `FdroidPackagePage` (no `index-v1.jar`). Extra indexes of any size are harvested and cached. Izzy host-resolves per package only when the index download is empty. |
 | `FdroidLookupEngine.lookup(packageName, records)` | Exact package-name match |
 | `FdroidCachePolicy.isFresh(fetchedAtMs, nowMs)` | Fresh for 3 days |
 | `FdroidOrigin.from(kind)` | Official → `AppOrigin.Fdroid`; others → `ExtraRepo` |
 | `FdroidRepoCatalog.defaults()` | Official + Archive + Izzy + Guardian + Calyx URLs; only Official enabled by default |
-
 ### Signature verify (limitation)
 
 Official `index-v1.jar` signature verification is **not** implemented this sprint. Indexes are accepted over HTTPS as trimmed JSON fixtures or future downloads. Checksum verify is a later hardening item. Fallback smoke: `bash scripts/feature-gate.sh --stack android`.
@@ -56,7 +54,6 @@ Official `index-v1.jar` signature verification is **not** implemented this sprin
 | View | extra-repo settings in `ui/settings/` |
 | Tests | `examples/android/app/src/test/.../index/fdroid/` |
 | Wiring | scan orchestrator ≤10 lines |
-
 ## Definition of Done
 
 Parse and lookup unit tests against a trimmed fixture. If signature verify is skipped, state that here and use `bash scripts/feature-gate.sh --stack android` as the download smoke fallback.

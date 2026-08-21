@@ -89,7 +89,10 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")
     implementation("androidx.work:work-runtime-ktx:2.10.5")
+    implementation("androidx.security:security-crypto:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+    implementation("com.auroraoss:gplayapi:3.5.8")
+    implementation("com.google.code.gson:gson:2.13.2")
 
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("junit:junit:4.13.2")
