@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.27.0](https://github.com/edwardlthompson/DevPulse/compare/v0.26.0...v0.27.0) (2026-08-21)
+
 ### Added
 
 - Quiet **Donate via Venmo** in About and Settings; one optional note after a version change
