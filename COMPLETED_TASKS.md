@@ -2,6 +2,37 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## v0.27.0 ship (2026-08-21)
+
+- ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)
+
+## Sprint 18 — Donations and self-update (2026-08-20)
+
+- ✅ [AGENT] Device-local donate nudge + 24h GitHub filename update prompt
+
+## Sprint 17 — Aurora Play download (2026-08-20)
+
+- ✅ [AGENT] Opt-in Aurora Play APK download with Play Store fallback
+
+## Sprint 16 — Alternatives, repo fingerprints, Opportunity finish (2026-08-20)
+
+- ✅ [AGENT] Repo-add help: Guardian/Calyx `fdroidrepo` chips and fingerprint explainer
+- ✅ [AGENT] Parse and persist F-Droid categories from package HTML; Opportunity uses category then origin
+- ✅ [AGENT] Wire Alternatives + Sources on app detail from cached neighbors
+- ✅ [AGENT] Persist pasted forge URLs; Develop-next notes; focused Opportunity export; DevPulse self-pulse
+- ✅ [AGENT] Izzy host-resolve when index missing or over 2MB; red-count home widget
+- ✅ [AGENT] Parse APK file name from F-Droid/Izzy package HTML so Update stays in-app
+
+## Sprint 15 — Host-resolve, Opportunity, leftover forges (2026-08-20)
+
+- ✅ [AGENT] Host-resolve official/archive F-Droid via package API + page; never harvest indexes over 2MB
+- ✅ [AGENT] Wire Opportunity (“What to build”) from cached stale inventory
+- ✅ [AGENT] Pin loved stale apps (persist + hide from red list)
+- ✅ [AGENT] Store the optional GitHub token in EncryptedSharedPreferences
+- ✅ [AGENT] Opt-in stale-crossing notifications (180 / 365 days, WorkManager, no FCM)
+- ✅ [AGENT] Persist scan history and show apps that went quiet
+- ✅ [AGENT] GitLab and Codeberg leftover lookup when F-Droid has no GitHub source
+
 ## v0.26.0 ship (2026-08-20)
 
 - ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)

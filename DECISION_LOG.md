@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-21 — Ship v0.27.0 on GitHub Releases
+- **Status:** Accepted
+- **Context:** `/ship` after quiet Venmo donate, filename self-update, host-resolve Refresh, Opportunity, leftover forges, and Aurora Play. Actions still cannot open PRs. Release Please did not tag after merge because it could not find the gh-opened PR.
+- **Decision:** Use a `feat:` prepare commit so Release Please proposes 0.27.0. Open PR #8 with `gh`, fold Unreleased on the RP branch, admin-merge. Create tag `v0.27.0` and the GitHub Release with `gh`, then dispatch `release.yml`. Leave recurring "next tag" and November radar HUMAN rows open.
+- **Alternatives considered:** Wait for Actions to create the PR (rejected: org setting still denies it). Rely on RP to tag after merge (rejected: "No latest release pull request found").
+- **Consequences:** Tag `v0.27.0` published. Signed APK and SBOM attach via `release.yml`. Empty Izzy indexes now extra-host-resolve instead of failing the repo.
+
 ### 2026-08-20 — Continuum donate and self-update method
 - **Status:** Accepted
 - **Context:** Reuse Continuum Calendar’s quiet Venmo + ethical reminder + daily GitHub installer check so DevPulse does not nag or mix donate with updates.
