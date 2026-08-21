@@ -211,6 +211,22 @@
 | **Cause** | Frame rate is not a Window method. Many OEMs keep apps at 60 unless `preferredDisplayModeId` selects the fastest same-resolution mode |
 | **Fix** | `DisplayRefresh` sets `preferredDisplayModeId` / `preferredRefreshRate`. Scrollables use `Modifier.preferredFrameRate(FrameRateCategory.High)` |
 | **Prevention** | Do not disable ARR (`setFrameRatePowerSavingsBalanced(false)`) to fake smoothness; let High votes ramp during fling |
+### KB-027 — gh-opened Release Please PR does not tag on merge
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | After admin-merge of a `gh pr create` Release Please PR, no `vX.Y.Z` tag or GitHub Release appears. RP then tries to open another PR |
+| **Cause** | RP looks for a labeled release PR (`autorelease: pending`). A hand-opened PR is not that object, so merge is "No latest release pull request found" |
+| **Fix** | `gh release create vX.Y.Z --target <merge-sha>` then `gh workflow run release.yml --ref main -f tag=vX.Y.Z` |
+| **Prevention** | Enable Actions to create PRs, or add the RP labels when opening with `gh` |
+### KB-028 — Empty Izzy index threw before extra host-resolve
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `ReleaseRefreshHostResolveTest.emptyIzzyUsesExtraHostResolve` fails; Refresh treats empty Izzy as `fdroid izzy fail` |
+| **Cause** | `FdroidRefreshFetch.load` throws `empty index` before `ReleaseRefreshRepos` can call extra host-resolve |
+| **Fix** | `allowEmpty` when Izzy extra host-resolve is available; archive still fails on empty |
+| **Prevention** | Keep the empty-index fail test for Archive; do not throw before the Izzy fallback |
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |
