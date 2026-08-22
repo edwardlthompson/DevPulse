@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-22 — v0.29.0 ship
+- **Status:** Accepted
+- **Context:** Welcome auto-dismissed via an older apps ack; Update all / Refresh overlays ignored Back; Session install hung without Install unknown apps.
+- **Decision:** Welcome-seen is only `welcome_seen`. Back/Close dismiss overlays immediately. Install permission is checked before download/install. Update all uses the Settings install method.
+- **Alternatives considered:** Keep ack as a Welcome skip for existing users (rejected: first 0.28.0 launch never showed the install row). Keep overlays locked until complete (rejected: users had to kill the app).
+- **Consequences:** Tag `v0.29.0` and `DevPulse-0.29.0.apk` published. System is the safer OP13 method until Session plus install permission is granted.
+
 ### 2026-08-22 — v0.28.0 ship
 - **Status:** Accepted
 - **Context:** `/ship` after listing-tap installs, Update all parallel downloads plus ignore cache, and welcome-once splash.
