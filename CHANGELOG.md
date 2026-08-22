@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.28.0](https://github.com/edwardlthompson/DevPulse/compare/v0.27.0...v0.28.0) (2026-08-22)
+
 ### Added
 
 - Tapping a listed source downloads that source's APK and shows the install confirm (Play via Aurora, F-Droid, APKPure, Aptoide, GitHub; APKMirror only when the listing exposes `download.php`)
