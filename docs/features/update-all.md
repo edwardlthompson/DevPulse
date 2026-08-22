@@ -4,29 +4,32 @@
 
 ## Public API (locked)
 
-Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Play and APKMirror stay page-only.
+Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Listing taps download a source APK when one exists; APKMirror follows the listing page to `download.php` when that link is present.
 
 ### Types
 
 | Name | Kind | Contract |
 |------|------|----------|
-| `UpdateAll` | object | `artifacts(apps)` is Direct-only; `run` downloads every file then installs sequentially |
+| `UpdateAll` | object | `jobs(apps)` is every outdated app with a fetchable source; `run` downloads up to `PARALLEL` APKs at once, then queues installs |
 | `UpdateAllResult` | data class | `downloaded`, `installed`, `failedDownload`, `failedInstall` |
-
 ## Acceptance criteria
 
-- ✅ User-visible: Update all appears when any visible app has a newer direct APK
-- ✅ Offline/error: a failed download skips that app; remaining files still install
-- ✅ Accessibility: button has a content description
+- ✅ User-visible: Update all appears when any visible app has a newer fetchable listing; a dialog shows overall and per-app progress
+- ✅ Offline/error: a failed download skips that app; remaining apps still run
+- ✅ Accessibility: button and overall bar have content descriptions
 - ✅ i18n: `update_all`, `update_all_busy`
 - ✅ System/Session still prompt per install; Root stays silent only when the user picked it
-- ✅ APKPure page-only rows download `asset.url` when get_app_update returns an APK; otherwise they open the APKPure app
+- ✅ Play/F-Droid/APKPure/Aptoide/GitHub use the same in-app download path as a listing tap; APKMirror is skipped in the batch (no file URL)
+- ✅ A failed source+version is ignored (⚠️ on that listing) and Update all walks remaining newer versions; Has update clears when none remain
+- ✅ A successful install settles the package so it leaves the updates list; a failed app stays only while a lower fetchable version remains
+- ✅ Ignored versions persist in `ignored_updates.tsv` so the same false-positive listing does not return until Refresh finds a newer version
+- ✅ Update all downloads up to four APKs at once, then installs the ready files one at a time
 
 ## Smoke scenario
 
-1. _Given_ two F-Droid artifacts in memory and two newer installed apps
-2. _When_ `UpdateAll.run` fetches both then installs
-3. _Then_ download callbacks finish before any install; both files are staged
+1. _Given_ two newer apps (Play-listed and F-Droid-listed)
+2. _When_ Update all runs
+3. _Then_ first-choice APKs download in parallel, installs run one at a time, and a failed source walks the next version in a later wave; successful rows leave the list
 
 ## Container map
 
@@ -36,17 +39,15 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Play an
 | View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/inventory/UpdateAllButton.kt` |
 | Tests | `UpdateAllTest.kt`, `StoreListingIntentTest.kt`, `ApkPureLinkTest.kt` |
 | Wiring | `InventoryScreen` one composable call |
-
 ### Critique
 
 | Issue | Resolution |
 |----|---|
 | Null/empty at boundary | `UpdateAll.artifacts` skips apps without a Direct URL; `UpdateCache.stage` rejects empty bytes |
 | Network timeout | `ApkHttpFetcher` / `Result` — failed fetch increments `failedDownload` and continues |
-| Race conditions | Button disables while busy; installs stay sequential after the download phase |
+| Race conditions | Button disables while busy; downloads use `ReleaseRefreshParallel` (`PARALLEL` 4); `InstallAwait` waits for each Session result |
 | Unhandled exceptions | `runCatching` in `StoreListingIntent.open`; stage uses `Result` |
 | Cache evicts mid-batch | `UpdateAll` passes `maxFiles` (40) into `UpdateCache.stage` |
-
 ## Notes
 
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

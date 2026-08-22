@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
@@ -17,10 +16,8 @@ import dev.foss.goldenpath.ui.theme.SpacingMd
 fun ForgePasteScreen(
     packageName: String,
     repoUrl: String,
-    token: String,
     onPackageNameChange: (String) -> Unit,
     onRepoUrlChange: (String) -> Unit,
-    onTokenChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -38,12 +35,5 @@ fun ForgePasteScreen(
             onValueChange = onRepoUrlChange,
             label = { Text(stringResource(R.string.forge_paste_url)) },
         )
-        OutlinedTextField(
-            value = token,
-            onValueChange = onTokenChange,
-            label = { Text(stringResource(R.string.forge_token)) },
-            visualTransformation = PasswordVisualTransformation(),
-        )
-        Text(text = stringResource(R.string.forge_token_never_log), style = MaterialTheme.typography.bodySmall)
     }
 }

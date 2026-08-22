@@ -54,13 +54,13 @@ class ReleaseRefreshForgeTest {
     }
 
     @Test
-    fun noHintSearchOffStaysUnknownWithoutHttp() {
+    fun noHintStoreListedIsForgeMissWithoutHttp() {
         val hits = intArrayOf(0, 0)
         val pkg = "com.example.wipefiles"
         val json = """{"apps":[{"packageName":"$pkg","lastUpdated":1610000000000}]}"""
         val forge = runForge(pkg, json, official, countClient(hits)).getValue(pkg).offers.single { it.source == RemoteReleasedSource.Forge }
         assertFalse(forge.listed)
-        assertFalse(forge.known)
+        assertTrue(forge.known)
         assertEquals(0, hits[0])
         assertEquals(0, hits[1])
     }
@@ -68,7 +68,7 @@ class ReleaseRefreshForgeTest {
     @Test
     fun noHintEmptySearchIsKnownMissWhenOptInOn() {
         val pkg = "com.example.wipefiles"
-        val json = """{"apps":[{"packageName":"$pkg","lastUpdated":1610000000000}]}"""
+        val json = """{"apps":[]}"""
         val client = GitHubSearchClient { GitHubSearchPage(200, """{"items":[]}""") }
         val pick = runForge(pkg, json, official, client, searchUnknowns = true).getValue(pkg)
         val forge = pick.offers.single { it.source == RemoteReleasedSource.Forge }

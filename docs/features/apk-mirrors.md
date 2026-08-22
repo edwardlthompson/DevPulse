@@ -12,7 +12,7 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 |------|------|----------|
 | `ApkMirrorBatchFetcher` | fun interface | `fetch(packageNames): Result<String>` — one JSON body per chunk |
 | `ApkPureBatchFetcher` | fun interface | same |
-| `ApkMirrorScan.offersFor` | function | Chunk 100; exists+version+`publish_date` when present |
+| `ApkMirrorScan.offersFor` | function | Chunk 100, up to 4 chunks in parallel; exists+version+`publish_date` when present |
 | `ApkPureScan.offersFor` | function | Chunk 200; version only; date stays null |
 ### Functions
 
@@ -26,7 +26,7 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 - ✅ Settings opt-in, default off; Refresh batches enabled dump sites
 - ✅ Offline/error: inventory stays local; unknown not red
 - ✅ i18n: `dump_store_*`, `apkmirror_enable`, `apkpure_enable`, `inventory_source_apkmirror`, `inventory_source_apkpure`
-- ✅ Listing taps open the APKPure app when installed (`com.apkpure.aegon` via `market://details?id=`); website is fallback. APKPure file download uses `asset.url` on Refresh and on Update
+- ✅ Listing taps download APKPure `asset.url` (including `download.cdnpure.com`) and APKMirror `download.php` when the listing page exposes it. Missing file is a failed download.
 
 ## Smoke scenario
 
@@ -37,5 +37,5 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 
 ## Notes
 
-- Dates are last-seen-on-that-site. APKPure has no date field in its update JSON.
+- Dates are last-seen-on-that-site. APKPure has no date field in its update JSON. APKMirror chunks overlap (4-wide). Mirror and Pure dump threads overlap. An Aurora/Play miss still goes through both dump stores.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

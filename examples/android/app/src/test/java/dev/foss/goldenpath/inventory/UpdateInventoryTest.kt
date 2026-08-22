@@ -17,7 +17,10 @@ class UpdateInventoryTest {
         )
         assertTrue(UpdateInventory.linksFor("1.0", pick).isEmpty())
         assertTrue(UpdateInventory.listingsFor(pick).any { it.source == RemoteReleasedSource.Fdroid })
-        assertTrue(UpdateInventory.linksFor("0.9", pick).isEmpty())
+        assertEquals(
+            setOf(RemoteReleasedSource.Fdroid, RemoteReleasedSource.Forge),
+            UpdateInventory.linksFor("0.9", pick).map { it.source }.toSet(),
+        )
     }
 
     @Test
@@ -39,7 +42,7 @@ class UpdateInventoryTest {
         assertTrue(play.known)
         assertNull(play.url)
         assertFalse(UpdateInventory.canOpen(play))
-        assertFalse(UpdateInventory.canOpen(listings.first()))
+        assertTrue(UpdateInventory.canOpen(listings.first()))
         val listedPlay = UpdateLink(
             RemoteReleasedSource.Play,
             UpdateUrls.play("a"),
@@ -54,6 +57,13 @@ class UpdateInventoryTest {
             known = true,
         )
         assertTrue(UpdateInventory.canOpen(listedMirror))
+        val listedPure = UpdateLink(
+            RemoteReleasedSource.ApkPure,
+            "https://apkpure.com/search?q=a",
+            listed = true,
+            known = true,
+        )
+        assertTrue(UpdateInventory.canOpen(listedPure))
     }
 
     @Test
@@ -66,7 +76,10 @@ class UpdateInventoryTest {
             ),
         )
         val links = UpdateInventory.linksFor("1.0", pick)
-        assertEquals(listOf(RemoteReleasedSource.Play), links.map { it.source })
+        assertEquals(
+            setOf(RemoteReleasedSource.Play, RemoteReleasedSource.Fdroid, RemoteReleasedSource.Forge),
+            links.map { it.source }.toSet(),
+        )
         assertEquals(2L, links.first { it.source == RemoteReleasedSource.Play }.releasedAtMs)
         assertEquals("1.5", links.first { it.source == RemoteReleasedSource.Play }.versionName)
     }
@@ -92,7 +105,8 @@ class UpdateInventoryTest {
             ),
         )
         val links = UpdateInventory.linksFor("1.0", pick)
-        assertTrue(links.isEmpty())
+        assertFalse(links.any { it.source == RemoteReleasedSource.Play })
+        assertTrue(links.any { it.source == RemoteReleasedSource.Fdroid })
         assertTrue(UpdateInventory.listingsFor(pick).size >= ListingChannels.STANDARD.size)
     }
 }

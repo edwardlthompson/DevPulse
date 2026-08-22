@@ -18,23 +18,49 @@ object ReleaseRefreshDump {
     ) {
         RefreshTrace.line("dump stores mirror=$apkMirrorEnabled pure=$apkPureEnabled apps=${apps.size}")
         val packages = apps.map { it.packageName }
-        if (apkMirrorEnabled) {
-            val offers = ApkMirrorScan.offersFor(packages, apkMirrorFetcher, nowMs)
-            apps.forEach { app ->
-                val loc = RefreshLocations.label("ApkMirror", app.label, app.packageName)
-                clock.begin(loc)
-                commit(app.packageName, offers.getValue(app.packageName))
-                clock.tick(loc)
+        val jobs = buildList {
+            if (apkMirrorEnabled) {
+                add(
+                    Thread {
+                        applyOne(apps, RefreshOutletIds.MIRROR, "ApkMirror", clock) {
+                            ApkMirrorScan.offersFor(packages, apkMirrorFetcher, nowMs)
+                        }.forEach { (app, offer) -> commit(app.packageName, offer) }
+                    },
+                )
+            }
+            if (apkPureEnabled) {
+                add(
+                    Thread {
+                        applyOne(apps, RefreshOutletIds.PURE, "ApkPure", clock) {
+                            ApkPureScan.offersFor(packages, apkPureFetcher, nowMs)
+                        }.forEach { (app, offer) -> commit(app.packageName, offer) }
+                    },
+                )
             }
         }
-        if (apkPureEnabled) {
-            val offers = ApkPureScan.offersFor(packages, apkPureFetcher)
-            apps.forEach { app ->
-                val loc = RefreshLocations.label("ApkPure", app.label, app.packageName)
-                clock.begin(loc)
-                commit(app.packageName, offers.getValue(app.packageName))
-                clock.tick(loc)
-            }
+        jobs.forEach { it.start() }
+        jobs.forEach { it.join() }
+    }
+
+    private fun applyOne(
+        apps: List<InstalledApp>,
+        id: String,
+        source: String,
+        clock: RefreshProgressClock,
+        fetch: () -> Map<String, RemoteReleaseOffer>,
+    ): List<Pair<InstalledApp, RemoteReleaseOffer>> {
+        clock.planOutlet(id, source, apps.size)
+        val offers = if (RefreshSkip.stopped(id)) emptyMap() else fetch()
+        val rows = apps.mapNotNull { app ->
+            val loc = RefreshLocations.label(source, app.label, app.packageName)
+            clock.begin(loc)
+            clock.outletAt(id, app.label)
+            val offer = offers[app.packageName]
+            clock.outletTick(id)
+            clock.tick(loc)
+            if (offer == null) null else app to offer
         }
+        RefreshOutletBoard.noteFinished(id)
+        return rows
     }
 }

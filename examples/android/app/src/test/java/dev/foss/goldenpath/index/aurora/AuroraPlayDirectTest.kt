@@ -43,6 +43,20 @@ class AuroraPlayDirectTest {
         assertEquals("2.0", artifact?.versionName)
         assertEquals(20L, artifact?.versionCode)
     }
+
+    @Test
+    fun prefersBaseOverSplit() {
+        val artifact = AuroraPlayDirect.resolve(
+            "app.one",
+            AuroraPlayFiles {
+                listOf(
+                    AuroraPlayFile("https://redirector.gvt1.com/edgedl/android/market/split", base = false),
+                    AuroraPlayFile("https://redirector.gvt1.com/edgedl/android/market/base", "2.0", 20, base = true),
+                )
+            },
+        )
+        assertEquals("https://redirector.gvt1.com/edgedl/android/market/base", artifact?.downloadUrl)
+    }
 }
 
 class AuroraAuthTest {

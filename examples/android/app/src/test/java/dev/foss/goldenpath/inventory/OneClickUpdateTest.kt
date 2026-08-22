@@ -10,6 +10,8 @@ class OneClickUpdateTest {
     @Before
     fun reset() {
         UpdateArtifactMemory.clear()
+        IgnoredUpdates.clear()
+        AppliedUpdates.clear()
     }
 
     @Test

@@ -1,13 +1,21 @@
 package dev.foss.goldenpath.index.forge
 
+import dev.foss.goldenpath.inventory.RefreshSkip
 import dev.foss.goldenpath.inventory.UpdateNotesMemory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class GitHubScanTest {
+    @Before
+    fun resetPace() {
+        GitHubSearchPace.reset()
+        RefreshSkip.reset()
+    }
+
     @Test
     fun pickRejectsOwnerTailWithoutFullPackage() {
         val candidates = listOf(
@@ -90,6 +98,32 @@ class GitHubScanTest {
             GitHubSearchPage(200, """{"items":[{"full_name":"someone/WiseTimer","name":"WiseTimer","archived":false}]}""")
         }
         val offer = GitHubScan.toOffer("com.example.wipefiles", "Wipe Files", search, GitHubReleaseClient { GitHubSearchPage(429, "") }, searchUnknowns = true)
+        assertFalse(offer.listed)
+        assertFalse(offer.known)
+    }
+
+    @Test
+    fun stopsReleaseWalkAfterFirst403() {
+        ForgeRateLimit.reset()
+        var releases = 0
+        val search = GitHubSearchClient {
+            GitHubSearchPage(
+                200,
+                """{"items":[
+                  {"full_name":"a/one","name":"one","archived":false},
+                  {"full_name":"a/two","name":"two","archived":false},
+                  {"full_name":"a/three","name":"three","archived":false}
+                ]}""",
+            )
+        }
+        val offer = GitHubScan.toOffer(
+            "app.x",
+            "X",
+            search,
+            GitHubReleaseClient { releases += 1; GitHubSearchPage(403, "") },
+            searchUnknowns = true,
+        ) { }
+        assertEquals(2, releases)
         assertFalse(offer.listed)
         assertFalse(offer.known)
     }

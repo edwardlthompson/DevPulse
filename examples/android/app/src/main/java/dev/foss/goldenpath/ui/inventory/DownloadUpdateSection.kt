@@ -94,6 +94,7 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
                             inspect = { file -> ApkArchiveIdentity.inspect(context.packageManager, file) },
                             installed = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
                                 ?: InstalledIdentity(app.packageName, emptySet()),
+                            filesDir = context.filesDir,
                         )
                     }
                     busy = false
@@ -107,6 +108,14 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
             enabled = !busy,
             modifier = Modifier.semantics { contentDescription = label },
         ) { Text(label) }
+        if (kind is OneClickKind.Play && aurora) {
+            val playLabel = stringResource(R.string.update_one_click_play)
+            TextButton(
+                onClick = { PlayStoreIntent.open(context, app.packageName) },
+                enabled = !busy,
+                modifier = Modifier.semantics { contentDescription = playLabel },
+            ) { Text(playLabel) }
+        }
         failRes?.let { res ->
             Text(text = stringResource(res), color = MaterialTheme.colorScheme.error)
         }

@@ -64,6 +64,22 @@ class RemoteReleaseCodecTest {
     }
 
     @Test
+    fun fetchedAtSurvivesRoundTrip() {
+        val pick = RemoteReleaseRollup.from(
+            listOf(
+                RemoteReleaseOffer(
+                    source = RemoteReleasedSource.Play,
+                    listed = true,
+                    known = true,
+                    fetchedAtMs = 1_720_000_000_000L,
+                ),
+            ),
+        )
+        val decoded = RemoteReleaseCodec.decode(RemoteReleaseCodec.encode(mapOf("app.x" to pick)))
+        assertEquals(1_720_000_000_000L, decoded.getValue("app.x").offers.single().fetchedAtMs)
+    }
+
+    @Test
     fun emptyAndJunkYieldEmpty() {
         assertEquals(emptyMap<String, RemoteReleasePick>(), RemoteReleaseCodec.decode(""))
         assertEquals(emptyMap<String, RemoteReleasePick>(), RemoteReleaseCodec.decode("not-a-row"))

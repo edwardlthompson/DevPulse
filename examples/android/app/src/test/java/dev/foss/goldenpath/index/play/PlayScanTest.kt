@@ -1,5 +1,8 @@
 package dev.foss.goldenpath.index.play
 
+import dev.foss.goldenpath.index.aurora.AuroraPlayApp
+import dev.foss.goldenpath.index.aurora.AuroraPlayDetails
+import dev.foss.goldenpath.index.aurora.AuroraPlayStatus
 import dev.foss.goldenpath.inventory.RefreshTrace
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -88,6 +91,38 @@ class PlayScanTest {
         val offer = PlayScan.toOffer("com.instagram.android", PlayPageClient { PlayPageResponse(200, html) })
         assertTrue(offer.listed)
         assertTrue(offer.known)
+        assertEquals("192.168.1.2", offer.versionName)
+    }
+
+    @Test
+    fun auroraListedSkipsHtml() {
+        var html = 0
+        val aurora = AuroraPlayDetails {
+            mapOf("app.x" to AuroraPlayApp(AuroraPlayStatus.Listed, "9.0", 5L))
+        }
+        val offer = PlayScan.toOffer(
+            "app.x",
+            PlayPageClient { html += 1; PlayPageResponse(200, "") },
+            aurora,
+        )
+        assertEquals(0, html)
+        assertTrue(offer.listed)
+        assertEquals("9.0", offer.versionName)
+        assertEquals("https://play.google.com/store/apps/details?id=app.x", offer.pageUrl)
+    }
+
+    @Test
+    fun auroraUnknownFallsBackToHtml() {
+        val html = readFixture("play/listed-page.html")
+        val aurora = AuroraPlayDetails {
+            mapOf("com.instagram.android" to AuroraPlayApp(AuroraPlayStatus.Unknown))
+        }
+        val offer = PlayScan.toOffer(
+            "com.instagram.android",
+            PlayPageClient { PlayPageResponse(200, html) },
+            aurora,
+        )
+        assertTrue(offer.listed)
         assertEquals("192.168.1.2", offer.versionName)
     }
 

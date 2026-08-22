@@ -13,7 +13,7 @@ Types in `dev.foss.goldenpath.index.aptoide`. No live network in unit tests. Nev
 | `AptoideLookupStatus` | enum | `Ok`, `UnknownCheckManually` |
 | `AptoideLookup` | data class | `updatedOnMs`, `publishedVersion`, `status` |
 | `AptoideCachePolicy` | object | 24h TTL |
-| `AptoideFetchPolicy` | object | honest User-Agent; Refresh uses bounded parallel getMeta (no serial 1500 ms sleep) |
+| `AptoideFetchPolicy` | object | honest User-Agent; Refresh batches `listAppsUpdates` (100/chunk, vercode 0 + signing SHA-1). Successful-chunk omissions are known misses (7-day TTL). getMeta only if a chunk fails or the APK has no signing SHA-1 |
 ### Functions
 
 | Name | Contract |
@@ -49,6 +49,6 @@ Fixture parser tests required. Fallback: `bash scripts/feature-gate.sh --stack a
 
 ## Notes
 
-- Date is last-seen-on-Aptoide, not Play. Refresh always probes Aptoide in the bounded parallel pool when the outlet is enabled; an F-Droid hit does not skip it.
+- Date is last-seen-on-Aptoide, not Play. Refresh POSTs installed package + signing SHA-1 to public `listAppsUpdates` (same endpoint Aptoide Store uses). Matching-signer hits get `updated`/`modified` from that JSON. A successful chunk that omits a package is a **known miss** for 7 days — no leftover `getMeta` (Play-signed apps rarely match Aptoide’s cert). A failed chunk does not mark misses and still `getMeta`. Unsigned APKs stay on getMeta. An F-Droid hit does not skip Aptoide.
 - Listing taps open `cm.aptoide.pt` when installed (`https://en.aptoide.com/app?package_name=`). Aptoide Games does not handle `aptoidesearch://`. Official Store APK: `https://en.aptoide.com/download`. HTTPS uname pages are the web fallback only.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

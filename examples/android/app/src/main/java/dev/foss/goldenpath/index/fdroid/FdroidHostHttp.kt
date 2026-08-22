@@ -1,33 +1,65 @@
 package dev.foss.goldenpath.index.fdroid
 
+import android.util.Log
+import dev.foss.goldenpath.inventory.RefreshOutletBoard
+import dev.foss.goldenpath.inventory.RefreshOutletIds
+import dev.foss.goldenpath.inventory.RefreshProgressClock
+import dev.foss.goldenpath.inventory.RefreshSkip
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 class FdroidHostHttp(
     private val api: FdroidPackageClient = FdroidPackageClient { pkg -> get(apiUrl(pkg)) },
     private val pages: FdroidPageClient = FdroidPageClient { pkg -> get(pageUrl(pkg)) },
+    private val workers: Int = FdroidIndexBudget.HOST_WORKERS,
 ) : FdroidHostResolver {
     private val cache = ConcurrentHashMap<String, FdroidAppRecord?>()
 
-    override fun resolve(repo: FdroidRepo, wanted: Set<String>): List<FdroidAppRecord> =
-        wanted.mapNotNull { pkg ->
-            val key = "${repo.id}:$pkg"
-            val hit = cache[key] ?: fetch(repo, pkg)?.also { cache[key] = it }
-            hit?.copy(repoId = repo.id)
+    override fun resolve(repo: FdroidRepo, wanted: Set<String>): List<FdroidAppRecord> {
+        val pkgs = wanted.toList()
+        if (pkgs.isEmpty()) return emptyList()
+        val done = AtomicInteger(0)
+        val n = workers.coerceAtLeast(1).coerceAtMost(pkgs.size)
+        val pool = Executors.newFixedThreadPool(n)
+        return try {
+            pkgs.map { pkg ->
+                pool.submit<FdroidAppRecord?> {
+                    val id = RefreshOutletIds.fdroid(repo.id)
+                    if (RefreshSkip.stopped(id)) return@submit null
+                    val rec = runCatching { one(repo, pkg) }.getOrNull()
+                    val at = done.incrementAndGet()
+                    RefreshOutletBoard.at(id, pkg)
+                    RefreshOutletBoard.tick(id)
+                    RefreshProgressClock.pulseActive()
+                    if (at == 1 || at == pkgs.size || at % 20 == 0) {
+                        runCatching { Log.i("DevPulse", "fdroid ${repo.id} host $at/${pkgs.size}") }
+                    }
+                    rec
+                }
+            }.mapNotNull { it.get() }
+        } finally {
+            pool.shutdown()
+            pool.awaitTermination(30, TimeUnit.MINUTES)
         }
+    }
+
+    private fun one(repo: FdroidRepo, pkg: String): FdroidAppRecord? {
+        val key = "${repo.id}:$pkg"
+        val hit = cache[key] ?: fetch(repo, pkg)?.also { cache[key] = it }
+        return hit?.copy(repoId = repo.id)
+    }
 
     private fun fetch(repo: FdroidRepo, pkg: String): FdroidAppRecord? =
         if (FdroidIndexBudget.extraHostResolve(repo)) {
             FdroidHostResolve.pageRecord(pkg, repo.id, extraPage(repo, pkg).getOrNull())
         } else {
-            FdroidHostResolve.record(
-                pkg,
-                repo.id,
-                api.packageJson(pkg).getOrNull(),
-                pages.packagePage(pkg).getOrNull(),
-            )
+            val json = api.packageJson(pkg).getOrNull() ?: return null
+            FdroidHostResolve.record(pkg, repo.id, json, pages.packagePage(pkg).getOrNull())
         }
 
     companion object {

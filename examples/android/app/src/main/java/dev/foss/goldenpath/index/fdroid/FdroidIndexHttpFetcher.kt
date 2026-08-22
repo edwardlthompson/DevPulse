@@ -20,8 +20,16 @@ object FdroidIndexHttpFetcher : FdroidIndexFetcher {
             if (conn.contentLengthLong == 0L) {
                 error("empty body")
             }
+            val listed = conn.contentLengthLong
+            if (listed > FdroidIndexBudget.MAX_BYTES) {
+                error("fdroid index ${listed}B over budget")
+            }
             val bytes = conn.inputStream.use { input ->
-                FdroidIndexUnpack.readBytes(input, FdroidIndexUnpack.isJarUrl(url))
+                FdroidIndexUnpack.readBytes(
+                    input,
+                    FdroidIndexUnpack.isJarUrl(url),
+                    FdroidIndexBudget.MAX_BYTES,
+                )
             }
             if (bytes.isEmpty()) error("empty body")
             bytes

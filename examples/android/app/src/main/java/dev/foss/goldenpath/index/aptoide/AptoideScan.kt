@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.aptoide
 
+import dev.foss.goldenpath.inventory.ProbeCache
+import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseMemory
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
 import dev.foss.goldenpath.inventory.RemoteReleasePick
@@ -58,5 +60,32 @@ object AptoideScan {
         }
         RemoteReleaseMemory.putAll(picks)
         return picks
+    }
+
+    fun applyBatch(
+        refs: List<AptoideApkRef>,
+        fetcher: AptoideUpdatesFetcher,
+        nowMs: Long,
+    ): Map<String, RemoteReleaseOffer> {
+        val wanted = refs.filter { it.packageName.isNotBlank() && !it.signature.isNullOrBlank() }
+        if (wanted.isEmpty()) return emptyMap()
+        val out = linkedMapOf<String, RemoteReleaseOffer>()
+        wanted.chunked(AptoideFetchPolicy.CHUNK).forEach { chunk ->
+            val body = fetcher.fetch(chunk).getOrElse {
+                RefreshTrace.line("aptoide batch ${chunk.size} fail ${it.javaClass.simpleName}: ${it.message}")
+                return@forEach
+            }
+            val parsed = AptoideUpdatesParser.parseMany(body, nowMs)
+            RefreshTrace.line("aptoide batch ${chunk.size} listed=${parsed.size}")
+            chunk.forEach { ref ->
+                val pkg = ref.packageName
+                val hit = parsed[pkg]?.let { toPick(it, pkg) }?.offers?.firstOrNull()
+                out[pkg] = ProbeCache.stamp(
+                    hit ?: RemoteReleaseOffer(RemoteReleasedSource.Aptoide, listed = false, known = true),
+                    nowMs,
+                )
+            }
+        }
+        return out
     }
 }

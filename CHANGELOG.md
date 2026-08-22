@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tapping a listed source downloads that source's APK and shows the install confirm (Play via Aurora, F-Droid, APKPure, Aptoide, GitHub; APKMirror only when the listing exposes `download.php`)
+- Update all shows overall and per-app progress; downloads up to four APKs at once, then installs them one by one
+- A failed source+version is ignored (⚠️) and Update all walks remaining newer listings; a successful install leaves the updates list
+- First-run Welcome appears once (existing users skip); a splash holds the home while prefs load; Settings has a Permissions page
+
+### Changed
+
+- Update all skips APKMirror (no reliable file URL); listing taps still try the listing page
+- Has update hides settled or exhausted apps until the next Refresh finds a newer version
+
+### Fixed
+
+- Session Update all no longer stacks install confirms before the previous result returns
+- Welcome no longer flashes on every launch before DataStore finishes loading
+
 ## [0.27.0](https://github.com/edwardlthompson/DevPulse/compare/v0.26.0...v0.27.0) (2026-08-21)
 
 ### Added

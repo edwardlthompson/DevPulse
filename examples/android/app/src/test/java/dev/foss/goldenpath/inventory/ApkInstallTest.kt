@@ -47,4 +47,17 @@ class ApkInstallTest {
         assertEquals(1, session)
         assertTrue(rootArgs.orEmpty().contains("su"))
     }
+
+    @Test
+    fun systemLaunchFailureIsFailed() {
+        val apk = File.createTempFile("app", ".apk").apply { writeBytes(byteArrayOf(1)) }
+        val result = ApkInstall.apply(
+            apk,
+            InstallMethod.System,
+            system = { error("blocked") },
+            session = {},
+            shell = InstallShell { InstallShellResult(1, "") },
+        )
+        assertTrue(result is ApkInstallResult.Failed)
+    }
 }

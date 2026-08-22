@@ -38,3 +38,8 @@ interface ForgeTokenStore {
     fun getToken(): String?
     fun setToken(token: String?)
 }
+
+object ForgeCachePolicy {
+    const val TTL_MS = 24 * 60 * 60 * 1000L
+    const val MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000L
+}

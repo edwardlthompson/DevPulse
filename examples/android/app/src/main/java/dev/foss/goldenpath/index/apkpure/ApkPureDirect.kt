@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.apkpure
 
+import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.UpdateArtifact
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 
@@ -8,9 +9,9 @@ object ApkPureDirect {
     fun resolve(packageName: String, fetch: ApkPureBatchFetcher): UpdateArtifact? {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return null
-        UpdateArtifactMemory.best(pkg)?.let { return it }
+        UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.ApkPure)?.let { return it }
         val json = fetch.fetch(listOf(pkg)).getOrNull() ?: return null
         ApkPureMetaParser.parseMany(json)
-        return UpdateArtifactMemory.best(pkg)
+        return UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.ApkPure)
     }
 }

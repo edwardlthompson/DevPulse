@@ -12,7 +12,7 @@ Types in `dev.foss.goldenpath.index.play`. No live network in unit tests. Never 
 |------|------|-----------------|
 | `PlayLookupStatus` | enum | `Ok`, `UnknownCheckManually` |
 | `PlayLookup` | data class | `updatedOnMs`, `publishedVersion`, `status` |
-| `PlayCachePolicy` | object | 24h TTL |
+| `PlayCachePolicy` | object | 24h listed TTL; **7-day** delist TTL (`MISS_TTL_MS`) |
 ### Functions
 
 | Name | Contract |
@@ -26,7 +26,7 @@ Types in `dev.foss.goldenpath.index.play`. No live network in unit tests. Never 
 ## Acceptance criteria
 
 - ✅ User-visible behavior: public Play details HTML yields Updated-on and published version
-- ✅ Offline/error behavior: 24h cache; persist last error; 403 or parse fail → unknown-check-manually; never guess a date
+- ✅ Offline/error behavior: 24h listed cache honored by Refresh (`ProbeCache` + `fetchedAtMs`); confirmed 404/410/not-found stays delisted for 7 days and is not re-fetched; persist last error; 403 or parse fail → unknown-check-manually; never guess a date; unknown rows are not reused. Aurora **missing** is a Play miss (no HTML). Play HTML runs only when Aurora is unknown or unwired.
 - ✅ Accessibility: unknown state is announced as text, not an empty badge
 - ✅ i18n: keys under `play_*` in `strings.xml`
 - ✅ Public HTML only; modest concurrency, effectively serial
@@ -55,6 +55,6 @@ Isolated parser tests with fixtures are mandatory. Fallback for live Play: manua
 ## Notes
 
 - Honest User-Agent. Do not impersonate a browser
-- Refresh probes the public details page. HTTP 404/410 or a not-found page without version/date is not listed and never becomes an update link
+- Refresh probes Play via Aurora `gplayapi` bulk details first (same catalog as Play). A listed/missing Aurora result is a Play listed/miss. First-walk misses get one second Aurora pass. Auth or transport failure is unknown and falls back to the public HTML page. A Play miss does not skip F-Droid, Aptoide, APKMirror, or APKPure. Confirmed misses are reused for 7 days. Update can still open the Play Store.
 - After delisting, `docs/features/play-wayback.md` may recover `datePublished` from archived HTML. The listing stays unlisted.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

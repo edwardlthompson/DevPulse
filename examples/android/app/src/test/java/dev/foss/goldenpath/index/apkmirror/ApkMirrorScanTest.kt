@@ -1,12 +1,23 @@
 package dev.foss.goldenpath.index.apkmirror
 
 import dev.foss.goldenpath.inventory.RefreshTrace
+import dev.foss.goldenpath.inventory.RemoteReleaseMemory
+import dev.foss.goldenpath.inventory.RemoteReleaseOffer
+import dev.foss.goldenpath.inventory.RemoteReleaseRollup
+import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class ApkMirrorScanTest {
+    @Before
+    fun reset() {
+        RemoteReleaseMemory.clear()
+        RefreshTrace.emit = {}
+    }
+
     @Test
     fun batchMapsHitsAndMisses() {
         val json = checkNotNull(javaClass.classLoader?.getResourceAsStream("apkmirror/exists-ok.json"))
@@ -44,5 +55,50 @@ class ApkMirrorScanTest {
         )
         RefreshTrace.emit = {}
         assertTrue(lines.any { it.contains("apkmirror chunk") && it.contains("fail") })
+    }
+
+    @Test
+    fun fetchesEveryChunk() {
+        val seen = java.util.concurrent.CopyOnWriteArrayList<Int>()
+        val names = (1..201).map { "app.$it" }
+        ApkMirrorScan.offersFor(
+            names,
+            ApkMirrorBatchFetcher { chunk ->
+                seen += chunk.size
+                Result.success("""{"data":[]}""")
+            },
+            1_720_000_000_000L,
+        )
+        assertEquals(listOf(100, 100, 1), seen.sortedDescending())
+    }
+
+    @Test
+    fun freshListingsSkipHttp() {
+        val fetches = java.util.concurrent.atomic.AtomicInteger(0)
+        val now = 1_720_000_000_000L
+        RemoteReleaseMemory.putAll(
+            mapOf(
+                "app.listed" to RemoteReleaseRollup.from(
+                    listOf(
+                        RemoteReleaseOffer(
+                            RemoteReleasedSource.ApkMirror,
+                            listed = true,
+                            versionName = "2.4.0",
+                            fetchedAtMs = now,
+                        ),
+                    ),
+                ),
+            ),
+        )
+        val offers = ApkMirrorScan.offersFor(
+            listOf("app.listed"),
+            ApkMirrorBatchFetcher {
+                fetches.incrementAndGet()
+                Result.success("")
+            },
+            now,
+        )
+        assertEquals(0, fetches.get())
+        assertEquals("2.4.0", offers.getValue("app.listed").versionName)
     }
 }

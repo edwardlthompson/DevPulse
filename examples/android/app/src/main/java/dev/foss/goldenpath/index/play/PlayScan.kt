@@ -1,12 +1,28 @@
 package dev.foss.goldenpath.index.play
 
+import dev.foss.goldenpath.index.aurora.AuroraPlayDetails
+import dev.foss.goldenpath.index.aurora.AuroraPlayScan
+import dev.foss.goldenpath.index.aurora.AuroraPlayStatus
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.UpdateUrls
 
 object PlayScan {
-    fun toOffer(packageName: String, client: PlayPageClient): RemoteReleaseOffer {
+    fun toOffer(
+        packageName: String,
+        client: PlayPageClient?,
+        aurora: AuroraPlayDetails? = null,
+    ): RemoteReleaseOffer {
+        if (aurora != null) {
+            val app = runCatching { aurora.getMany(listOf(packageName))[packageName] }.getOrNull()
+            if (app != null && app.status != AuroraPlayStatus.Unknown) {
+                RefreshTrace.line("play $packageName aurora ${app.status.name.lowercase()}")
+                return AuroraPlayScan.toOffer(packageName, app)
+            }
+            RefreshTrace.line("play $packageName aurora unknown")
+        }
+        if (client == null) return unknown()
         val page = runCatching { client.get(packageName) }.getOrElse {
             RefreshTrace.line("play $packageName fail ${it.javaClass.simpleName}: ${it.message}")
             return unknown()

@@ -8,15 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -24,7 +19,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import dev.foss.goldenpath.R
-import dev.foss.goldenpath.ui.insets.bottomInsetPadding
+import dev.foss.goldenpath.inventory.WelcomeHome
 import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
@@ -36,14 +31,20 @@ fun InventoryScreen(
     val listState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    if (!model.canScan) {
-        InventoryRationale(
-            skipped = model.rationaleSkipped,
-            onAcknowledge = model.onAcknowledge,
-            onSkip = model.onSkip,
-            modifier = modifier,
-        )
-        return
+    when (model.welcomeHome) {
+        WelcomeHome.Welcome -> {
+            WelcomeScreen(
+                onContinue = model.onAcknowledge,
+                onSkip = model.onSkip,
+                modifier = modifier,
+            )
+            return
+        }
+        WelcomeHome.Splash -> {
+            SplashImage(modifier = modifier)
+            return
+        }
+        WelcomeHome.Inventory -> Unit
     }
     Column(
         modifier = modifier
@@ -82,13 +83,6 @@ fun InventoryScreen(
             )
         }
         UpdateAllButton(apps = model.apps)
-        if (model.showUsageWalkthrough) {
-            Text(text = stringResource(R.string.inventory_usage_title), style = MaterialTheme.typography.titleSmall)
-            Text(text = stringResource(R.string.inventory_usage_body))
-            TextButton(onClick = model.onDismissUsage) {
-                Text(stringResource(R.string.inventory_usage_seen))
-            }
-        }
         if (model.apps.isEmpty()) {
             Text(text = stringResource(R.string.inventory_empty))
         } else {
@@ -104,39 +98,6 @@ fun InventoryScreen(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun InventoryRationale(
-    skipped: Boolean,
-    onAcknowledge: () -> Unit,
-    onSkip: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .highRefreshScroll()
-            .padding(SpacingMd),
-        verticalArrangement = Arrangement.spacedBy(SpacingMd),
-    ) {
-        Text(
-            text = stringResource(R.string.inventory_rationale_title),
-            style = MaterialTheme.typography.headlineSmall,
-        )
-        Text(
-            text = stringResource(
-                if (skipped) R.string.inventory_blocked else R.string.inventory_rationale_body,
-            ),
-        )
-        Button(onClick = onAcknowledge) {
-            Text(stringResource(R.string.inventory_rationale_ack))
-        }
-        TextButton(onClick = onSkip, modifier = Modifier.bottomInsetPadding()) {
-            Text(stringResource(R.string.inventory_rationale_skip))
         }
     }
 }

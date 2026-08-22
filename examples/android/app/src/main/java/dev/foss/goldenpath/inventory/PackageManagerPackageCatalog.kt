@@ -16,10 +16,10 @@ class PackageManagerPackageCatalog(
 
     private fun installedPackages(): List<PackageInfo> =
         if (Build.VERSION.SDK_INT >= 33) {
-            packageManager.getInstalledPackages(PackageManager.PackageInfoFlags.of(0))
+            packageManager.getInstalledPackages(PackageManager.PackageInfoFlags.of(packageFlags()))
         } else {
             @Suppress("DEPRECATION")
-            packageManager.getInstalledPackages(0)
+            packageManager.getInstalledPackages(packageFlags().toInt())
         }
 
     private fun toSnapshot(info: PackageInfo): PackageSnapshot? {
@@ -36,6 +36,7 @@ class PackageManagerPackageCatalog(
             isSystemApp = appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0,
             apkLastModifiedMs = apkLastModified(appInfo.sourceDir),
             installerPackageName = installerOf(info.packageName),
+            signingSha1 = signingSha1(info),
         )
     }
 
@@ -58,4 +59,22 @@ class PackageManagerPackageCatalog(
             @Suppress("DEPRECATION")
             info.versionCode.toLong()
         }
+
+    private fun packageFlags(): Long =
+        if (Build.VERSION.SDK_INT >= 28) {
+            PackageManager.GET_SIGNING_CERTIFICATES.toLong()
+        } else {
+            @Suppress("DEPRECATION")
+            PackageManager.GET_SIGNATURES.toLong()
+        }
+
+    private fun signingSha1(info: PackageInfo): String? {
+        val cert = if (Build.VERSION.SDK_INT >= 28) {
+            info.signingInfo?.apkContentsSigners?.firstOrNull()?.toByteArray()
+        } else {
+            @Suppress("DEPRECATION")
+            info.signatures?.firstOrNull()?.toByteArray()
+        }
+        return ApkSigningSha1.of(cert)
+    }
 }

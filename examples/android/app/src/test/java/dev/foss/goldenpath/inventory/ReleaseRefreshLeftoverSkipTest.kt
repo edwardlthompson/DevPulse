@@ -3,14 +3,18 @@ package dev.foss.goldenpath.inventory
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
 import dev.foss.goldenpath.index.forge.GitHubSearchPage
 import dev.foss.goldenpath.index.forge.GithubHint
-import dev.foss.goldenpath.index.forge.LeftoverKind
 import dev.foss.goldenpath.index.forge.LeftoverSearchClient
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 
 class ReleaseRefreshLeftoverSkipTest {
+    @Before
+    fun reset() {
+        RemoteReleaseMemory.clear()
+    }
+
     @Test
     fun leftoverSkippedWhenHintPresent() {
         val leftoverCalls = AtomicInteger(0)
@@ -30,18 +34,22 @@ class ReleaseRefreshLeftoverSkipTest {
     }
 
     @Test
-    fun leftoverRunsWhenNoHint() {
+    fun leftoverUnlistedSearchesGithubNotGitlab() {
         val leftoverCalls = AtomicInteger(0)
-        val leftover = LeftoverSearchClient { kind, _ ->
+        val searches = AtomicInteger(0)
+        val leftover = LeftoverSearchClient { _, _ ->
             leftoverCalls.incrementAndGet()
-            if (kind == LeftoverKind.GitLabSearch) {
-                GitHubSearchPage(200, """[{"path_with_namespace":"acme/app","name":"app"}]""")
-            } else {
-                GitHubSearchPage(200, "[]")
-            }
+            GitHubSearchPage(200, "[]")
         }
-        val client = GitHubSearchClient { GitHubSearchPage(200, """{"items":[]}""") }
-        ReleaseRefreshProbes.github("org.app", "App", client, leftover = leftover)
-        assertTrue(leftoverCalls.get() > 0)
+        val offer = ReleaseRefreshProbes.github(
+            "org.app",
+            "App",
+            GitHubSearchClient { searches.incrementAndGet(); GitHubSearchPage(200, """{"items":[]}""") },
+            leftover = leftover,
+        )
+        assertEquals(1, searches.get())
+        assertEquals(0, leftoverCalls.get())
+        assertEquals(true, offer.known)
+        assertEquals(false, offer.listed)
     }
 }

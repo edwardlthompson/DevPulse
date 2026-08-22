@@ -28,8 +28,8 @@ class RefreshHostGate(
     }
 
     companion object {
-        const val PLAY = 8
-        const val APTOIDE = 8
+        const val PLAY = 12
+        const val APTOIDE = 12
         const val GITHUB = 4
         const val REPOS = 5
         const val APPS = 12

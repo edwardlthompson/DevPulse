@@ -13,9 +13,10 @@ Types in `dev.foss.goldenpath.index.aurora`. No live Play or auroraoss.com in un
 | `AuroraPlayFile` | data class | `url`, optional version |
 | `AuroraPlayFiles` | fun interface | Returns purchase files for one package |
 | `AuroraPlayDirect` | object | Maps a https Play CDN URL onto `UpdateArtifact` |
+| `AuroraPlayDetails` | fun interface | `getMany(packages)` → listed / missing / unknown. First walk, then one second pass of misses |
+| `AuroraPlayScan` | object | Maps Aurora listed/missing onto `RemoteReleasedSource.Play` |
 | `AuroraAuth` | object | Parses anonymous AuthData JSON; empty email → no session |
 | `EncryptedAuroraAuthStore` | class | EncryptedSharedPreferences; token never logged |
-
 ### Functions
 
 | Name | Contract |
@@ -23,10 +24,9 @@ Types in `dev.foss.goldenpath.index.aurora`. No live Play or auroraoss.com in un
 | `AuroraPlayDirect.resolve(pkg, files)` | First allowed https URL or null |
 | `OneClickUpdate.apply` Play kind | `resolveAurora` then download; null → `market://details?id=` |
 | `AuroraAuth.emailOf` / `parse` | Missing or blank email → null |
-
 ## Acceptance criteria
 
-- ✅ User-visible: Settings → Scan sources shows Aurora next to Google Play; off by default
+- ✅ User-visible: Play Refresh uses Aurora bulk details as the Play catalog. Settings → Scan sources still shows Aurora download next to Google Play (off by default). Play-listed apps can Update via Aurora or open the Play Store.
 - ✅ Aurora Store app is not required; Play Store page is the only fallback
 - ✅ Update tries Aurora download, then opens Play Store
 - ✅ Offline/error: auth or purchase fail → Play Store; no invented URL
@@ -47,9 +47,8 @@ Types in `dev.foss.goldenpath.index.aurora`. No live Play or auroraoss.com in un
 | Network timeout | 25s HTTP; `runCatching` → empty files → Play Store |
 | Race conditions | Artifact memory stays synchronized; Update button disables while busy |
 | Unhandled exceptions | Live purchase wrapped in `runCatching`; identity inspect still required before install |
-
 ## Notes
 
-- Uses FOSS `com.auroraoss:gplayapi` (GPL-3), same anonymous `https://auroraoss.com/api/auth` path APKUpdater uses. Google can break this. Opt-in only.
+- Uses FOSS `com.auroraoss:gplayapi` (GPL-3), same anonymous `https://auroraoss.com/api/auth` path APKUpdater uses. Google can break this. Play listing via Aurora is on whenever Play lookup is on; APK download stays opt-in. Relative `updatedOn` strings are not turned into dates. A first-walk miss is retried once (`aurora second-pass`); F-Droid, Aptoide, APKMirror, and APKPure still probe every app. A known Play miss only skips GitHub name-search.
 - Identity checks (package + cert + sha256) still apply. Android still confirms install unless Root silent is chosen.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`

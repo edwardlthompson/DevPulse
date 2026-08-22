@@ -100,7 +100,7 @@
 |----|-------|------------|
 | FR-29 | As a user I see Alternatives | Cached F-Droid plus Izzy and other enabled repos by category, name similarity, tags; only maintained matches with dates and links |
 | FR-30 | As a user I see Sources | Every known location; opt-in prefetch of direct APK URLs; user confirms install; never open a website to fetch a file we already have |
-| FR-37 | As a user I update every downloadable APK | Update all stages direct files then installs them one by one; Play and APKMirror stay page-only; APKPure downloads `asset.url` when present and opens the APKPure app only when there is no file |
+| FR-37 | As a user I update every downloadable APK | Update all stages direct files then installs them one by one; APKPure uses live `asset.url` (including `download.cdnpure.com`); APKMirror follows `download.php` when the listing page exposes it |
 | FR-38 | As a user I open the few pages DevPulse cannot download | Settings lists Play Store fallback and APKMirror. F-Droid family APKs install in-app |
 | FR-36 | As a user I keep a Play date after delisting | Wayback HTML `datePublished` only; never invent a date from the capture timestamp |
 ### Polish (later sprints)

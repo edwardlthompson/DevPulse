@@ -38,6 +38,18 @@ class FdroidHostResolveTest {
     }
 
     @Test
+    fun skipArchiveWhenOfficialOn() {
+        val official = FdroidRepoCatalog.defaults().first { it.id == "official" }
+        val archive = FdroidRepoCatalog.defaults().first { it.id == "archive" }
+        assertTrue(FdroidIndexBudget.skipArchiveHost(true, archive))
+        assertTrue(!FdroidIndexBudget.skipArchiveHost(false, archive))
+        assertTrue(!FdroidIndexBudget.skipArchiveHost(true, official))
+        assertTrue(!FdroidIndexBudget.extraHostAllowed(388))
+        assertTrue(FdroidIndexBudget.extraHostAllowed(39))
+        assertTrue(FdroidIndexBudget.extraHostAllowed(1))
+    }
+
+    @Test
     fun pageOnlyIzzyRecord() {
         val rec = FdroidHostResolve.pageRecord(
             "org.maps",

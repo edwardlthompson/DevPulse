@@ -26,4 +26,16 @@ class ApkPureMetaParserTest {
             UpdateArtifactMemory.best("app.listed")?.downloadUrl,
         )
     }
+
+    @Test
+    fun keepsCdnUrlAndPrefersApkOverXapk() {
+        val amp = "\\u0026"
+        val json =
+            """{"app_update_response":[{"package_name":"app.cdn","version_name":"1.2","version_code":12,"asset":{"trackers":[],"type":"XAPK","url":"https://download.cdnpure.com/b/XAPK/app.cdn?c=1${amp}as=z"}}]}"""
+        ApkPureMetaParser.parseMany(json)
+        assertEquals(
+            "https://download.cdnpure.com/b/APK/app.cdn?c=1&as=z",
+            UpdateArtifactMemory.best("app.cdn")?.downloadUrl,
+        )
+    }
 }

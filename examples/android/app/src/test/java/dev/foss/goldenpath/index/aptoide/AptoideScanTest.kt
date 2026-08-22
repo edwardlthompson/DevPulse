@@ -31,6 +31,36 @@ class AptoideScanTest {
     }
 
     @Test
+    fun applyBatchListsHitsAndSkipsUnsigned() {
+        val json = checkNotNull(javaClass.classLoader?.getResourceAsStream("aptoide/updates-ok.json"))
+            .bufferedReader().use { it.readText() }
+        val hits = AptoideScan.applyBatch(
+            listOf(
+                AptoideApkRef("cm.aptoide.pt", "D5:90:A7:D7:92:FD:03:31:54:2D:99:FA:F9:99:76:41:79:07:73:A9"),
+                AptoideApkRef("app.unsigned", signature = null),
+            ),
+            AptoideUpdatesFetcher { Result.success(json) },
+            nowMs = 1_720_000_000_000L,
+        )
+        assertEquals("9.22.0", hits.getValue("cm.aptoide.pt").versionName)
+        assertEquals(true, hits.getValue("cm.aptoide.pt").listed)
+        assertEquals(null, hits["app.unsigned"])
+    }
+
+    @Test
+    fun applyBatchOmissionIsKnownMiss() {
+        val json = checkNotNull(javaClass.classLoader?.getResourceAsStream("aptoide/updates-ok.json"))
+            .bufferedReader().use { it.readText() }
+        val hits = AptoideScan.applyBatch(
+            listOf(AptoideApkRef("app.other", "AA:BB")),
+            AptoideUpdatesFetcher { Result.success(json) },
+            nowMs = 1_720_000_000_000L,
+        )
+        assertEquals(false, hits.getValue("app.other").listed)
+        assertEquals(true, hits.getValue("app.other").known)
+    }
+
+    @Test
     fun unameBecomesAppViewListing() {
         val json = """{"data":{"uname":"wipefiles","updated":"2024-01-02 00:00:00","file":{"vername":"1"}}}"""
         val pick = AptoideScan.toPick(

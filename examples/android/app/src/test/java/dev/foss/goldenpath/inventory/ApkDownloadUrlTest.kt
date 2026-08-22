@@ -46,4 +46,18 @@ class ApkDownloadUrlTest {
             ApkDownloadUrl.httpsFile("https://redirector.gvt1.com/edgedl/android/market/app.one"),
         )
     }
+
+    @Test
+    fun acceptsApkPureCdnAndUnescapesAmpersand() {
+        assertEquals(
+            "https://download.cdnpure.com/b/APK/app.one?c=1&as=abc",
+            ApkDownloadUrl.httpsFile("https://download.cdnpure.com/b/APK/app.one?c=1\\u0026as=abc"),
+        )
+        assertEquals(
+            "https://www.apkmirror.com/wp-content/themes/APKMirror/download.php?id=9",
+            ApkDownloadUrl.httpsFile(
+                "https://www.apkmirror.com/wp-content/themes/APKMirror/download.php?id=9",
+            ),
+        )
+    }
 }

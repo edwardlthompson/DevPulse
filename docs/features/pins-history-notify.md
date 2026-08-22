@@ -8,9 +8,9 @@
 |------|----------|
 | `PinRules.hideFromRedList` | Unchanged; pins persist in DataStore |
 | `ScanHistory.wentQuiet(prev, next)` | Packages that became Red |
+| `PulseHistory.note` | Append refresh/scan/update rows to `scan-history/pulse_log.tsv`; drop rows older than 30 days |
 | `StaleCrossing.newlyCrossed(before, after, days)` | First time `daysSinceActivity` reaches 180 or 365 |
 | `StaleNotifyWorker` | Weekly WorkManager; NotificationManager only; no FCM |
-
 ## Acceptance criteria
 
 - ✅ Pin on app detail hides the row from the red/stale list

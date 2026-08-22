@@ -42,6 +42,11 @@ fun SettingsScreen(
             onClose = onBack,
             modifier = modifier,
         )
+        SettingsPage.Permissions -> SettingsPane(
+            title = stringResource(R.string.inventory_blocked),
+            onBack = { page = null },
+            modifier = modifier,
+        ) { SettingsGroup { PermissionSettings() } }
         SettingsPage.Appearance -> SettingsPane(
             title = stringResource(R.string.settings_section_appearance),
             onBack = { page = null },

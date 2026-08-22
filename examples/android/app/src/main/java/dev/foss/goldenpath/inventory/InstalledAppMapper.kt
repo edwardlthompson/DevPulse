@@ -12,6 +12,7 @@ data class PackageSnapshot(
     val isSystemApp: Boolean,
     val apkLastModifiedMs: Long = 0L,
     val installerPackageName: String? = null,
+    val signingSha1: String? = null,
 )
 
 object InstalledAppMapper {
@@ -35,6 +36,7 @@ object InstalledAppMapper {
             origin = AppOriginResolver.fromInstaller(snapshot.installerPackageName),
             installedAtMs = resolved.ms,
             installedAtSource = resolved.source,
+            signingSha1 = snapshot.signingSha1,
         )
     }
 }

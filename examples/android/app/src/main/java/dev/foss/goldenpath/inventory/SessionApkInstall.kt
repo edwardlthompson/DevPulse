@@ -12,15 +12,22 @@ object SessionApkInstall {
     const val ACTION = "dev.foss.goldenpath.INSTALL_SESSION"
     private const val NAME = "update.apk"
 
-    fun start(context: Context, apkFile: File) {
+    fun start(context: Context, apkFile: File) = start(context, listOf(apkFile))
+
+    fun start(context: Context, apkFiles: List<File>) {
+        val files = apkFiles.filter { it.isFile }
+        if (files.isEmpty()) error("apk")
         val installer = context.packageManager.packageInstaller
         val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
-        applyOwnership(context, apkFile, params)
+        applyOwnership(context, files.first(), params)
         val sessionId = installer.createSession(params)
         installer.openSession(sessionId).use { session ->
-            session.openWrite(NAME, 0, apkFile.length()).use { out ->
-                apkFile.inputStream().use { input -> input.copyTo(out) }
-                session.fsync(out)
+            files.forEachIndexed { index, apkFile ->
+                val name = if (files.size == 1) NAME else "split-$index.apk"
+                session.openWrite(name, 0, apkFile.length()).use { out ->
+                    apkFile.inputStream().use { input -> input.copyTo(out) }
+                    session.fsync(out)
+                }
             }
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or
                 if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_MUTABLE else 0
@@ -56,9 +63,13 @@ class InstallStatusReceiver : BroadcastReceiver() {
         val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)
         if (status == PackageInstaller.STATUS_SUCCESS) {
             InstalledAppsRevision.bump()
+            InstallAwait.signal(true)
             return
         }
-        if (status != PackageInstaller.STATUS_PENDING_USER_ACTION) return
+        if (status != PackageInstaller.STATUS_PENDING_USER_ACTION) {
+            InstallAwait.signal(false)
+            return
+        }
         @Suppress("DEPRECATION")
         val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT) ?: return
         confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -22,9 +22,15 @@ object DownloadLaunch {
         else -> "direct"
     }
 
-    fun fromFdroidCache(dir: File, packageName: String, nowMs: Long): UpdateArtifact? {
+    fun fromFdroidCache(
+        dir: File,
+        packageName: String,
+        nowMs: Long,
+        source: RemoteReleasedSource? = null,
+    ): UpdateArtifact? {
         val store = FdroidIndexStore(dir)
         cacheRepos.forEach { repoId ->
+            if (source != null && ListingChannels.sourceForRepo(repoId) != source) return@forEach
             val data = File(dir, "$repoId.index")
             if (!data.isFile) return@forEach
             val raw = store.load(repoId, nowMs) ?: return@forEach

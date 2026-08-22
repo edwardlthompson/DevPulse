@@ -28,8 +28,7 @@ class RefreshNotifier(private val context: Context) {
     fun progress(done: Int, total: Int, location: String = ""): Notification {
         val text = when {
             total <= 0 -> context.getString(R.string.inventory_refreshing)
-            location.isBlank() -> context.getString(R.string.inventory_refresh_progress, done, total)
-            else -> context.getString(R.string.inventory_refresh_progress_location, done, total, location)
+            else -> context.getString(R.string.inventory_refresh_progress, done, total)
         }
         val indeterminate = total <= 0
         return base(context.getString(R.string.refresh_notify_title), text, ongoing = true)

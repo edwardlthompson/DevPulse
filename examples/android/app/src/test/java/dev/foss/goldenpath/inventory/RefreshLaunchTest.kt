@@ -21,6 +21,17 @@ class RefreshLaunchTest {
     }
 
     @Test
+    fun flagReadsAllSourcesExtra() {
+        assertEquals(
+            true,
+            RefreshLaunch.flag(
+                Intent().putExtra(RefreshLaunch.EXTRA_ALL_SOURCES, true),
+                RefreshLaunch.EXTRA_ALL_SOURCES,
+            ),
+        )
+    }
+
+    @Test
     fun flagReadsPresentDumpExtras() {
         assertEquals(null, RefreshLaunch.flag(Intent(), RefreshLaunch.EXTRA_APK_MIRROR))
         assertEquals(true, RefreshLaunch.flag(
@@ -45,5 +56,26 @@ class RefreshLaunchTest {
             "https://f-droid.org/repo/app.apk",
             DownloadLaunch.urlOverride(Intent().putExtra(DownloadLaunch.EXTRA_URL, "https://f-droid.org/repo/app.apk")),
         )
+    }
+
+    @Test
+    fun listingExtrasDefaultToPlay() {
+        assertEquals(null, RefreshLaunch.listingPackage(Intent()))
+        assertEquals(
+            "com.trandllstudio.jcp",
+            RefreshLaunch.listingPackage(Intent().putExtra(RefreshLaunch.EXTRA_LISTING, " com.trandllstudio.jcp ")),
+        )
+        assertEquals(RemoteReleasedSource.Play, RefreshLaunch.listingSource(Intent()))
+        assertEquals(
+            RemoteReleasedSource.Fdroid,
+            RefreshLaunch.listingSource(Intent().putExtra(RefreshLaunch.EXTRA_LISTING_SOURCE, "Fdroid")),
+        )
+    }
+
+    @Test
+    fun updateAllExtraIsRead() {
+        assertFalse(UpdateAllLaunch.requested(null))
+        assertFalse(UpdateAllLaunch.requested(Intent()))
+        assertTrue(UpdateAllLaunch.requested(Intent().putExtra(UpdateAllLaunch.EXTRA, true)))
     }
 }

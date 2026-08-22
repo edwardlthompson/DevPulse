@@ -31,6 +31,7 @@ object GitHubScan {
             return fail(packageName, it)
         }
         if (page.statusCode == 403 || page.statusCode == 429 || page.statusCode !in 200..299) {
+            ForgeRateLimit.noteGithub(page.statusCode)
             RefreshTrace.line("github $packageName search http ${page.statusCode} unknown ${page.body.length}B")
             return unknown()
         }
@@ -61,11 +62,12 @@ object GitHubScan {
         for (candidate in candidates) {
             val page = listReleases(candidate.ownerRepo, releases, pause)
             if (page.statusCode == 403 || page.statusCode == 429 || page.statusCode !in 200..299) {
+                ForgeRateLimit.noteGithub(page.statusCode)
                 RefreshTrace.line(
                     "github $packageName releases ${candidate.ownerRepo} http ${page.statusCode} unknown ${page.body.length}B",
                 )
                 blocked = true
-                continue
+                break
             }
             val hit = GitHubReleaseParser.firstWithPackage(packageName, page.body)
             if (hit == null) {
@@ -107,8 +109,11 @@ object GitHubScan {
         label: String,
         client: GitHubSearchClient,
         pause: (Long) -> Unit,
-    ): GitHubSearchPage = fetch(client.searchRepos(GitHubSearchQuery.repositories(packageName, label)), pause) {
-        client.searchRepos(GitHubSearchQuery.repositories(packageName, label))
+    ): GitHubSearchPage {
+        GitHubSearchPace.await(sleepMs = pause)
+        return fetch(client.searchRepos(GitHubSearchQuery.repositories(packageName, label)), pause) {
+            client.searchRepos(GitHubSearchQuery.repositories(packageName, label))
+        }
     }
 
     internal fun listReleases(

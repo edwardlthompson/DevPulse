@@ -121,7 +121,10 @@ class ReleaseRefreshTest {
             onProgress = { ticks.add(it) },
         )
         assertEquals(0, ticks.first().done)
-        assertEquals(RefreshProgress(5, 5, ticks.last().location), ticks.last())
+        assertEquals(5, ticks.last().done)
+        assertEquals(5, ticks.last().total)
+        assertTrue(ticks.last().outlets.any { it.id == RefreshOutletIds.PLAY })
+        assertTrue(ticks.last().outlets.any { it.id == RefreshOutletIds.GITHUB })
         assertEquals(0, githubHits.get())
         assertTrue(ticks.any { it.location.startsWith("F-Droid · official") })
         assertTrue(ticks.any { it.location.contains("Play · Other (app.other)") })

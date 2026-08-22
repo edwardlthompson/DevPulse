@@ -9,6 +9,7 @@ data class AuroraPlayFile(
     val url: String,
     val versionName: String? = null,
     val versionCode: Long? = null,
+    val base: Boolean = true,
 )
 
 fun interface AuroraPlayFiles {
@@ -21,7 +22,8 @@ object AuroraPlayDirect {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return null
         remembered(pkg)?.let { return it }
-        val file = files.files(pkg).firstOrNull { ApkDownloadUrl.httpsFile(it.url) != null } ?: return null
+        val usable = files.files(pkg).filter { ApkDownloadUrl.httpsFile(it.url) != null }
+        val file = usable.firstOrNull { it.base } ?: usable.firstOrNull() ?: return null
         val url = ApkDownloadUrl.httpsFile(file.url) ?: return null
         val artifact = UpdateArtifact(
             packageName = pkg,

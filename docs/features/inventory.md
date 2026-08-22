@@ -49,7 +49,7 @@ Shared types live in `dev.foss.goldenpath.inventory`. Compose adapters must not 
 - ✅ i18n: keys under `inventory_*` in `strings.xml`
 - ✅ Show icon, label, package name, installed version, `lastUpdateTime`, minSdk, targetSdk
 - ✅ Origin is Play, F-Droid, extra repo, sideloaded, or preinstalled — never left as unknown
-- ✅ QUERY_ALL_PACKAGES rationale shown on Android 11+; do not scan until acknowledged
+- ✅ QUERY_ALL_PACKAGES rationale shown once on Android 11+; later launches use the splash image; Settings → Permissions re-grants access; do not scan until acknowledged
 - ✅ PACKAGE_USAGE_STATS optional walkthrough; never required
 
 ## Smoke scenario

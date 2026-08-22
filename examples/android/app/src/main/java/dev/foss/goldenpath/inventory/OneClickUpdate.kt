@@ -20,11 +20,14 @@ sealed class OneClickResult {
 
 object OneClickUpdate {
     fun kind(packageName: String, listings: List<UpdateLink>): OneClickKind {
-        UpdateArtifactMemory.best(packageName)?.let { return OneClickKind.Direct(it) }
-        if (listings.any { it.source == RemoteReleasedSource.Play && it.listed }) {
+        UpdateArtifactMemory.best(packageName)
+            ?.takeUnless { IgnoredUpdates.has(packageName, it.source, it.versionName) }
+            ?.let { return OneClickKind.Direct(it) }
+        val usable = listings.filter { UpdateInventory.canOpen(it, packageName) }
+        if (usable.any { it.source == RemoteReleasedSource.Play }) {
             return OneClickKind.Play(packageName)
         }
-        if (listings.any { it.source == RemoteReleasedSource.ApkPure && it.listed }) {
+        if (usable.any { it.source == RemoteReleasedSource.ApkPure }) {
             return OneClickKind.ApkPure(packageName)
         }
         return OneClickKind.None
@@ -40,26 +43,44 @@ object OneClickUpdate {
         installed: InstalledIdentity,
         resolveApkPure: (String) -> UpdateArtifact? = { null },
         resolveAurora: (String) -> UpdateArtifact? = { null },
-    ): OneClickResult = when (kind) {
-        is OneClickKind.None -> OneClickResult.None
-        is OneClickKind.Play -> {
-            val artifact = resolveAurora(kind.packageName)
-            if (artifact != null) {
-                applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
-            } else {
-                openPlay(kind.packageName)
-                OneClickResult.PlayOpened
+        filesDir: File? = null,
+    ): OneClickResult {
+        val startedAt = System.currentTimeMillis()
+        val result = when (kind) {
+            is OneClickKind.None -> OneClickResult.None
+            is OneClickKind.Play -> {
+                val artifact = resolveAurora(kind.packageName)
+                if (artifact != null) {
+                    applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
+                } else {
+                    openPlay(kind.packageName)
+                    OneClickResult.PlayOpened
+                }
             }
-        }
-        is OneClickKind.ApkPure -> {
-            val artifact = resolveApkPure(kind.packageName)
-            if (artifact != null) {
-                applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
-            } else {
-                OneClickResult.FailedDownload
+            is OneClickKind.ApkPure -> {
+                val artifact = resolveApkPure(kind.packageName)
+                if (artifact != null) {
+                    applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
+                } else {
+                    RefreshTrace.line("apkpure ${kind.packageName} no asset")
+                    OneClickResult.FailedDownload
+                }
             }
+            is OneClickKind.Direct -> applyDirect(kind.artifact, cacheDir, fetch, install, inspect, installed)
         }
-        is OneClickKind.Direct -> applyDirect(kind.artifact, cacheDir, fetch, install, inspect, installed)
+        if (result == OneClickResult.FailedDownload || result == OneClickResult.FailedInstall) {
+            rememberFail(kind, filesDir)
+        }
+        filesDir?.let {
+            PulseHistory.note(
+                it,
+                "update",
+                System.currentTimeMillis() - startedAt,
+                if (result == OneClickResult.Installed) 1 else 0,
+                "result=${result::class.simpleName}",
+            )
+        }
+        return result
     }
 
     private fun applyDirect(
@@ -80,6 +101,18 @@ object OneClickUpdate {
         return when (install(file)) {
             is ApkInstallResult.Failed -> OneClickResult.FailedInstall
             else -> OneClickResult.Installed
+        }
+    }
+
+    private fun rememberFail(kind: OneClickKind, filesDir: File?) {
+        when (kind) {
+            is OneClickKind.Direct ->
+                IgnoredUpdates.add(kind.artifact.packageName, kind.artifact.source, kind.artifact.versionName, filesDir)
+            is OneClickKind.Play ->
+                IgnoredUpdates.add(kind.packageName, RemoteReleasedSource.Play, null, filesDir)
+            is OneClickKind.ApkPure ->
+                IgnoredUpdates.add(kind.packageName, RemoteReleasedSource.ApkPure, null, filesDir)
+            is OneClickKind.None -> Unit
         }
     }
 }

@@ -3,15 +3,21 @@ package dev.foss.goldenpath.inventory
 import dev.foss.goldenpath.index.apkmirror.ApkMirrorBatchFetcher
 import dev.foss.goldenpath.index.apkpure.ApkPureBatchFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideMetaFetcher
+import dev.foss.goldenpath.index.aptoide.AptoideUpdatesFetcher
+import dev.foss.goldenpath.index.aurora.AuroraPlayDetails
 import dev.foss.goldenpath.index.fdroid.FdroidAppRecord
 import dev.foss.goldenpath.index.fdroid.FdroidCategoryStore
 import dev.foss.goldenpath.index.fdroid.FdroidHostResolver
 import dev.foss.goldenpath.index.fdroid.FdroidIndexFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidIndexStore
+import dev.foss.goldenpath.index.fdroid.FdroidNameCatalog
 import dev.foss.goldenpath.index.fdroid.FdroidNotes
 import dev.foss.goldenpath.index.fdroid.FdroidRepo
 import dev.foss.goldenpath.index.forge.FdroidGithubHints
+import dev.foss.goldenpath.index.forge.FdroidLeftoverHints
+import dev.foss.goldenpath.index.forge.ForgeRateLimit
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
+import dev.foss.goldenpath.index.forge.GitHubSearchPace
 import dev.foss.goldenpath.index.forge.LeftoverSearchClient
 import dev.foss.goldenpath.index.forge.GithubHint
 import dev.foss.goldenpath.index.forge.GithubVerifiedStore
@@ -74,10 +80,15 @@ object ReleaseRefresh {
         leftoverClient: LeftoverSearchClient? = null,
         categoryStore: FdroidCategoryStore? = null,
         pastedStore: PastedRepoStore? = null,
+        nameCatalog: FdroidNameCatalog? = null,
+        aptoideUpdatesFetcher: AptoideUpdatesFetcher = AptoideUpdatesFetcher {
+            Result.failure(IllegalStateException("aptoide-batch"))
+        },
+        aurora: AuroraPlayDetails? = null,
     ): Map<String, RemoteReleasePick> {
         val userApps = apps.filter { !it.isSystemApp }
         val wantedSet = userApps.map { it.packageName }.toSet()
-        val playOn = playClient != null
+        val playOn = playClient != null || aurora != null
         val forgeOn = gitHubClient != null
         val noRemote = !playOn && !aptoideEnabled && !forgeOn && !apkMirrorEnabled && !apkPureEnabled
         if (repos.isEmpty() && (userApps.isEmpty() || noRemote)) {
@@ -85,14 +96,22 @@ object ReleaseRefresh {
             return emptyMap()
         }
         val clock = RefreshProgressClock(onProgress)
+        RefreshSkip.reset()
+        RefreshOutletBoard.reset()
+        GitHubSearchPace.reset()
+        RefreshOutletPlan.seed(
+            clock, userApps.size, repos, playOn, aptoideEnabled, forgeOn,
+            leftoverClient != null, apkMirrorEnabled, apkPureEnabled,
+        )
         clock.addWork(
             RefreshLocations.total(
                 repos.size, userApps.size, playOn, aptoideEnabled, forgeOn, apkMirrorEnabled, apkPureEnabled,
             ),
         )
+        ForgeRateLimit.reset()
         clock.begin("refresh start repos=${repos.size} apps=${userApps.size}")
         val loaded = ReleaseRefreshRepos.fetchAll(
-            repos, fdroidFetcher, indexStore, nowMs, wantedSet, executor, clock, hostResolve,
+            repos, fdroidFetcher, indexStore, nowMs, wantedSet, executor, clock, hostResolve, nameCatalog,
         )
         val records = loaded.flatMap { it.records }
         categoryStore?.putAll(records)
@@ -100,7 +119,7 @@ object ReleaseRefresh {
         val byPackage = FdroidIndexMisses.merge(
             fdroidOffers(records, wantedSet),
             FdroidIndexMisses.offers(wantedSet, okRepos, records),
-        )
+        ).mapValues { (_, offers) -> offers.map { ProbeCache.stamp(it, nowMs) } }
         RemoteReleaseMemory.putAll(byPackage.mapValues { RemoteReleaseRollup.from(it.value) })
         val library = FdroidGithubHints.mergeLibrary(
             verifiedStore?.load().orEmpty(),
@@ -110,13 +129,14 @@ object ReleaseRefresh {
             PastedRepoCodec.hints(pastedStore?.load().orEmpty())
         verifiedStore?.save(knownRepos.mapValues { it.value.ownerRepo })
         RefreshTrace.line("github library ${library.size} persisted")
+        val leftoverHints = FdroidLeftoverHints.merge(records, wantedSet, pastedStore?.load().orEmpty())
         ReleaseRefreshWaves.storeThenForge(
             userApps, byPackage, playOn, aptoideEnabled, forgeOn,
             playClient, aptoideFetcher, gitHubClient, nowMs, repos,
             executor, hostGate ?: RefreshHostGate(), clock,
             knownRepos, verifiedStore, searchUnknowns,
             apkMirrorEnabled, apkPureEnabled, apkMirrorFetcher, apkPureFetcher,
-            leftoverClient,
+            leftoverClient, leftoverHints, aptoideUpdatesFetcher, aurora,
         )
         RefreshTrace.line("refresh done locations=${clock.done}/${clock.total}")
         return RemoteReleaseMemory.byPackage.filterKeys { it in wantedSet }

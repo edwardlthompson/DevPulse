@@ -33,7 +33,8 @@ object InventoryCopy {
     fun unlistedRes(known: Boolean): Int =
         if (known) R.string.inventory_listing_delisted else R.string.inventory_listing_unknown
 
-    fun listingMark(listed: Boolean?, known: Boolean?): ListingMark {
+    fun listingMark(listed: Boolean?, known: Boolean?, ignored: Boolean = false): ListingMark {
+        if (ignored) return ListingMark.Ignored
         if (known != true) return ListingMark.Unknown
         return if (listed == true) ListingMark.Listed else ListingMark.Missing
     }
@@ -42,12 +43,14 @@ object InventoryCopy {
         ListingMark.Listed -> "✅ "
         ListingMark.Missing -> "❌ "
         ListingMark.Unknown -> "❓ "
+        ListingMark.Ignored -> "⚠️ "
     }
 
     fun listingMarkStatusRes(mark: ListingMark): Int = when (mark) {
         ListingMark.Listed -> R.string.inventory_listing_status_listed
         ListingMark.Missing -> R.string.inventory_listing_status_not_listed
         ListingMark.Unknown -> R.string.inventory_listing_status_unknown
+        ListingMark.Ignored -> R.string.update_cache_failed
     }
 }
 
@@ -55,4 +58,5 @@ enum class ListingMark {
     Listed,
     Missing,
     Unknown,
+    Ignored,
 }

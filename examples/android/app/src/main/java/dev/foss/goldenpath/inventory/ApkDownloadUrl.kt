@@ -4,7 +4,7 @@ import java.net.URI
 
 object ApkDownloadUrl {
     fun httpsFile(raw: String?): String? {
-        val text = raw?.trim().orEmpty()
+        val text = jsonUrl(raw?.trim().orEmpty())
         if (text.isEmpty()) return null
         val https = text.replaceFirst(Regex("^http://", RegexOption.IGNORE_CASE), "https://")
         if (!https.startsWith("https://", ignoreCase = true)) return null
@@ -16,9 +16,15 @@ object ApkDownloadUrl {
         }.getOrNull()
     }
 
+    fun jsonUrl(text: String): String =
+        text.replace("\\u0026", "&", ignoreCase = true).replace("\\/", "/")
+
     private fun allowed(host: String, url: String): Boolean {
         if (url.contains(".apk", ignoreCase = true)) return true
         return host.contains("apkpure") ||
+            host.contains("cdnpure") ||
+            host.contains("pureapk") ||
+            host.contains("apkmirror") ||
             host.contains("aptoide") ||
             host.contains("f-droid") ||
             host.contains("izzysoft") ||

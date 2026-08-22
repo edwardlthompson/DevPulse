@@ -40,7 +40,9 @@ object ApkPureMetaParser {
         UpdateNotesText.take(whatsNew.find(chunk)?.groupValues?.get(1))?.let {
             UpdateNotesMemory.putIfAbsent(name, UpdateNotes(it, RemoteReleasedSource.ApkPure))
         }
-        val url = ApkDownloadUrl.httpsFile(assetUrl.find(chunk)?.groupValues?.get(1)) ?: return
+        val raw = assetUrl.find(chunk)?.groupValues?.get(1) ?: return
+        val prefer = ApkDownloadUrl.jsonUrl(raw).replace("/b/XAPK/", "/b/APK/", ignoreCase = true)
+        val url = ApkDownloadUrl.httpsFile(prefer) ?: return
         UpdateArtifactMemory.add(
             UpdateArtifact(
                 packageName = name,

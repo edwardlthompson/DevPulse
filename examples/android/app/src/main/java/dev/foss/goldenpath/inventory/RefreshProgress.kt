@@ -4,6 +4,7 @@ data class RefreshProgress(
     val done: Int,
     val total: Int,
     val location: String = "",
+    val outlets: List<RefreshOutletSnap> = emptyList(),
 ) {
     val fraction: Float get() = if (total <= 0) 0f else (done.toFloat() / total).coerceIn(0f, 1f)
 }
@@ -12,30 +13,70 @@ class RefreshProgressClock(
     private val onProgress: (RefreshProgress) -> Unit,
 ) {
     private val lock = Any()
+    private var location: String = ""
     var done: Int = 0
         private set
     var total: Int = 0
         private set
 
+    init {
+        active = this
+    }
+
     fun addWork(count: Int) {
         if (count <= 0) return
         synchronized(lock) {
             total += count
-            onProgress(RefreshProgress(done, total))
+            push()
         }
     }
 
     fun begin(location: String) {
         synchronized(lock) {
+            this.location = location
             RefreshTrace.line(location)
-            onProgress(RefreshProgress(done, total, location))
+            push()
         }
     }
 
     fun tick(location: String) {
         synchronized(lock) {
+            this.location = location
             done += 1
-            onProgress(RefreshProgress(done, total, location))
+            push()
+        }
+    }
+
+    fun planOutlet(id: String, title: String, count: Int) {
+        RefreshOutletBoard.plan(id, title, count)
+        pulse()
+    }
+
+    fun outletAt(id: String, current: String) {
+        RefreshOutletBoard.at(id, current)
+        pulse()
+    }
+
+    fun outletTick(id: String) {
+        RefreshOutletBoard.tick(id)
+        pulse()
+    }
+
+    fun pulse() {
+        synchronized(lock) { push() }
+    }
+
+    private fun push() {
+        onProgress(RefreshProgress(done, total, location, RefreshOutletBoard.snaps()))
+    }
+
+    companion object {
+        @Volatile
+        var active: RefreshProgressClock? = null
+            private set
+
+        fun pulseActive() {
+            active?.pulse()
         }
     }
 }

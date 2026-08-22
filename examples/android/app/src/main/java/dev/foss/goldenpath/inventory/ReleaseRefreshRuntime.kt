@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.inventory
 
+import dev.foss.goldenpath.index.forge.GitHubSearchPace
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,9 +14,17 @@ object ReleaseRefreshRuntime {
 
     fun tryBegin(): Boolean {
         if (runningState.value) return false
+        RefreshSkip.reset()
+        RefreshOutletBoard.reset()
+        GitHubSearchPace.reset()
         progressState.value = RefreshProgress(0, 0)
         runningState.value = true
         return true
+    }
+
+    fun stopOutlet(id: String) {
+        RefreshSkip.stop(id)
+        RefreshProgressClock.pulseActive()
     }
 
     fun setProgress(value: RefreshProgress) {

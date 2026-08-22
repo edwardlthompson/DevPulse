@@ -23,6 +23,15 @@ object ListingChannels {
         else -> RemoteReleasedSource.ExtraRepo
     }
 
+    fun repoId(source: RemoteReleasedSource): String? = when (source) {
+        RemoteReleasedSource.Fdroid -> "official"
+        RemoteReleasedSource.Archive -> "archive"
+        RemoteReleasedSource.Izzy -> "izzy"
+        RemoteReleasedSource.Guardian -> "guardian"
+        RemoteReleasedSource.Calyx -> "calyx"
+        else -> null
+    }
+
     fun complete(
         offers: List<RemoteReleaseOffer>,
         searched: Set<RemoteReleasedSource>,

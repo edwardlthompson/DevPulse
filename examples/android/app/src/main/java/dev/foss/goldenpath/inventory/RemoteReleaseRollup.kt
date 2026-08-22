@@ -1,6 +1,16 @@
 package dev.foss.goldenpath.inventory
 
 object RemoteReleaseRollup {
+    fun merge(existing: RemoteReleasePick?, update: RemoteReleasePick): RemoteReleasePick {
+        if (existing == null) return update
+        val into = existing.offers.toMutableList()
+        update.offers.forEach { extra ->
+            into.removeAll { it.source == extra.source }
+            into += extra
+        }
+        return from(into)
+    }
+
     fun from(offers: List<RemoteReleaseOffer>): RemoteReleasePick {
         val usable = offers.filter { it.listed }
         val recovered = offers.filter { !it.listed && it.known && (it.ms ?: 0L) > 0L }

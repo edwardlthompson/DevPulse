@@ -19,4 +19,5 @@ data class InstalledApp(
     val remoteVersionSource: RemoteReleasedSource = RemoteReleasedSource.None,
     val latestListings: List<UpdateLink> = emptyList(),
     val updateLinks: List<UpdateLink> = emptyList(),
+    val signingSha1: String? = null,
 )

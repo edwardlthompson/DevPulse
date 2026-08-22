@@ -13,6 +13,7 @@ data class PlayLookup(
 
 object PlayCachePolicy {
     const val TTL_MS = 24 * 60 * 60 * 1000L
+    const val MISS_TTL_MS = 7 * 24 * 60 * 60 * 1000L
 
     fun isFresh(fetchedAtMs: Long, nowMs: Long): Boolean =
         nowMs - fetchedAtMs in 0 until TTL_MS

@@ -12,6 +12,7 @@ object ApkMirrorFetchPolicy {
     const val CONNECT_TIMEOUT_MS = 15_000
     const val READ_TIMEOUT_MS = 20_000
     const val CHUNK = 100
+    const val PARALLEL = 4
     const val USER_AGENT = "DevPulse/0.22 (https://github.com/edwardlthompson/DevPulse)"
     const val EXISTS_URL = "https://www.apkmirror.com/wp-json/apkm/v1/app_exists/"
     /** Public APKUpdater partner header (FOSS-published). Not a user secret. */

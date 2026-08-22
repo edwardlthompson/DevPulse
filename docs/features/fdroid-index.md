@@ -23,6 +23,7 @@ Types in `dev.foss.goldenpath.index.fdroid`. No Play or forge clients. Network f
 | `FdroidIndexParser.parse(raw, repoId, wanted = emptySet())` | Accepts `String` or `ByteArray`. Extra repos parse wanted packages only. Official/Archive host-resolve via `FdroidPackageParser` + `FdroidPackagePage` (no `index-v1.jar`). Extra indexes of any size are harvested and cached. Izzy host-resolves per package only when the index download is empty. |
 | `FdroidLookupEngine.lookup(packageName, records)` | Exact package-name match |
 | `FdroidCachePolicy.isFresh(fetchedAtMs, nowMs)` | Fresh for 3 days |
+| `FdroidNameCatalog.probe(repoId, wanted)` | Official/Izzy membership from shipped `assets/fdroid-names/*.txt`. Host-resolve only catalog hits. Empty catalog → probe all. Regen: `python3 scripts/build-fdroid-name-catalog.py`. New F-Droid apps wait for the next catalog build. |
 | `FdroidOrigin.from(kind)` | Official → `AppOrigin.Fdroid`; others → `ExtraRepo` |
 | `FdroidRepoCatalog.defaults()` | Official + Archive + Izzy + Guardian + Calyx URLs; only Official enabled by default |
 ### Signature verify (limitation)

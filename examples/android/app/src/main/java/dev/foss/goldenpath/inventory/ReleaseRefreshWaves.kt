@@ -2,12 +2,18 @@ package dev.foss.goldenpath.inventory
 
 import dev.foss.goldenpath.index.apkmirror.ApkMirrorBatchFetcher
 import dev.foss.goldenpath.index.apkpure.ApkPureBatchFetcher
+import dev.foss.goldenpath.index.aptoide.AptoideApkRef
 import dev.foss.goldenpath.index.aptoide.AptoideMetaFetcher
+import dev.foss.goldenpath.index.aptoide.AptoideScan
+import dev.foss.goldenpath.index.aptoide.AptoideUpdatesFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidRepo
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
 import dev.foss.goldenpath.index.forge.GithubHint
 import dev.foss.goldenpath.index.forge.GithubVerifiedStore
+import dev.foss.goldenpath.index.forge.LeftoverHint
 import dev.foss.goldenpath.index.forge.LeftoverSearchClient
+import dev.foss.goldenpath.index.aurora.AuroraPlayDetails
+import dev.foss.goldenpath.index.aurora.AuroraPlayScan
 import dev.foss.goldenpath.index.play.PlayPageClient
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
@@ -36,31 +42,57 @@ object ReleaseRefreshWaves {
         apkMirrorFetcher: ApkMirrorBatchFetcher = ApkMirrorBatchFetcher { Result.success("") },
         apkPureFetcher: ApkPureBatchFetcher = ApkPureBatchFetcher { Result.success("") },
         leftoverClient: LeftoverSearchClient? = null,
+        leftoverHints: Map<String, LeftoverHint> = emptyMap(),
+        aptoideUpdatesFetcher: AptoideUpdatesFetcher = AptoideUpdatesFetcher {
+            Result.failure(IllegalStateException("aptoide-batch"))
+        },
+        aurora: AuroraPlayDetails? = null,
     ) {
         val bags = ConcurrentHashMap<String, MutableList<RemoteReleaseOffer>>()
         seed.forEach { (pkg, offers) -> bags[pkg] = syncList(offers) }
-        ReleaseRefreshDump.apply(
-            apps = apps,
-            apkMirrorEnabled = apkMirrorEnabled,
-            apkPureEnabled = apkPureEnabled,
-            apkMirrorFetcher = apkMirrorFetcher,
-            apkPureFetcher = apkPureFetcher,
-            nowMs = nowMs,
-            clock = clock,
-        ) { pkg, offer -> commit(bags, pkg, offer) }
-        val jobs = buildList {
+        val dump = Thread {
+            ReleaseRefreshDump.apply(
+                apps, apkMirrorEnabled, apkPureEnabled, apkMirrorFetcher, apkPureFetcher, nowMs, clock,
+            ) { pkg, offer -> commit(bags, pkg, offer) }
+        }
+        dump.start()
+        if (aptoideEnabled) {
+            AptoideScan.applyBatch(
+                apps.map { AptoideApkRef(it.packageName, it.signingSha1, it.versionCode) },
+                aptoideUpdatesFetcher,
+                nowMs,
+            ).forEach { (pkg, offer) -> commit(bags, pkg, offer) }
+        }
+        if (aurora != null) {
+            AuroraPlayScan.applyBatch(apps.map { it.packageName }, aurora, nowMs)
+                .forEach { (pkg, offer) -> commit(bags, pkg, offer) }
+        }
+        if (playOn) clock.planOutlet(RefreshOutletIds.PLAY, "Play", apps.size)
+        if (aptoideEnabled) clock.planOutlet(RefreshOutletIds.APTOIDE, "Aptoide", apps.size)
+        if (forgeOn) clock.planOutlet(RefreshOutletIds.GITHUB, "GitHub", apps.size)
+        if (forgeOn && leftoverClient != null) {
+            clock.planOutlet(RefreshOutletIds.LEFTOVER, "GitLab", apps.size)
+        }
+        val storeJobs = buildList {
             apps.forEach { app ->
-                if (playOn) add(OutletJob(app, Kind.Play))
-                if (aptoideEnabled) add(OutletJob(app, Kind.Aptoide))
-                if (forgeOn) add(OutletJob(app, Kind.GitHub))
+                if (playOn) add(OutletJob(app, OutletKind.Play))
+                if (aptoideEnabled) add(OutletJob(app, OutletKind.Aptoide))
             }
         }
-        ReleaseRefreshParallel.map(jobs, RefreshHostGate.APPS, executor) { job ->
-            runJob(
-                job, bags, playClient, aptoideFetcher, gitHubClient, nowMs, gate, clock,
-                knownRepos, verifiedStore, searchUnknowns, leftoverClient,
-            )
+        val forgeJobs = if (forgeOn) apps.map { OutletJob(it, OutletKind.GitHub) } else emptyList()
+        listOf(storeJobs, forgeJobs).forEach { jobs ->
+            ReleaseRefreshParallel.map(jobs, RefreshHostGate.APPS, executor) { job ->
+                ReleaseRefreshOutlet.run(
+                    job, bags, playClient, aptoideFetcher, gitHubClient, nowMs, gate, clock,
+                    knownRepos, verifiedStore, searchUnknowns, leftoverClient, leftoverHints, aurora,
+                ) { pkg, offer -> commit(bags, pkg, offer) }
+            }
         }
+        dump.join()
+        if (playOn) RefreshOutletBoard.noteFinished(RefreshOutletIds.PLAY)
+        if (aptoideEnabled) RefreshOutletBoard.noteFinished(RefreshOutletIds.APTOIDE)
+        if (forgeOn) RefreshOutletBoard.noteFinished(RefreshOutletIds.GITHUB)
+        if (forgeOn && leftoverClient != null) RefreshOutletBoard.noteFinished(RefreshOutletIds.LEFTOVER)
         ReleaseRefreshComplete.write(
             apps,
             { pkg -> bag(bags, pkg) },
@@ -69,10 +101,6 @@ object ReleaseRefreshWaves {
             ),
         )
     }
-
-    private enum class Kind { Play, Aptoide, GitHub }
-
-    private data class OutletJob(val app: InstalledApp, val kind: Kind)
 
     private fun syncList(offers: List<RemoteReleaseOffer>): MutableList<RemoteReleaseOffer> =
         Collections.synchronizedList(offers.toMutableList())
@@ -83,48 +111,6 @@ object ReleaseRefreshWaves {
     ): List<RemoteReleaseOffer> {
         val list = bags.getOrPut(pkg) { syncList(emptyList()) }
         synchronized(list) { return list.toList() }
-    }
-
-    private fun runJob(
-        job: OutletJob,
-        bags: ConcurrentHashMap<String, MutableList<RemoteReleaseOffer>>,
-        playClient: PlayPageClient?,
-        aptoideFetcher: AptoideMetaFetcher,
-        gitHubClient: GitHubSearchClient?,
-        nowMs: Long,
-        gate: RefreshHostGate,
-        clock: RefreshProgressClock,
-        knownRepos: Map<String, GithubHint>,
-        verifiedStore: GithubVerifiedStore?,
-        searchUnknowns: Boolean,
-        leftoverClient: LeftoverSearchClient?,
-    ) {
-        val app = job.app
-        val pkg = app.packageName
-        val loc = RefreshLocations.label(job.kind.name, app.label, pkg)
-        clock.begin(loc)
-        val offer = try {
-            when (job.kind) {
-                Kind.Play -> gate.play { ReleaseRefreshProbes.play(pkg, playClient!!) }
-                Kind.Aptoide -> gate.aptoide { ReleaseRefreshProbes.aptoide(pkg, aptoideFetcher, nowMs) }
-                Kind.GitHub -> gate.github {
-                    ReleaseRefreshProbes.github(
-                        packageName = pkg,
-                        label = app.label,
-                        client = gitHubClient!!,
-                        hint = knownRepos[pkg],
-                        searchUnknowns = searchUnknowns,
-                        leftover = leftoverClient,
-                        onVerified = { ownerRepo -> verifiedStore?.put(pkg, ownerRepo) },
-                    )
-                }
-            }
-        } catch (error: Throwable) {
-            RefreshTrace.line("${job.kind.name.lowercase()} $pkg fail ${error.javaClass.simpleName}: ${error.message}")
-            null
-        }
-        commit(bags, pkg, offer)
-        clock.tick(loc)
     }
 
     private fun commit(

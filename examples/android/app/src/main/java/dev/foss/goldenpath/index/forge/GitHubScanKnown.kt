@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.forge
 
+import dev.foss.goldenpath.inventory.RefreshOutletIds
+import dev.foss.goldenpath.inventory.RefreshSkip
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
@@ -25,6 +27,10 @@ object GitHubScanKnown {
                 versionName = hint.versionName,
                 pageUrl = ForgeUrl.downloadPage("https://github.com/$ownerRepo"),
             )
+        }
+        if (RefreshSkip.stopped(RefreshOutletIds.GITHUB)) {
+            RefreshTrace.line("github $packageName skip search (stopped)")
+            return GitHubScan.unknown()
         }
         if (!searchUnknowns) {
             RefreshTrace.line("github $packageName skip search (no hint)")

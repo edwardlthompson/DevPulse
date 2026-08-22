@@ -54,6 +54,9 @@ object UpdateArtifactMemory {
     fun best(packageName: String): UpdateArtifact? =
         byPackage[packageName]?.minByOrNull { UpdateArtifactRank.rank(it.source) }
 
+    fun forSource(packageName: String, source: RemoteReleasedSource): UpdateArtifact? =
+        byPackage[packageName.trim()]?.firstOrNull { it.source == source }
+
     fun markLocal(packageName: String, source: RemoteReleasedSource, path: String) {
         synchronized(lock) {
             val list = byPackage[packageName] ?: return

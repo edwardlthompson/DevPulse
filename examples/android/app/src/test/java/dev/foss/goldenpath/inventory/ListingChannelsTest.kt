@@ -14,6 +14,9 @@ class ListingChannelsTest {
         assertEquals(RemoteReleasedSource.Guardian, ListingChannels.sourceForRepo("guardian"))
         assertEquals(RemoteReleasedSource.Calyx, ListingChannels.sourceForRepo("calyx"))
         assertEquals(RemoteReleasedSource.ExtraRepo, ListingChannels.sourceForRepo("custom"))
+        assertEquals("official", ListingChannels.repoId(RemoteReleasedSource.Fdroid))
+        assertEquals("izzy", ListingChannels.repoId(RemoteReleasedSource.Izzy))
+        assertEquals(null, ListingChannels.repoId(RemoteReleasedSource.Play))
     }
 
     @Test

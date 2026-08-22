@@ -1,15 +1,27 @@
 package dev.foss.goldenpath.inventory
 
 object UpdateInventory {
-    fun hasUpdate(app: InstalledApp): Boolean =
-        VersionCompare.isNewer(app.remoteVersionName, app.versionName)
+    fun hasUpdate(app: InstalledApp): Boolean {
+        if (AppliedUpdates.settled(app.packageName)) return false
+        if (usable(app).isNotEmpty()) return true
+        if (app.latestListings.any { it.listed }) return false
+        val remote = app.remoteVersionName
+        if (IgnoredUpdates.has(app.packageName, app.remoteVersionSource, remote)) return false
+        return VersionCompare.isNewer(remote, app.versionName)
+    }
 
     fun withUpdates(apps: List<InstalledApp>): List<InstalledApp> = apps.filter(::hasUpdate)
 
-    fun canOpen(link: UpdateLink): Boolean =
-        link.listed &&
-            !link.url.isNullOrBlank() &&
-            (link.source == RemoteReleasedSource.Play || link.source == RemoteReleasedSource.ApkMirror)
+    fun usable(app: InstalledApp): List<UpdateLink> =
+        app.latestListings.filter { link ->
+            link.listed &&
+                UpdateAll.fetchable(link.source) &&
+                VersionCompare.isNewer(link.versionName, app.versionName) &&
+                !IgnoredUpdates.has(app.packageName, link.source, link.versionName)
+        }
+
+    fun canOpen(link: UpdateLink, packageName: String = ""): Boolean =
+        link.listed && !IgnoredUpdates.has(packageName, link.source, link.versionName)
 
     fun listingsFor(pick: RemoteReleasePick): List<UpdateLink> =
         ListingChannels.complete(pick.offers.map(ListingChannels::relabel), ListingChannels.STANDARD)

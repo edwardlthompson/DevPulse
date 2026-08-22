@@ -17,6 +17,69 @@
 
 ## Entries
 
+### 2026-08-22 — Listed source rows download then install
+- **Status:** Accepted
+- **Context:** APKPure and F-Droid listing rows on BTC Map / Root Explorer did nothing or opened a website. Users expect every listed source button to fetch that source's APK, show progress, then the system install dialog.
+- **Decision:** `canOpen` is any listed source. `ListingDirect` resolves an APK for the tapped source (memory, F-Droid/Izzy package page, Aptoide getMeta, APKPure asset, Aurora purchase, GitHub release asset). The row shows `update_cache_busy` plus a progress bar, then `ApkInstall`. No website fallback. APKMirror and Play-without-Aurora-file fail honestly.
+- **Alternatives considered:** Keep Play/APKMirror as page opens (rejected: same silent-tap bug). Reuse `UpdateArtifactMemory.best` (rejected: tapping F-Droid could install APKPure). Scrape APKMirror (rejected: no honest file URL).
+- **Consequences:** BTC Map F-Droid and Root Explorer APKPure download in-app. Play needs Aurora purchase. Mirror stays a failed download until a real file URL exists.
+
+### 2026-08-22 — Aurora second-pass misses; APKMirror overlap; scan dialog order
+- **Status:** Accepted
+- **Context:** Aurora bulk still omits Play apps. Users need those misses re-checked on Aurora once, while F-Droid/Aptoide/APKMirror/APKPure keep probing every app. APKMirror was the catalog-wave wall (~19s sequential chunks). The scan dialog grew source rows as outlets started and reordered by ETA.
+- **Decision:** After the first Aurora walk, retry first-walk misses once (`aurora second-pass`). A Play miss still does not skip other stores; it only settles forge name-search. APKMirror fetches up to four chunks at once and overlaps APKPure. Plan every enabled outlet before the first UI pulse. Finished rows stack last-finished at the top; pending keep plan order under a pinned overall bar.
+- **Alternatives considered:** Per-chunk omitted retry only (rejected: extra HTTP, no listing gain). Skip APKMirror for Play-listed apps (rejected: dump dates stay independent). Keep ETA sort (rejected: rows appear and jump).
+- **Consequences:** Instagram-style Aurora holes get one more Aurora look, then Aptoide/dumps/F-Droid as usual. APKMirror wall should drop toward one RTT plus parse. Scan dialog loads complete and stays readable.
+
+### 2026-08-21 — Play verdict settles forge leftovers
+- **Status:** Accepted
+- **Context:** Aurora bulk details omitted Instagram from a 20-pack. That hole was stamped as a Play miss. Leftover GitHub only skipped when some store was `listed`, so Instagram was name-searched.
+- **Decision:** A known Play verdict (listed or miss) settles the app — no GitHub search. Bulk details that omit a package are retried once before recording a miss.
+- **Alternatives considered:** Treat every bulk omission as unknown and fall back to Play HTML (rejected: 32-min path). Search GitHub whenever Play is a miss (rejected: Instagram is on Play).
+- **Consequences:** Play-distributed apps stay on the Aurora wave. True leftovers are apps Aurora never answered (unknown) and no other store listed.
+
+### 2026-08-21 — Funnel Refresh: catalogs first, leftovers only
+- **Status:** Accepted
+- **Context:** All-sources scans wasted time probing every outlet per app. Aurora is the Play catalog; GitHub name-search does not find GitLab-only apps that already have F-Droid `sourceCode`; Aptoide `getMeta` after a successful `listAppsUpdates` omission is almost always a cert mismatch.
+- **Decision:** Catalogs and hints always run. Aurora missing ⇒ Play miss (HTML only on Aurora unknown). Successful Aptoide-batch omissions ⇒ Aptoide known miss (7-day TTL), no getMeta. Store-listed ⇒ forge known miss. Leftovers search GitHub only; a GitHub miss is also the GitLab/Codeberg miss. Leftover hints still list with zero HTTP.
+- **Alternatives considered:** Keep leftover GitLab search after GitHub miss (rejected: timeouts, no extra hits beyond hints). Keep Aptoide getMeta for every omission (rejected: Play-signed leftovers). Invent Play dates on Aurora miss (rejected: miss has no date).
+- **Consequences:** Cold all-sources Refresh stays on the ~40s catalog wave plus a short GitHub walk for sideload-only leftovers. 403/timeout stay unknown. A later GitLab-only app without a hint stays a forge miss until the user pastes a URL or F-Droid grows `sourceCode`.
+
+### 2026-08-21 — Skip forge name-search for store-listed apps
+- **Status:** Accepted
+- **Context:** Cold all-sources Refresh after Aurora/Aptoide batch was 11.7 min. Play was 5.6s, Aptoide 2.7s, F-Droid ~3s. GitHub name-search used 680s: 328 label searches at 30/min plus 1,349 release misses. `all_sources` had forced `searchUnknowns` on.
+- **Decision:** Keep brute-force GitHub/GitLab/Codeberg name-search on the existing Settings toggle (default off). `all_sources` turns store outlets on and leaves that toggle off. When the toggle is on, skip name-search for packages already listed on Play, F-Droid, or Aptoide. Leftover hints still list with zero HTTP.
+- **Alternatives considered:** Raise the 30/min GitHub search pace (rejected: GitHub secondary search limit). Verify fewer release candidates (rejected: does not cut wall clock while search count stays ~330). Treat Play-listed as a known GitHub miss (rejected: we did not search GitHub).
+- **Consequences:** All-sources Refresh stays on catalogs + F-Droid/GitHub hints. Opt-in search only walks apps no store listed. A later GitHub listing for a Play-listed app still needs a hint, paste, or the toggle plus no store hit.
+
+### 2026-08-21 — Aurora as Play catalog scan
+- **Status:** Accepted
+- **Context:** Play Refresh downloaded ~900KB HTML per app. Aurora `gplayapi` bulk details is the same Play catalog in ~20-app protobuf batches. Users still want a Play Store update button.
+- **Decision:** When Play lookup is on, Refresh batches Aurora details first and stamps listed/missing as `RemoteReleasedSource.Play` with the Play Store URL. Auth/transport failure stays unknown and falls back to HTML. Update via Aurora stays opt-in; Play-listed apps also get “Update in Play”.
+- **Alternatives considered:** Keep HTML as the only Play probe (rejected: slow). Treat Aurora auth failure as delisted (rejected: not a catalog miss). Make Aurora a separate outlet (rejected: user asked for AS ≡ PS).
+- **Consequences:** Cold Play walk is a few bulk calls plus HTML only for Aurora unknowns. Relist after a confirmed miss still waits up to 7 days.
+
+### 2026-08-21 — Play delist miss cache
+- **Status:** Accepted
+- **Context:** Confirmed Play 404/not-found was only skipped for 24h, so the next day’s Refresh re-downloaded ~900KB HTML for apps already known delisted. Aurora is download-only and is not a Refresh outlet.
+- **Decision:** Reuse Play `listed=false, known=true` for 7 days (`PlayCachePolicy.MISS_TTL_MS`), same window as forge misses. 403/bot-wall/timeout stay unknown and still re-probe. Listed Play stays on the 24h date TTL.
+- **Alternatives considered:** Use Aurora/gplayapi as the Play scan (rejected: not a listing source; auth can break; play-lookup is public HTML). Treat 403 as delisted (rejected: spec forbids inventing a miss).
+- **Consequences:** Sideload-only and removed Play apps skip Play HTTP on the next scan. A later relist waits up to 7 days unless the user clears app storage.
+
+### 2026-08-21 — Aptoide batch updates and forge miss cache
+- **Status:** Accepted
+- **Context:** Aptoide Refresh was one `getMeta` per app. GitHub/GitLab felt slow because leftover search ran for every app without a GitHub hint, and `ProbeCache` reused only *listed* forge rows so known misses were searched again on every scan.
+- **Decision:** POST installed package + signing SHA-1 to Aptoide’s public `listAppsUpdates` (100/chunk, vercode 0) and leftover-`getMeta` only packages the batch did not list. Treat F-Droid GitLab/Codeberg `sourceCode` (and pasted leftover URLs) as instant leftover hints. Persist known GH/GL misses for 7 days. HTTP errors stay unknown.
+- **Alternatives considered:** Call into the installed Aptoide app (rejected: no supported IPC). Mark every `listAppsUpdates` omission as not listed (rejected: would hide Aptoide listings signed with a different cert). Re-search misses every Refresh (rejected: leftover HTTP dominated).
+- **Consequences:** Same-signer Aptoide hits become a few POSTs. Play-signed leftovers still use `getMeta`. Hinted GitHub/GitLab list with zero search HTTP. A completed empty search is not repeated for a week.
+
+### 2026-08-21 — Probe TTL and shipped F-Droid name catalogs
+- **Status:** Accepted
+- **Context:** Cold all-sources Refresh spent most of its time on Play HTML and official F-Droid 404 host-resolves. Policies already defined 24h Play/Aptoide and 3-day F-Droid TTLs but Refresh re-probed every package.
+- **Decision:** Persist `fetchedAtMs` on each offer. Refresh skips live HTTP for known fresh rows. Ship gzip package-name catalogs for official F-Droid and Izzy so host-resolve only hits names that can exist. Catalog misses are treated as not listed on that repo. Regen with `scripts/build-fdroid-name-catalog.py`.
+- **Alternatives considered:** Skip Play when another store lists the app (rejected: would hide a real Play date). Guess Play dates from other stores (rejected: spec forbids invented dates). Download Izzy’s 15MB index on device (rejected: over budget).
+- **Consequences:** First Play walk is still ~900KB HTML per app. Same-day rescan should skip Play/Aptoide/dump/forge-listed HTTP. New official/Izzy apps wait for the next catalog build. Unknown (`?`) rows still re-probe.
+
 ### 2026-08-21 — Ship v0.27.0 on GitHub Releases
 - **Status:** Accepted
 - **Context:** `/ship` after quiet Venmo donate, filename self-update, host-resolve Refresh, Opportunity, leftover forges, and Aurora Play. Actions still cannot open PRs. Release Please did not tag after merge because it could not find the gh-opened PR.

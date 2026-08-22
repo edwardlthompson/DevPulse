@@ -28,6 +28,11 @@ import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.PackageManagerPackageCatalog
 import dev.foss.goldenpath.inventory.QueryAllPackagesGate
 import dev.foss.goldenpath.inventory.FileRemoteReleaseStore
+import dev.foss.goldenpath.inventory.IgnoredUpdates
+import dev.foss.goldenpath.inventory.WelcomeHome
+import dev.foss.goldenpath.inventory.WelcomeNeeds
+import dev.foss.goldenpath.inventory.WelcomePrefs
+import dev.foss.goldenpath.inventory.RefreshOutletSnap
 import dev.foss.goldenpath.inventory.RefreshProgress
 import dev.foss.goldenpath.inventory.ReleaseRefreshRuntime
 import dev.foss.goldenpath.inventory.ReleaseRefreshService
@@ -46,6 +51,7 @@ import kotlinx.coroutines.launch
 class InventoryUiModel(
     val apps: List<InstalledApp>,
     val canScan: Boolean,
+    val welcomeHome: WelcomeHome,
     val rationaleSkipped: Boolean,
     val showUsageWalkthrough: Boolean,
     val query: String,
@@ -58,9 +64,12 @@ class InventoryUiModel(
     val showSearch: Boolean,
     val showFilters: Boolean,
     val refreshing: Boolean,
+    val showRefreshDialog: Boolean,
     val refreshDone: Int,
     val refreshTotal: Int,
     val refreshLocation: String,
+    val refreshOutlets: List<RefreshOutletSnap>,
+    val firstRefresh: Boolean,
     val onAcknowledge: () -> Unit,
     val onSkip: () -> Unit,
     val onDismissUsage: () -> Unit,
@@ -76,6 +85,8 @@ class InventoryUiModel(
     val onToggleSearch: () -> Unit,
     val onToggleFilters: () -> Unit,
     val onRefresh: () -> Unit,
+    val onStopOutlet: (String) -> Unit,
+    val onDismissRefresh: () -> Unit,
 )
 
 @Composable
@@ -86,7 +97,10 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     val catalog = remember { PackageManagerPackageCatalog(context.packageManager) }
     remember {
         RemoteReleaseMemory.hydrate(FileRemoteReleaseStore(File(context.filesDir, "remote_releases.json")))
+        IgnoredUpdates.hydrate(context.filesDir)
     }
+    val welcomePrefs = remember { WelcomePrefs(context) }
+    val welcomeSeen by welcomePrefs.seen.collectAsStateWithLifecycle(null as Boolean?)
     val acknowledged by prefs.queryAllPackagesAcknowledged.collectAsStateWithLifecycle(false)
     val includeSystem by prefs.includeSystemApps.collectAsStateWithLifecycle(false)
     val consent by prefs.usageStatsConsent.collectAsStateWithLifecycle(UsageStatsConsent.NotOffered)
@@ -95,12 +109,17 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     val updatesOnly by prefs.updatesOnly.collectAsStateWithLifecycle(false)
     val sourceFilters by prefs.sourceFilters.collectAsStateWithLifecycle(emptySet())
     val revision by RemoteReleaseMemory.revision.collectAsStateWithLifecycle(0)
+    val ignoredRev by IgnoredUpdates.revision.collectAsStateWithLifecycle(0)
     val catalogEpoch by InstalledAppsRevision.revision.collectAsStateWithLifecycle(0)
     val refreshing by ReleaseRefreshRuntime.running.collectAsStateWithLifecycle(false)
     val refreshProgress by ReleaseRefreshRuntime.progress.collectAsStateWithLifecycle(RefreshProgress(0, 0))
     val scanInterval by prefs.scanInterval.collectAsStateWithLifecycle(ScanInterval.OnDemand)
     val lastScanAt by prefs.lastScanAtMs.collectAsStateWithLifecycle(null)
     var skipped by remember { mutableStateOf(false) }
+    var keepRefreshDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(refreshing) {
+        if (refreshing) keepRefreshDialog = true
+    }
     var query by remember { mutableStateOf("") }
     var showSearch by remember { mutableStateOf(false) }
     var showFilters by remember { mutableStateOf(false) }
@@ -117,9 +136,12 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         onPauseOrDispose { }
     }
     val canScan = QueryAllPackagesGate.canScan(acknowledged, Build.VERSION.SDK_INT)
+    val welcomeHome = WelcomeNeeds.home(welcomeSeen, canScan)
     LaunchedEffect(scanInterval, lastScanAt, canScan) {
         ScanSchedule.apply(context, scanInterval)
-        if (canScan && !refreshing && ScanSchedule.due(scanInterval, lastScanAt, System.currentTimeMillis())) {
+        if (canScan && lastScanAt != null && !refreshing &&
+            ScanSchedule.due(scanInterval, lastScanAt, System.currentTimeMillis())
+        ) {
             requestRefreshNotifications(context)
             ReleaseRefreshService.start(context)
         }
@@ -131,7 +153,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
             .usageSince(nowMs - UsagePulse.WINDOW_MS, nowMs)
             .associateBy { it.packageName }
     }
-    val installed = remember(canScan, revision, catalogEpoch) {
+    val installed = remember(canScan, revision, catalogEpoch, ignoredRev) {
         if (!canScan) emptyList()
         else catalog.listInstalled().map(RemoteReleaseMemory::merge)
     }
@@ -153,6 +175,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     return InventoryUiModel(
         apps = if (canScan) visible else emptyList(),
         canScan = canScan,
+        welcomeHome = welcomeHome,
         rationaleSkipped = skipped && !canScan,
         showUsageWalkthrough = canScan && consent == UsageStatsConsent.NotOffered,
         query = query,
@@ -165,11 +188,23 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         showSearch = showSearch,
         showFilters = showFilters,
         refreshing = refreshing,
+        showRefreshDialog = refreshing || keepRefreshDialog,
         refreshDone = refreshProgress.done,
         refreshTotal = refreshProgress.total,
         refreshLocation = refreshProgress.location,
-        onAcknowledge = { scope.launch { prefs.setQueryAllPackagesAcknowledged(true) } },
-        onSkip = { skipped = true },
+        refreshOutlets = refreshProgress.outlets,
+        firstRefresh = lastScanAt == null,
+        onAcknowledge = {
+            scope.launch {
+                welcomePrefs.markSeen()
+                prefs.setQueryAllPackagesAcknowledged(true)
+                prefs.setUsageStatsConsent(UsageStatsConsent.WalkthroughSeen)
+            }
+        },
+        onSkip = {
+            skipped = true
+            scope.launch { welcomePrefs.markSeen() }
+        },
         onDismissUsage = { scope.launch { prefs.setUsageStatsConsent(UsageStatsConsent.WalkthroughSeen) } },
         onQueryChange = { query = it },
         onSortMode = { mode -> scope.launch { prefs.setSortMode(mode) } },
@@ -193,6 +228,8 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
                 ReleaseRefreshService.start(context)
             }
         },
+        onStopOutlet = { id -> ReleaseRefreshRuntime.stopOutlet(id) },
+        onDismissRefresh = { keepRefreshDialog = false },
     )
 }
 

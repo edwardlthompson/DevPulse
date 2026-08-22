@@ -1,8 +1,12 @@
 package dev.foss.goldenpath.inventory
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import dev.foss.goldenpath.about.UpdateApplier
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 object ApkInstall {
     fun apply(
@@ -10,13 +14,27 @@ object ApkInstall {
         apkFile: File,
         method: InstallMethod,
         shell: InstallShell = ProcessInstallShell,
-    ): ApkInstallResult = apply(
-        apkFile,
-        method,
-        system = { UpdateApplier.launchApkInstall(context, it) },
-        session = { SessionApkInstall.start(context, it) },
-        shell = shell,
-    )
+    ): ApkInstallResult {
+        val work = {
+            apply(
+                apkFile,
+                method,
+                system = { UpdateApplier.launchApkInstall(context, it) },
+                session = { SessionApkInstall.start(context, it) },
+                shell = shell,
+            )
+        }
+        if (method == InstallMethod.Root || Looper.myLooper() == Looper.getMainLooper()) {
+            return runCatching(work).getOrElse { ApkInstallResult.Failed(it.javaClass.simpleName) }
+        }
+        val latch = CountDownLatch(1)
+        var out: ApkInstallResult = ApkInstallResult.Failed("ui")
+        Handler(Looper.getMainLooper()).post {
+            out = runCatching(work).getOrElse { ApkInstallResult.Failed(it.javaClass.simpleName) }
+            latch.countDown()
+        }
+        return if (latch.await(20, TimeUnit.SECONDS)) out else ApkInstallResult.Failed("ui")
+    }
 
     fun apply(
         apkFile: File,
@@ -28,11 +46,15 @@ object ApkInstall {
         if (!apkFile.isFile) return ApkInstallResult.Failed("missing")
         return when (method) {
             InstallMethod.System -> {
-                system(apkFile)
+                runCatching { system(apkFile) }.getOrElse {
+                    return ApkInstallResult.Failed(it.javaClass.simpleName)
+                }
                 ApkInstallResult.Launched
             }
             InstallMethod.Session -> {
-                session(apkFile)
+                runCatching { session(apkFile) }.getOrElse {
+                    return ApkInstallResult.Failed(it.javaClass.simpleName)
+                }
                 ApkInstallResult.Launched
             }
             InstallMethod.Root -> {

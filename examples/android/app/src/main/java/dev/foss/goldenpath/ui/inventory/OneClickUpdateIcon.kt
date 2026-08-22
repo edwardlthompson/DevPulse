@@ -76,8 +76,9 @@ fun OneClickUpdateIcon(app: InstalledApp, modifier: Modifier = Modifier) {
                             if (aurora) AuroraPlayDirect.resolve(pkg, AuroraPlayLive.files(context)) else null
                         },
                         inspect = { file -> ApkArchiveIdentity.inspect(context.packageManager, file) },
-                        installed = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
-                            ?: InstalledIdentity(app.packageName, emptySet()),
+                            installed = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
+                                ?: InstalledIdentity(app.packageName, emptySet()),
+                            filesDir = context.filesDir,
                     )
                 }
                 busy = false

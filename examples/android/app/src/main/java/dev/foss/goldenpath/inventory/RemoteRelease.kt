@@ -31,6 +31,7 @@ data class RemoteReleaseOffer(
     val pageUrl: String? = null,
     val listed: Boolean = true,
     val known: Boolean = true,
+    val fetchedAtMs: Long? = null,
 )
 
 data class UpdateLink(
@@ -93,7 +94,12 @@ object RemoteReleaseMemory {
     fun putAll(updates: Map<String, RemoteReleasePick>) {
         if (updates.isEmpty()) return
         synchronized(lock) {
-            byPackage = byPackage + updates
+            byPackage = buildMap {
+                putAll(byPackage)
+                updates.forEach { (pkg, pick) ->
+                    put(pkg, RemoteReleaseRollup.merge(this[pkg], pick))
+                }
+            }
             persist?.save(byPackage)
             revisionState.value += 1
         }

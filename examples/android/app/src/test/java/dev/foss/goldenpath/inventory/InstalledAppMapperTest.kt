@@ -48,9 +48,11 @@ class InstalledAppMapperTest {
                 targetSdk = 37,
                 isSystemApp = false,
                 installerPackageName = "com.android.vending",
+                signingSha1 = "D5:90:A7:D7:92:FD:03:31:54:2D:99:FA:F9:99:76:41:79:07:73:A9",
             ),
         )
         assertEquals(AppOrigin.Play, app.origin)
+        assertEquals("D5:90:A7:D7:92:FD:03:31:54:2D:99:FA:F9:99:76:41:79:07:73:A9", app.signingSha1)
     }
 
     @Test

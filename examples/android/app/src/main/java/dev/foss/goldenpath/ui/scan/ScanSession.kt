@@ -20,8 +20,10 @@ import dev.foss.goldenpath.scan.ScanItem
 import dev.foss.goldenpath.scan.ScanMachine
 import dev.foss.goldenpath.scan.ScanPhase
 import dev.foss.goldenpath.notify.WidgetRedCount
+import dev.foss.goldenpath.inventory.PulseHistory
 import dev.foss.goldenpath.query.ScanHistoryStore
 import dev.foss.goldenpath.query.ScanHistoryWrite
+import dev.foss.goldenpath.staleness.Badge
 import dev.foss.goldenpath.scan.ScanProgress
 import java.io.File
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +78,7 @@ fun rememberScanSession(apps: List<InstalledApp>): ScanSession {
             scope.launch {
                 runCatching {
                     val now = System.currentTimeMillis()
+                    val startedAt = now
                     if (aptoideOn) {
                         withContext(Dispatchers.IO) {
                             AptoideScan.picksFor(apps.map { it.packageName }, AptoideHttpFetcher, now)
@@ -85,6 +88,13 @@ fun rememberScanSession(apps: List<InstalledApp>): ScanSession {
                     val scanned = LocalScan.run(merged, now)
                     val dir = File(context.filesDir, "scan-history")
                     ScanHistoryWrite.afterScan(dir, scanned)
+                    PulseHistory.note(
+                        context.filesDir,
+                        "scan",
+                        System.currentTimeMillis() - startedAt,
+                        scanned.size,
+                        "red=${scanned.count { it.staleness.badge == Badge.Red }};unknown=${scanned.count { it.staleness.badge == Badge.Unknown }}",
+                    )
                     WidgetRedCount.refresh(context)
                     quiet = ScanHistoryStore(dir).lastQuiet()
                     items = scanned
