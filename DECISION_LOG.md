@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-22 — v0.28.0 ship
+- **Status:** Accepted
+- **Context:** `/ship` after listing-tap installs, Update all parallel downloads plus ignore cache, and welcome-once splash.
+- **Decision:** `feat:` prepare on `main`; fold Unreleased onto Release Please PR #9; admin-merge when Queue RP failed; upload locally signed `DevPulse-0.28.0.apk` to tag `v0.28.0` (CI Release signs with the same GitHub secrets).
+- **Alternatives considered:** Wait only for the Release workflow APK (rejected: the user asked to upload). Leave generic RP bullets as the GitHub Release body (rejected: product notes already existed).
+- **Consequences:** Tag and notes published. Session installs stay one-at-a-time. APKMirror stays out of Update all until a real file URL exists.
+
 ### 2026-08-22 — Listed source rows download then install
 - **Status:** Accepted
 - **Context:** APKPure and F-Droid listing rows on BTC Map / Root Explorer did nothing or opened a website. Users expect every listed source button to fetch that source's APK, show progress, then the system install dialog.

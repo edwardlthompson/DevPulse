@@ -227,6 +227,14 @@
 | **Cause** | `FdroidRefreshFetch.load` throws `empty index` before `ReleaseRefreshRepos` can call extra host-resolve |
 | **Fix** | `allowEmpty` when Izzy extra host-resolve is available; archive still fails on empty |
 | **Prevention** | Keep the empty-index fail test for Archive; do not throw before the Izzy fallback |
+### KB-029 — Design cohesion rejects `Color(0x…)` in Compose UI
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `pre-release-gate` / `feature-gate --stack multi --strict` fails `design-cohesion` after Android tests passed |
+| **Cause** | `check-design-cohesion.sh` flags `Color(0x` in any `ui/**/*.kt` except generated `Color.kt` |
+| **Fix** | Use `MaterialTheme.colorScheme` tokens (`primary` for granted, `tertiary` for ignored/warning) |
+| **Prevention** | Do not add hex `Color` literals in inventory/settings composables; keep brand hex in `ui/theme/Color.kt` only |
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |
