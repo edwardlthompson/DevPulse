@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.29.0](https://github.com/edwardlthompson/DevPulse/compare/v0.28.0...v0.29.0) (2026-08-22)
+
 ### Fixed
 
 - Welcome stays until Continue or Not now; an older apps acknowledgment no longer skips it
