@@ -44,7 +44,13 @@ object WelcomeNeeds {
 
     fun ready(rows: List<WelcomeRow>): Boolean = rows.filter { it.required }.all { it.granted }
 
-    fun seen(welcomeSeen: Boolean, acknowledged: Boolean): Boolean = welcomeSeen || acknowledged
+    fun seen(welcomeSeen: Boolean): Boolean = welcomeSeen
+
+    fun ensureInstall(context: Context): Boolean {
+        if (installGranted(context)) return true
+        openInstallSettings(context)
+        return false
+    }
 
     fun home(loadedSeen: Boolean?, canScan: Boolean): WelcomeHome = when (loadedSeen) {
         null -> WelcomeHome.Splash

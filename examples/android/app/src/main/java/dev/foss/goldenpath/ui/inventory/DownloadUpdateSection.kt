@@ -36,6 +36,7 @@ import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.OneClickUpdate
 import dev.foss.goldenpath.inventory.PlayStoreIntent
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
+import dev.foss.goldenpath.inventory.WelcomeNeeds
 import dev.foss.goldenpath.ui.theme.SpacingSm
 import java.io.File
 import kotlinx.coroutines.Dispatchers
@@ -77,6 +78,7 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
         TextButton(
             onClick = {
                 if (busy) return@TextButton
+                if (!WelcomeNeeds.ensureInstall(context)) return@TextButton
                 busy = true
                 failRes = null
                 scope.launch {

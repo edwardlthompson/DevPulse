@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Welcome stays until Continue or Not now; an older apps acknowledgment no longer skips it
+- Back and Close dismiss Update all and Refresh overlays while work is still running
+- Install unknown apps is required before a download or install; missing permission opens the system page
+- Update all uses the Settings install method instead of always Session
+
 ## [0.28.0](https://github.com/edwardlthompson/DevPulse/compare/v0.27.0...v0.28.0) (2026-08-22)
 
 ### Added

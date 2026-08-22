@@ -41,15 +41,15 @@ fun RefreshProgressDialog(
     onDismiss: () -> Unit = {},
 ) {
     Dialog(
-        onDismissRequest = { if (complete) onDismiss() },
+        onDismissRequest = onDismiss,
         properties = DialogProperties(
-            dismissOnBackPress = complete,
-            dismissOnClickOutside = complete,
+            dismissOnBackPress = true,
+            dismissOnClickOutside = false,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false,
         ),
     ) {
-        BackHandler(enabled = complete) { onDismiss() }
+        BackHandler { onDismiss() }
         blurBehindDialog()
         Box(
             modifier = Modifier
@@ -74,10 +74,8 @@ fun RefreshProgressDialog(
                         onStopOutlet = onStopOutlet,
                         modifier = Modifier.weight(1f),
                     )
-                    if (complete) {
-                        TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                            Text(text = stringResource(R.string.about_close))
-                        }
+                    TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
+                        Text(text = stringResource(R.string.about_close))
                     }
                 }
             }

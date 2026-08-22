@@ -44,8 +44,7 @@ class WelcomeNeedsTest {
         assertEquals(WelcomeHome.Welcome, WelcomeNeeds.home(false, canScan = false))
         assertEquals(WelcomeHome.Splash, WelcomeNeeds.home(true, canScan = false))
         assertEquals(WelcomeHome.Inventory, WelcomeNeeds.home(true, canScan = true))
-        assertTrue(WelcomeNeeds.seen(welcomeSeen = true, acknowledged = false))
-        assertTrue(WelcomeNeeds.seen(welcomeSeen = false, acknowledged = true))
-        assertFalse(WelcomeNeeds.seen(welcomeSeen = false, acknowledged = false))
+        assertTrue(WelcomeNeeds.seen(welcomeSeen = true))
+        assertFalse(WelcomeNeeds.seen(welcomeSeen = false))
     }
 }

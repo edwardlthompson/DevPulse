@@ -14,7 +14,7 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Listing
 | `UpdateAllResult` | data class | `downloaded`, `installed`, `failedDownload`, `failedInstall` |
 ## Acceptance criteria
 
-- ✅ User-visible: Update all appears when any visible app has a newer fetchable listing; a dialog shows overall and per-app progress
+- ✅ User-visible: Update all appears when any visible app has a newer fetchable listing; a dialog shows overall and per-app progress; Back or Close dismisses it even while downloads run
 - ✅ Offline/error: a failed download skips that app; remaining apps still run
 - ✅ Accessibility: button and overall bar have content descriptions
 - ✅ i18n: `update_all`, `update_all_busy`

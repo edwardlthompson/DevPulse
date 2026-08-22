@@ -76,7 +76,7 @@ fun GoldenPathScreen(
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     var showOpportunity by remember { mutableStateOf(false) }
     val lookupDone = inventory.refreshTotal > 0 && inventory.refreshDone >= inventory.refreshTotal
-    val refreshDismissible = inventory.showRefreshDialog && (!inventory.refreshing || lookupDone)
+    val refreshDismissible = inventory.showRefreshDialog
     val overlayOpen = showSettings || showAbout || showOpportunity || scan.visible || scan.selected != null ||
         inventory.selectedApp != null
     LaunchedEffect(inventory.selectedApp?.packageName) {

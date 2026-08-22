@@ -276,7 +276,7 @@
     <string name="install_method_system">System</string>
     <string name="install_method_session">Session</string>
     <string name="install_method_root">Root silent</string>
-    <string name="install_method_failed">Install failed. Try System if this device is not rooted.</string>
+    <string name="install_method_failed">Install failed. Allow Install unknown apps, or try System.</string>
     <string name="update_prefetch_title">Prefetch update files</string>
     <string name="update_prefetch_body">Off by default. On Wi-Fi, cache direct APKs after Refresh. A file is ready only when the package, signing cert, and sha256 match. APKMirror stays page-only. Play files need the Aurora toggle. DevPulse never auto-installs.</string>
     <string name="update_prefetch_enable">Prefetch trusted APKs on Wi-Fi</string>

@@ -32,6 +32,7 @@ object ListingInstallLive {
     }
 
     fun install(context: Context, files: List<File>?, method: InstallMethod): OneClickResult {
+        if (!WelcomeNeeds.ensureInstall(context)) return OneClickResult.FailedInstall
         if (files.isNullOrEmpty()) return OneClickResult.FailedDownload
         if (files.size > 1) {
             return runCatching { SessionApkInstall.start(context, files) }

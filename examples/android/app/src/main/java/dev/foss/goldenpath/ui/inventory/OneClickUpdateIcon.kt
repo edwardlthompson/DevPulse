@@ -32,6 +32,7 @@ import dev.foss.goldenpath.inventory.OneClickKind
 import dev.foss.goldenpath.inventory.OneClickUpdate
 import dev.foss.goldenpath.inventory.PlayStoreIntent
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
+import dev.foss.goldenpath.inventory.WelcomeNeeds
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,7 @@ fun OneClickUpdateIcon(app: InstalledApp, modifier: Modifier = Modifier) {
         tint = MaterialTheme.colorScheme.error,
         modifier = modifier.clickable(enabled = !busy && kind !is OneClickKind.None, role = Role.Button) {
             if (busy) return@clickable
+            if (!WelcomeNeeds.ensureInstall(context)) return@clickable
             busy = true
             scope.launch {
                 withContext(Dispatchers.IO) {

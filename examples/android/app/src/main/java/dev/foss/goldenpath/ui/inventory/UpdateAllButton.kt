@@ -21,7 +21,9 @@ import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.InstallAwait
 import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.InstalledApp
+import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.inventory.ListingInstallLive
+import dev.foss.goldenpath.inventory.WelcomeNeeds
 import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.UpdateAll
@@ -41,6 +43,8 @@ fun UpdateAllButton(apps: List<InstalledApp>, modifier: Modifier = Modifier) {
     val queue = remember(groups) { groups.map { it.first() } }
     if (queue.isEmpty()) return
     val context = LocalContext.current
+    val prefs = remember { InventoryPreferences(context) }
+    val method by prefs.installMethod.collectAsStateWithLifecycle(InstallMethod.System)
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
     var show by remember { mutableStateOf(false) }
@@ -54,6 +58,7 @@ fun UpdateAllButton(apps: List<InstalledApp>, modifier: Modifier = Modifier) {
     TextButton(
         onClick = {
             if (busy) return@TextButton
+            if (!WelcomeNeeds.ensureInstall(context)) return@TextButton
             busy = true
             show = true
             snaps.clear()
@@ -73,13 +78,18 @@ fun UpdateAllButton(apps: List<InstalledApp>, modifier: Modifier = Modifier) {
                             ListingInstallLive.prepare(context, job.packageName, job.source, job.pageUrl, progress)
                         },
                         install = { files ->
-                            InstallAwait.arm()
-                            val launched = ListingInstallLive.install(
-                                context,
-                                files,
-                                InstallMethod.Session,
-                            ) == OneClickResult.Installed
-                            launched && InstallAwait.await()
+                            if (method == InstallMethod.Session) {
+                                InstallAwait.arm()
+                                val launched = ListingInstallLive.install(
+                                    context,
+                                    files,
+                                    method,
+                                ) == OneClickResult.Installed
+                                launched && InstallAwait.await()
+                            } else {
+                                ListingInstallLive.install(context, files, method) ==
+                                    OneClickResult.Installed
+                            }
                         },
                         onSnap = { snap ->
                             scope.launch(Dispatchers.Main.immediate) {
@@ -101,6 +111,13 @@ fun UpdateAllButton(apps: List<InstalledApp>, modifier: Modifier = Modifier) {
         modifier = modifier.semantics { contentDescription = label },
     ) { Text(label) }
     if (show) {
-        UpdateAllDialog(snaps = snaps.toList(), complete = !busy, onDismiss = { show = false })
+        UpdateAllDialog(
+            snaps = snaps.toList(),
+            complete = !busy,
+            onDismiss = {
+                show = false
+                InstallAwait.signal(false)
+            },
+        )
     }
 }

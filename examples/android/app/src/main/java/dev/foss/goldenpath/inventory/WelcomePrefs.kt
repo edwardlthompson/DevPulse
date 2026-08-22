@@ -9,7 +9,7 @@ class WelcomePrefs(context: Context) {
     private val store = context.inventoryDataStore
 
     val seen: Flow<Boolean> = store.data.map { prefs ->
-        prefs[WELCOME_SEEN] == true || prefs[QUERY_ALL_PACKAGES_ACK] == true
+        prefs[WELCOME_SEEN] == true
     }
 
     suspend fun markSeen() {
@@ -18,6 +18,5 @@ class WelcomePrefs(context: Context) {
 
     private companion object {
         val WELCOME_SEEN = booleanPreferencesKey("welcome_seen")
-        val QUERY_ALL_PACKAGES_ACK = booleanPreferencesKey("query_all_packages_ack")
     }
 }

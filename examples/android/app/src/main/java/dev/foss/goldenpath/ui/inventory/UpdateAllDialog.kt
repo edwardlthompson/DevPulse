@@ -56,15 +56,15 @@ fun UpdateAllDialog(
     val extra = if (current == null) 0f else (current.received.toFloat() / current.expected.toFloat()).coerceIn(0f, 1f)
     val fraction = ((finished + extra) / total).coerceIn(0f, 1f)
     Dialog(
-        onDismissRequest = { if (complete) onDismiss() },
+        onDismissRequest = onDismiss,
         properties = DialogProperties(
-            dismissOnBackPress = complete,
-            dismissOnClickOutside = complete,
+            dismissOnBackPress = true,
+            dismissOnClickOutside = false,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false,
         ),
     ) {
-        BackHandler(enabled = complete) { onDismiss() }
+        BackHandler { onDismiss() }
         dimBehind()
         Box(
             modifier = Modifier
@@ -109,10 +109,8 @@ fun UpdateAllDialog(
                             UpdateAllRow(snap)
                         }
                     }
-                    if (complete) {
-                        TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                            Text(text = stringResource(R.string.about_close))
-                        }
+                    TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
+                        Text(text = stringResource(R.string.about_close))
                     }
                 }
             }

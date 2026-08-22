@@ -29,6 +29,7 @@ import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.ListingInstallLive
 import dev.foss.goldenpath.inventory.UpdateInventory
 import dev.foss.goldenpath.inventory.UpdateLink
+import dev.foss.goldenpath.inventory.WelcomeNeeds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -79,6 +80,7 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String) {
             .then(
                 if (canOpen) {
                     Modifier.clickable(enabled = !busy, role = Role.Button) {
+                        if (!WelcomeNeeds.ensureInstall(context)) return@clickable
                         busy = true
                         failRes = null
                         received = 0L
