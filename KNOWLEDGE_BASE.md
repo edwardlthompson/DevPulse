@@ -235,6 +235,14 @@
 | **Cause** | `check-design-cohesion.sh` flags `Color(0x` in any `ui/**/*.kt` except generated `Color.kt` |
 | **Fix** | Use `MaterialTheme.colorScheme` tokens (`primary` for granted, `tertiary` for ignored/warning) |
 | **Prevention** | Do not add hex `Color` literals in inventory/settings composables; keep brand hex in `ui/theme/Color.kt` only |
+### KB-030 — Docs commit after tag cancels merge CI and fails SBOM
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `Release` SBOM job fails `Poll post-merge CI` with `FAIL CI (cancelled)` on the tag SHA; signed APK still uploads |
+| **Cause** | `gh release create` then a same-session `docs:` push cancels in-flight CI on the merge/tag commit. The SBOM poll treats cancelled as failed |
+| **Fix** | Wait for tag-SHA CI before the docs commit, or `gh workflow run release.yml --ref main -f tag=vX.Y.Z` after HEAD CI is green |
+| **Prevention** | Record ship notes before tagging, or backfill SBOM with workflow_dispatch after required checks pass |
 ### KB-011 — Vitest jsdom `localStorage` broken on Node 25+
 
 | Field | Detail |
