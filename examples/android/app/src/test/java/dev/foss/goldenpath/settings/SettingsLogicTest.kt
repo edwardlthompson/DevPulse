@@ -30,11 +30,12 @@ class SettingsLogicTest {
     @Test
     fun hubListsGlanceableSectionsThenAbout() {
         val rows = SettingsNav.hubRows()
-        assertEquals(7, rows.size)
+        assertEquals(8, rows.size)
         assertEquals(SettingsPage.Appearance, rows[0].page)
         assertEquals(SettingsPage.Permissions, rows[1].page)
-        assertEquals(SettingsPage.Stores, rows[5].page)
-        assertEquals(null, rows[6].page)
-        assertEquals(R.string.about_title, rows[6].titleRes)
+        assertEquals(SettingsPage.History, rows[3].page)
+        assertEquals(SettingsPage.Stores, rows[6].page)
+        assertEquals(null, rows[7].page)
+        assertEquals(R.string.about_title, rows[7].titleRes)
     }
 }

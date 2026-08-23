@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_history">History</string>
+    <string name="settings_hub_history">What was scanned, from where, and how long it took</string>
+    <string name="history_empty">No scans or refreshes recorded yet.</string>
+    <string name="history_kind_refresh">Refresh</string>
+    <string name="history_kind_scan">Scan</string>
+    <string name="history_kind_update">Update</string>
+    <string name="history_last_ok">Last success</string>
+    <string name="history_last_fail">Stopped or skipped</string>
+    <string name="history_apps">%1$d apps</string>
+    <string name="inventory_source_leftover">GitLab</string>
+</resources>

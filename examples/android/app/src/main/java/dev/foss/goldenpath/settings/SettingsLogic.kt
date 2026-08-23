@@ -2,7 +2,7 @@ package dev.foss.goldenpath.settings
 
 import dev.foss.goldenpath.R
 
-enum class SettingsPage { Appearance, Inventory, Updates, Sources, Stores, Permissions }
+enum class SettingsPage { Appearance, Inventory, History, Updates, Sources, Stores, Permissions }
 
 data class SettingsHubRow(
     val page: SettingsPage?,
@@ -15,6 +15,7 @@ object SettingsNav {
         SettingsHubRow(SettingsPage.Appearance, R.string.settings_section_appearance, R.string.settings_hub_appearance),
         SettingsHubRow(SettingsPage.Permissions, R.string.inventory_blocked, R.string.inventory_usage_seen),
         SettingsHubRow(SettingsPage.Inventory, R.string.settings_section_inventory, R.string.settings_hub_inventory),
+        SettingsHubRow(SettingsPage.History, R.string.settings_section_history, R.string.settings_hub_history),
         SettingsHubRow(SettingsPage.Updates, R.string.settings_section_updates, R.string.settings_hub_updates),
         SettingsHubRow(SettingsPage.Sources, R.string.settings_section_sources, R.string.settings_hub_sources),
         SettingsHubRow(SettingsPage.Stores, R.string.settings_section_stores, R.string.settings_hub_stores),

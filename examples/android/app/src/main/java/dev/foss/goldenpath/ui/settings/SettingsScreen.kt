@@ -62,6 +62,11 @@ fun SettingsScreen(
             SettingsGroup { StaleNotifySettings() }
             SettingsGroup { SettingsExportSection(onExport = onExport) }
         }
+        SettingsPage.History -> SettingsPane(
+            title = stringResource(R.string.settings_section_history),
+            onBack = { page = null },
+            modifier = modifier,
+        ) { HistorySettings() }
         SettingsPage.Updates -> SettingsPane(
             title = stringResource(R.string.settings_section_updates),
             onBack = { page = null },

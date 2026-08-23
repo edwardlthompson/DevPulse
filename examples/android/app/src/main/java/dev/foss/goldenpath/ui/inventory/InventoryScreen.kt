@@ -89,7 +89,6 @@ fun InventoryScreen(
         val context = LocalContext.current
         val selected = remember { mutableStateOf(UpdateAllResume.load(context.filesDir).toSet()) }
         InstallPermissionBanner()
-        RefreshSuccessLine()
         UpdateAllButton(apps = model.apps, selected = selected.value)
         if (model.apps.isEmpty()) {
             Text(text = stringResource(R.string.inventory_empty))
