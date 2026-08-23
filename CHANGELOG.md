@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.31.0](https://github.com/edwardlthompson/DevPulse/compare/v0.30.0...v0.31.0) (2026-08-23)
+
 ### Changed
 
 - After Refresh, per-source times no longer sit on the app list; Settings → History shows what ran, from where, and how long it took
