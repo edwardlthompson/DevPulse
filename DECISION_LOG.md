@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-23 — v0.31.0 ship
+- **Status:** Accepted
+- **Context:** Per-source Refresh times sat on the app list and hid a large part of the inventory.
+- **Decision:** Remove the home banner. Settings → History shows last success/skip per source and pulse rows (what ran, from where, how long). `feat:` prepare on `main`; fold Unreleased onto Release Please PR #12; admin-merge when the merge queue check failed.
+- **Alternatives considered:** Keep a one-line compact summary on home (rejected: the user asked the times off the list). New hub strings in `strings.xml` (rejected: file is already at the 300-line cap).
+- **Consequences:** Tag `v0.31.0` published. Recurring Weekly/Monthly/Human rows stay open.
+
 ### 2026-08-23 — v0.30.0 ship
 - **Status:** Accepted
 - **Context:** Sprint 19–21 listing honesty, Refresh/Update-all resume, and local cache/notify/copy work sat uncommitted after v0.29.0.

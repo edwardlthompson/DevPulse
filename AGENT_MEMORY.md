@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-23 | v0.31.0 /ship | `feat:` prepare; fold Unreleased on RP #12; admin-merge after Queue RP failed; History strings in `history.xml` so `strings.xml` stays at 300 | Wait for the tag `Release` workflow SBOM/APK; RP still opens a phantom next-version branch |
 | 2026-08-23 | v0.30.0 /ship | `feat:` prepare; fold Unreleased on RP #11; admin-merge after Queue RP failed; tag `v0.30.0` | Wait for the tag `Release` workflow SBOM/APK; keep `strings.xml` at 300 by reusing keys |
 | 2026-08-23 | Sprint 21 ideas | minSdk/ABI refuse + Play/dump Retry-After + quota/wipe/copy/notify; `./gradlew test` and watch-gates green | Keep `strings.xml` at 300 by reusing keys; thread device SDK/ABI into Update all, not only listing tap |
 | 2026-08-22 | v0.29.0 /ship | `feat:` prepare; fold Unreleased on RP #10; admin-merge; local signed `DevPulse-0.29.0.apk` uploaded | Do not treat `query_all_packages_ack` as Welcome-seen; keep download dialogs dismissible while work runs |
