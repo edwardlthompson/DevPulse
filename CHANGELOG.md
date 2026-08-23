@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.30.0](https://github.com/edwardlthompson/DevPulse/compare/v0.29.0...v0.30.0) (2026-08-23)
+
 ### Added
 
 - Listing rows show APK size, F-Droid anti-features, ABI mismatch, and last Refresh success or failure before download
