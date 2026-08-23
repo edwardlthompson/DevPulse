@@ -28,6 +28,7 @@ import dev.foss.goldenpath.opportunity.FileDevelopNextStore
 import dev.foss.goldenpath.opportunity.OpportunityExport
 import dev.foss.goldenpath.opportunity.OpportunityFromApps
 import dev.foss.goldenpath.opportunity.OpportunityRanker
+import dev.foss.goldenpath.opportunity.QuietDelta
 import dev.foss.goldenpath.opportunity.SelfPulseConfig
 import dev.foss.goldenpath.query.PinPreferences
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
@@ -97,7 +98,19 @@ fun OpportunityPane(
         TextButton(onClick = onBack) { Text(stringResource(R.string.opportunity_close)) }
         OpportunityScreen(gaps = gaps)
         pulse?.let { Text(text = stringResource(R.string.opportunity_self, it)) }
+        val quietFile = File(context.filesDir, "quiet_last.txt")
+        val quietNames = quiet.map { it.packageName }.toSet()
+        Text(
+            text = stringResource(
+                R.string.scan_went_quiet,
+                QuietDelta.count(QuietDelta.load(quietFile), quietNames),
+            ),
+        )
+        remember(quietNames) { QuietDelta.save(quietFile, quietNames); true }
         TextButton(onClick = { OpportunityShare.send(context, titles, gaps, json = false) }) {
+            Text(stringResource(R.string.opportunity_export))
+        }
+        TextButton(onClick = { OpportunityShare.send(context, titles, gaps, json = false, markdown = true) }) {
             Text(stringResource(R.string.opportunity_export))
         }
         quiet.take(8).forEach { app ->

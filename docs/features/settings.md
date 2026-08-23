@@ -9,6 +9,7 @@
 - ✅ Update-check toggle respects opt-in telemetry policy (`docs/PRIVACY.md`)
 - ✅ Offline: settings load last persisted values; no network required for display
 - ✅ i18n: all user-visible strings under `settings.*` keys
+- ✅ Settings can wipe cached remotes, dump chunks, and the F-Droid index without clearing ignores or pasted repos
 
 ## Smoke scenario
 

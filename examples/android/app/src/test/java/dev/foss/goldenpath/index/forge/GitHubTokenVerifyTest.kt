@@ -21,6 +21,7 @@ class GitHubTokenVerifyTest {
         val check = GitHubTokenVerify.connect("  ghp_ok  ", client, store)
         assertEquals(GitHubTokenOutcome.Accepted, check.outcome)
         assertEquals(5000, check.hourlyLimit)
+        assertEquals(4999, check.hourlyRemaining)
         assertEquals("ghp_ok", store.value)
     }
 

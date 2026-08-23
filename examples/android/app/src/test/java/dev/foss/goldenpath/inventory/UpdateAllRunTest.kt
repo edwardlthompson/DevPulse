@@ -13,6 +13,7 @@ class UpdateAllRunTest {
         UpdateArtifactMemory.clear()
         IgnoredUpdates.clear()
         AppliedUpdates.clear()
+        UpdateAllCancel.arm()
     }
 
     @Test
@@ -86,5 +87,40 @@ class UpdateAllRunTest {
         assertTrue(IgnoredUpdates.has("app.a", RemoteReleasedSource.Play, "3.0"))
         assertFalse(IgnoredUpdates.has("app.a", RemoteReleasedSource.Fdroid, "2.0"))
         assertTrue(AppliedUpdates.settled("app.a"))
+    }
+
+    @Test
+    fun cancelStopsFurtherInstalls() {
+        val jobs = listOf(
+            UpdateAllJob("app.a", "A", RemoteReleasedSource.Fdroid, null),
+            UpdateAllJob("app.b", "B", RemoteReleasedSource.Izzy, null),
+        )
+        val installed = mutableListOf<String>()
+        val result = UpdateAll.run(
+            jobs = jobs,
+            prepare = { job, _ -> listOf(File.createTempFile(job.packageName, ".apk")) },
+            install = { files ->
+                installed += files.first().name
+                UpdateAllCancel.request()
+                true
+            },
+        )
+        assertEquals(1, installed.size)
+        assertEquals(1, result.installed)
+        assertTrue(result.downloaded >= 1)
+    }
+
+    @Test
+    fun cancelDoesNotIgnoreTheCurrentJob() {
+        val job = UpdateAllJob("app.a", "A", RemoteReleasedSource.Fdroid, null, "2.0")
+        UpdateAll.run(
+            jobs = listOf(job),
+            prepare = { _, _ -> listOf(File.createTempFile("appa", ".apk")) },
+            install = {
+                UpdateAllCancel.request()
+                false
+            },
+        )
+        assertFalse(IgnoredUpdates.has("app.a", RemoteReleasedSource.Fdroid, "2.0"))
     }
 }

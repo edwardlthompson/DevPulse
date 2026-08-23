@@ -11,13 +11,18 @@ object UpdateAllLaunch {
     fun requested(intent: Intent?): Boolean =
         intent?.getBooleanExtra(EXTRA, false) == true
 
-    fun run(context: Context) {
+    fun run(context: Context, selected: Set<String> = emptySet()) {
         IgnoredUpdates.hydrate(context.filesDir)
         RemoteReleaseMemory.hydrate(FileRemoteReleaseStore(File(context.filesDir, "remote_releases.json")))
         val apps = PackageManagerPackageCatalog(context.packageManager)
             .listInstalled()
             .map(RemoteReleaseMemory::merge)
-        val groups = UpdateAllPick.groups(apps)
+        val groups = UpdateAllPick.groups(
+            apps,
+            selected,
+            android.os.Build.VERSION.SDK_INT,
+            android.os.Build.SUPPORTED_ABIS.toSet(),
+        )
         val queue = groups.map { it.first() }
         Log.i("DevPulse", "update all start ${queue.size}")
         RefreshTrace.emit = { Log.i("DevPulse", it) }
@@ -28,13 +33,12 @@ object UpdateAllLaunch {
                 ListingInstallLive.prepare(context, job.packageName, job.source, job.pageUrl, progress)
             },
             install = { files ->
-                InstallAwait.arm()
-                val launched = ListingInstallLive.install(
-                    context,
-                    files,
-                    InstallMethod.Session,
-                ) == OneClickResult.Installed
-                launched && InstallAwait.await()
+                val used = InstallMethod.Session.effective(WelcomeNeeds.installGranted(context))
+                if (used == InstallMethod.Session) {
+                    SessionThenSystem.run(context, files)
+                } else {
+                    ListingInstallLive.install(context, files, used) == OneClickResult.Installed
+                }
             },
             filesDir = context.filesDir,
         )

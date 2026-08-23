@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.apkmirror
 
+import dev.foss.goldenpath.inventory.DumpChunkBook
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseMemory
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
@@ -15,6 +16,8 @@ class ApkMirrorScanTest {
     @Before
     fun reset() {
         RemoteReleaseMemory.clear()
+        DumpChunkBook.clear()
+        DumpChunkBook.persistDir = null
         RefreshTrace.emit = {}
     }
 

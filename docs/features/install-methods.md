@@ -15,7 +15,6 @@ Types in `dev.foss.goldenpath.inventory`. No live `su` in unit tests. Default is
 | `InstallShell` | fun interface | `run(args) -> InstallShellResult` |
 | `RootPmInstall.args` | function | `su -c pm install -r --user 0 "path"` or none if the path is unsafe |
 | `ApkInstall.apply` | function | Dispatches to System / Session / Root; Root never starts an Activity |
-
 ## Acceptance criteria
 
 - ✅ Settings chips pick the method; default System
@@ -23,6 +22,15 @@ Types in `dev.foss.goldenpath.inventory`. No live `su` in unit tests. Default is
 - ✅ Session may skip the confirm dialog on Android 12+ only for updates of apps DevPulse already installed; first installs and Play/F-Droid-owned apps still prompt
 - ✅ Accessibility: chips have labels
 - ✅ i18n: `install_method_*`
+- ✅ Home shows a tap-to-grant banner when Install unknown apps is off (API 26+)
+- ✅ Session falls back to System when the app cannot request package installs
+- ✅ Listing tap / Update show why install failed: permission, signing, timeout, no file, or older than installed
+- ✅ A listing older than the installed version is not fetched
+- ✅ A listing whose minSdk is above the device, or whose native ABI does not overlap, is not fetched
+- ✅ Listing rows show known APK size and F-Droid anti-features before download
+- ✅ Aptoide listing tap picks Store or Games catalog before fetch
+- ✅ Install is refused before the system installer when the APK signing cert does not match the installed app
+- ✅ Session confirm-pending falls back to System when the session wait fails after launch
 
 ## Smoke scenario
 

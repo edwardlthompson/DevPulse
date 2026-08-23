@@ -25,6 +25,12 @@ object ApkIdentity {
         return want == actual.lowercase()
     }
 
+    fun signersMatch(apk: Set<String>, installed: Set<String>?): Boolean {
+        if (installed.isNullOrEmpty()) return true
+        if (apk.isEmpty()) return false
+        return apk.intersect(installed).isNotEmpty()
+    }
+
     fun identityReady(artifact: UpdateArtifact, inspect: ApkInspect, installed: InstalledIdentity): Boolean {
         val pkg = artifact.packageName.trim()
         if (pkg.isEmpty() || inspect.packageName != pkg || installed.packageName != pkg) return false

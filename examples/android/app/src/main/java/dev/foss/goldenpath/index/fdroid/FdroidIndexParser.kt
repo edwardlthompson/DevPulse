@@ -61,6 +61,9 @@ object FdroidIndexParser {
             apkName = hint?.apkName,
             apkSha256 = hint?.sha256,
             nativeCodes = hint?.nativeCodes.orEmpty(),
+            apkSizeBytes = hint?.sizeBytes,
+            antiFeatures = FdroidAntiFeatures.parse(chunk),
+            minSdk = hint?.minSdk,
         )
     }
 }

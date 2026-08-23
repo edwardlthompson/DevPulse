@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.forge
 
+import dev.foss.goldenpath.inventory.ListingMiss
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
@@ -31,9 +32,9 @@ object GitHubScan {
             return fail(packageName, it)
         }
         if (page.statusCode == 403 || page.statusCode == 429 || page.statusCode !in 200..299) {
-            ForgeRateLimit.noteGithub(page.statusCode)
+            ForgeRateLimit.noteGithub(page.statusCode, page.retryAfterSec)
             RefreshTrace.line("github $packageName search http ${page.statusCode} unknown ${page.body.length}B")
-            return unknown()
+            return unknown(if (page.statusCode == 403 || page.statusCode == 429) ListingMiss.Forbidden else ListingMiss.Parse)
         }
         val candidates = GitHubRepoParser.parse(page.body).take(5)
         val outcome = if (candidates.isEmpty()) "missing" else "candidates"
@@ -62,7 +63,7 @@ object GitHubScan {
         for (candidate in candidates) {
             val page = listReleases(candidate.ownerRepo, releases, pause)
             if (page.statusCode == 403 || page.statusCode == 429 || page.statusCode !in 200..299) {
-                ForgeRateLimit.noteGithub(page.statusCode)
+                ForgeRateLimit.noteGithub(page.statusCode, page.retryAfterSec)
                 RefreshTrace.line(
                     "github $packageName releases ${candidate.ownerRepo} http ${page.statusCode} unknown ${page.body.length}B",
                 )
@@ -97,7 +98,7 @@ object GitHubScan {
                 pageUrl = ForgeUrl.downloadPage("https://github.com/${best.ownerRepo}"),
             )
         }
-        if (blocked) return unknown()
+        if (blocked) return unknown(ListingMiss.Forbidden)
         return RemoteReleaseOffer(RemoteReleasedSource.Forge, listed = false, known = true)
     }
 
@@ -137,6 +138,6 @@ object GitHubScan {
         return unknown()
     }
 
-    internal fun unknown(): RemoteReleaseOffer =
-        RemoteReleaseOffer(RemoteReleasedSource.Forge, listed = false, known = false)
+    internal fun unknown(miss: ListingMiss? = null): RemoteReleaseOffer =
+        RemoteReleaseOffer(RemoteReleasedSource.Forge, listed = false, known = false, miss = miss)
 }

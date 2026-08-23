@@ -12,11 +12,14 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
@@ -26,6 +29,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.RefreshOutletSnap
+import dev.foss.goldenpath.inventory.ReleaseRefreshRuntime
 import dev.foss.goldenpath.ui.theme.ElevationLevel2
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
@@ -40,6 +44,7 @@ fun RefreshProgressDialog(
     complete: Boolean = false,
     onDismiss: () -> Unit = {},
 ) {
+    val paused by ReleaseRefreshRuntime.paused.collectAsStateWithLifecycle(false)
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -74,8 +79,19 @@ fun RefreshProgressDialog(
                         onStopOutlet = onStopOutlet,
                         modifier = Modifier.weight(1f),
                     )
-                    TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                        Text(text = stringResource(R.string.about_close))
+                    Row(modifier = Modifier.align(Alignment.End)) {
+                        if (!complete) {
+                            TextButton(
+                                onClick = {
+                                    if (paused) ReleaseRefreshRuntime.resume() else ReleaseRefreshRuntime.pause()
+                                },
+                            ) {
+                                Text(text = stringResource(if (paused) R.string.scan_resume else R.string.scan_pause))
+                            }
+                        }
+                        TextButton(onClick = onDismiss) {
+                            Text(text = stringResource(R.string.about_close))
+                        }
                     }
                 }
             }

@@ -14,6 +14,7 @@ data class RefreshOutletSnap(
     val elapsedMs: Long = 0,
     val finishedAtMs: Long? = null,
 )
+
 object RefreshOutletIds {
     const val PLAY = "play"
     const val APTOIDE = "aptoide"
@@ -26,15 +27,8 @@ object RefreshOutletIds {
 }
 object RefreshSkip {
     private val ids = ConcurrentHashMap.newKeySet<String>()
-
-    fun reset() {
-        ids.clear()
-    }
-
-    fun stop(id: String) {
-        ids.add(id)
-    }
-
+    fun reset() { ids.clear() }
+    fun stop(id: String) { ids.add(id) }
     fun stopped(id: String): Boolean = id in ids
 }
 
@@ -99,8 +93,8 @@ object RefreshOutletBoard {
 
     fun noteFinished(id: String, nowMs: Long = System.currentTimeMillis()) {
         val row = synchronized(lock) { rows[id] } ?: return
-        val elapsed = (nowMs - row.t0).coerceAtLeast(1)
-        RefreshPaceBook.note(id, row.total.coerceAtLeast(1), elapsed)
+        RefreshPaceBook.note(id, row.total.coerceAtLeast(1), (nowMs - row.t0).coerceAtLeast(1))
+        RefreshResume.remember(id)
     }
 
     private data class Row(

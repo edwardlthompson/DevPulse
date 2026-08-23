@@ -14,16 +14,21 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Listing
 | `UpdateAllResult` | data class | `downloaded`, `installed`, `failedDownload`, `failedInstall` |
 ## Acceptance criteria
 
-- ✅ User-visible: Update all appears when any visible app has a newer fetchable listing; a dialog shows overall and per-app progress; Back or Close dismisses it even while downloads run
+- ✅ User-visible: Update all appears when any visible app has a newer fetchable listing; a dialog shows overall and per-app progress; Back or Close dismisses it and cancels remaining downloads and installs
 - ✅ Offline/error: a failed download skips that app; remaining apps still run
 - ✅ Accessibility: button and overall bar have content descriptions
 - ✅ i18n: `update_all`, `update_all_busy`
 - ✅ System/Session still prompt per install; Root stays silent only when the user picked it
-- ✅ Play/F-Droid/APKPure/Aptoide/GitHub use the same in-app download path as a listing tap; APKMirror is skipped in the batch (no file URL)
+- ✅ Play/F-Droid/APKPure/Aptoide/GitHub use the same in-app download path as a listing tap; APKMirror joins Update all only when a cached `download.php` file URL exists
 - ✅ A failed source+version is ignored (⚠️ on that listing) and Update all walks remaining newer versions; Has update clears when none remain
 - ✅ A successful install settles the package so it leaves the updates list; a failed app stays only while a lower fetchable version remains
 - ✅ Ignored versions persist in `ignored_updates.tsv` so the same false-positive listing does not return until Refresh finds a newer version
 - ✅ Update all downloads up to four APKs at once, then installs the ready files one at a time
+- ✅ Long-press a row with an update to include only that app in Update; empty selection still updates every listed app
+- ✅ Remaining Update all packages persist across process death and resume on the next launch
+- ✅ Download is skipped when free space is at or below a 64 MB reserve
+- ✅ Update on a metered network asks before starting downloads
+- ✅ Listings whose minSdk is above the device, or whose ABI does not overlap, are not queued
 
 ## Smoke scenario
 

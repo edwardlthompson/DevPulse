@@ -12,24 +12,35 @@ object UpdateInventory {
 
     fun withUpdates(apps: List<InstalledApp>): List<InstalledApp> = apps.filter(::hasUpdate)
 
-    fun usable(app: InstalledApp): List<UpdateLink> =
+    fun usable(app: InstalledApp, deviceSdk: Int = 0, deviceAbis: Set<String> = emptySet()): List<UpdateLink> =
         app.latestListings.filter { link ->
             link.listed &&
-                UpdateAll.fetchable(link.source) &&
+                UpdateAll.fetchable(link.source, app.packageName) &&
                 VersionCompare.isNewer(link.versionName, app.versionName) &&
-                !IgnoredUpdates.has(app.packageName, link.source, link.versionName)
+                !IgnoredUpdates.has(app.packageName, link.source, link.versionName) &&
+                ListingFit.allow(link, deviceSdk, deviceAbis)
         }
 
-    fun canOpen(link: UpdateLink, packageName: String = ""): Boolean =
-        link.listed && !IgnoredUpdates.has(packageName, link.source, link.versionName)
+    fun canOpen(
+        link: UpdateLink,
+        packageName: String = "",
+        installedVersion: String? = null,
+        deviceSdk: Int = 0,
+        deviceAbis: Set<String> = emptySet(),
+    ): Boolean =
+        link.listed &&
+            !IgnoredUpdates.has(packageName, link.source, link.versionName) &&
+            ListingNewer.allow(link.versionName, installedVersion) &&
+            ListingFit.allow(link, deviceSdk, deviceAbis)
 
-    fun listingsFor(pick: RemoteReleasePick): List<UpdateLink> =
+    fun listingsFor(pick: RemoteReleasePick, packageName: String = ""): List<UpdateLink> =
         ListingChannels.complete(pick.offers.map(ListingChannels::relabel), ListingChannels.STANDARD)
             .filter { it.source != RemoteReleasedSource.None }
             .groupBy { it.source }
             .values
             .map { group -> group.firstOrNull { it.listed } ?: group.first() }
             .map { offer ->
+                val extra = ListingExtraBook.get(packageName, offer.source)
                 UpdateLink(
                     source = offer.source,
                     url = if (offer.listed) offer.pageUrl else null,
@@ -37,6 +48,11 @@ object UpdateInventory {
                     releasedAtMs = offer.ms,
                     listed = offer.listed,
                     known = offer.known,
+                    miss = offer.miss,
+                    sizeBytes = extra?.sizeBytes,
+                    antiFeatures = extra?.antiFeatures.orEmpty(),
+                    minSdk = extra?.minSdk,
+                    nativeCodes = extra?.nativeCodes.orEmpty(),
                 )
             }
             .sortedWith(::byHighestVersion)

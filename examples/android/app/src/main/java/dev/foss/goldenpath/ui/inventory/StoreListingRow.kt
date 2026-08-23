@@ -21,23 +21,23 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.InstallMethod
-import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.InventoryPreferences
-import dev.foss.goldenpath.inventory.IgnoredUpdates
-import dev.foss.goldenpath.inventory.ListingInstallLive
+import dev.foss.goldenpath.inventory.ListingFetch
+import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.UpdateInventory
 import dev.foss.goldenpath.inventory.UpdateLink
 import dev.foss.goldenpath.inventory.WelcomeNeeds
+import java.text.DateFormat
+import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.DateFormat
-import java.util.Date
 
 @Composable
-internal fun StoreListingRow(link: UpdateLink, packageName: String) {
+internal fun StoreListingRow(link: UpdateLink, packageName: String, installedVersion: String? = null) {
     val context = LocalContext.current
     val prefs = remember { InventoryPreferences(context) }
     val method by prefs.installMethod.collectAsStateWithLifecycle(InstallMethod.System)
@@ -46,6 +46,7 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String) {
     var failRes by remember(packageName, link.source) { mutableStateOf<Int?>(null) }
     var received by remember(packageName, link.source) { mutableLongStateOf(0L) }
     var expected by remember(packageName, link.source) { mutableLongStateOf(-1L) }
+    var pickAptoide by remember(packageName, link.source) { mutableStateOf(false) }
     val ignoredRev by IgnoredUpdates.revision.collectAsStateWithLifecycle(0)
     val ignored = remember(ignoredRev, packageName, link.source, link.versionName) {
         IgnoredUpdates.has(packageName, link.source, link.versionName)
@@ -65,14 +66,38 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String) {
             listingDate(link.releasedAtMs),
         )
     } else {
-        stringResource(InventoryCopy.unlistedRes(link.known))
+        stringResource(InventoryCopy.unlistedRes(link.known, link.miss))
     }
-    val canOpen = UpdateInventory.canOpen(link, packageName)
+    val deviceSdk = android.os.Build.VERSION.SDK_INT
+    val deviceAbis = android.os.Build.SUPPORTED_ABIS.toSet()
+    val canOpen = UpdateInventory.canOpen(link, packageName, installedVersion, deviceSdk, deviceAbis)
     val tone = when {
         ignored -> MaterialTheme.colorScheme.tertiary
         link.listed -> MaterialTheme.colorScheme.onSurface
         link.known -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    fun startFetch() {
+        busy = true
+        failRes = null
+        received = 0L
+        expected = -1L
+        scope.launch {
+            failRes = runCatching {
+                withContext(Dispatchers.IO) {
+                    ListingFetch.run(context, packageName, link, installedVersion, method) { read, total ->
+                        scope.launch(Dispatchers.Main.immediate) {
+                            received = read
+                            expected = total
+                        }
+                    }
+                }
+            }.getOrElse {
+                IgnoredUpdates.add(packageName, link.source, link.versionName, context.filesDir)
+                R.string.update_cache_failed
+            }
+            busy = false
+        }
     }
     Column(
         modifier = Modifier
@@ -80,41 +105,8 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String) {
             .then(
                 if (canOpen) {
                     Modifier.clickable(enabled = !busy, role = Role.Button) {
-                        if (!WelcomeNeeds.ensureInstall(context)) return@clickable
-                        busy = true
-                        failRes = null
-                        received = 0L
-                        expected = -1L
-                        scope.launch {
-                            try {
-                                val files = withContext(Dispatchers.IO) {
-                                    ListingInstallLive.prepare(
-                                        context,
-                                        packageName,
-                                        link.source,
-                                        link.url,
-                                    ) { read, total ->
-                                        scope.launch(Dispatchers.Main.immediate) {
-                                            received = read
-                                            expected = total
-                                        }
-                                    }
-                                }
-                                failRes = when (ListingInstallLive.install(context, files, method)) {
-                                    OneClickResult.FailedDownload -> R.string.update_cache_failed
-                                    OneClickResult.FailedInstall -> R.string.install_method_failed
-                                    else -> null
-                                }
-                                if (failRes != null) {
-                                    IgnoredUpdates.add(packageName, link.source, link.versionName, context.filesDir)
-                                }
-                            } catch (_: Exception) {
-                                failRes = R.string.update_cache_failed
-                                IgnoredUpdates.add(packageName, link.source, link.versionName, context.filesDir)
-                            } finally {
-                                busy = false
-                            }
-                        }
+                        if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) return@clickable
+                        if (link.source == RemoteReleasedSource.Aptoide) pickAptoide = true else startFetch()
                     }
                 } else {
                     Modifier
@@ -128,6 +120,10 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String) {
             color = if (ignored) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface,
         )
         Text(text = line, style = MaterialTheme.typography.bodySmall, color = tone)
+        ListingExtrasLine(link, installedVersion, deviceSdk, deviceAbis)
+        if (pickAptoide) {
+            AptoideCatalogDialog(onPicked = { pickAptoide = false; startFetch() }, onDismiss = { pickAptoide = false })
+        }
         if (busy) {
             Text(text = stringResource(R.string.update_cache_busy), style = MaterialTheme.typography.bodySmall)
             if (expected > 0L) {
@@ -146,7 +142,6 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String) {
 }
 
 @Composable
-private fun listingDate(ms: Long?): String {
-    if (ms == null || ms <= 0L) return stringResource(R.string.inventory_source_date_unknown)
-    return DateFormat.getDateInstance().format(Date(ms))
-}
+private fun listingDate(ms: Long?): String =
+    if (ms == null || ms <= 0L) stringResource(R.string.inventory_source_date_unknown)
+    else DateFormat.getDateInstance().format(Date(ms))

@@ -24,7 +24,7 @@ object ListingInstallLive {
         onProgress: (Long, Long) -> Unit = { _, _ -> },
     ): OneClickResult {
         val startedAt = System.currentTimeMillis()
-        val files = prepare(context, packageName, source, pageUrl, onProgress)
+        val files = prepare(context, packageName, source, pageUrl, onProgress = onProgress)
         val result = install(context, files, method)
         if (result == OneClickResult.Installed) AppliedUpdates.settle(packageName)
         note(context, startedAt, result)
@@ -32,16 +32,15 @@ object ListingInstallLive {
     }
 
     fun install(context: Context, files: List<File>?, method: InstallMethod): OneClickResult {
-        if (!WelcomeNeeds.ensureInstall(context)) return OneClickResult.FailedInstall
-        if (files.isNullOrEmpty()) return OneClickResult.FailedDownload
+        if (files.isNullOrEmpty()) return OneClickResult.Failed(ListingFail.why)
+        if (!signerOk(context, files.first())) return OneClickResult.Failed(InstallWhy.Signing)
+        val used = method.effective(WelcomeNeeds.installGranted(context))
         if (files.size > 1) {
+            if (!WelcomeNeeds.ensureInstall(context)) return OneClickResult.Failed(InstallWhy.Permission)
             return runCatching { SessionApkInstall.start(context, files) }
-                .fold({ OneClickResult.Installed }, { OneClickResult.FailedInstall })
+                .fold({ OneClickResult.Installed }, { OneClickResult.Failed(InstallWhy.Permission) })
         }
-        return when (ApkInstall.apply(context, files.first(), method)) {
-            is ApkInstallResult.Failed -> OneClickResult.FailedInstall
-            else -> OneClickResult.Installed
-        }
+        return ApkInstall.apply(context, files.first(), used).toClick()
     }
 
     fun prepare(
@@ -50,9 +49,12 @@ object ListingInstallLive {
         source: RemoteReleasedSource,
         pageUrl: String?,
         onProgress: (Long, Long) -> Unit = { _, _ -> },
+        installedVersion: String? = null,
     ): List<File>? {
         val pkg = packageName.trim()
-        if (pkg.isEmpty()) return null
+        if (pkg.isEmpty()) return ListingFail.none()
+        val listed = RemoteReleaseMemory.byPackage[pkg]?.offers?.firstOrNull { it.source == source }?.versionName
+        if (!ListingNewer.allow(listed, installedVersion)) return ListingFail.older()
         if (source == RemoteReleasedSource.Play) return play(context, pkg, onProgress)
         val artifact = ListingDirect.resolve(
             packageName = pkg,
@@ -69,32 +71,39 @@ object ListingInstallLive {
         )
         if (artifact == null) {
             Log.i("DevPulse", "listing ${source.name} $pkg no file")
-            return null
+            return ListingFail.none()
         }
         artifact.localPath?.let(::File)?.takeIf { it.isFile }?.let { return listOf(it) }
+        val cache = File(context.cacheDir, "updates")
+        if (!StorageRoom.enough(cache)) return ListingFail.none()
         val bytes = ApkHttpFetcher.get(artifact.downloadUrl, onProgress).getOrElse {
             Log.i("DevPulse", "listing ${source.name} $pkg download fail ${it.message}")
-            return null
+            return ListingFail.none()
         }
         val file = ListingDownload.write(
-            File(context.cacheDir, "updates"),
+            cache,
             artifact,
             bytes,
             inspect = { ApkArchiveIdentity.inspect(context.packageManager, it) },
         )
-        if (file == null) Log.i("DevPulse", "listing ${source.name} $pkg package mismatch")
-        return file?.let { listOf(it) }
+        if (file == null) {
+            Log.i("DevPulse", "listing ${source.name} $pkg package mismatch")
+            return ListingFail.signing()
+        }
+        return listOf(file)
     }
 
     private fun play(context: Context, pkg: String, onProgress: (Long, Long) -> Unit): List<File>? {
         val parts = AuroraPlayBundle.files(pkg, AuroraPlayLive.files(context))
         if (parts.isEmpty()) {
             Log.i("DevPulse", "listing Play $pkg no file")
-            return null
+            return ListingFail.none()
         }
         Log.i("DevPulse", "listing Play $pkg files=${parts.size}")
+        val cache = File(context.cacheDir, "updates")
+        if (!StorageRoom.enough(cache)) return ListingFail.none()
         val files = ListingPlay.download(
-            File(context.cacheDir, "updates"),
+            cache,
             pkg,
             parts,
             fetch = { url, progress ->
@@ -106,7 +115,13 @@ object ListingInstallLive {
             onProgress = onProgress,
         )
         Log.i("DevPulse", "listing Play $pkg kept=${files?.size ?: 0}")
-        return files
+        return files ?: ListingFail.signing()
+    }
+
+    private fun signerOk(context: Context, file: File): Boolean {
+        val apk = ApkArchiveIdentity.inspect(context.packageManager, file)
+        val device = apk.packageName?.let { ApkArchiveIdentity.installed(context.packageManager, it) }
+        return ApkIdentity.signersMatch(apk.signers, device?.signers)
     }
 
     private fun note(context: Context, startedAt: Long, result: OneClickResult) {

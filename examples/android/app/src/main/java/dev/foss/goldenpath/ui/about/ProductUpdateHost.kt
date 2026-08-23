@@ -42,6 +42,7 @@ fun ProductUpdateHost(
         update = ProductUpdate.ProductAsset(
             asset.version,
             ProductUpdate.installUrl(asset.url, release.htmlUrl),
+            ProductUpdate.changelog(currentVersion, asset.version, release.body),
         )
     }
 
@@ -62,6 +63,7 @@ fun ProductUpdateHost(
         if (prompt != null) {
             UpdateAvailableDialog(
                 version = prompt.version,
+                notes = prompt.notes,
                 onInstall = {
                     prefs.markChecked(System.currentTimeMillis(), prompt.version)
                     update = null

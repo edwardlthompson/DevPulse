@@ -10,8 +10,11 @@ object InventoryFilter {
     fun matchesQuery(apps: List<InstalledApp>, query: String): List<InstalledApp> {
         val needle = query.trim().lowercase()
         if (needle.isEmpty()) return apps
+        val sha = needle.replace(":", "").replace(" ", "")
         return apps.filter { app ->
-            app.label.lowercase().contains(needle) || app.packageName.lowercase().contains(needle)
+            app.label.lowercase().contains(needle) ||
+                app.packageName.lowercase().contains(needle) ||
+                app.signingSha1?.lowercase()?.replace(":", "")?.contains(sha) == true
         }
     }
 

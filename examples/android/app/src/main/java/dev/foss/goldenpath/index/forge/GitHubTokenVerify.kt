@@ -11,6 +11,7 @@ enum class GitHubTokenOutcome {
 data class GitHubTokenCheck(
     val outcome: GitHubTokenOutcome,
     val hourlyLimit: Int? = null,
+    val hourlyRemaining: Int? = null,
 )
 
 fun interface GitHubTokenClient {
@@ -19,6 +20,7 @@ fun interface GitHubTokenClient {
 
 object GitHubTokenVerify {
     private val coreLimit = Regex(""""core"\s*:\s*\{[^}]*"limit"\s*:\s*(\d+)""")
+    private val coreRemaining = Regex(""""core"\s*:\s*\{[^}]*"remaining"\s*:\s*(\d+)""")
 
     fun connect(draft: String, client: GitHubTokenClient, store: ForgeTokenStore): GitHubTokenCheck {
         val token = draft.trim()
@@ -39,7 +41,11 @@ object GitHubTokenVerify {
             return GitHubTokenCheck(GitHubTokenOutcome.Rejected)
         }
         if (page.statusCode !in 200..299) return GitHubTokenCheck(GitHubTokenOutcome.Unreachable)
-        return GitHubTokenCheck(GitHubTokenOutcome.Accepted, coreLimit.find(page.body)?.groupValues?.get(1)?.toIntOrNull())
+        return GitHubTokenCheck(
+            GitHubTokenOutcome.Accepted,
+            coreLimit.find(page.body)?.groupValues?.get(1)?.toIntOrNull(),
+            coreRemaining.find(page.body)?.groupValues?.get(1)?.toIntOrNull(),
+        )
     }
 
     private fun badCredentials(page: GitHubSearchPage): Boolean =

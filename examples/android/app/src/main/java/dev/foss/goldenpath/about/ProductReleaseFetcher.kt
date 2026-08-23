@@ -8,7 +8,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object ProductReleaseFetcher {
-    data class Parsed(val htmlUrl: String, val assets: List<ProductUpdate.NamedAsset>)
+    data class Parsed(val htmlUrl: String, val assets: List<ProductUpdate.NamedAsset>, val body: String? = null)
 
     suspend fun fetchLatest(): Parsed? = withContext(Dispatchers.IO) {
         val conn = URL(ProductUpdate.RELEASES_API).openConnection() as HttpURLConnection
@@ -34,8 +34,9 @@ object ProductReleaseFetcher {
         return try {
             val root = JSONObject(json)
             val htmlUrl = root.optString("html_url", ProductUpdate.RELEASES_PAGE)
+            val body = root.optString("body").trim().ifEmpty { null }
             val assets = mutableListOf<ProductUpdate.NamedAsset>()
-            val arr = root.optJSONArray("assets") ?: return Parsed(htmlUrl, assets)
+            val arr = root.optJSONArray("assets") ?: return Parsed(htmlUrl, assets, body)
             for (i in 0 until arr.length()) {
                 val item = arr.optJSONObject(i) ?: continue
                 val name = item.optString("name")
@@ -44,7 +45,7 @@ object ProductReleaseFetcher {
                     assets.add(ProductUpdate.NamedAsset(name, url))
                 }
             }
-            Parsed(htmlUrl, assets)
+            Parsed(htmlUrl, assets, body)
         } catch (_: Exception) {
             null
         }

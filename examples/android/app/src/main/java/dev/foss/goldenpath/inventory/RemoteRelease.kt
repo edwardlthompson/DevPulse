@@ -32,6 +32,7 @@ data class RemoteReleaseOffer(
     val listed: Boolean = true,
     val known: Boolean = true,
     val fetchedAtMs: Long? = null,
+    val miss: ListingMiss? = null,
 )
 
 data class UpdateLink(
@@ -41,6 +42,11 @@ data class UpdateLink(
     val releasedAtMs: Long? = null,
     val listed: Boolean = true,
     val known: Boolean = true,
+    val miss: ListingMiss? = null,
+    val sizeBytes: Long? = null,
+    val antiFeatures: List<String> = emptyList(),
+    val minSdk: Int? = null,
+    val nativeCodes: Set<String> = emptySet(),
 )
 
 data class RemoteReleasePick(
@@ -70,7 +76,7 @@ object RemoteRelease {
     }
 
     fun apply(app: InstalledApp, pick: RemoteReleasePick): InstalledApp {
-        val listings = UpdateInventory.listingsFor(pick)
+        val listings = UpdateInventory.listingsFor(pick, app.packageName)
         return app.copy(
             remoteReleasedAtMs = pick.ms,
             remoteReleasedSource = pick.source,
@@ -120,6 +126,17 @@ object RemoteReleaseMemory {
         val pick = byPackage[app.packageName]
         val dated = if (pick != null) RemoteRelease.apply(app, pick) else app
         return dated.copy(origin = AppOriginResolver.refine(dated.origin, pick?.source))
+    }
+
+    fun drop(packageName: String) {
+        val pkg = packageName.trim()
+        if (pkg.isEmpty()) return
+        synchronized(lock) {
+            if (pkg !in byPackage) return
+            byPackage = byPackage - pkg
+            persist?.save(byPackage)
+            revisionState.value += 1
+        }
     }
 
     fun clear() {

@@ -11,6 +11,7 @@ class UpdateAllStayTest {
     fun reset() {
         IgnoredUpdates.clear()
         AppliedUpdates.clear()
+        UpdateAllCancel.arm()
     }
 
     @Test

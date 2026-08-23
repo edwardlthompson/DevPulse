@@ -8,6 +8,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dev.foss.goldenpath.inventory.PackageManagerPackageCatalog
 import dev.foss.goldenpath.inventory.RemoteReleaseMemory
+import dev.foss.goldenpath.inventory.StaleSnooze
 import dev.foss.goldenpath.inventory.StalenessDays
 import dev.foss.goldenpath.query.ScanHistoryStore
 import java.io.File
@@ -27,8 +28,10 @@ class StaleNotifyWorker(
         val after = StalenessDays.of(apps, now)
         val store = ScanHistoryStore(File(applicationContext.filesDir, "scan-history"))
         val before = StalenessDays.parse(store.loadDays())
+        val snooze = StaleSnooze.load(File(applicationContext.filesDir, "stale_snooze.tsv"))
         val hits = after.mapNotNull { (pkg, days) ->
             val next = days ?: return@mapNotNull null
+            if (StaleSnooze.hidden(snooze[pkg], now)) return@mapNotNull null
             NotifyPolicy.crossings(before[pkg], next, pkg)
         }
         val grouped = listOf(
@@ -37,6 +40,7 @@ class StaleNotifyWorker(
             NotifyPolicy.ONE_YEAR to hits.filter { it.days >= NotifyPolicy.ONE_YEAR }.map { it.packageName },
         ).filter { it.second.isNotEmpty() }
         if (grouped.isNotEmpty()) StaleNotifier(applicationContext).postCrossings(grouped)
+        UpdatesNotify.post(applicationContext, apps)
         store.saveDays(StalenessDays.encode(after))
         return Result.success()
     }

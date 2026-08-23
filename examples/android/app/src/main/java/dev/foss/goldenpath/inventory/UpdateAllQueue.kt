@@ -36,18 +36,21 @@ internal object UpdateAllQueue {
         counts: IntArray,
     ) {
         ready.forEach { (job, files) ->
+            if (UpdateAllCancel.requested()) return
             if (job.packageName in settled) return@forEach
             onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Apply))
-            if (install(files)) {
+            val ok = install(files)
+            if (ok) {
                 counts[1] += 1
                 settled += job.packageName
                 AppliedUpdates.settle(job.packageName)
                 onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Ok, stay = false))
                 groupOf(open, job.packageName).clear()
-            } else {
+            } else if (!UpdateAllCancel.requested()) {
                 counts[3] += 1
                 fail(job, filesDir, onSnap, more(groupOf(open, job.packageName)), download = false)
             }
+            if (UpdateAllCancel.requested()) return
         }
     }
 

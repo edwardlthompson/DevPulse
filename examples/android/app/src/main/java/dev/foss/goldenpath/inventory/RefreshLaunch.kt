@@ -18,6 +18,7 @@ object RefreshLaunch {
     const val EXTRA_ALL_SOURCES = "all_sources"
     const val EXTRA_LISTING = "listing_package"
     const val EXTRA_LISTING_SOURCE = "listing_source"
+    const val EXTRA_UPDATES_ONLY = "updates_only"
 
     fun requested(intent: Intent?): Boolean =
         intent?.getBooleanExtra(EXTRA, false) == true
@@ -43,6 +44,8 @@ object RefreshLaunch {
         val listing = listingPackage(intent)
         val source = listingSource(intent)
         val updateAll = UpdateAllLaunch.requested(intent)
+        val leftover = UpdateAllResume.load(activity.filesDir)
+        val updatesOnly = flag(intent, EXTRA_UPDATES_ONLY) == true
         intent?.removeExtra(EXTRA)
         intent?.removeExtra(EXTRA_ALL_SOURCES)
         intent?.removeExtra(EXTRA_APK_MIRROR)
@@ -52,6 +55,12 @@ object RefreshLaunch {
         intent?.removeExtra(EXTRA_LISTING)
         intent?.removeExtra(EXTRA_LISTING_SOURCE)
         intent?.removeExtra(UpdateAllLaunch.EXTRA)
+        intent?.removeExtra(EXTRA_UPDATES_ONLY)
+        if (updatesOnly) {
+            activity.lifecycleScope.launch {
+                InventoryPreferences(activity).setUpdatesOnly(true)
+            }
+        }
         if (refresh) {
             activity.lifecycleScope.launch {
                 val prefs = InventoryPreferences(activity)
@@ -79,9 +88,9 @@ object RefreshLaunch {
                 Log.i("DevPulse", "listing smoke $listing ${source.name} ${result::class.simpleName}")
             }
         }
-        if (updateAll) {
+        if (updateAll || leftover.isNotEmpty()) {
             activity.lifecycleScope.launch(Dispatchers.IO) {
-                UpdateAllLaunch.run(activity)
+                UpdateAllLaunch.run(activity, if (updateAll) emptySet() else leftover.toSet())
             }
         }
     }

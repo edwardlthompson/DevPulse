@@ -70,6 +70,7 @@ class InstallStatusReceiver : BroadcastReceiver() {
             InstallAwait.signal(false)
             return
         }
+        InstallAwait.markPending()
         @Suppress("DEPRECATION")
         val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT) ?: return
         confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

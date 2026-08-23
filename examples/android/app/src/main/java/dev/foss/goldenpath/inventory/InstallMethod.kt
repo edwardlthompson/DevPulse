@@ -6,6 +6,9 @@ enum class InstallMethod {
     Root,
     ;
 
+    fun effective(canRequestInstalls: Boolean): InstallMethod =
+        if (this == Session && !canRequestInstalls) System else this
+
     companion object {
         fun parse(raw: String?): InstallMethod =
             entries.firstOrNull { it.name == raw } ?: System

@@ -29,6 +29,9 @@ data class FdroidAppRecord(
     val nativeCodes: Set<String> = emptySet(),
     val category: String? = null,
     val relatedPackages: List<String> = emptyList(),
+    val apkSizeBytes: Long? = null,
+    val antiFeatures: List<String> = emptyList(),
+    val minSdk: Int? = null,
 )
 
 data class CachedIndex(

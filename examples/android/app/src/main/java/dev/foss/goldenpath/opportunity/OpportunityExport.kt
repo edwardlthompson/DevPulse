@@ -33,4 +33,13 @@ object OpportunityExport {
         )
         append("]}")
     }
+
+    fun markdown(titles: List<String>, gaps: List<CategoryGap>): String = buildString {
+        append("# Fork list\n")
+        titles.forEach { append("- ").append(it).append('\n') }
+        if (gaps.isNotEmpty()) {
+            append("\n## Gaps\n")
+            gaps.forEach { append("- ").append(it.category).append(" (").append(it.quietCount).append(")\n") }
+        }
+    }
 }

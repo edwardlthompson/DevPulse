@@ -13,12 +13,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.inventory.UpdateAllResume
 import dev.foss.goldenpath.inventory.WelcomeHome
 import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
@@ -82,7 +86,11 @@ fun InventoryScreen(
                 onOpenUsageAccess = model.onOpenUsageAccess,
             )
         }
-        UpdateAllButton(apps = model.apps)
+        val context = LocalContext.current
+        val selected = remember { mutableStateOf(UpdateAllResume.load(context.filesDir).toSet()) }
+        InstallPermissionBanner()
+        RefreshSuccessLine()
+        UpdateAllButton(apps = model.apps, selected = selected.value)
         if (model.apps.isEmpty()) {
             Text(text = stringResource(R.string.inventory_empty))
         } else {
@@ -90,6 +98,14 @@ fun InventoryScreen(
                 items(model.apps, key = { it.packageName }) { app ->
                     InventoryRow(
                         app = app,
+                        selected = app.packageName in selected.value,
+                        onToggleSelect = {
+                            selected.value = if (app.packageName in selected.value) {
+                                selected.value - app.packageName
+                            } else {
+                                selected.value + app.packageName
+                            }
+                        },
                         onOpen = {
                             focusManager.clearFocus()
                             keyboard?.hide()

@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.about
 
+import dev.foss.goldenpath.inventory.ApkIdentity
+
 /** Continuum-style self-update and donate rules. Prefs stay device-local. */
 object ProductUpdate {
     const val MS_DAY = 86_400_000L
@@ -9,7 +11,7 @@ object ProductUpdate {
     const val VENMO_URL = "https://venmo.com/code?user_id=1857304970395648420"
 
     data class NamedAsset(val name: String, val url: String)
-    data class ProductAsset(val version: String, val url: String)
+    data class ProductAsset(val version: String, val url: String, val notes: String? = null)
 
     fun shouldCheckDaily(lastCheckAt: Long?, now: Long): Boolean {
         if (lastCheckAt == null || lastCheckAt < 0L) return true
@@ -62,5 +64,13 @@ object ProductUpdate {
         if (!isNewerVersion(currentVersion, latestVersion)) return false
         if (dismissedVersion == latestVersion) return false
         return true
+    }
+
+    fun selfUpdateOk(apkSigners: Set<String>, installed: Set<String>?): Boolean =
+        ApkIdentity.signersMatch(apkSigners, installed)
+
+    fun changelog(installed: String, latest: String, body: String?): String? {
+        if (!isNewerVersion(installed, latest)) return null
+        return body?.trim()?.ifEmpty { null }
     }
 }

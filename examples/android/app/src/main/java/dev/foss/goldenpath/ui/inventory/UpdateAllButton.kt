@@ -1,6 +1,6 @@
 package dev.foss.goldenpath.ui.inventory
 
-import android.util.Log
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,24 +22,29 @@ import dev.foss.goldenpath.inventory.InstallAwait
 import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.InventoryPreferences
-import dev.foss.goldenpath.inventory.ListingInstallLive
+import dev.foss.goldenpath.inventory.MeteredNet
 import dev.foss.goldenpath.inventory.WelcomeNeeds
-import dev.foss.goldenpath.inventory.OneClickResult
-import dev.foss.goldenpath.inventory.RefreshTrace
-import dev.foss.goldenpath.inventory.UpdateAll
+import dev.foss.goldenpath.inventory.UpdateAllCancel
 import dev.foss.goldenpath.inventory.UpdateAllPick
 import dev.foss.goldenpath.inventory.UpdateAllPhase
 import dev.foss.goldenpath.inventory.UpdateAllSnap
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
-fun UpdateAllButton(apps: List<InstalledApp>, modifier: Modifier = Modifier) {
+fun UpdateAllButton(
+    apps: List<InstalledApp>,
+    selected: Set<String> = emptySet(),
+    modifier: Modifier = Modifier,
+) {
     val revision by UpdateArtifactMemory.revision.collectAsStateWithLifecycle()
     val ignoredRev by IgnoredUpdates.revision.collectAsStateWithLifecycle(0)
-    val groups = remember(apps, revision, ignoredRev) { UpdateAllPick.groups(apps) }
+    val deviceSdk = android.os.Build.VERSION.SDK_INT
+    val deviceAbis = remember { android.os.Build.SUPPORTED_ABIS.toSet() }
+    val groups = remember(apps, selected, revision, ignoredRev) {
+        UpdateAllPick.groups(apps, selected, deviceSdk, deviceAbis)
+    }
     val queue = remember(groups) { groups.map { it.first() } }
     if (queue.isEmpty()) return
     val context = LocalContext.current
@@ -48,74 +53,71 @@ fun UpdateAllButton(apps: List<InstalledApp>, modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
     var show by remember { mutableStateOf(false) }
+    var metered by remember { mutableStateOf(false) }
     val snaps = remember { mutableStateListOf<UpdateAllSnap>() }
     val finished = snaps.count { !it.stay }
     val label = if (busy) {
         stringResource(R.string.update_all_busy, finished, queue.size)
     } else {
-        stringResource(R.string.update_all)
+        stringResource(R.string.update_all, queue.size)
+    }
+    val start = {
+        if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) {
+            Unit
+        } else {
+            UpdateAllCancel.arm()
+            busy = true
+            show = true
+            snaps.clear()
+            snaps.addAll(queue.map { UpdateAllSnap(it.packageName, it.label, it.source, UpdateAllPhase.Wait) })
+            startUpdateAll(
+                context, scope, queue, groups, method,
+                onSnap = { snap ->
+                    scope.launch(Dispatchers.Main.immediate) {
+                        val at = snaps.indexOfFirst { it.packageName == snap.packageName }
+                        if (at >= 0) snaps[at] = snap else snaps.add(snap)
+                    }
+                },
+                onDone = { busy = false },
+            )
+        }
     }
     TextButton(
         onClick = {
             if (busy) return@TextButton
-            if (!WelcomeNeeds.ensureInstall(context)) return@TextButton
-            busy = true
-            show = true
-            snaps.clear()
-            snaps.addAll(
-                queue.map { job ->
-                    UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Wait)
-                },
-            )
-            scope.launch {
-                withContext(Dispatchers.IO) {
-                    Log.i("DevPulse", "update all start ${queue.size}")
-                    RefreshTrace.emit = { Log.i("DevPulse", it) }
-                    val result = UpdateAll.run(
-                        jobs = queue,
-                        groups = groups,
-                        prepare = { job, progress ->
-                            ListingInstallLive.prepare(context, job.packageName, job.source, job.pageUrl, progress)
-                        },
-                        install = { files ->
-                            if (method == InstallMethod.Session) {
-                                InstallAwait.arm()
-                                val launched = ListingInstallLive.install(
-                                    context,
-                                    files,
-                                    method,
-                                ) == OneClickResult.Installed
-                                launched && InstallAwait.await()
-                            } else {
-                                ListingInstallLive.install(context, files, method) ==
-                                    OneClickResult.Installed
-                            }
-                        },
-                        onSnap = { snap ->
-                            scope.launch(Dispatchers.Main.immediate) {
-                                val at = snaps.indexOfFirst { it.packageName == snap.packageName }
-                                if (at >= 0) snaps[at] = snap else snaps.add(snap)
-                            }
-                        },
-                        filesDir = context.filesDir,
-                    )
-                    Log.i(
-                        "DevPulse",
-                        "update all done downloaded=${result.downloaded} installed=${result.installed} failDl=${result.failedDownload} failIns=${result.failedInstall}",
-                    )
-                }
-                busy = false
+            if (MeteredNet.needsConfirm(MeteredNet.metered(context), queue.size)) {
+                metered = true
+            } else {
+                start()
             }
         },
         enabled = !busy,
         modifier = modifier.semantics { contentDescription = label },
     ) { Text(label) }
+    if (metered) {
+        AlertDialog(
+            onDismissRequest = { metered = false },
+            title = { Text(stringResource(R.string.update_all, queue.size)) },
+            text = { Text(stringResource(R.string.update_prefetch_enable)) },
+            confirmButton = {
+                TextButton(onClick = { metered = false; start() }) {
+                    Text(stringResource(R.string.inventory_rationale_ack))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { metered = false }) {
+                    Text(stringResource(R.string.about_not_now))
+                }
+            },
+        )
+    }
     if (show) {
         UpdateAllDialog(
             snaps = snaps.toList(),
             complete = !busy,
             onDismiss = {
                 show = false
+                UpdateAllCancel.request()
                 InstallAwait.signal(false)
             },
         )

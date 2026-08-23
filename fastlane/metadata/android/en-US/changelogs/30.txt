@@ -1,0 +1,1 @@
+Refuse older or unfit listings. Refresh and Update all can resume. Settings can wipe listing caches. Detail can copy package and SHA-1.

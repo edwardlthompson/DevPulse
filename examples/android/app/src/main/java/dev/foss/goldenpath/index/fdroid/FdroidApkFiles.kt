@@ -4,6 +4,8 @@ data class FdroidApkHint(
     val apkName: String,
     val sha256: String? = null,
     val nativeCodes: Set<String> = emptySet(),
+    val sizeBytes: Long? = null,
+    val minSdk: Int? = null,
 )
 
 object FdroidApkFiles {
@@ -11,6 +13,8 @@ object FdroidApkFiles {
     private val versionCode = Regex(""""versionCode"\s*:\s*(-?\d+)""")
     private val sha256 = Regex(""""hash"\s*:\s*"([0-9a-fA-F]{64})"""")
     private val nativecode = Regex(""""nativecode"\s*:\s*\[([^\]]*)\]""")
+    private val size = Regex(""""size"\s*:\s*(\d+)""")
+    private val minSdkVer = Regex(""""minSdkVersion"\s*:\s*(\d+)""")
 
     fun namesFor(raw: ByteArray, wanted: Set<String>): Map<String, FdroidApkHint> {
         val start = FdroidIndexBytes.indexOf(raw, "\"packages\"")
@@ -66,6 +70,8 @@ object FdroidApkFiles {
             apkName = nameMatch.groupValues[1],
             sha256 = sha256.find(window)?.groupValues?.get(1)?.lowercase(),
             nativeCodes = natives,
+            sizeBytes = size.find(window)?.groupValues?.get(1)?.toLongOrNull()?.takeIf { it > 0L },
+            minSdk = minSdkVer.find(window)?.groupValues?.get(1)?.toIntOrNull()?.takeIf { it > 0 },
         )
     }
 }

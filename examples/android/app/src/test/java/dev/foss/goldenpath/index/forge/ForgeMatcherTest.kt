@@ -19,6 +19,7 @@ class ForgeMatcherTest {
     fun backoffOnlyFor403And429() {
         assertEquals(1000L, ForgeBackoff.nextDelayMs(403, 1))
         assertEquals(4000L, ForgeBackoff.nextDelayMs(429, 2))
+        assertEquals(12_000L, ForgeBackoff.nextDelayMs(429, 2, retryAfterSec = 12))
         assertNull(ForgeBackoff.nextDelayMs(200, 1))
     }
 

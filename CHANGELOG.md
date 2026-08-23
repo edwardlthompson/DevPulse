@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Listing rows show APK size, F-Droid anti-features, ABI mismatch, and last Refresh success or failure before download
+- Play developer website that is a public forge URL becomes a GitHub hint; GitHub tokens show remaining hourly quota
+- Settings can wipe cached listings, clear ignored versions, and export or restore ignore backups
+- Opt-in stale reminders also post a local notice when fetchable updates exist
+- App detail can copy package id and signing SHA-1, paste a repo, forget a package, and re-probe one app
+- Refresh can pause, resume after process death, stay on Wi-Fi, and limit to the current filter set
+- Update all can resume remaining jobs, confirm on metered networks, and skip when storage is too low
+- Aptoide asks Store or Games before fetch; leftover GitLab and Codeberg tokens share the GitHub secret store
+
+### Changed
+
+- Listings older than installed, above the device minSdk, or with no overlapping ABI are not fetched or queued
+- GitHub, Play, APKMirror, and APKPure 429s honor Retry-After; Settings shows remaining host backoff
+- APKMirror joins Update all only when a cached `download.php` file URL exists
+- Home rows show installed versus newest fetchable version and distinguish 403, parse fail, and never listed
+
+### Fixed
+
+- Session falls back to System when it cannot request package installs; the home banner says when Install unknown apps is off
+- Listing tap and Update all say why install failed (permission, signing, timeout, no file, or older)
+- Refresh progress is a polite TalkBack live region; install-blocked rows announce that state
+
 ## [0.29.0](https://github.com/edwardlthompson/DevPulse/compare/v0.28.0...v0.29.0) (2026-08-22)
 
 ### Fixed

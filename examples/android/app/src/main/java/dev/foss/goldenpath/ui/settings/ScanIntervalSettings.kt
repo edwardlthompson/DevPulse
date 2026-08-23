@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.InventoryPreferences
+import dev.foss.goldenpath.inventory.RefreshWifiPrefs
 import dev.foss.goldenpath.inventory.ScanInterval
 import dev.foss.goldenpath.inventory.ScanSchedule
 import dev.foss.goldenpath.ui.theme.SpacingMd
@@ -28,7 +29,9 @@ fun ScanIntervalSettings(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val prefs = remember { InventoryPreferences(context) }
     val scope = rememberCoroutineScope()
+    val wifiPrefs = remember { RefreshWifiPrefs(context) }
     val interval by prefs.scanInterval.collectAsStateWithLifecycle(ScanInterval.OnDemand)
+    val wifiOnly by wifiPrefs.enabled.collectAsStateWithLifecycle(false)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
         Text(text = stringResource(R.string.scan_interval_title), style = MaterialTheme.typography.titleMedium)
         Text(text = stringResource(R.string.scan_interval_body), style = MaterialTheme.typography.bodySmall)
@@ -56,5 +59,10 @@ fun ScanIntervalSettings(modifier: Modifier = Modifier) {
                 )
             }
         }
+        PreferenceSwitch(
+            label = stringResource(R.string.update_prefetch_enable),
+            checked = wifiOnly,
+            onCheckedChange = { value -> scope.launch { wifiPrefs.setEnabled(value) } },
+        )
     }
 }

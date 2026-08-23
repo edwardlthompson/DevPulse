@@ -7,7 +7,9 @@ import java.net.URLEncoder
 object AptoideHttpFetcher : AptoideMetaFetcher {
     override fun fetch(packageName: String): Result<String> = runCatching {
         val encoded = URLEncoder.encode(packageName, Charsets.UTF_8.name())
-        val url = URL("${AptoideFetchPolicy.META_URL}?package_name=$encoded")
+        val url = URL(
+            "${AptoideFetchPolicy.META_URL}?package_name=$encoded&store_name=${AptoideCatalog.storeName()}",
+        )
         val conn = url.openConnection() as HttpURLConnection
         try {
             conn.requestMethod = "GET"

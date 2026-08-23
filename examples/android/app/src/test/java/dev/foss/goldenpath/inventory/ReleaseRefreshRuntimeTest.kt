@@ -23,4 +23,16 @@ class ReleaseRefreshRuntimeTest {
         assertFalse(ReleaseRefreshRuntime.running.value)
         assertTrue(ReleaseRefreshRuntime.tryBegin())
     }
+
+    @Test
+    fun pauseHoldsUntilResume() {
+        assertTrue(ReleaseRefreshRuntime.tryBegin())
+        ReleaseRefreshRuntime.pause()
+        assertTrue(ReleaseRefreshRuntime.paused.value)
+        ReleaseRefreshRuntime.resume()
+        assertFalse(ReleaseRefreshRuntime.paused.value)
+        ReleaseRefreshRuntime.finish()
+        ReleaseRefreshRuntime.pause()
+        assertFalse(ReleaseRefreshRuntime.paused.value)
+    }
 }

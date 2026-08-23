@@ -36,7 +36,7 @@ class GitHubSearchHttp(private val token: String? = null) : GitHubSearchClient, 
             val code = conn.responseCode
             val stream = if (code in 200..299) conn.inputStream else conn.errorStream
             val body = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
-            GitHubSearchPage(code, body)
+            GitHubSearchPage(code, body, RetryAfter.seconds(conn.getHeaderField("Retry-After")))
         } finally {
             conn.disconnect()
         }

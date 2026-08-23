@@ -3,6 +3,7 @@ package dev.foss.goldenpath.index.play
 import dev.foss.goldenpath.index.aurora.AuroraPlayApp
 import dev.foss.goldenpath.index.aurora.AuroraPlayDetails
 import dev.foss.goldenpath.index.aurora.AuroraPlayStatus
+import dev.foss.goldenpath.inventory.RefreshHostBackoff
 import dev.foss.goldenpath.inventory.RefreshTrace
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -134,6 +135,13 @@ class PlayScanTest {
         PlayScan.toOffer("com.instagram.android", PlayPageClient { PlayPageResponse(403, html) })
         assertTrue(lines.any { it.startsWith("play com.instagram.android http 403 unknown") })
         RefreshTrace.emit = {}
+    }
+
+    @Test
+    fun rateLimitedPageHonorsRetryAfter() {
+        RefreshHostBackoff.clear()
+        PlayScan.toOffer("app.x", PlayPageClient { PlayPageResponse(429, "", 12) })
+        assertTrue((RefreshHostBackoff.active()["play"] ?: 0L) in 1_000L..12_000L)
     }
 
     private fun readFixture(path: String): String =

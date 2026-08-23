@@ -17,7 +17,7 @@ Types in `dev.foss.goldenpath.index.play`. No live network in unit tests. Never 
 
 | Name | Contract |
 |------|----------|
-| `PlayHtmlParser.parse(html)` | Reads `itemprop="datePublished"` and `itemprop="softwareVersion"` only |
+| `PlayHtmlParser.parse(html)` | Reads `itemprop="datePublished"`, `itemprop="softwareVersion"`, and developer website when present |
 | Missing or unparseable date | `status = UnknownCheckManually`, `updatedOnMs = null` — never invent a day |
 ### Rate limit (types only)
 
@@ -26,13 +26,16 @@ Types in `dev.foss.goldenpath.index.play`. No live network in unit tests. Never 
 ## Acceptance criteria
 
 - ✅ User-visible behavior: public Play details HTML yields Updated-on and published version
-- ✅ Offline/error behavior: 24h listed cache honored by Refresh (`ProbeCache` + `fetchedAtMs`); confirmed 404/410/not-found stays delisted for 7 days and is not re-fetched; persist last error; 403 or parse fail → unknown-check-manually; never guess a date; unknown rows are not reused. Aurora **missing** is a Play miss (no HTML). Play HTML runs only when Aurora is unknown or unwired.
+- ✅ Offline/error behavior: 24h listed cache honored by Refresh (`ProbeCache` + `fetchedAtMs`); confirmed 404/410/not-found stays delisted for 7 days and is not re-fetched; persist last error; 403 → HTTP 403 copy; parse fail → could-not-parse copy; never guess a date; unknown rows are not reused. Aurora **missing** is a Play miss (no HTML). Play HTML runs only when Aurora is unknown or unwired.
 - ✅ Accessibility: unknown state is announced as text, not an empty badge
 - ✅ i18n: keys under `play_*` in `strings.xml`
 - ✅ Public HTML only; modest concurrency, effectively serial
 - ✅ One failure must not block the whole scan
 - ✅ Fixture-based parser tests ship with the feature
 - ✅ Optional and on-demand so F-Droid anti-features stay NonFreeNet at most
+- ✅ App detail can re-probe Play / Aptoide / GitHub for that package without a full Refresh
+- ✅ Play developer website that is a public forge URL becomes a GitHub hint (FR-11)
+- ✅ HTTP 429/403 honor Retry-After on the Play HTML fetch
 
 ## Smoke scenario
 

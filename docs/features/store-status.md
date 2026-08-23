@@ -13,12 +13,11 @@
 | `InventoryPreferences.playLookupEnabled` | Default **on** |
 | `InventoryPreferences.forgeLookupEnabled` | Default **on** |
 | `InventoryPreferences.aptoideLookupEnabled` | Default **off** (unchanged) |
-
 Refresh totals stay `repos(enabled) + apps × enabled probes` via `RefreshLocations.total`. Runner passes a Play/GitHub client only when that toggle is on. F-Droid still uses `FdroidEnabledRepos`.
 
 ## Acceptance criteria
 
-- ✅ User-visible behavior: listing rows show ✅ when listed and known, ❌ when missing and known, ❓ when unknown (timeout, 403, failed index)
+- ✅ User-visible behavior: listing rows show ✅ when listed and known, ❌ when missing and known, ❓ when unknown; subtitle distinguishes 403, parse fail, and never listed
 - ✅ Offline/error behavior: timeout, scrape fail, or missing offer stays unknown — never a guess
 - ✅ Accessibility: TalkBack reads “listed” / “not listed” / “unknown”, not emoji alone; store toggles have labels
 - ✅ i18n: `inventory_listing_status_*`, `play_lookup_*`, `forge_lookup_*`
@@ -37,7 +36,6 @@ Refresh totals stay `repos(enabled) + apps × enabled probes` via `RefreshLocati
 | View | `ui/inventory/InventoryDetailScreen.kt`, `ui/settings/PlayLookupSettings.kt`, `ForgeLookupSettings.kt` |
 | Tests | `src/test/.../inventory/StoreSelectionTest.kt`, `InventoryCopyTest.kt`, `ReleaseRefreshTest.kt` |
 | Wiring | `ReleaseRefreshRunner.kt` (no `GoldenPathApp` change) |
-
 ## Notes
 
 - Do not scan a hidden store as a fallback because another store hit

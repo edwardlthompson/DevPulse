@@ -4,6 +4,7 @@ import dev.foss.goldenpath.index.fdroid.FdroidPackageMeta
 import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.StalenessDays
 import dev.foss.goldenpath.inventory.UpdateUrls
+import dev.foss.goldenpath.inventory.VersionCompare
 import dev.foss.goldenpath.staleness.Staleness
 
 object AlternativesFromCache {
@@ -23,7 +24,8 @@ object AlternativesFromCache {
         }
         val maintained = pool.filter { other ->
             val age = days[other.packageName] ?: return@filter false
-            age < Staleness.AMBER_MAX_INCLUSIVE
+            age < Staleness.AMBER_MAX_INCLUSIVE &&
+                VersionCompare.isNewer(other.versionName ?: other.remoteVersionName, app.versionName)
         }
         val candidates = maintained.map { other ->
             AlternativeHit(

@@ -64,6 +64,25 @@ class RemoteReleaseCodecTest {
     }
 
     @Test
+    fun forbiddenFlagSurvivesRoundTrip() {
+        val pick = RemoteReleaseRollup.from(
+            listOf(
+                RemoteReleaseOffer(
+                    RemoteReleasedSource.Play,
+                    listed = false,
+                    known = false,
+                    miss = ListingMiss.Forbidden,
+                ),
+            ),
+        )
+        val play = RemoteReleaseCodec.decode(
+            RemoteReleaseCodec.encode(mapOf("app.x" to pick)),
+        ).getValue("app.x").offers.single()
+        assertEquals(ListingMiss.Forbidden, play.miss)
+        assertFalse(play.known)
+    }
+
+    @Test
     fun fetchedAtSurvivesRoundTrip() {
         val pick = RemoteReleaseRollup.from(
             listOf(

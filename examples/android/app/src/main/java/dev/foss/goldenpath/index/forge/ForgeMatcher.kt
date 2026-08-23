@@ -23,8 +23,9 @@ object ForgeMatcher {
 }
 
 object ForgeBackoff {
-    fun nextDelayMs(statusCode: Int, attempt: Int): Long? {
+    fun nextDelayMs(statusCode: Int, attempt: Int, retryAfterSec: Long? = null): Long? {
         if (statusCode != 403 && statusCode != 429) return null
+        retryAfterSec?.takeIf { it > 0L }?.let { return it * 1_000L }
         val step = attempt.coerceAtLeast(1)
         return 1_000L * step * step
     }

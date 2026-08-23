@@ -99,6 +99,7 @@ fun InventoryDetailScreen(
             }
         }
         DetailCallout(stringResource(R.string.inventory_callout_package), app.packageName)
+        DetailCopy(app.packageName, app.signingSha1)
         DetailCallout(stringResource(R.string.inventory_callout_origin), stringResource(InventoryCopy.originRes(app)))
         DetailCallout(stringResource(R.string.inventory_callout_installed), version)
         DetailCallout(stringResource(R.string.inventory_callout_installed_date), localDate(app.installedAtMs))
@@ -113,13 +114,16 @@ fun InventoryDetailScreen(
             Text(text = stringResource(R.string.inventory_sdk_risk), color = MaterialTheme.colorScheme.error)
         }
         Text(text = stringResource(R.string.inventory_listings_title), style = MaterialTheme.typography.titleMedium)
+        ReprobeButton(app)
         if (listings.isEmpty()) {
             Text(text = stringResource(R.string.inventory_no_listings))
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(SpacingSm)) {
-                listings.forEach { StoreListingRow(it, app.packageName) }
+                listings.forEach { StoreListingRow(it, app.packageName, app.versionName) }
             }
         }
+        DetailForget(app.packageName)
+        DetailPasteRepo(app.packageName)
         UpdateNotesSection(app.packageName)
         DownloadUpdateSection(app)
         AlternativesSection(app = app, inventory = inventory)

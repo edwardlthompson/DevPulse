@@ -64,6 +64,18 @@ class UpdateInventoryTest {
             known = true,
         )
         assertTrue(UpdateInventory.canOpen(listedPure))
+        assertFalse(
+            UpdateInventory.canOpen(
+                UpdateLink(RemoteReleasedSource.Fdroid, versionName = "1.0", listed = true),
+                installedVersion = "2.0",
+            ),
+        )
+        assertFalse(
+            UpdateInventory.canOpen(
+                UpdateLink(RemoteReleasedSource.Fdroid, versionName = "3.0", listed = true, minSdk = 35),
+                deviceSdk = 34,
+            ),
+        )
     }
 
     @Test

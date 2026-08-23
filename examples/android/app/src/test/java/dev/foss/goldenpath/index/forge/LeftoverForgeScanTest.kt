@@ -17,6 +17,13 @@ class LeftoverForgeScanTest {
     }
 
     @Test
+    fun leftoverBudgetCountsDown() {
+        assertEquals(ForgeRateLimit.LEFTOVER_SKIP_AFTER, ForgeRateLimit.leftoverLeft())
+        ForgeRateLimit.noteLeftoverTimeout()
+        assertEquals(ForgeRateLimit.LEFTOVER_SKIP_AFTER - 1, ForgeRateLimit.leftoverLeft())
+    }
+
+    @Test
     fun gitlabReleaseWithPackageLists() {
         val client = LeftoverSearchClient { kind, query ->
             when (kind) {

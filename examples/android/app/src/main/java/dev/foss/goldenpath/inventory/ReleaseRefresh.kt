@@ -24,6 +24,7 @@ import dev.foss.goldenpath.index.forge.GithubVerifiedStore
 import dev.foss.goldenpath.index.forge.PastedRepoCodec
 import dev.foss.goldenpath.index.forge.PastedRepoStore
 import dev.foss.goldenpath.index.play.PlayPageClient
+import dev.foss.goldenpath.index.play.PlaySourceHints
 import java.util.concurrent.ExecutorService
 
 object ReleaseRefresh {
@@ -103,6 +104,8 @@ object ReleaseRefresh {
             clock, userApps.size, repos, playOn, aptoideEnabled, forgeOn,
             leftoverClient != null, apkMirrorEnabled, apkPureEnabled,
         )
+        RefreshResume.hydrate(RefreshResume.persistDir?.let { RefreshResume.load(it) }.orEmpty())
+        RefreshResume.apply(RefreshOutletBoard.snaps().map { it.id })
         clock.addWork(
             RefreshLocations.total(
                 repos.size, userApps.size, playOn, aptoideEnabled, forgeOn, apkMirrorEnabled, apkPureEnabled,
@@ -125,11 +128,12 @@ object ReleaseRefresh {
             verifiedStore?.load().orEmpty(),
             loaded.map { it.repoId to it.githubLibrary },
         )
+        val pasted = pastedStore?.load().orEmpty() + PlaySourceHints.snapshot()
         val knownRepos = library + FdroidGithubHints.hints(records, wantedSet) +
-            PastedRepoCodec.hints(pastedStore?.load().orEmpty())
+            PastedRepoCodec.hints(pasted)
         verifiedStore?.save(knownRepos.mapValues { it.value.ownerRepo })
         RefreshTrace.line("github library ${library.size} persisted")
-        val leftoverHints = FdroidLeftoverHints.merge(records, wantedSet, pastedStore?.load().orEmpty())
+        val leftoverHints = FdroidLeftoverHints.merge(records, wantedSet, pasted)
         ReleaseRefreshWaves.storeThenForge(
             userApps, byPackage, playOn, aptoideEnabled, forgeOn,
             playClient, aptoideFetcher, gitHubClient, nowMs, repos,

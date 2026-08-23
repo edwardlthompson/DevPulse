@@ -54,6 +54,28 @@ object IgnoredUpdates {
         }
     }
 
+    fun drop(packageName: String, filesDir: File? = null) {
+        val pkg = packageName.trim()
+        if (pkg.isEmpty()) return
+        synchronized(lock) {
+            val next = rows.filterNot { it.packageName == pkg }.toSet()
+            if (next.size == rows.size) return
+            rows = next
+            if (filesDir != null) persist = file(filesDir)
+            persist?.let { save(it, rows) }
+            revisionState.value += 1
+        }
+    }
+
+    fun clearPersisted(filesDir: File) {
+        synchronized(lock) {
+            rows = emptySet()
+            persist = file(filesDir)
+            save(persist!!, rows)
+            revisionState.value += 1
+        }
+    }
+
     fun clear() {
         synchronized(lock) {
             rows = emptySet()

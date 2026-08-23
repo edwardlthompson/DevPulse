@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-23 | Sprint 21 ideas | minSdk/ABI refuse + Play/dump Retry-After + quota/wipe/copy/notify; `./gradlew test` and watch-gates green | Keep `strings.xml` at 300 by reusing keys; thread device SDK/ABI into Update all, not only listing tap |
 | 2026-08-22 | v0.29.0 /ship | `feat:` prepare; fold Unreleased on RP #10; admin-merge; local signed `DevPulse-0.29.0.apk` uploaded | Do not treat `query_all_packages_ack` as Welcome-seen; keep download dialogs dismissible while work runs |
 | 2026-08-22 | v0.28.0 /ship | `feat:` prepare; fold Unreleased on RP #9; admin-merge after Queue RP check failed; local signed `DevPulse-0.28.0.apk` uploaded; CI Release also signed | Replace `Color(0x…)` in Compose with theme tokens before `pre-release-gate` (`design-cohesion`); `gh pr edit --body` on Windows needs a UTF-8 `--body-file` |
 | 2026-08-21 | v0.27.0 /ship | `feat:` prepare; PR #8 opened with `gh`; fold Unreleased; admin-merge; `gh release create` after RP missed the tag | Enable Actions "create pull requests"; label gh-opened RP PRs so merge still counts as a release PR |

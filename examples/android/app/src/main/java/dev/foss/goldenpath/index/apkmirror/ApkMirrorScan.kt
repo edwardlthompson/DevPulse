@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.apkmirror
 
+import dev.foss.goldenpath.inventory.DumpChunkBook
+import dev.foss.goldenpath.inventory.ListingMiss
 import dev.foss.goldenpath.inventory.ProbeCache
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
@@ -22,10 +24,12 @@ object ApkMirrorScan {
         }
         val out = linkedMapOf<String, RemoteReleaseOffer>()
         fetchChunks(stale.chunked(ApkMirrorFetchPolicy.CHUNK), fetcher).forEach { (chunk, fetched) ->
-            val body = fetched.getOrElse {
+            val live = fetched.getOrElse {
                 RefreshTrace.line("apkmirror chunk ${chunk.size} fail ${it.javaClass.simpleName}: ${it.message}")
                 null
             }
+            if (live != null) DumpChunkBook.remember("apkmirror", live)
+            val body = live ?: DumpChunkBook.last("apkmirror")
             val parsed = if (body == null) emptyMap() else ApkMirrorMetaParser.parseMany(body, nowMs)
             if (body != null) {
                 RefreshTrace.line("apkmirror chunk ${chunk.size} listed=${parsed.values.count { it.listed }}")
@@ -36,6 +40,11 @@ object ApkMirrorScan {
                         source = RemoteReleasedSource.ApkMirror,
                         listed = false,
                         known = body != null,
+                        miss = when {
+                            live == null && body == null -> ListingMiss.Parse
+                            parsed[pkg] == null && body != null -> ListingMiss.Never
+                            else -> null
+                        },
                     ),
                     nowMs,
                 )

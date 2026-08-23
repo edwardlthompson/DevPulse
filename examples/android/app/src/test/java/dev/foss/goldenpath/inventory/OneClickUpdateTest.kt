@@ -109,7 +109,7 @@ class OneClickUpdateTest {
             inspect = { ApkInspect("app.one", setOf("aa")) },
             installed = InstalledIdentity("app.one", setOf("aa")),
         )
-        assertEquals(OneClickResult.FailedDownload, result)
+        assertEquals(OneClickResult.Failed(InstallWhy.NoFile), result)
     }
 
     @Test
@@ -128,5 +128,21 @@ class OneClickUpdateTest {
         )
         assertEquals(OneClickResult.Installed, result)
         assertTrue(installed.endsWith(".apk"))
+    }
+
+    @Test
+    fun identityMismatchIsSigning() {
+        val artifact = UpdateArtifact("app.one", RemoteReleasedSource.Fdroid, "https://f-droid.org/repo/app.one_1.apk")
+        val dir = File.createTempFile("apk", "dir").apply { delete(); mkdirs() }
+        val result = OneClickUpdate.apply(
+            OneClickKind.Direct(artifact),
+            dir,
+            fetch = { Result.success(byteArrayOf(9, 8, 7)) },
+            install = { ApkInstallResult.Ok },
+            openPlay = {},
+            inspect = { ApkInspect("app.other", setOf("aa")) },
+            installed = InstalledIdentity("app.one", setOf("aa")),
+        )
+        assertEquals(OneClickResult.Failed(InstallWhy.Signing), result)
     }
 }

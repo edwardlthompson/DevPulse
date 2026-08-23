@@ -20,5 +20,6 @@ class OpportunityExportTest {
         assertTrue(csv.contains("quiet,Beta"))
         assertTrue(csv.contains("gap,Maps,2"))
         assertTrue(OpportunityExport.json(titles, gaps).contains("\"quietCount\":2"))
+        assertTrue(OpportunityExport.markdown(titles, gaps).contains("- Beta"))
     }
 }

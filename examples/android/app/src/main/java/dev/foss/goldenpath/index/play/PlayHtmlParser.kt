@@ -16,6 +16,13 @@ object PlayHtmlParser {
     )
     private val jsonDate = Regex(""""datePublished"\s*:\s*"([^"]+)"""")
     private val jsonVersion = Regex(""""softwareVersion"\s*:\s*"([^"]+)"""")
+    private val jsonDeveloper = Regex(
+        """"developerWebsite"\s*:\s*\{\s*"url"\s*:\s*"(https?://[^"]+)"""",
+    )
+    private val itemDeveloper = Regex(
+        """itemprop="url"[^>]*content="(https?://[^"]+)"""",
+        RegexOption.IGNORE_CASE,
+    )
     private val isoDate = DateTimeFormatter.ISO_LOCAL_DATE
     private val botHints = listOf(
         "before you continue",
@@ -35,12 +42,14 @@ object PlayHtmlParser {
         val version = softwareVersion.find(html)?.groupValues?.get(1)?.trim()?.ifEmpty { null }
             ?: jsonVersion.find(html)?.groupValues?.get(1)?.trim()?.ifEmpty { null }
         val updatedOnMs = dateRaw?.let { parseIsoDate(it) }
+        val developerUrl = jsonDeveloper.find(html)?.groupValues?.get(1)?.trim()?.ifEmpty { null }
+            ?: itemDeveloper.find(html)?.groupValues?.get(1)?.trim()?.ifEmpty { null }
         return if (updatedOnMs == null && version == null) {
-            PlayLookup(null, null, PlayLookupStatus.UnknownCheckManually)
+            PlayLookup(null, null, PlayLookupStatus.UnknownCheckManually, developerUrl)
         } else if (updatedOnMs == null) {
-            PlayLookup(null, version, PlayLookupStatus.UnknownCheckManually)
+            PlayLookup(null, version, PlayLookupStatus.UnknownCheckManually, developerUrl)
         } else {
-            PlayLookup(updatedOnMs, version, PlayLookupStatus.Ok)
+            PlayLookup(updatedOnMs, version, PlayLookupStatus.Ok, developerUrl)
         }
     }
 

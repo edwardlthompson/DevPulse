@@ -13,8 +13,7 @@ sealed class OneClickResult {
     data object Installed : OneClickResult()
     data object PlayOpened : OneClickResult()
     data object ApkPureOpened : OneClickResult()
-    data object FailedDownload : OneClickResult()
-    data object FailedInstall : OneClickResult()
+    data class Failed(val why: InstallWhy) : OneClickResult()
     data object None : OneClickResult()
 }
 
@@ -63,12 +62,12 @@ object OneClickUpdate {
                     applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
                 } else {
                     RefreshTrace.line("apkpure ${kind.packageName} no asset")
-                    OneClickResult.FailedDownload
+                    OneClickResult.Failed(InstallWhy.NoFile)
                 }
             }
             is OneClickKind.Direct -> applyDirect(kind.artifact, cacheDir, fetch, install, inspect, installed)
         }
-        if (result == OneClickResult.FailedDownload || result == OneClickResult.FailedInstall) {
+        if (result is OneClickResult.Failed) {
             rememberFail(kind, filesDir)
         }
         filesDir?.let {
@@ -92,16 +91,20 @@ object OneClickUpdate {
         installed: InstalledIdentity,
     ): OneClickResult {
         val cached = artifact.localPath?.let(::File)?.takeIf { it.isFile }
+        if (cached == null && !StorageRoom.enough(cacheDir)) {
+            return OneClickResult.Failed(InstallWhy.NoFile)
+        }
         val file = cached ?: run {
-            val bytes = fetch.get(artifact.downloadUrl).getOrElse { return OneClickResult.FailedDownload }
+            val bytes = fetch.get(artifact.downloadUrl).getOrElse { return OneClickResult.Failed(InstallWhy.NoFile) }
             UpdateCache.stage(cacheDir, artifact, bytes, inspect, installed).getOrElse {
-                return OneClickResult.FailedDownload
+                val why = if (it.message == "identity") InstallWhy.Signing else InstallWhy.NoFile
+                return OneClickResult.Failed(why)
             }
         }
-        return when (install(file)) {
-            is ApkInstallResult.Failed -> OneClickResult.FailedInstall
-            else -> OneClickResult.Installed
+        if (!ApkIdentity.signersMatch(inspect(file).signers, installed.signers)) {
+            return OneClickResult.Failed(InstallWhy.Signing)
         }
+        return install(file).toClick()
     }
 
     private fun rememberFail(kind: OneClickKind, filesDir: File?) {

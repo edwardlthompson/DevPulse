@@ -19,7 +19,7 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 | Name | Contract |
 |------|----------|
 | `ApkMirrorMetaParser.parseMany` | Missing/unparseable date → `ms = null`; never invent a day |
-| Failed HTTP | `listed = false`, `known = false` |
+| Failed HTTP | reuse last-good dump chunk when present; else `listed = false`, `known = false` |
 | Successful miss | `listed = false`, `known = true` |
 ## Acceptance criteria
 
@@ -27,6 +27,7 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 - ✅ Offline/error: inventory stays local; unknown not red
 - ✅ i18n: `dump_store_*`, `apkmirror_enable`, `apkpure_enable`, `inventory_source_apkmirror`, `inventory_source_apkpure`
 - ✅ Listing taps download APKPure `asset.url` (including `download.cdnpure.com`) and APKMirror `download.php` when the listing page exposes it. Missing file is a failed download.
+- ✅ Dump 429/403 honor Retry-After before the next Refresh chunk
 
 ## Smoke scenario
 

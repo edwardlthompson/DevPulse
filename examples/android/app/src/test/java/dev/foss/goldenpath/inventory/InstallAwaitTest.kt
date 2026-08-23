@@ -15,5 +15,8 @@ class InstallAwaitTest {
         assertFalse(InstallAwait.await(50))
         InstallAwait.arm()
         assertFalse(InstallAwait.await(20))
+        assertFalse(InstallAwait.pending)
+        InstallAwait.markPending()
+        assertTrue(InstallAwait.pending)
     }
 }

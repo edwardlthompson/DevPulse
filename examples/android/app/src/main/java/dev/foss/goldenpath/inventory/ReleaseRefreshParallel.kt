@@ -45,7 +45,12 @@ object ReleaseRefreshParallel {
     ): List<R> {
         if (items.isEmpty()) return emptyList()
         val n = workers.coerceAtLeast(1)
-        if (executor == null && (n == 1 || items.size == 1)) return items.map(block)
+        if (executor == null && (n == 1 || items.size == 1)) {
+            return items.map {
+                ReleaseRefreshRuntime.awaitRun()
+                block(it)
+            }
+        }
         val owned = executor == null
         val pool = executor ?: Executors.newFixedThreadPool(n.coerceAtMost(items.size))
         val slots = Semaphore(n)
@@ -54,6 +59,7 @@ object ReleaseRefreshParallel {
                 pool.submit<R> {
                     slots.acquire()
                     try {
+                        ReleaseRefreshRuntime.awaitRun()
                         block(item)
                     } finally {
                         slots.release()

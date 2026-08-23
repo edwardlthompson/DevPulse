@@ -48,9 +48,12 @@ Shared types live in `dev.foss.goldenpath.inventory`. Compose adapters must not 
 - ✅ Accessibility: TalkBack reads label, package, and version on each row
 - ✅ i18n: keys under `inventory_*` in `strings.xml`
 - ✅ Show icon, label, package name, installed version, `lastUpdateTime`, minSdk, targetSdk
+- ✅ Home row shows installed → newest fetchable version when an update exists
 - ✅ Origin is Play, F-Droid, extra repo, sideloaded, or preinstalled — never left as unknown
 - ✅ QUERY_ALL_PACKAGES rationale shown once on Android 11+; later launches use the splash image; Settings → Permissions re-grants access; do not scan until acknowledged
 - ✅ PACKAGE_USAGE_STATS optional walkthrough; never required
+- ✅ App detail can copy package id and signing SHA-1
+- ✅ Listing rows show ABI mismatch before tap when nativecode does not overlap the device
 
 ## Smoke scenario
 

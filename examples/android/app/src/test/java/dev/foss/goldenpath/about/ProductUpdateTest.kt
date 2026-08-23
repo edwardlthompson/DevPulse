@@ -63,4 +63,12 @@ class ProductUpdateTest {
         assertEquals("https://github.com/x", ProductUpdate.installUrl("  ", "https://github.com/x"))
         assertEquals(ProductUpdate.RELEASES_PAGE, ProductUpdate.installUrl(null, null))
     }
+
+    @Test
+    fun changelogAndSelfUpdateSigners() {
+        assertEquals("fixed crash", ProductUpdate.changelog("0.28.0", "0.29.0", " fixed crash "))
+        assertEquals(null, ProductUpdate.changelog("0.29.0", "0.29.0", "notes"))
+        assertEquals(true, ProductUpdate.selfUpdateOk(setOf("aa"), setOf("aa")))
+        assertEquals(false, ProductUpdate.selfUpdateOk(setOf("aa"), setOf("bb")))
+    }
 }

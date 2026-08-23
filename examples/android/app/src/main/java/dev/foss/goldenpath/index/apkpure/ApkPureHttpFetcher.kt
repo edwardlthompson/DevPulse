@@ -1,6 +1,8 @@
 package dev.foss.goldenpath.index.apkpure
 
 import android.os.Build
+import dev.foss.goldenpath.index.forge.RetryAfter
+import dev.foss.goldenpath.inventory.HostRetry
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.random.Random
@@ -24,8 +26,10 @@ object ApkPureHttpFetcher : ApkPureBatchFetcher {
             conn.connectTimeout = ApkPureFetchPolicy.CONNECT_TIMEOUT_MS
             conn.readTimeout = ApkPureFetchPolicy.READ_TIMEOUT_MS
             conn.outputStream.bufferedWriter().use { it.write(body) }
-            if (conn.responseCode != HttpURLConnection.HTTP_OK) {
-                error("apkpure ${conn.responseCode}")
+            val code = conn.responseCode
+            if (code != HttpURLConnection.HTTP_OK) {
+                HostRetry.note("apkpure", code, RetryAfter.seconds(conn.getHeaderField("Retry-After")))
+                error("apkpure $code")
             }
             conn.inputStream.bufferedReader().use { it.readText() }
         } finally {

@@ -12,6 +12,7 @@ object GitHubFetchPolicy {
 data class GitHubSearchPage(
     val statusCode: Int,
     val body: String,
+    val retryAfterSec: Long? = null,
 )
 
 fun interface GitHubSearchClient {

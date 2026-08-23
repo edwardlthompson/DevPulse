@@ -12,7 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -62,7 +64,9 @@ fun RefreshProgressBar(
                     stringResource(R.string.inventory_refresh_progress, done, total)
                 },
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = SpacingSm, top = SpacingSm, end = SpacingSm),
+                modifier = Modifier
+                    .padding(start = SpacingSm, top = SpacingSm, end = SpacingSm)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
             )
             RefreshNotifyCopy.firstScanHintRes(firstScan)?.let { hint ->
                 Text(

@@ -17,6 +17,7 @@ class ProductReleaseFetcherTest {
             """
             {
               "html_url": "https://github.com/edwardlthompson/DevPulse/releases/tag/v0.27.0",
+              "body": "Signing and welcome fixes",
               "assets": [
                 {"name": "sbom.cyclonedx.json", "browser_download_url": "https://example.com/sbom"},
                 {"name": "DevPulse-0.27.0.apk", "browser_download_url": "https://example.com/a.apk"}
@@ -25,6 +26,7 @@ class ProductReleaseFetcherTest {
             """.trimIndent(),
         )
         assertEquals("https://github.com/edwardlthompson/DevPulse/releases/tag/v0.27.0", parsed?.htmlUrl)
+        assertEquals("Signing and welcome fixes", parsed?.body)
         assertEquals(2, parsed?.assets?.size)
         val picked = ProductUpdate.selectApkAsset(parsed?.assets ?: emptyList())
         assertEquals("0.27.0", picked?.version)

@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.apkpure
 
+import dev.foss.goldenpath.inventory.DumpChunkBook
+import dev.foss.goldenpath.inventory.ListingMiss
 import dev.foss.goldenpath.inventory.ProbeCache
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseOffer
@@ -23,10 +25,12 @@ object ApkPureScan {
         val out = linkedMapOf<String, RemoteReleaseOffer>()
         stale.chunked(ApkPureFetchPolicy.CHUNK).forEach { chunk ->
             val fetched = fetcher.fetch(chunk)
-            val body = fetched.getOrElse {
+            val live = fetched.getOrElse {
                 RefreshTrace.line("apkpure chunk ${chunk.size} fail ${it.javaClass.simpleName}: ${it.message}")
                 null
             }
+            if (live != null) DumpChunkBook.remember("apkpure", live)
+            val body = live ?: DumpChunkBook.last("apkpure")
             val parsed = if (body == null) emptyMap() else ApkPureMetaParser.parseMany(body)
             if (body != null) {
                 RefreshTrace.line("apkpure chunk ${chunk.size} listed=${parsed.values.count { it.listed }}")
@@ -37,6 +41,11 @@ object ApkPureScan {
                         source = RemoteReleasedSource.ApkPure,
                         listed = false,
                         known = body != null,
+                        miss = when {
+                            live == null && body == null -> ListingMiss.Parse
+                            parsed[pkg] == null && body != null -> ListingMiss.Never
+                            else -> null
+                        },
                     ),
                     nowMs,
                 )

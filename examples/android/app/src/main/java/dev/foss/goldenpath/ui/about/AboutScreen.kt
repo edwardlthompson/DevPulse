@@ -16,10 +16,7 @@ import androidx.compose.ui.res.stringResource
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.about.DonationsConfig
 import dev.foss.goldenpath.about.ProductUpdate
-import dev.foss.goldenpath.ui.insets.LocalNavigationMode
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
-import dev.foss.goldenpath.ui.insets.navigationBarInsetBottomDp
-import dev.foss.goldenpath.ui.insets.navigationModeLabelRes
 import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
@@ -35,8 +32,6 @@ fun AboutScreen(
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
-    val navMode = LocalNavigationMode.current
-    val insetDp = navigationBarInsetBottomDp()
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -51,15 +46,6 @@ fun AboutScreen(
         Text(text = stringResource(R.string.about_version, version))
         Text(text = stringResource(R.string.about_format, installedFormat))
         Text(text = updateStatus)
-        Text(
-            text = stringResource(
-                R.string.about_debug_navigation_mode,
-                stringResource(navigationModeLabelRes(navMode)),
-                insetDp,
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
         if (canApplyUpdate) {
             Button(onClick = onApplyUpdate) {
                 Text(stringResource(R.string.about_update_apply))

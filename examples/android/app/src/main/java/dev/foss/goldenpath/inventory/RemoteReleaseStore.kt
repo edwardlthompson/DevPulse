@@ -63,8 +63,9 @@ object RemoteReleaseCodec {
             versionName = unesc(cols[3]).ifEmpty { null },
             pageUrl = unesc(cols[4]).ifEmpty { null },
             listed = flag == "1" || flag == "true",
-            known = flag != "?" && flag != "unknown",
+            known = flag !in setOf("?", "unknown", "403", "parse"),
             fetchedAtMs = cols.getOrNull(6)?.toLongOrNull(),
+            miss = missOf(flag),
         )
     }
 
@@ -84,8 +85,17 @@ object RemoteReleaseCodec {
 
     private fun listingFlag(offer: RemoteReleaseOffer): String = when {
         offer.listed -> "1"
+        offer.miss == ListingMiss.Forbidden -> "403"
+        offer.miss == ListingMiss.Parse -> "parse"
         !offer.known -> "?"
         else -> "0"
+    }
+
+    private fun missOf(flag: String): ListingMiss? = when (flag) {
+        "403" -> ListingMiss.Forbidden
+        "parse" -> ListingMiss.Parse
+        "0" -> ListingMiss.Never
+        else -> null
     }
 
     private fun esc(value: String?): String = (value ?: "").replace("\t", " ").replace("\n", " ")

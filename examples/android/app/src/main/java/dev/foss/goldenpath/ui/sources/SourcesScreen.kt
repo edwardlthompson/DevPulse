@@ -29,7 +29,6 @@ fun SourcesScreen(
         verticalArrangement = Arrangement.spacedBy(SpacingMd),
     ) {
         Text(text = stringResource(R.string.sources_title), style = MaterialTheme.typography.titleMedium)
-        Text(text = stringResource(R.string.sources_no_install))
         urls.forEach { url ->
             val cd = stringResource(R.string.inventory_open_listing, url)
             Text(

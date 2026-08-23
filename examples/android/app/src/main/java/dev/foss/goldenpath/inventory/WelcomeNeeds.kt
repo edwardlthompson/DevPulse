@@ -29,6 +29,9 @@ object WelcomeNeeds {
     fun installGranted(context: Context, sdkInt: Int = Build.VERSION.SDK_INT): Boolean =
         sdkInt < 26 || context.packageManager.canRequestPackageInstalls()
 
+    fun showInstallBanner(granted: Boolean, sdkInt: Int = Build.VERSION.SDK_INT): Boolean =
+        sdkInt >= 26 && !granted
+
     fun rows(
         appsAccepted: Boolean,
         notifyGranted: Boolean,

@@ -9,11 +9,23 @@ import dev.foss.goldenpath.opportunity.OpportunityExport
 import java.io.File
 
 object OpportunityShare {
-    fun send(context: Context, titles: List<String>, gaps: List<CategoryGap>, json: Boolean) {
+    fun send(context: Context, titles: List<String>, gaps: List<CategoryGap>, json: Boolean, markdown: Boolean = false) {
         runCatching {
-            val name = if (json) "devpulse-opportunity.json" else "devpulse-opportunity.csv"
-            val mime = if (json) "application/json" else "text/csv"
-            val body = if (json) OpportunityExport.json(titles, gaps) else OpportunityExport.csv(titles, gaps)
+            val name = when {
+                markdown -> "devpulse-opportunity.md"
+                json -> "devpulse-opportunity.json"
+                else -> "devpulse-opportunity.csv"
+            }
+            val mime = when {
+                markdown -> "text/markdown"
+                json -> "application/json"
+                else -> "text/csv"
+            }
+            val body = when {
+                markdown -> OpportunityExport.markdown(titles, gaps)
+                json -> OpportunityExport.json(titles, gaps)
+                else -> OpportunityExport.csv(titles, gaps)
+            }
             val file = File(context.cacheDir, name)
             file.writeText(body, Charsets.UTF_8)
             val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)

@@ -9,6 +9,7 @@
 - ✅ Accessibility: links announced as external destinations
 - ✅ i18n: keys under `alternatives_*` and `sources_*` in `strings.xml`
 - ✅ Show only actively maintained matches with last-update dates and links
+- ✅ Alternatives stay in the same category and newer than the installed version; long-press pins watch-this-instead
 - ✅ List every known download location: official F-Droid, IzzyOnDroid, other enabled repos, and forge Releases if an APK asset exists
 - ✅ Do not auto-download or auto-install
 

@@ -15,16 +15,17 @@ object ApkInstall {
         method: InstallMethod,
         shell: InstallShell = ProcessInstallShell,
     ): ApkInstallResult {
+        val used = method.effective(WelcomeNeeds.installGranted(context))
         val work = {
             apply(
                 apkFile,
-                method,
+                used,
                 system = { UpdateApplier.launchApkInstall(context, it) },
                 session = { SessionApkInstall.start(context, it) },
                 shell = shell,
             )
         }
-        if (method == InstallMethod.Root || Looper.myLooper() == Looper.getMainLooper()) {
+        if (used == InstallMethod.Root || Looper.myLooper() == Looper.getMainLooper()) {
             return runCatching(work).getOrElse { ApkInstallResult.Failed(it.javaClass.simpleName) }
         }
         val latch = CountDownLatch(1)

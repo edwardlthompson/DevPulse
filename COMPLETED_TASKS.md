@@ -2,6 +2,71 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 21 — Ideas backlog (after Sprint 20) (2026-08-23)
+
+- ✅ [AGENT] Refuse a listing whose minSdk is above the device
+- ✅ [AGENT] Show ABI mismatch on the row before tap
+- ✅ [AGENT] GitHub remaining hourly quota on the token screen
+- ✅ [AGENT] TalkBack live region for Refresh progress
+- ✅ [AGENT] Honor Retry-After on Play and dump 429s
+- ✅ [AGENT] Settings: wipe all remotes and probe caches
+- ✅ [AGENT] Opt-in local N fetchable updates notice
+- ✅ [AGENT] Copy package id and signing SHA-1 from detail
+
+## Sprint 20 — Ideas backlog (after Sprint 19) (2026-08-23)
+
+- ✅ [AGENT] Refuse a listing older than installed
+- ✅ [AGENT] Honor Retry-After on 429
+- ✅ [AGENT] Refresh checkpoint after process death
+- ✅ [AGENT] Play developer-website → forge hint
+- ✅ [AGENT] Show listing size before download
+- ✅ [AGENT] Last-failure line per outlet
+- ✅ [AGENT] Aptoide Store vs Games pick before fetch
+- ✅ [AGENT] F-Droid anti-feature chips on listings
+
+## Sprint 19 — Ideas backlog (after v0.29.0) (2026-08-23)
+
+- ✅ [AGENT] Cancel in-flight Update all when Back/Close hides the overlay
+- ✅ [AGENT] Permission-revoked banner on home when Install unknown apps is off
+- ✅ [AGENT] Prefer System install when Session cannot request package installs
+- ✅ [AGENT] Per-listing why-install-failed copy (permission, signing, timeout, no file)
+- ✅ [AGENT] Signing-cert mismatch gate before install
+- ✅ [AGENT] Session confirm-pending status with System fallback
+- ✅ [AGENT] Multi-select Update (not all)
+- ✅ [AGENT] Resume remaining Update all jobs after process death
+- ✅ [AGENT] Storage-space check before download
+- ✅ [AGENT] Metered-network confirm for Update all
+- ✅ [AGENT] Re-probe one app from detail
+- ✅ [AGENT] Pause/resume Refresh from the dialog
+- ✅ [AGENT] Wi-Fi-only Refresh toggle
+- ✅ [AGENT] Last-success timestamp per outlet on home
+- ✅ [AGENT] Refresh only the current filter set
+- ✅ [AGENT] Visible per-host backoff in Settings
+- ✅ [AGENT] Home row installed vs newest fetchable version delta
+- ✅ [AGENT] Distinguish 403 / parse-fail / never-listed on the list
+- ✅ [AGENT] APKMirror in Update all only when a file URL is already cached
+- ✅ [AGENT] Remember last-good dump etag / chunk
+- ✅ [AGENT] Aptoide Store vs Games hint on install fail
+- ✅ [AGENT] Encrypted GitLab and Codeberg tokens (same path as GitHub)
+- ✅ [AGENT] Remaining leftover-search budget on the token screen
+- ✅ [AGENT] Attach a pasted repo from app detail
+- ✅ [AGENT] Opportunity went-quiet-since-last-scan delta
+- ✅ [AGENT] Alternatives: same category and newer than installed
+- ✅ [AGENT] Watch-this-instead pin on an alternative
+- ✅ [AGENT] Opportunity export as a short markdown fork list
+- ✅ [AGENT] Forget this package (wipe listings, ignore, notes)
+- ✅ [AGENT] Settings: clear ignored versions
+- ✅ [AGENT] Export/import settings without inventory
+- ✅ [AGENT] Backup/restore ignore and applied-update files
+- ✅ [AGENT] Airplane-mode label on cached remotes
+- ✅ [AGENT] Verify self-update APK against DevPulse signing cert
+- ✅ [AGENT] In-app changelog between installed and latest GitHub APK
+- ✅ [AGENT] Fastlane-style GitHub Release notes file
+- ✅ [AGENT] TalkBack: row says install blocked when grant is off
+- ✅ [AGENT] Widget tap opens updates-only
+- ✅ [AGENT] Per-app stale-reminder snooze
+- ✅ [AGENT] Search by package id and signing SHA-1
+
 ## v0.27.0 ship (2026-08-21)
 
 - ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)
@@ -55,7 +120,6 @@
 |------|-------|----------------|
 | ✅ [AGENT] APKPure, Aptoide, Update all logic + tests | AGENT | `examples/android/app/src/main/java/dev/foss/goldenpath/inventory/` |
 | ✅ [AGENT] Settings hub and store-client UI | AGENT | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
-
 ## v0.24.0 ship (2026-08-20)
 
 - ✅ [HUMAN] Approve release tag when product-ready (this cut only; recurring next-tag row stays open)

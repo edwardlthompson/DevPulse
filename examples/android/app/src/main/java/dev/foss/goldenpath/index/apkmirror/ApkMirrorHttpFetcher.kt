@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.apkmirror
 
+import dev.foss.goldenpath.index.forge.RetryAfter
+import dev.foss.goldenpath.inventory.HostRetry
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -17,8 +19,10 @@ object ApkMirrorHttpFetcher : ApkMirrorBatchFetcher {
             conn.connectTimeout = ApkMirrorFetchPolicy.CONNECT_TIMEOUT_MS
             conn.readTimeout = ApkMirrorFetchPolicy.READ_TIMEOUT_MS
             conn.outputStream.bufferedWriter().use { it.write(body) }
-            if (conn.responseCode != HttpURLConnection.HTTP_OK) {
-                error("apkmirror ${conn.responseCode}")
+            val code = conn.responseCode
+            if (code != HttpURLConnection.HTTP_OK) {
+                HostRetry.note("apkmirror", code, RetryAfter.seconds(conn.getHeaderField("Retry-After")))
+                error("apkmirror $code")
             }
             conn.inputStream.bufferedReader().use { it.readText() }
         } finally {

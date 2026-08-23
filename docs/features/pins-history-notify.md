@@ -16,6 +16,7 @@
 - ✅ Pin on app detail hides the row from the red/stale list
 - ✅ Scan history shows how many went quiet since last scan
 - ✅ Opt-in notifications for 6-month and 1-year crossings
+- ✅ The same opt-in posts a local notice when fetchable updates exist
 - ✅ Offline: all local; worker no-ops without inventory permission
 
 ## Smoke scenario

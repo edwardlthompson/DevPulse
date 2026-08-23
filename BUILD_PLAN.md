@@ -102,6 +102,9 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 | Sprint 16 — Alternatives, repo fingerprints, Opportunity finish | 2026-08-21 | COMPLETED_TASKS.md @ `a2663a3` |
 | Sprint 17 — Aurora Play download | 2026-08-21 | COMPLETED_TASKS.md @ `a2663a3` |
 | Sprint 18 — Donations and self-update | 2026-08-21 | COMPLETED_TASKS.md @ `a2663a3` |
+| Sprint 19 — Ideas backlog (after v0.29.0) | 2026-08-23 | COMPLETED_TASKS.md @ `92c860a` |
+| Sprint 20 — Ideas backlog (after Sprint 19) | 2026-08-23 | COMPLETED_TASKS.md |
+| Sprint 21 — Ideas backlog (after Sprint 20) | 2026-08-23 | COMPLETED_TASKS.md |
 > **Sprint 11** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 12** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 13** archived in COMPLETED_TASKS.md @ `fd20edd`.
@@ -117,6 +120,9 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **Sprint 16** archived in COMPLETED_TASKS.md @ `a2663a3`.
 > **Sprint 17** archived in COMPLETED_TASKS.md @ `a2663a3`.
 > **Sprint 18** archived in COMPLETED_TASKS.md @ `a2663a3`.
+> **Sprint 19** archived in COMPLETED_TASKS.md @ `92c860a`.
+> **Sprint 20** archived in COMPLETED_TASKS.md.
+> **Sprint 21** archived in COMPLETED_TASKS.md.
 
 ## Ongoing Maintenance (recurring)
 

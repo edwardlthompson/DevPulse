@@ -1,6 +1,6 @@
 package dev.foss.goldenpath.ui.inventory
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -18,6 +19,8 @@ import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.UpdateInventory
+import dev.foss.goldenpath.inventory.VersionDelta
+import dev.foss.goldenpath.inventory.WelcomeNeeds
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.SpacingSm
 import java.text.DateFormat
@@ -27,21 +30,33 @@ import java.util.Date
 fun InventoryRow(
     app: InstalledApp,
     onOpen: () -> Unit,
+    selected: Boolean = false,
+    onToggleSelect: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val dateText = listReleaseDate(app)
     val hasUpdate = UpdateInventory.hasUpdate(app)
+    val context = LocalContext.current
     val rowCd = buildString {
         append(stringResource(R.string.inventory_row_cd_short, app.label, dateText))
         if (hasUpdate) {
             append(". ")
             append(stringResource(R.string.inventory_update_available))
+            if (selected) append(" ✓")
+        }
+        if (WelcomeNeeds.showInstallBanner(WelcomeNeeds.installGranted(context))) {
+            append(". ")
+            append(stringResource(R.string.install_method_failed))
         }
     }
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onOpen)
+            .combinedClickable(
+                role = Role.Button,
+                onClick = onOpen,
+                onLongClick = { if (hasUpdate) onToggleSelect?.invoke() },
+            )
             .semantics { contentDescription = rowCd }
             .padding(vertical = SpacingSm),
         verticalAlignment = Alignment.CenterVertically,
@@ -52,8 +67,15 @@ fun InventoryRow(
                 .weight(1f)
                 .padding(start = SpacingMd),
         ) {
-            Text(text = app.label, style = MaterialTheme.typography.titleMedium)
-            Text(text = dateText, style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = app.label,
+                style = MaterialTheme.typography.titleMedium,
+                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = VersionDelta.line(app.versionName, VersionDelta.newest(app)) ?: dateText,
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
         if (hasUpdate) {
             OneClickUpdateIcon(app)

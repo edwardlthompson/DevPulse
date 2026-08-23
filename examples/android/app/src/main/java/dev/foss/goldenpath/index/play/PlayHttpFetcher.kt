@@ -3,6 +3,7 @@ package dev.foss.goldenpath.index.play
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
+import dev.foss.goldenpath.index.forge.RetryAfter
 import java.net.URL
 import java.net.URLEncoder
 
@@ -23,7 +24,7 @@ object PlayHttpFetcher : PlayPageClient {
             val code = conn.responseCode
             val stream = if (code in 200..299) conn.inputStream else conn.errorStream
             val body = stream?.let { readListed(it, PlayFetchPolicy.MAX_BODY_BYTES) }.orEmpty()
-            return PlayPageResponse(code, body)
+            return PlayPageResponse(code, body, RetryAfter.seconds(conn.getHeaderField("Retry-After")))
         } finally {
             conn.disconnect()
         }

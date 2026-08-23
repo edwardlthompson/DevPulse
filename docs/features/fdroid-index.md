@@ -12,7 +12,7 @@ Types in `dev.foss.goldenpath.index.fdroid`. No Play or forge clients. Network f
 |------|------|-----------------|
 | `FdroidRepoKind` | enum | `Official`, `Archive`, `Izzy`, `Guardian`, `Calyx`, `Custom` |
 | `FdroidRepo` | data class | `id`, `kind`, `indexUrl`, `enabled` |
-| `FdroidAppRecord` | data class | `packageName`, `lastUpdatedMs`, `sourceCode`, `repoId`, optional `category`, `relatedPackages` |
+| `FdroidAppRecord` | data class | `packageName`, `lastUpdatedMs`, `sourceCode`, `repoId`, optional `category`, `relatedPackages`, `apkSizeBytes`, `antiFeatures` |
 | `CachedIndex` | data class | `raw`, `fetchedAtMs` |
 | `FdroidIndexError` | enum | `DownloadFailed`, `ParseFailed`, `NotFound` |
 | `FdroidLookup` | data class | `record`, `fromCache`, `error` |
@@ -40,6 +40,7 @@ Official `index-v1.jar` signature verification is **not** implemented this sprin
 - ✅ Otherwise checksum plus HTTPS, and this file documents that limitation
 - ✅ Extra repos: IzzyOnDroid toggle; Guardian Project, Calyx, custom URLs
 - ✅ Origin badge can become F-Droid or extra repo when the package is found
+- ✅ Listing extras remember APK size, anti-feature names, and minSdk from the index
 
 ## Smoke scenario
 

@@ -28,6 +28,8 @@ class InventoryFilterTest {
     fun queryMatchesLabelOrPackage() {
         assertEquals(listOf(user), InventoryFilter.matchesQuery(listOf(user, system), "alpha"))
         assertEquals(listOf(system), InventoryFilter.matchesQuery(listOf(user, system), "app.system"))
+        val signed = user.copy(signingSha1 = "aa:bb:cc")
+        assertEquals(listOf(signed), InventoryFilter.matchesQuery(listOf(signed), "AABBCC"))
     }
 
     @Test

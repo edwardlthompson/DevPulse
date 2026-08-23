@@ -63,7 +63,7 @@ fun OneClickUpdateIcon(app: InstalledApp, modifier: Modifier = Modifier) {
         tint = MaterialTheme.colorScheme.error,
         modifier = modifier.clickable(enabled = !busy && kind !is OneClickKind.None, role = Role.Button) {
             if (busy) return@clickable
-            if (!WelcomeNeeds.ensureInstall(context)) return@clickable
+            if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) return@clickable
             busy = true
             scope.launch {
                 withContext(Dispatchers.IO) {

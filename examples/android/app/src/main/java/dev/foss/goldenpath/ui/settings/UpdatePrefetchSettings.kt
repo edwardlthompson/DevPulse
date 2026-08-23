@@ -27,7 +27,7 @@ fun UpdatePrefetchSettings(modifier: Modifier = Modifier) {
         Text(text = stringResource(R.string.update_prefetch_title), style = MaterialTheme.typography.titleMedium)
         Text(text = stringResource(R.string.update_prefetch_body), style = MaterialTheme.typography.bodySmall)
         PreferenceSwitch(
-            label = stringResource(R.string.update_prefetch_enable),
+            label = stringResource(R.string.update_prefetch_title),
             checked = enabled,
             onCheckedChange = { value -> scope.launch { prefs.setUpdatePrefetchEnabled(value) } },
         )

@@ -109,9 +109,12 @@ fun ForgeTokenSave(
 
 @Composable
 private fun outcomeText(check: GitHubTokenCheck): String = when (check.outcome) {
-    GitHubTokenOutcome.Accepted -> check.hourlyLimit?.let {
-        stringResource(R.string.forge_token_saved, it)
-    } ?: stringResource(R.string.forge_token_saved_unknown)
+    GitHubTokenOutcome.Accepted -> when {
+        check.hourlyRemaining != null && check.hourlyLimit != null ->
+            stringResource(R.string.scan_progress, check.hourlyRemaining, check.hourlyLimit)
+        check.hourlyLimit != null -> stringResource(R.string.forge_token_saved, check.hourlyLimit)
+        else -> stringResource(R.string.forge_token_saved_unknown)
+    }
     GitHubTokenOutcome.Rejected -> stringResource(R.string.forge_token_rejected)
     GitHubTokenOutcome.Unreachable -> stringResource(R.string.forge_token_network)
     GitHubTokenOutcome.Cleared -> stringResource(R.string.forge_token_cleared)

@@ -12,9 +12,18 @@ object InstallAwait {
     @Volatile
     private var ok: Boolean = false
 
+    @Volatile
+    var pending: Boolean = false
+        private set
+
     fun arm() {
         ok = false
+        pending = false
         latch = CountDownLatch(1)
+    }
+
+    fun markPending() {
+        pending = true
     }
 
     fun signal(success: Boolean) {

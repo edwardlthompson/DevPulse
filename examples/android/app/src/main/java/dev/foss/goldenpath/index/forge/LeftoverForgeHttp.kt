@@ -4,7 +4,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 
-class LeftoverForgeHttp : LeftoverSearchClient {
+class LeftoverForgeHttp(
+    private val gitlabToken: String? = null,
+    private val codebergToken: String? = null,
+) : LeftoverSearchClient {
     override fun page(kind: LeftoverKind, query: String): GitHubSearchPage {
         val q = URLEncoder.encode(query, Charsets.UTF_8.name())
         val url = when (kind) {
@@ -29,11 +32,18 @@ class LeftoverForgeHttp : LeftoverSearchClient {
             conn.instanceFollowRedirects = true
             conn.requestMethod = "GET"
             conn.setRequestProperty("User-Agent", GitHubFetchPolicy.USER_AGENT)
+            val host = if (url.contains("gitlab.com")) ForgeHost.GitLab else ForgeHost.Codeberg
+            val token = if (host == ForgeHost.GitLab) gitlabToken else codebergToken
+            LeftoverAuth.header(host, token)?.let { (name, value) -> conn.setRequestProperty(name, value) }
             conn.connectTimeout = GitHubFetchPolicy.CONNECT_TIMEOUT_MS
             conn.readTimeout = GitHubFetchPolicy.READ_TIMEOUT_MS
             val code = conn.responseCode
             val stream = if (code in 200..299) conn.inputStream else conn.errorStream
-            GitHubSearchPage(code, stream?.bufferedReader()?.use { it.readText() }.orEmpty())
+            GitHubSearchPage(
+                code,
+                stream?.bufferedReader()?.use { it.readText() }.orEmpty(),
+                RetryAfter.seconds(conn.getHeaderField("Retry-After")),
+            )
         } finally {
             conn.disconnect()
         }

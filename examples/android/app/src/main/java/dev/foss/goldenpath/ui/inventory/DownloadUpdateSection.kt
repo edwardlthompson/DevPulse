@@ -78,7 +78,7 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
         TextButton(
             onClick = {
                 if (busy) return@TextButton
-                if (!WelcomeNeeds.ensureInstall(context)) return@TextButton
+                if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) return@TextButton
                 busy = true
                 failRes = null
                 scope.launch {
@@ -101,8 +101,7 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
                     }
                     busy = false
                     failRes = when (result) {
-                        OneClickResult.FailedDownload -> R.string.update_cache_failed
-                        OneClickResult.FailedInstall -> R.string.install_method_failed
+                        is OneClickResult.Failed -> InventoryCopy.failRes(result.why)
                         else -> null
                     }
                 }

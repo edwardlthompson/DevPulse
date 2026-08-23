@@ -59,7 +59,8 @@ object UpdateAll {
             (group.firstOrNull()?.packageName.orEmpty()) to group.toMutableList()
         }
         val settled = mutableSetOf<String>()
-        while (true) {
+        UpdateAllResume.checkpoint(filesDir, open, settled)
+        while (!UpdateAllCancel.requested()) {
             val wave = open.mapNotNull { (pkg, group) ->
                 if (pkg.isEmpty() || pkg in settled) {
                     group.clear()
@@ -70,15 +71,20 @@ object UpdateAll {
             }
             if (wave.isEmpty()) break
             val fetched = ReleaseRefreshParallel.map(wave, PARALLEL) { job ->
+                if (UpdateAllCancel.requested()) return@map job to null
                 RefreshTrace.line("update all try ${job.source.name} ${job.packageName} ${job.versionName}")
                 onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Fetch))
                 job to prepare(job) { read, total ->
                     onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Fetch, read, total))
                 }
             }
+            if (UpdateAllCancel.requested()) break
             val ready = UpdateAllQueue.takeDownloads(fetched, open, filesDir, onSnap, counts)
+            if (UpdateAllCancel.requested()) break
             UpdateAllQueue.installReady(ready, open, settled, install, filesDir, onSnap, counts)
+            UpdateAllResume.checkpoint(filesDir, open, settled)
         }
+        UpdateAllResume.checkpoint(filesDir, open, settled)
         val result = UpdateAllResult(counts[0], counts[1], counts[2], counts[3])
         filesDir?.let {
             PulseHistory.note(
@@ -92,8 +98,16 @@ object UpdateAll {
         return result
     }
 
-    internal fun fetchable(source: RemoteReleasedSource): Boolean = when (source) {
-        RemoteReleasedSource.None, RemoteReleasedSource.ApkMirror -> false
+    internal fun fetchable(source: RemoteReleasedSource, packageName: String = ""): Boolean = when (source) {
+        RemoteReleasedSource.None -> false
+        RemoteReleasedSource.ApkMirror -> cachedMirror(packageName)
         else -> true
+    }
+
+    private fun cachedMirror(packageName: String): Boolean {
+        val url = UpdateArtifactMemory.forSource(packageName, RemoteReleasedSource.ApkMirror)
+            ?.downloadUrl
+            .orEmpty()
+        return url.contains("download.php", ignoreCase = true)
     }
 }

@@ -27,11 +27,13 @@ fun DonateNudgeDialog(onDonate: () -> Unit, onNotNow: () -> Unit) {
 }
 
 @Composable
-fun UpdateAvailableDialog(version: String, onInstall: () -> Unit, onLater: () -> Unit) {
+fun UpdateAvailableDialog(version: String, onInstall: () -> Unit, onLater: () -> Unit, notes: String? = null) {
     AlertDialog(
         onDismissRequest = onLater,
         title = { Text(stringResource(R.string.about_update_prompt_title)) },
-        text = { Text(stringResource(R.string.about_update_prompt_body, version)) },
+        text = {
+            Text(notes?.takeIf { it.isNotBlank() } ?: stringResource(R.string.about_update_prompt_body, version))
+        },
         confirmButton = {
             TextButton(onClick = onInstall) {
                 Text(stringResource(R.string.about_install))

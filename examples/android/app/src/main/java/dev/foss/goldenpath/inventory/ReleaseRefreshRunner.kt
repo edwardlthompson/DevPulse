@@ -17,7 +17,9 @@ import dev.foss.goldenpath.index.fdroid.FileFdroidCategoryStore
 import dev.foss.goldenpath.index.forge.EncryptedForgeTokenStore
 import dev.foss.goldenpath.index.forge.FileGithubVerifiedStore
 import dev.foss.goldenpath.index.forge.FilePastedRepoStore
+import dev.foss.goldenpath.index.forge.ForgeHost
 import dev.foss.goldenpath.index.forge.GitHubSearchHttp
+import dev.foss.goldenpath.index.forge.LeftoverForgeHttp
 import dev.foss.goldenpath.index.play.PlayHttpFetcher
 import dev.foss.goldenpath.index.play.WaybackHttpFetcher
 import dev.foss.goldenpath.index.play.WaybackPlay
@@ -26,7 +28,11 @@ import java.io.File
 import kotlinx.coroutines.flow.first
 
 object ReleaseRefreshRunner {
-    suspend fun run(context: Context, onProgress: (RefreshProgress) -> Unit): Int {
+    suspend fun run(
+        context: Context,
+        onProgress: (RefreshProgress) -> Unit,
+        wanted: Collection<String> = emptySet(),
+    ): Int {
         RefreshTrace.emit = { Log.i("DevPulse", it) }
         AppliedUpdates.clear()
         val prefs = InventoryPreferences(context)
@@ -35,11 +41,21 @@ object ReleaseRefreshRunner {
         val searchUnknowns = prefs.forgeLookupSearchUnknowns.first()
         WaybackPlay.client = WaybackHttpFetcher.takeIf { playOn }
         val paceFile = File(context.filesDir, "refresh_pace.tsv")
+        val successFile = File(context.filesDir, "refresh_success.tsv")
+        val failFile = File(context.filesDir, "refresh_fail.tsv")
         RefreshPaceBook.hydrate(RefreshPaceFile.load(paceFile))
+        RefreshSuccessBook.hydrate(RefreshPaceFile.load(successFile))
+        RefreshFailBook.hydrate(RefreshPaceFile.load(failFile))
+        RefreshResume.persistDir = context.filesDir
+        DumpChunkBook.persistDir = context.filesDir
+        DumpChunkBook.hydrate(context.filesDir)
         val startedAt = System.currentTimeMillis()
         return try {
         val result = ReleaseRefresh.run(
-            apps = PackageManagerPackageCatalog(context.packageManager).listInstalled(),
+            apps = RefreshScope.apps(
+                PackageManagerPackageCatalog(context.packageManager).listInstalled(),
+                wanted,
+            ),
             repos = FdroidEnabledRepos.list(FdroidRepoPreferences(context)),
             aptoideEnabled = prefs.aptoideLookupEnabled.first(),
             fdroidFetcher = FdroidIndexHttpFetcher,
@@ -53,7 +69,7 @@ object ReleaseRefreshRunner {
             verifiedStore = FileGithubVerifiedStore(File(context.filesDir, "github_verified.tsv")),
             searchUnknowns = searchUnknowns,
             hostResolve = FdroidHostHttp(),
-            leftoverClient = null,
+            leftoverClient = leftoverHttp(context),
             categoryStore = FileFdroidCategoryStore(File(context.filesDir, "fdroid_categories.tsv")),
             pastedStore = FilePastedRepoStore(File(context.filesDir, "pasted_repos.tsv")),
             nameCatalog = runCatching { FdroidNameCatalog.fromAssets(context.assets) }
@@ -67,7 +83,13 @@ object ReleaseRefreshRunner {
             apkPureFetcher = ApkPureHttpFetcher,
             onProgress = onProgress,
         )
+        val snaps = ReleaseRefreshRuntime.progress.value.outlets
+        RefreshSuccessBook.capture(snaps)
+        RefreshFailBook.capture(snaps)
         RefreshPaceFile.save(paceFile, RefreshPaceBook.snapshot())
+        RefreshPaceFile.save(successFile, RefreshSuccessBook.snapshot())
+        RefreshPaceFile.save(failFile, RefreshFailBook.snapshot())
+        if (snaps.isNotEmpty() && snaps.all { it.finishedAtMs != null }) RefreshResume.clear()
         prefs.setLastScanAtMs(System.currentTimeMillis())
         val progress = ReleaseRefreshRuntime.progress.value
         val outlets = progress.outlets.joinToString(";") { "${it.id}=${it.elapsedMs}" }
@@ -94,5 +116,13 @@ object ReleaseRefreshRunner {
         } finally {
             WaybackPlay.client = null
         }
+    }
+
+    private fun leftoverHttp(context: Context): LeftoverForgeHttp {
+        val store = EncryptedForgeTokenStore.create(context)
+        return LeftoverForgeHttp(
+            store?.leftover(ForgeHost.GitLab),
+            store?.leftover(ForgeHost.Codeberg),
+        )
     }
 }

@@ -44,6 +44,15 @@ class PlayHtmlParserTest {
     }
 
     @Test
+    fun developerWebsiteIsKept() {
+        val result = PlayHtmlParser.parse(
+            """<div itemprop="datePublished" content="2024-06-01"></div>""" +
+                """{"developerWebsite":{"url":"https://github.com/TeamNewPipe/NewPipe"}}""",
+        )
+        assertEquals("https://github.com/TeamNewPipe/NewPipe", result.developerUrl)
+    }
+
+    @Test
     fun botWallIsNotListed() {
         assertEquals(false, PlayHtmlParser.looksListed(readFixture("play/bot-wall.html")))
     }

@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import dev.foss.goldenpath.network.NetworkUnmetered
 import dev.foss.goldenpath.notify.RefreshNotifier
 import dev.foss.goldenpath.notify.RefreshNotifyCopy
 import kotlinx.coroutines.flow.first
@@ -28,16 +29,23 @@ class ReleaseRefreshWorker(
             Build.VERSION.SDK_INT,
         )
         if (!canScan) return Result.success()
+        val wifiOnly = RefreshWifiPrefs(applicationContext).enabled.first()
+        if (!RefreshWifiOnly.allow(wifiOnly, NetworkUnmetered.isUnmetered(applicationContext))) {
+            return Result.success()
+        }
         if (!ReleaseRefreshRuntime.tryBegin()) return Result.success()
         notifier.ensureChannel()
         setForeground(getForegroundInfo())
         var lookedUp = 0
         try {
-            lookedUp = ReleaseRefreshRunner.run(applicationContext) { progress ->
-                ReleaseRefreshRuntime.setProgress(progress)
-                notifier.postProgress(progress.done, progress.total, progress.location)
-                lookedUp = RefreshNotifyCopy.lookedUpCount(progress)
-            }
+            lookedUp = ReleaseRefreshRunner.run(
+                applicationContext,
+                { progress ->
+                    ReleaseRefreshRuntime.setProgress(progress)
+                    notifier.postProgress(progress.done, progress.total, progress.location)
+                    lookedUp = RefreshNotifyCopy.lookedUpCount(progress)
+                },
+            )
         } catch (_: Throwable) {
             lookedUp = 0
         } finally {

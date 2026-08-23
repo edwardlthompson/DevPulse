@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.apkpure
 
+import dev.foss.goldenpath.inventory.DumpChunkBook
 import dev.foss.goldenpath.inventory.RemoteReleaseMemory
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import org.junit.Assert.assertFalse
@@ -12,6 +13,8 @@ class ApkPureScanTest {
     fun reset() {
         UpdateArtifactMemory.clear()
         RemoteReleaseMemory.clear()
+        DumpChunkBook.clear()
+        DumpChunkBook.persistDir = null
     }
     @Test
     fun listedAndUnknownStayHonest() {

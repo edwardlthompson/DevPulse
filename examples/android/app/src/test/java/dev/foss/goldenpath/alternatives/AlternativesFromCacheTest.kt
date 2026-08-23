@@ -24,6 +24,7 @@ class AlternativesFromCacheTest {
         val now = 2_000_000_000_000L
         val stale = sampleApp("org.old.maps", "Old Maps", remoteReleasedAtMs = now - 400L * 86_400_000L)
         val fresh = sampleApp("org.fresh.maps", "Fresh Maps", remoteReleasedAtMs = now - 10L * 86_400_000L)
+            .copy(versionName = "2.0")
         val meta = mapOf(
             "org.old.maps" to FdroidPackageMeta("Maps"),
             "org.fresh.maps" to FdroidPackageMeta("Maps"),

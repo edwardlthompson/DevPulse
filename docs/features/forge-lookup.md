@@ -44,13 +44,15 @@ Production uses `EncryptedForgeTokenStore` (EncryptedSharedPreferences, ADR-0001
 ## Acceptance criteria
 
 - ✅ User-visible behavior: GitHub **hint-first** (F-Droid `sourceCode` on the same app object ∪ persisted map) lists without `listReleases` / `searchRepos`. Leftover name search is **opt-in** (`forge_lookup_search_unknowns`, default off). When search is on, list only if a release asset/title/tag/body contains the full package (or `-`/`_` variant)
-- ✅ Offline/error behavior: honour 403 and 429 on opt-in search; persist backoff; pace at 30 searches/min; finish every wanted app unless Stop; show unknown for that app only
+- ✅ Offline/error behavior: honour 403 and 429 on opt-in search; persist backoff; pace at 30 searches/min; finish every wanted app unless Stop; show unknown for that app only; Settings shows remaining host backoff
+- ✅ GitLab and Codeberg tokens persist in the same encrypted prefs file as GitHub; leftover-search remaining budget is visible on the token screen
+- ✅ App detail can attach a pasted repo URL for that package
 - ✅ Accessibility: match confidence announced on the detail screen
 - ✅ i18n: keys under `forge_*` in `strings.xml`
 - ✅ Prefer exact package or Gradle id over fuzzy title
 - ✅ Optional GitLab and Codeberg
 - ✅ User can paste a missed repo URL; DevPulse tracks it thereafter
-- ✅ Optional GitHub token: Save and check calls `GET /rate_limit`, stores only on 200, never logs the token. Remove clears it. Paste-as-you-type does not persist.
+- ✅ Optional GitHub token: Save and check calls `GET /rate_limit`, stores only on 200, never logs the token. Remove clears it. Paste-as-you-type does not persist. Accepted tokens show remaining of hourly limit.
 - ✅ In-app create-and-connect guide: why (60 vs ~5,000 requests/hour), five browser steps with HTTPS links where a page exists (login, fine-grained list, create). Copy/paste stay in-app. GitHub Android app does not create PATs
 - ✅ F-Droid GitHub `sourceCode` on the same app object is enough to list GitHub (Izzy Wipe Files lists `peterhearty/WipeFiles` with no token). Do not list from a neighbor’s `sourceCode`
 

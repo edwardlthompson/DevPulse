@@ -47,4 +47,11 @@ class WelcomeNeedsTest {
         assertTrue(WelcomeNeeds.seen(welcomeSeen = true))
         assertFalse(WelcomeNeeds.seen(welcomeSeen = false))
     }
+
+    @Test
+    fun installBannerOnlyWhenUnknownAppsOff() {
+        assertTrue(WelcomeNeeds.showInstallBanner(granted = false, sdkInt = 34))
+        assertFalse(WelcomeNeeds.showInstallBanner(granted = true, sdkInt = 34))
+        assertFalse(WelcomeNeeds.showInstallBanner(granted = false, sdkInt = 25))
+    }
 }

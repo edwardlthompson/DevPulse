@@ -83,7 +83,7 @@ fun UpdateAllDialog(
                     .align(Alignment.TopCenter),
             ) {
                 Column(modifier = Modifier.fillMaxSize().padding(SpacingMd)) {
-                    Text(text = stringResource(R.string.update_all), style = MaterialTheme.typography.titleMedium)
+                    Text(text = stringResource(R.string.update_all, snaps.size), style = MaterialTheme.typography.titleMedium)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

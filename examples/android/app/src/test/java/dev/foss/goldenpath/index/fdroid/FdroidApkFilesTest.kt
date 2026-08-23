@@ -32,13 +32,15 @@ class FdroidApkFilesTest {
         val raw = """
             {"packages":{"org.ver":[
               {"versionCode":1,"apkName":"org.ver_1.apk","hash":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
-              {"versionCode":32,"apkName":"org.ver_32.apk","hash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","nativecode":["arm64-v8a"]}
+              {"versionCode":32,"apkName":"org.ver_32.apk","hash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","nativecode":["arm64-v8a"],"size":4200000,"minSdkVersion":26}
             ]}}
         """.trimIndent()
         val hint = FdroidApkFiles.namesIn(raw, setOf("org.ver"))["org.ver"]
         assertEquals("org.ver_32.apk", hint?.apkName)
         assertEquals("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", hint?.sha256)
         assertEquals(setOf("arm64-v8a"), hint?.nativeCodes)
+        assertEquals(4_200_000L, hint?.sizeBytes)
+        assertEquals(26, hint?.minSdk)
         val rec = FdroidIndexParser.parse(
             """{"apps":[{"packageName":"org.ver","lastUpdated":1}],"packages":{"org.ver":[{"versionCode":32,"apkName":"org.ver_32.apk","hash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}]}}""",
             "official",

@@ -17,6 +17,7 @@ import dev.foss.goldenpath.index.forge.EncryptedForgeTokenStore
 import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.ui.forge.ForgeTokenGuide
 import dev.foss.goldenpath.ui.forge.ForgeTokenSave
+import dev.foss.goldenpath.ui.forge.LeftoverTokenFields
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import kotlinx.coroutines.launch
 
@@ -42,7 +43,9 @@ fun ForgeLookupSettings(modifier: Modifier = Modifier) {
             checked = searchUnknowns,
             onCheckedChange = { value -> scope.launch { prefs.setForgeLookupSearchUnknowns(value) } },
         )
+        HostBackoffLine()
         ForgeTokenGuide()
         ForgeTokenSave(store = remember { EncryptedForgeTokenStore.wrap(context) })
+        LeftoverTokenFields(remember { EncryptedForgeTokenStore.create(context) })
     }
 }

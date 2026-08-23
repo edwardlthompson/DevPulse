@@ -9,6 +9,7 @@ data class PlayLookup(
     val updatedOnMs: Long?,
     val publishedVersion: String?,
     val status: PlayLookupStatus,
+    val developerUrl: String? = null,
 )
 
 object PlayCachePolicy {
@@ -33,6 +34,7 @@ object PlayFetchPolicy {
 data class PlayPageResponse(
     val code: Int,
     val body: String,
+    val retryAfterSec: Long? = null,
 )
 
 fun interface PlayPageFetcher {

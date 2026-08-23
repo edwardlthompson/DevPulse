@@ -35,4 +35,13 @@ class ApkIdentityTest {
         assertFalse(ApkIdentity.identityReady(artifact, inspect, installed.copy(abis = setOf("x86"))))
         assertFalse(ApkIdentity.identityReady(artifact, inspect.copy(signers = emptySet()), installed))
     }
+
+    @Test
+    fun signersMatchAllowsUnknownInstalled() {
+        assertTrue(ApkIdentity.signersMatch(setOf("aa"), null))
+        assertTrue(ApkIdentity.signersMatch(setOf("aa"), emptySet()))
+        assertTrue(ApkIdentity.signersMatch(setOf("aa"), setOf("aa", "bb")))
+        assertFalse(ApkIdentity.signersMatch(setOf("aa"), setOf("bb")))
+        assertFalse(ApkIdentity.signersMatch(emptySet(), setOf("aa")))
+    }
 }

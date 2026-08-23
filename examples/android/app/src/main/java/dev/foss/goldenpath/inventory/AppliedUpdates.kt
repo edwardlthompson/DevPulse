@@ -14,6 +14,13 @@ object AppliedUpdates {
 
     fun settled(packageName: String): Boolean = packageName.trim() in settled
 
+    fun clearOne(packageName: String) {
+        val pkg = packageName.trim()
+        if (pkg.isEmpty()) return
+        synchronized(this) { settled = settled - pkg }
+        InstalledAppsRevision.bump()
+    }
+
     fun clear() {
         synchronized(this) { settled = emptySet() }
         InstalledAppsRevision.bump()

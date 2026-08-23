@@ -6,12 +6,22 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 
 class EncryptedForgeTokenStore(private val prefs: SharedPreferences) : ForgeTokenStore {
-    override fun getToken(): String? = prefs.getString(KEY, null)?.trim()?.ifEmpty { null }
+    override fun getToken(): String? = read(KEY)
 
-    override fun setToken(token: String?) {
+    override fun setToken(token: String?) = write(KEY, token)
+
+    fun leftover(host: ForgeHost): String? = LeftoverAuth.key(host)?.let(::read)
+
+    fun setLeftover(host: ForgeHost, token: String?) {
+        LeftoverAuth.key(host)?.let { write(it, token) }
+    }
+
+    private fun read(key: String): String? = prefs.getString(key, null)?.trim()?.ifEmpty { null }
+
+    private fun write(key: String, token: String?) {
         val trimmed = token?.trim().orEmpty()
         prefs.edit().apply {
-            if (trimmed.isEmpty()) remove(KEY) else putString(KEY, trimmed)
+            if (trimmed.isEmpty()) remove(key) else putString(key, trimmed)
             apply()
         }
     }

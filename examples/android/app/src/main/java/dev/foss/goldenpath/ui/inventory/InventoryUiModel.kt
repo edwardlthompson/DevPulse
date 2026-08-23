@@ -39,6 +39,7 @@ import dev.foss.goldenpath.inventory.ReleaseRefreshService
 import dev.foss.goldenpath.inventory.RemoteReleaseMemory
 import java.io.File
 import dev.foss.goldenpath.inventory.ScanInterval
+import dev.foss.goldenpath.inventory.StaleSnooze
 import dev.foss.goldenpath.inventory.ScanSchedule
 import dev.foss.goldenpath.inventory.UsagePulse
 import dev.foss.goldenpath.inventory.UsageStatsAccess
@@ -172,6 +173,12 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         usageByPackage = usage,
         nowMs = nowMs,
     ).filter { !staleOnly || it.packageName !in pins }
+        .filter {
+            !staleOnly || !StaleSnooze.hidden(
+                StaleSnooze.load(File(context.filesDir, "stale_snooze.tsv"))[it.packageName],
+                nowMs,
+            )
+        }
     return InventoryUiModel(
         apps = if (canScan) visible else emptyList(),
         canScan = canScan,
@@ -225,7 +232,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         onRefresh = {
             if (!refreshing && canScan) {
                 requestRefreshNotifications(context)
-                ReleaseRefreshService.start(context)
+                ReleaseRefreshService.start(context, visible.map { it.packageName })
             }
         },
         onStopOutlet = { id -> ReleaseRefreshRuntime.stopOutlet(id) },
