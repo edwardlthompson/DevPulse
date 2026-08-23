@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-23 — v0.30.0 ship
+- **Status:** Accepted
+- **Context:** Sprint 19–21 listing honesty, Refresh/Update-all resume, and local cache/notify/copy work sat uncommitted after v0.29.0.
+- **Decision:** `feat:` prepare on `main`; fold Unreleased product notes onto Release Please PR #11; admin-merge when the merge queue check failed. Listings that are older, above device minSdk, or ABI-mismatched are refused. Play/dump 429s honor Retry-After.
+- **Alternatives considered:** Leave generic RP “prepare” bullets as the GitHub Release body (rejected: product notes already existed). Wait only for Queue merge (rejected: same ACTION_REQUIRED pattern as 0.28.0/0.29.0).
+- **Consequences:** Tag `v0.30.0` published. Recurring Weekly/Monthly/Human rows stay open.
+
 ### 2026-08-22 — v0.29.0 ship
 - **Status:** Accepted
 - **Context:** Welcome auto-dismissed via an older apps ack; Update all / Refresh overlays ignored Back; Session install hung without Install unknown apps.
