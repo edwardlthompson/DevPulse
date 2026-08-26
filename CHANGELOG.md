@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.32.0](https://github.com/edwardlthompson/DevPulse/compare/v0.31.0...v0.32.0) (2026-08-26)
+
 ### Added
 
 - Inventory FAB pastes a GitHub owner/repo URL; Exact/SuffixVariant auto-bind, picker on conflict, unmatched watched (not a catalog)
