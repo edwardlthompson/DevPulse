@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-26 — v0.32.0 ship
+- **Status:** Accepted
+- **Context:** Sprint 22–23 GitHub-add (aliases, FAB paste, starred scan, Obtainium JSON import) sat on `main` as `feat:` prepare `7f7dcf7`. The local `git push` token did not start Actions. Release Please has no `workflow_dispatch`.
+- **Decision:** Dispatch CI, Security Scan, and CodeQL on `main`. Fold Unreleased product notes onto RP #13; admin-merge when Queue RP failed. `gh release create v0.32.0 --target` the merge SHA after RP missed the tag (KB-027).
+- **Alternatives considered:** Wait only for RP to open a PR (rejected: first push never started the workflow). Merge the Aug 23 phantom 0.32.0 branch as-is (rejected: commit-history changelog, missing product notes).
+- **Consequences:** Tag `v0.32.0` published. Sprint 22–23 `[ADB]` smoke stays open. Recurring Weekly/Monthly/Human rows stay open.
+
 ### 2026-08-26 — GitHub-only apps via aliases, paste, and stars (not Play-miss name-search)
 - **Status:** Accepted
 - **Context:** Obtainium-class GitHub APKs (`dev.imranr.obtainium`) miss Refresh because F-Droid harvests `*.fdroid` and `storeSettled` skips GitHub name-search after a Play miss. Opening name-search for every Play miss would blow the GitHub API budget. APKUpdater’s speed comes from rumboalla’s curated map, which `docs/features/forge-lookup.md` already refuses to vendor.

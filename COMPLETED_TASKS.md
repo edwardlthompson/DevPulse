@@ -2,6 +2,22 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 23 — Obtainium migrate and filters (2026-08-26)
+
+- ✅ [AGENT] Obtainium JSON import (skip secrets/unknown sources); per-app prerelease + length-capped APK regex; direct HTTPS APK via `ApkDownloadUrl.httpsFile` + cert/package gate
+- ✅ [AGENT] Feature spec `docs/features/github-add.md`; DECISION_LOG alias vs storeSettled vs no APKUpdater map; PRIVACY starred row
+- ✅ [AGENT] Import, opts, direct APK + tests
+- ✅ [AGENT] Feature spec
+
+## Sprint 22 — GitHub add (uninstall Obtainium) (2026-08-26)
+
+- ✅ [AGENT] PackageIdAliases (allowlist suffixes only) + ForgeLibraryMatch + WatchedRepoStore; githubHints alias without sibling version/ms; AppReprobeLive same lookup; tests for Obtainium, firefox non-alias, and version isolation
+- ✅ [AGENT] Inventory FAB add-repo; persist pasted last-wins; forgetFetched then re-probe; picker when alias conflicts; TalkBack labels; `res/values/forge.xml`
+- ✅ [AGENT] Opt-in starred scan; token required; max 5 pages; zero listReleases; Exact/SuffixVariant only; 403 CTA; never log stars or token
+- ✅ [AGENT] Logic + alias tests
+- ✅ [AGENT] FAB + dialog + i18n
+- ✅ [AGENT] Starred + privacy
+
 ## Sprint 21 — Ideas backlog (after Sprint 20) (2026-08-23)
 
 - ✅ [AGENT] Refuse a listing whose minSdk is above the device
