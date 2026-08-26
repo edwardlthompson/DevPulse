@@ -86,7 +86,9 @@ fun SettingsScreen(
             SettingsGroup { AptoideLookupSettings() }
             SettingsGroup { DumpStoreLookupSettings() }
             SettingsGroup { ForgeLookupSettings() }
+            SettingsGroup { GithubStarredSettings() }
             SettingsGroup { ForgePasteSettings() }
+            SettingsGroup { ObtainiumImportSettings() }
         }
         SettingsPage.Stores -> SettingsPane(
             title = stringResource(R.string.settings_section_stores),

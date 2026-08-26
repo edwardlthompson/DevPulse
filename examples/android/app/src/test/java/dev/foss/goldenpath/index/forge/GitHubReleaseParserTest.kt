@@ -34,4 +34,31 @@ class GitHubReleaseParserTest {
         assertEquals(emptyList<GitHubReleaseRecord>(), GitHubReleaseParser.parse("{}"))
         assertNull(GitHubReleaseParser.firstWithPackage("com.example.wipefiles", """[{"name":"1.0","assets":[{"name":"WiseTimer.apk"}]}]"""))
     }
+
+    @Test
+    fun prereleaseAndFilenameRegexFilterAssets() {
+        val json = """
+            [
+              {"name":"com.example.app","prerelease":true,"tag_name":"v1-pre",
+               "assets":[{"browser_download_url":"https://github.com/a/b/releases/download/v1/com.example.app-pre.apk"}]},
+              {"name":"com.example.app","prerelease":false,"tag_name":"v1",
+               "assets":[{"browser_download_url":"https://github.com/a/b/releases/download/v1/com.example.app-arm64.apk"}]}
+            ]
+        """.trimIndent()
+        assertNull(GitHubReleaseParser.firstWithPackage("com.example.app", json, includePrereleases = false, apkRegex = "pre"))
+        val arm = GitHubReleaseParser.firstWithPackage("com.example.app", json, includePrereleases = false, apkRegex = "arm64")
+        assertEquals(
+            "https://github.com/a/b/releases/download/v1/com.example.app-arm64.apk",
+            arm?.apkUrl,
+        )
+        val overlong = GitHubReleaseParser.firstWithPackage(
+            "com.example.app",
+            json,
+            apkRegex = "a".repeat(GithubAppOptCodec.MAX_REGEX + 1),
+        )
+        assertEquals(
+            "https://github.com/a/b/releases/download/v1/com.example.app-pre.apk",
+            overlong?.apkUrl,
+        )
+    }
 }

@@ -17,6 +17,7 @@ fun GoldenPathScaffold(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit,
+    floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -29,6 +30,7 @@ fun GoldenPathScaffold(
             )
         },
         topBar = topBar,
+        floatingActionButton = floatingActionButton,
         content = content,
     )
 }

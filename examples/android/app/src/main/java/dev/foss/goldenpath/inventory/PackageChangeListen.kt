@@ -37,6 +37,12 @@ object PackageChangeListen {
                 )
             ) {
                 InstalledAppsRevision.bump()
+                if (intent?.action == Intent.ACTION_PACKAGE_ADDED &&
+                    intent.getBooleanExtra(Intent.EXTRA_REPLACING, false) != true
+                ) {
+                    val pkg = intent.data?.schemeSpecificPart.orEmpty()
+                    context?.let { WatchedRepoBind.onInstalled(it, pkg) }
+                }
             }
         }
     }

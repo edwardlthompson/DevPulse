@@ -105,7 +105,6 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 | Sprint 19 — Ideas backlog (after v0.29.0) | 2026-08-23 | COMPLETED_TASKS.md @ `92c860a` |
 | Sprint 20 — Ideas backlog (after Sprint 19) | 2026-08-23 | COMPLETED_TASKS.md @ `2b6d448` |
 | Sprint 21 — Ideas backlog (after Sprint 20) | 2026-08-23 | COMPLETED_TASKS.md @ `2b6d448` |
-
 > **Sprint 11** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 12** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 13** archived in COMPLETED_TASKS.md @ `fd20edd`.
@@ -124,6 +123,50 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **Sprint 19** archived in COMPLETED_TASKS.md @ `92c860a`.
 > **Sprint 20** archived in COMPLETED_TASKS.md @ `2b6d448`.
 > **Sprint 21** archived in COMPLETED_TASKS.md @ `2b6d448`.
+
+## Sprint 22 — GitHub add (uninstall Obtainium)
+
+Sequential schema lock: `PackageIdAliases`, `ForgeLibraryMatch`, `WatchedRepoStore`. FAB wiring stays in the inventory view. Starred is opt-in Settings, not Refresh.
+
+### Sequential
+
+- ✅ [AGENT] PackageIdAliases (allowlist suffixes only) + ForgeLibraryMatch + WatchedRepoStore; githubHints alias without sibling version/ms; AppReprobeLive same lookup; tests for Obtainium, firefox non-alias, and version isolation
+- ✅ [AGENT] Inventory FAB add-repo; persist pasted last-wins; forgetFetched then re-probe; picker when alias conflicts; TalkBack labels; `res/values/forge.xml`
+- ✅ [AGENT] Opt-in starred scan; token required; max 5 pages; zero listReleases; Exact/SuffixVariant only; 403 CTA; never log stars or token
+
+### Human & device (after automation)
+
+- 🔲 [ADB] GitHub Obtainium lists on Refresh; FAB paste binds; cert refuse still blocks a mismatched APK
+
+### Parallelization
+
+<!-- agent_count_target: 3 -->
+
+Shared types stay Sequential.
+
+| Task | Owner | Isolated scope |
+|------|-------|----------------|
+| ✅ [AGENT] Logic + alias tests | AGENT | `examples/android/app/src/main/java/dev/foss/goldenpath/index/forge/` |
+| ✅ [AGENT] FAB + dialog + i18n | AGENT | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/forge/` |
+| ✅ [AGENT] Starred + privacy | AGENT | `docs/` |
+
+## Sprint 23 — Obtainium migrate and filters
+
+- ✅ [AGENT] Obtainium JSON import (skip secrets/unknown sources); per-app prerelease + length-capped APK regex; direct HTTPS APK via `ApkDownloadUrl.httpsFile` + cert/package gate
+- ✅ [AGENT] Feature spec `docs/features/github-add.md`; DECISION_LOG alias vs storeSettled vs no APKUpdater map; PRIVACY starred row
+
+### Human & device (after automation)
+
+- 🔲 [ADB] Import a recorded Obtainium fixture; listing tap still refuses a mismatched signing cert
+
+### Parallelization
+
+<!-- agent_count_target: 2 -->
+
+| Task | Owner | Isolated scope |
+|------|-------|----------------|
+| ✅ [AGENT] Import, opts, direct APK + tests | AGENT | `examples/android/app/src/main/java/dev/foss/goldenpath/inventory/` |
+| ✅ [AGENT] Feature spec | AGENT | `docs/features/` |
 
 ## Ongoing Maintenance (recurring)
 

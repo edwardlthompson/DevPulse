@@ -65,7 +65,7 @@
 | FR-9 | As a user I find a GitHub repo | Search package name and/or title; latest commit and release when found |
 | FR-10 | As a user I optionally use GitLab and Codeberg | Same idea as GitHub |
 | FR-11 | As a user I get extracted source links | From F-Droid SourceCode and Play description or developer website when present |
-| FR-12 | As a user I paste a missed repo URL | DevPulse tracks it thereafter |
+| FR-12 | As a user I paste a missed GitHub URL, scan starred repos, or import Obtainium JSON | FAB or detail paste (GitHub only); allowlist aliases; starred opt-in with token; import url+id only; DevPulse tracks bound apps thereafter |
 | FR-13 | As a user I optionally store a GitHub token | EncryptedSharedPreferences; never logged |
 | FR-14 | As a user I see leftovers as unknown | Anything not found on those sources stays sideloaded or unknown |
 ### Staleness

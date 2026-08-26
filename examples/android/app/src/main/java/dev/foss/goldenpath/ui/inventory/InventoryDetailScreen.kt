@@ -124,6 +124,8 @@ fun InventoryDetailScreen(
         }
         DetailForget(app.packageName)
         DetailPasteRepo(app.packageName)
+        DetailDirectApk(app.packageName)
+        DetailGithubOpts(app.packageName)
         UpdateNotesSection(app.packageName)
         DownloadUpdateSection(app)
         AlternativesSection(app = app, inventory = inventory)

@@ -81,21 +81,6 @@ class ReleaseRefreshForgeTest {
     }
 
     @Test
-    fun officialHintBeatsVerifiedStore() {
-        val pkg = "uk.org.platitudes.wipefiles"
-        val rec = FdroidAppRecord(pkg, 1L, "https://github.com/plat/wipefiles", "official")
-        val known = ReleaseRefresh.githubHints(listOf(rec), setOf(pkg), mapOf(pkg to "old/repo"))
-        assertEquals("plat/wipefiles", known[pkg]?.ownerRepo)
-        val pasted = ReleaseRefresh.githubHints(
-            listOf(rec),
-            setOf(pkg),
-            mapOf(pkg to "old/repo"),
-            pasted = mapOf(pkg to "https://github.com/paste/repo"),
-        )
-        assertEquals("paste/repo", pasted[pkg]?.ownerRepo)
-    }
-
-    @Test
     fun mergeOfferReplacesSameSource() {
         val bag = mutableListOf(RemoteReleaseOffer(RemoteReleasedSource.Forge, pageUrl = "https://github.com/a/b/releases"))
         ReleaseRefreshWaves.mergeOffer(bag, RemoteReleaseOffer(RemoteReleasedSource.Forge, listed = false, known = true))

@@ -66,6 +66,26 @@ class ListingDirectTest {
     }
 
     @Test
+    fun forgeDirectApkSkipsReleasesAndRejectsLinkLocal() {
+        val href = "https://github.com/o/r/releases/download/v1/app.apk"
+        val artifact = ListingDirect.resolve(
+            "org.app",
+            RemoteReleasedSource.Forge,
+            fetchReleases = { error("no releases") },
+            directApkUrl = href,
+        )
+        assertEquals(href, artifact?.downloadUrl)
+        assertNull(
+            ListingDirect.resolve(
+                "org.app",
+                RemoteReleasedSource.Forge,
+                fetchReleases = { null },
+                directApkUrl = "http://169.254.0.1/x.apk",
+            ),
+        )
+    }
+
+    @Test
     fun aptoideAndPlayUseInjectedResolvers() {
         val aptoide = UpdateArtifact("a", RemoteReleasedSource.Aptoide, "https://pool.apk.aptoide.com/a.apk")
         val play = UpdateArtifact("a", RemoteReleasedSource.Play, "https://redirector.gvt1.com/edgedl/android/market/a")

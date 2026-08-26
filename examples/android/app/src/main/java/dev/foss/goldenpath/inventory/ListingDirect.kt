@@ -3,6 +3,7 @@ package dev.foss.goldenpath.inventory
 import dev.foss.goldenpath.index.apkmirror.ApkMirrorDirect
 import dev.foss.goldenpath.index.fdroid.FdroidListing
 import dev.foss.goldenpath.index.forge.ForgeListing
+import dev.foss.goldenpath.index.forge.GithubAppOpt
 
 object ListingDirect {
     fun resolve(
@@ -15,6 +16,8 @@ object ListingDirect {
         resolveAptoide: (String) -> UpdateArtifact? = { null },
         resolvePlay: (String) -> UpdateArtifact? = { null },
         fdroidCache: (String, RemoteReleasedSource) -> UpdateArtifact? = { _, _ -> null },
+        githubOpt: GithubAppOpt? = null,
+        directApkUrl: String? = null,
     ): UpdateArtifact? {
         val pkg = packageName.trim()
         if (pkg.isEmpty() || source == RemoteReleasedSource.None) return null
@@ -27,7 +30,14 @@ object ListingDirect {
             RemoteReleasedSource.Calyx,
             RemoteReleasedSource.ExtraRepo,
             -> fdroid(pkg, source, pageUrl, fetchPage, fdroidCache)
-            RemoteReleasedSource.Forge -> forge(pkg, pageUrl, fetchReleases)
+            RemoteReleasedSource.Forge -> {
+                directApkUrl?.let { href ->
+                    ApkDownloadUrl.httpsFile(href)?.let { url ->
+                        return UpdateArtifact(pkg, RemoteReleasedSource.Forge, url, null)
+                    }
+                }
+                forge(pkg, pageUrl, fetchReleases, githubOpt)
+            }
             RemoteReleasedSource.ApkPure -> resolveApkPure(pkg)
             RemoteReleasedSource.Aptoide -> resolveAptoide(pkg)
             RemoteReleasedSource.Play -> resolvePlay(pkg)
@@ -56,9 +66,14 @@ object ListingDirect {
         return listed
     }
 
-    private fun forge(pkg: String, pageUrl: String?, fetchReleases: (String) -> String?): UpdateArtifact? {
+    private fun forge(
+        pkg: String,
+        pageUrl: String?,
+        fetchReleases: (String) -> String?,
+        opt: GithubAppOpt?,
+    ): UpdateArtifact? {
         val repo = ForgeListing.ownerRepo(pageUrl) ?: return null
         val json = fetchReleases(repo) ?: return null
-        return ForgeListing.fromReleases(pkg, json)
+        return ForgeListing.fromReleases(pkg, json, opt)
     }
 }

@@ -4,14 +4,10 @@ import android.content.Context
 import android.util.Log
 import dev.foss.goldenpath.index.apkpure.ApkPureDirect
 import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
-import dev.foss.goldenpath.index.aptoide.AptoideHttpFetcher
-import dev.foss.goldenpath.index.aptoide.AptoideScan
 import dev.foss.goldenpath.index.aurora.AuroraAuth
 import dev.foss.goldenpath.index.aurora.AuroraPlayBundle
 import dev.foss.goldenpath.index.aurora.AuroraPlayDirect
 import dev.foss.goldenpath.index.aurora.AuroraPlayLive
-import dev.foss.goldenpath.index.forge.EncryptedForgeTokenStore
-import dev.foss.goldenpath.index.forge.GitHubSearchHttp
 import java.io.File
 
 object ListingInstallLive {
@@ -61,13 +57,15 @@ object ListingInstallLive {
             source = source,
             pageUrl = pageUrl,
             fetchPage = ListingPageHttp::get,
-            fetchReleases = { repo -> releases(context, repo) },
+            fetchReleases = { repo -> ListingInstallFetch.releases(context, repo) },
             resolveApkPure = { ApkPureDirect.resolve(it, ApkPureHttpFetcher) },
-            resolveAptoide = { aptoide(it) },
+            resolveAptoide = { ListingInstallFetch.aptoide(it) },
             resolvePlay = { AuroraPlayDirect.resolve(it, AuroraPlayLive.files(context)) },
             fdroidCache = { name, src ->
                 DownloadLaunch.fromFdroidCache(File(context.filesDir, "fdroid-index"), name, System.currentTimeMillis(), src)
             },
+            githubOpt = ListingForgeFiles.opt(context.filesDir, pkg),
+            directApkUrl = ListingForgeFiles.apk(context.filesDir, pkg),
         )
         if (artifact == null) {
             Log.i("DevPulse", "listing ${source.name} $pkg no file")
@@ -132,19 +130,6 @@ object ListingInstallLive {
             if (result == OneClickResult.Installed) 1 else 0,
             "result=${result::class.simpleName}",
         )
-    }
-
-    private fun aptoide(packageName: String): UpdateArtifact? {
-        AptoideScan.toPick(
-            AptoideScan.lookupOne(packageName, AptoideHttpFetcher, System.currentTimeMillis(), force = true),
-            packageName,
-        )
-        return UpdateArtifactMemory.forSource(packageName, RemoteReleasedSource.Aptoide)
-    }
-
-    private fun releases(context: Context, ownerRepo: String): String? {
-        val page = GitHubSearchHttp(EncryptedForgeTokenStore.wrap(context).getToken()).listReleases(ownerRepo)
-        return page.body.takeIf { page.statusCode in 200..299 }
     }
 }
 

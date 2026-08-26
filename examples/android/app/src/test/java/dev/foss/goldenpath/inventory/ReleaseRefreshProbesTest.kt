@@ -10,6 +10,7 @@ import dev.foss.goldenpath.index.play.PlayPageClient
 import dev.foss.goldenpath.index.play.PlayPageResponse
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger

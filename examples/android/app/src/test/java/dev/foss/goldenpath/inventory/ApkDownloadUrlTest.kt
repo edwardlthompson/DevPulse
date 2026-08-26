@@ -13,6 +13,8 @@ class ApkDownloadUrlTest {
         )
         assertNull(ApkDownloadUrl.httpsFile("https://d.apkpure.com/b/XAPK/app.one?version=latest"))
         assertNull(ApkDownloadUrl.httpsFile("ftp://evil.example/app.apk"))
+        assertNull(ApkDownloadUrl.httpsFile("http://169.254.0.1/x.apk"))
+        assertNull(ApkDownloadUrl.httpsFile("https://localhost/app.apk"))
     }
 
     @Test

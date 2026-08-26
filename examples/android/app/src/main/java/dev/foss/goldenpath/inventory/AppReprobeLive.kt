@@ -5,11 +5,9 @@ import android.util.Log
 import dev.foss.goldenpath.index.aptoide.AptoideHttpFetcher
 import dev.foss.goldenpath.index.aurora.AuroraPlayLive
 import dev.foss.goldenpath.index.forge.EncryptedForgeTokenStore
-import dev.foss.goldenpath.index.forge.FileGithubVerifiedStore
 import dev.foss.goldenpath.index.forge.GitHubSearchHttp
-import dev.foss.goldenpath.index.forge.GithubHint
+import dev.foss.goldenpath.index.forge.GithubHintFiles
 import dev.foss.goldenpath.index.play.PlayHttpFetcher
-import java.io.File
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -38,8 +36,7 @@ object AppReprobeLive {
             offers += ReleaseRefreshProbes.aptoide(app.packageName, AptoideHttpFetcher, nowMs)
         }
         if (forgeOn) {
-            val hint = FileGithubVerifiedStore(File(context.filesDir, "github_verified.tsv"))
-                .load()[app.packageName]?.let { GithubHint(it) }
+            val hint = GithubHintFiles.hint(context.filesDir, app.packageName)
             offers += ReleaseRefreshProbes.github(
                 app.packageName,
                 app.label,

@@ -20,6 +20,7 @@ object ApkDownloadUrl {
         text.replace("\\u0026", "&", ignoreCase = true).replace("\\/", "/")
 
     private fun allowed(host: String, url: String): Boolean {
+        if (!publicHost(host)) return false
         if (url.contains(".apk", ignoreCase = true)) return true
         return host.contains("apkpure") ||
             host.contains("cdnpure") ||
@@ -42,5 +43,11 @@ object ApkDownloadUrl {
             host.endsWith("googleusercontent.com") ||
             host.endsWith("play.googleapis.com") ||
             host.endsWith("android.clients.google.com")
+    }
+
+    private fun publicHost(host: String): Boolean {
+        if (host.isEmpty() || host == "localhost" || host.endsWith(".local")) return false
+        if (host.all { it.isDigit() || it == '.' || it == ':' }) return false
+        return true
     }
 }

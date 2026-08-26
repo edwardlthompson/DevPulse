@@ -19,10 +19,16 @@ object ForgeListing {
         return "$owner/$name"
     }
 
-    fun fromReleases(packageName: String, json: String): UpdateArtifact? {
+    fun fromReleases(packageName: String, json: String, opt: GithubAppOpt? = null): UpdateArtifact? {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return null
-        val url = GitHubReleaseParser.firstWithPackage(pkg, json)?.apkUrl ?: return null
+        val rec = GitHubReleaseParser.firstWithPackage(
+            pkg,
+            json,
+            includePrereleases = opt?.includePrereleases ?: true,
+            apkRegex = opt?.apkRegex,
+        )
+        val url = rec?.apkUrl ?: return null
         GitHubNotes.rememberApk(pkg, url)
         return UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.Forge)
     }

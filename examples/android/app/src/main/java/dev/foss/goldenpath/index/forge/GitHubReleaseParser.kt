@@ -7,6 +7,8 @@ data class GitHubReleaseRecord(
     val haystack: String,
     val notes: String? = null,
     val apkUrl: String? = null,
+    val prerelease: Boolean = false,
+    val apkUrls: List<String> = emptyList(),
 )
 
 object GitHubReleaseParser {
@@ -15,6 +17,7 @@ object GitHubReleaseParser {
     private val body = Regex(""""body"\s*:\s*"((?:\\.|[^"\\])*)"""")
     private val published = Regex(""""published_at"\s*:\s*"([^"]*)"""")
     private val apkAsset = Regex(""""browser_download_url"\s*:\s*"(https://[^"]+\.apk)"""", RegexOption.IGNORE_CASE)
+    private val prerelease = Regex(""""prerelease"\s*:\s*(true|false)""")
 
     fun parse(json: String): List<GitHubReleaseRecord> {
         val trimmed = json.trim()
@@ -28,15 +31,39 @@ object GitHubReleaseParser {
                 tagName.find(chunk)?.groupValues?.get(1).orEmpty(),
                 rawBody.orEmpty(),
             )
+            val urls = apkAsset.findAll(chunk).map { it.groupValues[1] }.toList()
             GitHubReleaseRecord(
                 publishedAtMs = GitHubRepoParser.isoMs(published.find(chunk)?.groupValues?.get(1)),
                 haystack = bits.joinToString("\n"),
                 notes = UpdateNotesText.take(rawBody),
-                apkUrl = apkAsset.find(chunk)?.groupValues?.get(1),
+                apkUrl = urls.firstOrNull(),
+                prerelease = prerelease.find(chunk)?.groupValues?.get(1) == "true",
+                apkUrls = urls,
             )
         }
     }
 
-    fun firstWithPackage(packageName: String, json: String): GitHubReleaseRecord? =
-        parse(json).firstOrNull { ForgePackageEvidence.inText(packageName, it.haystack) }
+    fun firstWithPackage(
+        packageName: String,
+        json: String,
+        includePrereleases: Boolean = true,
+        apkRegex: String? = null,
+    ): GitHubReleaseRecord? {
+        val pattern = GithubAppOptCodec.regexOrNull(apkRegex)
+        return parse(json).firstOrNull { rec ->
+            if (!includePrereleases && rec.prerelease) return@firstOrNull false
+            if (!ForgePackageEvidence.inText(packageName, rec.haystack)) return@firstOrNull false
+            if (pattern != null && rec.apkUrls.none { pattern.containsMatchIn(GithubAppOptCodec.filename(it)) }) {
+                return@firstOrNull false
+            }
+            true
+        }?.let { rec ->
+            if (pattern == null) rec
+            else rec.copy(
+                apkUrl = rec.apkUrls.first {
+                    pattern.containsMatchIn(GithubAppOptCodec.filename(it))
+                },
+            )
+        }
+    }
 }

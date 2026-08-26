@@ -21,6 +21,7 @@ import dev.foss.goldenpath.index.forge.GitHubSearchPace
 import dev.foss.goldenpath.index.forge.LeftoverSearchClient
 import dev.foss.goldenpath.index.forge.GithubHint
 import dev.foss.goldenpath.index.forge.GithubVerifiedStore
+import dev.foss.goldenpath.index.forge.PackageIdAliases
 import dev.foss.goldenpath.index.forge.PastedRepoCodec
 import dev.foss.goldenpath.index.forge.PastedRepoStore
 import dev.foss.goldenpath.index.play.PlayPageClient
@@ -51,10 +52,7 @@ object ReleaseRefresh {
         wanted: Set<String>,
         verified: Map<String, String> = emptyMap(),
         pasted: Map<String, String> = emptyMap(),
-    ): Map<String, GithubHint> {
-        val fromStore = verified.mapValues { GithubHint(it.value) }
-        return fromStore + FdroidGithubHints.hints(records, wanted) + PastedRepoCodec.hints(pasted)
-    }
+    ): Map<String, GithubHint> = ReleaseRefreshHints.github(records, wanted, verified, pasted)
 
     @Suppress("UNUSED_PARAMETER")
     fun run(
@@ -129,8 +127,9 @@ object ReleaseRefresh {
             loaded.map { it.repoId to it.githubLibrary },
         )
         val pasted = pastedStore?.load().orEmpty() + PlaySourceHints.snapshot()
-        val knownRepos = library + FdroidGithubHints.hints(records, wantedSet) +
+        val merged = library + FdroidGithubHints.hints(records, wantedSet) +
             PastedRepoCodec.hints(pasted)
+        val knownRepos = PackageIdAliases.expand(wantedSet, merged)
         verifiedStore?.save(knownRepos.mapValues { it.value.ownerRepo })
         RefreshTrace.line("github library ${library.size} persisted")
         val leftoverHints = FdroidLeftoverHints.merge(records, wantedSet, pasted)

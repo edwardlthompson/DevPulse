@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="forge_add">Add GitHub repo</string>
+    <string name="forge_add_save">Add</string>
+    <string name="forge_add_invalid">Need a GitHub owner/repo URL</string>
+    <string name="forge_add_bound">Linked %1$d installed app(s)</string>
+    <string name="forge_add_watched">Saved; no installed app matched</string>
+    <string name="forge_add_pick">Pick an installed app for this repo</string>
+    <string name="forge_add_app">%1$s (%2$s)</string>
+    <string name="forge_starred_scan">Scan my starred GitHub projects</string>
+    <string name="forge_starred_body">Uses your saved token. Matches starred repos to apps you already installed. Off Refresh.</string>
+    <string name="forge_starred_need_token">Save a GitHub token first</string>
+    <string name="forge_starred_forbidden">Token cannot read starred repos. Grant starring read in Settings.</string>
+    <string name="forge_starred_failed">Starred scan failed</string>
+    <string name="forge_starred_ok">Matched %1$d of %2$d starred repos</string>
+    <string name="forge_opt_prerelease">Include GitHub prereleases</string>
+    <string name="forge_opt_apk_regex">APK filename regex (optional)</string>
+    <string name="forge_import">Import Obtainium backup</string>
+    <string name="forge_import_ok">Imported %1$d apps, skipped %2$d</string>
+    <string name="forge_import_failed">Could not read that Obtainium file</string>
+    <string name="forge_direct_apk">Direct APK HTTPS URL</string>
+</resources>

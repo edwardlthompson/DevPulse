@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-26 — GitHub-only apps via aliases, paste, and stars (not Play-miss name-search)
+- **Status:** Accepted
+- **Context:** Obtainium-class GitHub APKs (`dev.imranr.obtainium`) miss Refresh because F-Droid harvests `*.fdroid` and `storeSettled` skips GitHub name-search after a Play miss. Opening name-search for every Play miss would blow the GitHub API budget. APKUpdater’s speed comes from rumboalla’s curated map, which `docs/features/forge-lookup.md` already refuses to vendor.
+- **Decision:** Allowlist package suffixes (`.fdroid`, `.debug`, `.nightly`) copy `ownerRepo` only. Inventory FAB pastes a GitHub URL (pasted last-wins). Opt-in starred scan reverse-maps the harvested library with zero `listReleases`. Do not change `storeSettled`. Do not import APKUpdater’s GitHub map. Grow our own from F-Droid `sourceCode` plus pasted/starred repos.
+- **Alternatives considered:** Name-search every Play miss (rejected: quota). Vendor rumboalla’s map (rejected: FOSS policy). Clone Obtainium’s 20+ HTML/proprietary scrapers (rejected: updater, not a store).
+- **Consequences:** GitHub-only installed apps can update after alias, FAB, or stars. Unmatched URLs stay in `WatchedRepoStore`, not the inventory catalog. Sprint 22–23 rows on BUILD_PLAN; spec `docs/features/github-add.md`.
+
 ### 2026-08-23 — v0.31.0 ship
 - **Status:** Accepted
 - **Context:** Per-source Refresh times sat on the app list and hid a large part of the inventory.

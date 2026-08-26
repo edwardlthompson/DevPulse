@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Inventory FAB pastes a GitHub owner/repo URL; Exact/SuffixVariant auto-bind, picker on conflict, unmatched watched (not a catalog)
+- Allowlist package aliases (`.fdroid`, `.debug`, `.nightly`) so GitHub-only apps like Obtainium list without copying F-Droid sibling versions
+- Opt-in GitHub starred scan (saved token, max 500 repos) matches installed apps without `listReleases`
+- Obtainium JSON import (url and package id only; skip secrets and unknown sources)
+- Per-app GitHub prereleases and a 64-character APK filename regex; direct HTTPS APK URLs
+
+### Changed
+
+- Re-probe uses the same alias lookup so a pasted repo is not restamped as a Forge miss after Play
+
 ## [0.31.0](https://github.com/edwardlthompson/DevPulse/compare/v0.30.0...v0.31.0) (2026-08-23)
 
 ### Changed

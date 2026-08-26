@@ -15,6 +15,7 @@ Local notifications are device-only (scan progress and â€œrelease dates updatedâ
 | Optional Aptoide package lookups | Last-release date when F-Droid has no record | Consent (Settings, default off) | 24h cache until cleared |
 | Optional APKMirror / APKPure package lookups | Listing, version, and dump-site date when enabled | Consent (Settings, default off) | Until next Refresh |
 | Optional GitHub token | Higher forge API limits | Consent | EncryptedSharedPreferences until user removes it |
+| Optional GitHub starred list | Match starred repos to apps already installed | Consent (Settings toggle; token already saved) | Requested live from GitHub; not stored; never logged |
 | Scan cache and history | Degraded/offline results; history | User request | Until user clears cache |
 | Pins and private notes | Keep-anyway and Develop-next | User request | Until user deletes them |
 | Release notes from F-Droid what'sNew or GitHub release body | Show what changed on app detail | User request (Refresh) | Until process ends or next Refresh |
@@ -29,6 +30,7 @@ Network runs when the user scans, opts into later lookups, or when the daily Git
 - Aptoide `app/getMeta` by package name, only if the user enables it and starts Refresh
 - APKMirror `app_exists` and APKPure `get_app_update` in batches, only if the user enables those outlets and starts Refresh
 - Forges: documented GitHub / optional GitLab / Codeberg APIs
+- Optional starred scan: `GET /user/starred` up to 5 pages when the user taps Scan in Settings (token required; star names are not logged)
 - About / launch update check: GitHub `releases/latest` once per 24 hours; User-Agent `DevPulse/{version}`; 10s timeout; fail stays silent
 - User-Agent: `DevPulse/0.1` plus the public GitHub URL. No browser impersonation
 - Optional APK file download (user tap): APKPure `asset.url`, F-Droid/Izzy repo APK, GitHub release asset, or Aptoide `file.path`. Files stay in app cache until the user installs or clears cache.
@@ -48,7 +50,7 @@ No PII is transmitted. The optional token is an Authorization header to GitHub o
 
 - **Access:** Export scan reports (CSV/JSON) when that feature ships
 - **Deletion:** Clear cache, revoke usage-stats, delete the token, or uninstall
-- **Opt-out:** Usage stats, Aptoide / APKMirror / APKPure lookups, notifications, Play/forge lookups, and the GitHub token are opt-in
+- **Opt-out:** Usage stats, Aptoide / APKMirror / APKPure lookups, notifications, Play/forge lookups, the GitHub token, and starred scan are opt-in
 - **Portability:** Full-scan and focused Opportunity exports
 
 ## Data Minimization
