@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.0](https://github.com/edwardlthompson/DevPulse/compare/v0.31.0...v0.32.0) (2026-08-26)
+
+
+### Added
+
+* prepare v0.32.0 DevPulse product release ([7f7dcf7](https://github.com/edwardlthompson/DevPulse/commit/7f7dcf7a80a183c98713c616c629255c806e4ff3))
+
+
+### Documentation
+
+* record KB-030 cancelled CI failing SBOM poll ([f0faba5](https://github.com/edwardlthompson/DevPulse/commit/f0faba5e87c3a0e5d61dc27c32e2e8518b886128))
+* record v0.31.0 ship notes and fold lessons ([fdd5903](https://github.com/edwardlthompson/DevPulse/commit/fdd59035bbd858cd56ea313d1655527fdb01ba8f))
+
 ## [Unreleased]
 
 ### Added
