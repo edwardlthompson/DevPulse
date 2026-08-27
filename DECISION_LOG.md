@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-27 — v0.34.1 ship
+- **Status:** Accepted
+- **Context:** Update all hung at 0 of 22 on OP13 while buffering Play split APKs in RAM; Firefox OOM on a 256MB part.
+- **Decision:** Stream listing APKs to disk, reject listed sizes over 200MB, abort incomplete split sets, cut Update all parallelism to 2. `fix:` prepare `4819da6`; fold Unreleased onto RP #17; admin-merge.
+- **Alternatives considered:** Keep in-memory `ByteArray` with a lower cap only (rejected: BAOS still doubled past the cap). Leave PARALLEL at 4 (rejected: four Play bundles still contend for heap/IO).
+- **Consequences:** Tag `v0.34.1` published. Sprint 22–23 `[ADB]` smoke stays open. Recurring Weekly/Monthly/Human rows stay open.
+
 ### 2026-08-27 — v0.34.0 ship
 - **Status:** Accepted
 - **Context:** Sources toggle/Setup, gated starred/search/custom F-Droid, Obtainium envelopes + share/open, and nested menus that keep scroll sat on `main` as `feat:` prepare `ac6945f`.
