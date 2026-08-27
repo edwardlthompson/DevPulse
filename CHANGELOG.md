@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.0](https://github.com/edwardlthompson/DevPulse/compare/v0.33.0...v0.34.0) (2026-08-27)
+
 ### Added
 
 - Obtainium import accepts None, Exclude secrets, and All backup envelopes, a share/open JSON intent, and a file picker that is not limited to `application/json`
