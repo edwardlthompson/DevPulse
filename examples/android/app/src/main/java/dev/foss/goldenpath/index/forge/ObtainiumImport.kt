@@ -1,20 +1,38 @@
 package dev.foss.goldenpath.index.forge
 
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+
 object ObtainiumImport {
+    const val MAX_BYTES = 2 * 1024 * 1024
+
     data class Result(val imported: Int, val skipped: Int, val rows: List<Pair<String, String>>)
+
+    fun readUtf8(stream: InputStream, maxBytes: Int = MAX_BYTES): String? {
+        val out = ByteArrayOutputStream()
+        val buf = ByteArray(8192)
+        var total = 0
+        while (true) {
+            val n = stream.read(buf)
+            if (n < 0) break
+            total += n
+            if (total > maxBytes) return null
+            out.write(buf, 0, n)
+        }
+        return out.toString(Charsets.UTF_8.name())
+    }
 
     fun parse(json: String): Result {
         val inner = appsInner(json) ?: return Result(0, 0, emptyList())
         val rows = mutableListOf<Pair<String, String>>()
         var skipped = 0
-        inner.split(Regex("\\}\\s*,\\s*\\{")).forEach { chunk ->
-            val id = field(chunk, "id")
+        objects(inner).forEach { chunk ->
             val url = field(chunk, "url")
-            if (id.isEmpty() || '.' !in id || GithubAdd.ownerRepo(url) == null) {
+            if (GithubAdd.ownerRepo(url) == null) {
                 skipped += 1
                 return@forEach
             }
-            rows += id to url
+            rows += field(chunk, "id") to url
         }
         return Result(rows.size, skipped, rows)
     }
@@ -28,7 +46,11 @@ object ObtainiumImport {
         var saved = 0
         rows.forEach { (id, url) ->
             val repo = GithubAdd.ownerRepo(url) ?: return@forEach
-            if (GithubAdd.persistPicked(id, repo, pasted, verified, watched)) saved += 1
+            if (id.isNotEmpty() && '.' in id) {
+                GithubAdd.persistPicked(id, repo, pasted, verified, watched)
+            }
+            watched.add(repo)
+            saved += 1
         }
         return saved
     }
@@ -37,10 +59,45 @@ object ObtainiumImport {
         val appsAt = json.indexOf("\"apps\"")
         if (appsAt < 0) return null
         val start = json.indexOf('[', appsAt)
-        val end = json.indexOf(']', start)
-        if (start < 0 || end < 0) return null
-        return json.substring(start + 1, end).trim().trimStart('[').trimEnd(']').trim()
-            .takeIf { it.isNotEmpty() && it != "[]" }
+        if (start < 0) return null
+        val end = matching(json, start, '[', ']') ?: return null
+        return json.substring(start + 1, end).trim().takeIf { it.isNotEmpty() }
+    }
+
+    private fun objects(inner: String): List<String> {
+        val out = mutableListOf<String>()
+        var i = 0
+        while (i < inner.length) {
+            val start = inner.indexOf('{', i)
+            if (start < 0) break
+            val end = matching(inner, start, '{', '}') ?: break
+            out += inner.substring(start, end + 1)
+            i = end + 1
+        }
+        return out
+    }
+
+    private fun matching(text: String, openAt: Int, open: Char, close: Char): Int? {
+        var depth = 0
+        var i = openAt
+        var inStr = false
+        var escape = false
+        while (i < text.length) {
+            val c = text[i]
+            when {
+                escape -> escape = false
+                inStr && c == '\\' -> escape = true
+                c == '"' -> inStr = !inStr
+                inStr -> Unit
+                c == open -> depth++
+                c == close -> {
+                    depth--
+                    if (depth == 0) return i
+                }
+            }
+            i++
+        }
+        return null
     }
 
     private fun field(chunk: String, name: String): String =

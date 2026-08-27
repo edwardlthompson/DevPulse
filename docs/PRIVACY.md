@@ -16,6 +16,7 @@ Local notifications are device-only (scan progress and â€œrelease dates updatedâ
 | Optional APKMirror / APKPure package lookups | Listing, version, and dump-site date when enabled | Consent (Settings, default off) | Until next Refresh |
 | Optional GitHub token | Higher forge API limits | Consent | EncryptedSharedPreferences until user removes it |
 | Optional GitHub starred list | Match starred repos to apps already installed | Consent (Settings toggle; token already saved) | Requested live from GitHub; not stored; never logged |
+| Obtainium backup JSON (user-picked file) | Import GitHub owner/repo watches | User request (Sources) | Device-local TSV until cleared; tokens in the file are not stored |
 | Scan cache and history | Degraded/offline results; history | User request | Until user clears cache |
 | Pins and private notes | Keep-anyway and Develop-next | User request | Until user deletes them |
 | Release notes from F-Droid what'sNew or GitHub release body | Show what changed on app detail | User request (Refresh) | Until process ends or next Refresh |

@@ -144,6 +144,16 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 
 - 🔲 [ADB] Import a recorded Obtainium fixture; listing tap still refuses a mismatched signing cert
 
+## Sprint 24 — Obtainium import all GitHub watches
+
+Nested `apkUrls` / `categories` truncated the backup parse. Every GitHub `owner/repo` must land in `WatchedRepoStore`.
+
+### Sequential
+
+- ✅ [AGENT] Bracket-match Obtainium JSON; persist every GitHub watch; OpenDocument picker in Sources
+
+<!-- parallel_exception: single import-container fix -->
+
 ## Ongoing Maintenance (recurring)
 
 ### Weekly

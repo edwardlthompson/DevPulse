@@ -15,10 +15,9 @@ Types in `dev.foss.goldenpath.index.forge`. Unit tests use fixtures only — no 
 | `WatchedRepoStore` | TSV | Unmatched `owner/repo`. Not inventory rows. Re-bind on `PACKAGE_ADDED` |
 | `GithubAdd` | object | GitHub `owner/repo` from a paste URL; persist pasted last-wins then verified |
 | `GitHubStarredScan` | object | Max 5 pages of `/user/starred`. Zero `listReleases` / `searchRepos` |
-| `ObtainiumImport` | object | `apps[].id` + `url` only. Never tokens or `additionalSettings` secrets |
+| `ObtainiumImport` | object | Every GitHub `apps[].url` → watched. `id`+url bind when present. Nested JSON; never tokens |
 | `GithubAppOpt` | data | Per-app prerelease flag; APK filename regex capped at 64 characters |
 | `DirectApkCodec` | object | `ApkDownloadUrl.httpsFile` only (https, public host, no XAPK) |
-
 ## Acceptance criteria
 
 - ✅ User-visible: inventory FAB pastes a GitHub URL; Exact/SuffixVariant auto-bind; picker on conflict; unmatched stays watched
@@ -26,6 +25,7 @@ Types in `dev.foss.goldenpath.index.forge`. Unit tests use fixtures only — no 
 - ✅ Re-probe uses the same alias lookup so a paste does not vanish after `storeSettled`
 - ✅ Opt-in starred scan (token required, Settings, off Refresh) auto-binds Exact/SuffixVariant and shows matched K of N
 - ✅ Obtainium JSON import skips unknown sources and never writes tokens
+- ✅ Nested Obtainium backups import every GitHub watch into `WatchedRepoStore`; file picker in Sources
 - ✅ Per-app include-prereleases and filename regex; over-long or invalid pattern ignored; ABI/minSdk refuse unchanged
 - ✅ Direct HTTPS APK URL installs still run package + cert + sha256 gates
 - ✅ Offline/error: blank/ftp/non-GitHub FAB rejected; starred 403/429 snackbar; truncated import does not crash
@@ -46,7 +46,6 @@ Types in `dev.foss.goldenpath.index.forge`. Unit tests use fixtures only — no 
 | View | `ui/forge/AddRepoDialog.kt`, `ui/inventory/DetailGithubOpts.kt`, `ui/settings/GithubStarredSettings.kt` |
 | Tests | `src/test/.../index/forge/` + `ReleaseRefreshForgeTest` / `ReleaseRefreshProbesTest` |
 | Wiring | FAB on `GoldenPathScreen`; Sources settings groups |
-
 ## Definition of Done
 
 Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fallback `bash scripts/feature-gate.sh --stack android`. After each AGENT step: `python3 scripts/agent-run.py watch-agent-gates --once --autofix`.
@@ -64,12 +63,14 @@ Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fal
 | Re-probe restamps Forge miss | `AppReprobeLive` uses `GithubHintFiles.hint`; hint short-circuits `storeSettled`. Test: Play known-miss + aliased hint → Forge listed, zero `searchRepos` |
 | Starred quota / privacy | Token required; 5-page cap; no per-star HTTP; opt-in Settings; `docs/PRIVACY.md`; never log token or star list |
 | Obtainium import secrets | Parse url+id only; skip tokens. Test fixture with a dummy PAT that must not reach stores |
+| Nested `]` truncates backup | Bracket-match `apps` array and objects; skip strings. Test: `apkUrls` + `categories` + escaped `]` in additionalSettings |
+| Huge pasted backup OOM | OpenDocument picker; `readUtf8` 2MB cap returns null. Test: oversize stream |
+| Uninstalled Obtainium apps vanish | `persist` always `watched.add` after bind. Test: two GitHub rows in watched store |
 | Regex ReDoS | 64-char cap, filename only, invalid pattern ignored. Test: over-long pattern rejected |
 | Direct APK SSRF | `ApkDownloadUrl.httpsFile` public-host allowlist; no http IP. Test: `http://169.254.0.1/x.apk` rejected |
 | Watched repos becoming a catalog | `WatchedRepoStore` never appears as inventory rows; bind only when an installed package matches. Test: unmatched URL → store size 1 |
 | `strings.xml` 300-line cap | New copy in `values/forge.xml` |
 | File size | New files; do not grow `GitHubScan.kt` |
-
 ## Notes
 
 - Do not browse F-Droid/Droidify catalogs or import rumboalla’s GitHub map.
