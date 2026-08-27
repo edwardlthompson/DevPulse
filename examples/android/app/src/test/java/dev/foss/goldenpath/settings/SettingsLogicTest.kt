@@ -28,6 +28,13 @@ class SettingsLogicTest {
     }
 
     @Test
+    fun overlayKeepsParentWhenChildOpen() {
+        assertTrue(MenuPlace.composeParent(exclusiveSwap = false, childOpen = true))
+        assertFalse(MenuPlace.composeParent(exclusiveSwap = true, childOpen = true))
+        assertTrue(MenuPlace.composeParent(exclusiveSwap = false, childOpen = false))
+    }
+
+    @Test
     fun hubListsGlanceableSectionsThenAbout() {
         val rows = SettingsNav.hubRows()
         assertEquals(8, rows.size)

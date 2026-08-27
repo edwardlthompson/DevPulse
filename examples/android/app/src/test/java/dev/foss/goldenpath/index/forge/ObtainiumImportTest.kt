@@ -63,6 +63,14 @@ class ObtainiumImportTest {
     }
 
     @Test
+    fun sandboxNameRejectsPaths() {
+        assertNull(ObtainiumImport.sandboxName("../x.json"))
+        assertNull(ObtainiumImport.sandboxName("/sdcard/Obt/x.json"))
+        assertNull(ObtainiumImport.sandboxName("notes.txt"))
+        assertEquals("obtainium-import.json", ObtainiumImport.sandboxName("obtainium-import.json"))
+    }
+
+    @Test
     fun oversizeBackupIsRejected() {
         val bytes = ByteArray(ObtainiumImport.MAX_BYTES + 1) { '{'.code.toByte() }
         assertNull(ObtainiumImport.readUtf8(ByteArrayInputStream(bytes)))

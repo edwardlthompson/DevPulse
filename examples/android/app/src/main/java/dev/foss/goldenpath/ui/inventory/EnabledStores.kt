@@ -26,7 +26,8 @@ fun rememberEnabledSources(): Set<RemoteReleasedSource> {
     val guardian by repos.repoEnabled("guardian").collectAsStateWithLifecycle(false)
     val calyx by repos.repoEnabled("calyx").collectAsStateWithLifecycle(false)
     val custom by repos.customIndexUrl.collectAsStateWithLifecycle("")
-    return remember(play, aptoide, apkMirror, apkPure, forge, official, archive, izzy, guardian, calyx, custom) {
+    val customOn by repos.customEnabled.collectAsStateWithLifecycle(false)
+    return remember(play, aptoide, apkMirror, apkPure, forge, official, archive, izzy, guardian, calyx, custom, customOn) {
         StoreSelection.sources(
             play = play,
             aptoide = aptoide,
@@ -39,7 +40,7 @@ fun rememberEnabledSources(): Set<RemoteReleasedSource> {
                 if (izzy) add("izzy")
                 if (guardian) add("guardian")
                 if (calyx) add("calyx")
-                if (custom.isNotBlank()) add("custom")
+                if (customOn && custom.isNotBlank()) add("custom")
             },
         )
     }

@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Obtainium import accepts None, Exclude secrets, and All backup envelopes, a share/open JSON intent, and a file picker that is not limited to `application/json`
+- Custom F-Droid index is a gated Sources toggle: it stays off until an HTTPS `index-v1.jar` or index JSON URL is saved
+
+### Changed
+
+- Sources is a toggle list; token, repo, paste, and import fields live under Setup with Save and ✅/❌ toasts
+- Starred scan and Search GitHub unknowns stay off until a GitHub token is saved
+- Back from a submenu restores the parent menu's scroll place (Settings hub, Sources, Scan, Inventory)
+
 ## [0.33.0](https://github.com/edwardlthompson/DevPulse/compare/v0.32.0...v0.33.0) (2026-08-27)
 
 ### Added

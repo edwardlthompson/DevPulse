@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.index.forge.FilePastedRepoStore
+import dev.foss.goldenpath.settings.SourceFieldValidate
 import dev.foss.goldenpath.ui.forge.ForgePasteScreen
 import java.io.File
 
@@ -29,7 +30,16 @@ fun ForgePasteSettings(modifier: Modifier = Modifier) {
             onPackageNameChange = { packageName = it },
             onRepoUrlChange = { repoUrl = it },
         )
-        TextButton(onClick = { store.put(packageName, repoUrl) }) {
+        TextButton(
+            onClick = {
+                if (SourceFieldValidate.paste(packageName, repoUrl)) {
+                    store.put(packageName, repoUrl)
+                    SettingsToast.ok(context, context.getString(R.string.sources_saved_ok))
+                } else {
+                    SettingsToast.fail(context, context.getString(R.string.sources_paste_invalid))
+                }
+            },
+        ) {
             Text(stringResource(R.string.forge_paste_save))
         }
     }

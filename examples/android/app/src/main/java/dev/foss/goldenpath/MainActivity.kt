@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import dev.foss.goldenpath.about.AppUpdatePreferences
+import dev.foss.goldenpath.inventory.ObtainiumImportLaunch
 import dev.foss.goldenpath.inventory.RefreshLaunch
 import dev.foss.goldenpath.network.NetworkStatusMonitor
 import dev.foss.goldenpath.ui.GoldenPathApp
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
             )
         }
         RefreshLaunch.maybeStart(this, intent)
+        ObtainiumImportLaunch.maybeStart(this, intent)
     }
 
     override fun onResume() {
@@ -51,6 +53,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         RefreshLaunch.maybeStart(this, intent)
+        ObtainiumImportLaunch.maybeStart(this, intent)
     }
 
     override fun onDestroy() {

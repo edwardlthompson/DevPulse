@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,6 +47,7 @@ fun ScanScreen(
         else -> progress.completed.coerceAtMost(items.size)
     }
     val visible = items.take(visibleCount)
+    val listState = rememberLazyListState()
     val progressCd = stringResource(R.string.scan_progress, progress.completed, progress.total)
     Column(
         modifier = modifier
@@ -68,7 +70,10 @@ fun ScanScreen(
                 else -> Button(onClick = onStart) { Text(stringResource(R.string.scan_start)) }
             }
         }
-        LazyColumn(modifier = Modifier.weight(1f).highRefreshScroll()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.weight(1f).highRefreshScroll(),
+        ) {
             items(visible, key = { it.app.packageName }) { item ->
                 ScanResultRow(item = item, onClick = { onSelect(item) })
             }

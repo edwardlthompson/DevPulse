@@ -15,6 +15,7 @@ private val Context.fdroidRepoDataStore: DataStore<Preferences> by preferencesDa
 )
 
 private val CUSTOM_URL = stringPreferencesKey("custom_index_url")
+private val CUSTOM_ENABLED = booleanPreferencesKey("custom_index_enabled")
 
 class FdroidRepoPreferences(private val context: Context) {
     fun repoEnabled(repoId: String): Flow<Boolean> {
@@ -27,6 +28,10 @@ class FdroidRepoPreferences(private val context: Context) {
         prefs[CUSTOM_URL] ?: ""
     }
 
+    val customEnabled: Flow<Boolean> = context.fdroidRepoDataStore.data.map { prefs ->
+        prefs[CUSTOM_ENABLED] ?: prefs[CUSTOM_URL].orEmpty().isNotBlank()
+    }
+
     suspend fun setRepoEnabled(repoId: String, enabled: Boolean) {
         val key = booleanPreferencesKey("repo_enabled_$repoId")
         context.fdroidRepoDataStore.edit { prefs -> prefs[key] = enabled }
@@ -34,5 +39,9 @@ class FdroidRepoPreferences(private val context: Context) {
 
     suspend fun setCustomIndexUrl(url: String) {
         context.fdroidRepoDataStore.edit { prefs -> prefs[CUSTOM_URL] = url.trim() }
+    }
+
+    suspend fun setCustomEnabled(enabled: Boolean) {
+        context.fdroidRepoDataStore.edit { prefs -> prefs[CUSTOM_ENABLED] = enabled }
     }
 }

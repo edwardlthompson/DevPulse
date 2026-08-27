@@ -39,6 +39,7 @@ import dev.foss.goldenpath.R
 import dev.foss.goldenpath.about.DonationsConfig
 import dev.foss.goldenpath.ui.about.AboutScreen
 import dev.foss.goldenpath.ui.components.GoldenPathScaffold
+import dev.foss.goldenpath.ui.components.MenuOverlay
 import dev.foss.goldenpath.ui.forge.AddRepoDialog
 import dev.foss.goldenpath.ui.inventory.InventoryDetailScreen
 import dev.foss.goldenpath.ui.inventory.InventoryScreen
@@ -184,17 +185,24 @@ fun GoldenPathScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-                InventoryScreen(model = inventory, modifier = Modifier.fillMaxSize())
-                if (inventory.selectedApp != null) {
-                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                        InventoryDetailScreen(
-                            app = inventory.selectedApp,
-                            onBack = inventory.onClearSelect,
-                            inventory = inventory.apps,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
-                }
+                MenuOverlay(
+                    open = inventory.selectedApp != null,
+                    modifier = Modifier.fillMaxSize(),
+                    parent = {
+                        InventoryScreen(model = inventory, modifier = Modifier.fillMaxSize())
+                    },
+                    child = {
+                        when (val app = inventory.selectedApp) {
+                            null -> Unit
+                            else -> InventoryDetailScreen(
+                                app = app,
+                                onBack = inventory.onClearSelect,
+                                inventory = inventory.apps,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
+                    },
+                )
                 if (showSettings) {
                     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                         SettingsScreen(
@@ -232,30 +240,37 @@ fun GoldenPathScreen(
                         )
                     }
                 }
-                if (scan.visible && scan.selected == null) {
+                if (scan.visible) {
                     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                        ScanScreen(
-                            items = scan.items,
-                            progress = scan.progress,
-                            onStart = scan.start,
-                            onPause = scan.pause,
-                            onResume = scan.resume,
-                            onSelect = scan.select,
-                            onClose = scan.close,
-                            quiet = scan.quiet,
+                        MenuOverlay(
+                            open = scan.selected != null,
                             modifier = Modifier.fillMaxSize(),
+                            parent = {
+                                ScanScreen(
+                                    items = scan.items,
+                                    progress = scan.progress,
+                                    onStart = scan.start,
+                                    onPause = scan.pause,
+                                    onResume = scan.resume,
+                                    onSelect = scan.select,
+                                    onClose = scan.close,
+                                    quiet = scan.quiet,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            },
+                            child = {
+                                when (val detail = scan.selected) {
+                                    null -> Unit
+                                    else -> ScanDetailScreen(
+                                        detail = detail,
+                                        onBack = scan.clearSelect,
+                                        modifier = Modifier.fillMaxSize(),
+                                    )
+                                }
+                            },
                         )
                     }
                 }
-            if (scan.selected != null) {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    ScanDetailScreen(
-                        detail = scan.selected,
-                        onBack = scan.clearSelect,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-            }
         }
     }
     if (inventory.canScan && inventory.showRefreshDialog) {

@@ -17,6 +17,7 @@
     <string name="forge_opt_apk_regex">APK filename regex (optional)</string>
     <string name="forge_import">Import Obtainium backup</string>
     <string name="forge_import_file">Choose Obtainium backup</string>
+    <string name="forge_import_body">Pick the JSON file. None, Exclude secrets, or All all work; tokens are ignored.</string>
     <string name="forge_import_ok">Imported %1$d GitHub repos, skipped %2$d</string>
     <string name="forge_import_failed">Could not read that Obtainium file</string>
     <string name="forge_direct_apk">Direct APK HTTPS URL</string>

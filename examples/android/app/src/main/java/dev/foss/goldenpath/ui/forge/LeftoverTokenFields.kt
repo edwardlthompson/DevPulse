@@ -10,12 +10,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import android.widget.Toast
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.index.forge.EncryptedForgeTokenStore
 import dev.foss.goldenpath.index.forge.ForgeHost
 import dev.foss.goldenpath.index.forge.ForgeRateLimit
+import dev.foss.goldenpath.settings.SourceFieldValidate
 
 @Composable
 fun LeftoverTokenFields(store: EncryptedForgeTokenStore?) {
@@ -36,6 +39,7 @@ fun LeftoverTokenFields(store: EncryptedForgeTokenStore?) {
 
 @Composable
 private fun HostTokenRow(host: ForgeHost, store: EncryptedForgeTokenStore) {
+    val context = LocalContext.current
     var draft by remember(host) { mutableStateOf("") }
     OutlinedTextField(
         value = draft,
@@ -43,7 +47,17 @@ private fun HostTokenRow(host: ForgeHost, store: EncryptedForgeTokenStore) {
         label = { Text(host.name) },
         visualTransformation = PasswordVisualTransformation(),
     )
-    TextButton(onClick = { store.setLeftover(host, draft); draft = "" }) {
+    TextButton(
+        onClick = {
+            if (SourceFieldValidate.leftoverToken(draft)) {
+                store.setLeftover(host, draft)
+                draft = ""
+                Toast.makeText(context, "✅ ${context.getString(R.string.sources_saved_ok)}", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(context, "❌ ${context.getString(R.string.sources_token_invalid)}", Toast.LENGTH_LONG).show()
+            }
+        },
+    ) {
         Text(stringResource(R.string.forge_token_save))
     }
 }

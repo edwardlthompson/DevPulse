@@ -62,9 +62,9 @@ Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fal
 | Wrong update from sibling F-Droid flavor | SuffixVariant copies `ownerRepo` only, not version/ms. Cert mismatch still refuses install. Test: aliased Obtainium `versionName` null until listing tap |
 | Re-probe restamps Forge miss | `AppReprobeLive` uses `GithubHintFiles.hint`; hint short-circuits `storeSettled`. Test: Play known-miss + aliased hint → Forge listed, zero `searchRepos` |
 | Starred quota / privacy | Token required; 5-page cap; no per-star HTTP; opt-in Settings; `docs/PRIVACY.md`; never log token or star list |
-| Obtainium import secrets | Parse url+id only; skip tokens. Test fixture with a dummy PAT that must not reach stores |
+| Obtainium import secrets | Parse url+id only; skip tokens. None (`settings: null`), Exclude secrets, and All all import GitHub apps. Test: dummy PAT / `github-creds` never reach stores |
 | Nested `]` truncates backup | Bracket-match `apps` array and objects; skip strings. Test: `apkUrls` + `categories` + escaped `]` in additionalSettings |
-| Huge pasted backup OOM | OpenDocument picker; `readUtf8` 2MB cap returns null. Test: oversize stream |
+| Huge pasted backup OOM | GetContent picker; `readUtf8` 2MB cap returns null. Test: oversize stream |
 | Uninstalled Obtainium apps vanish | `persist` always `watched.add` after bind. Test: two GitHub rows in watched store |
 | Regex ReDoS | 64-char cap, filename only, invalid pattern ignored. Test: over-long pattern rejected |
 | Direct APK SSRF | `ApkDownloadUrl.httpsFile` public-host allowlist; no http IP. Test: `http://169.254.0.1/x.apk` rejected |

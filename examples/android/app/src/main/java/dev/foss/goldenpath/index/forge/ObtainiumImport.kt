@@ -22,6 +22,14 @@ object ObtainiumImport {
         return out.toString(Charsets.UTF_8.name())
     }
 
+    fun sandboxName(raw: String): String? {
+        val name = raw.trim()
+        if (name.isEmpty() || name.any { it == '/' || it == '\\' }) return null
+        if (".." in name) return null
+        if (!name.endsWith(".json", ignoreCase = true)) return null
+        return name
+    }
+
     fun parse(json: String): Result {
         val inner = appsInner(json) ?: return Result(0, 0, emptyList())
         val rows = mutableListOf<Pair<String, String>>()
@@ -56,12 +64,16 @@ object ObtainiumImport {
     }
 
     private fun appsInner(json: String): String? {
-        val appsAt = json.indexOf("\"apps\"")
-        if (appsAt < 0) return null
-        val start = json.indexOf('[', appsAt)
-        if (start < 0) return null
-        val end = matching(json, start, '[', ']') ?: return null
-        return json.substring(start + 1, end).trim().takeIf { it.isNotEmpty() }
+        val text = json.trim()
+        val start = if (text.startsWith('[')) {
+            0
+        } else {
+            val appsAt = text.indexOf("\"apps\"")
+            if (appsAt < 0) return null
+            text.indexOf('[', appsAt).takeIf { it >= 0 } ?: return null
+        }
+        val end = matching(text, start, '[', ']') ?: return null
+        return text.substring(start + 1, end).trim().takeIf { it.isNotEmpty() }
     }
 
     private fun objects(inner: String): List<String> {

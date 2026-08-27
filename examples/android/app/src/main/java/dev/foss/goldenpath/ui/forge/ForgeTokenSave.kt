@@ -86,7 +86,15 @@ fun ForgeTokenSave(
                             val msg = result.hourlyLimit?.let {
                                 context.getString(R.string.forge_token_saved, it)
                             } ?: context.getString(R.string.forge_token_saved_unknown)
-                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                            android.widget.Toast.makeText(context, "✅ $msg", android.widget.Toast.LENGTH_LONG).show()
+                        } else {
+                            val fail = when (result.outcome) {
+                                GitHubTokenOutcome.Rejected -> context.getString(R.string.forge_token_rejected)
+                                GitHubTokenOutcome.Unreachable -> context.getString(R.string.forge_token_network)
+                                GitHubTokenOutcome.Blank -> context.getString(R.string.forge_token_blank)
+                                else -> context.getString(R.string.sources_saved_fail)
+                            }
+                            android.widget.Toast.makeText(context, "❌ $fail", android.widget.Toast.LENGTH_LONG).show()
                         }
                         busy = false
                     }

@@ -23,6 +23,11 @@ object SettingsNav {
     )
 }
 
+object MenuPlace {
+    fun composeParent(exclusiveSwap: Boolean, childOpen: Boolean): Boolean =
+        if (exclusiveSwap) !childOpen else true
+}
+
 object SettingsLogic {
     fun isUpdateCheckEnabled(interval: String): Boolean = interval != "off"
 

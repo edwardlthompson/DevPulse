@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sources_setup">Setup</string>
+    <string name="sources_need_setup">Open Setup and save a valid value first</string>
+    <string name="sources_need_token">Save a valid GitHub token in Setup first</string>
+    <string name="sources_need_index">Save a valid custom index URL in Setup first</string>
+    <string name="sources_saved_ok">Saved and validated</string>
+    <string name="sources_saved_fail">That value did not pass validation</string>
+    <string name="sources_index_invalid">Need an HTTPS F-Droid index-v1.jar or index JSON URL</string>
+    <string name="sources_token_invalid">That token is blank or the wrong length</string>
+    <string name="sources_paste_invalid">Need a package id and a GitHub owner/repo URL</string>
+    <string name="sources_custom_enable">Use custom F-Droid index</string>
+    <string name="fdroid_custom_save">Save custom index</string>
+</resources>
