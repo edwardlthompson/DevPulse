@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.0](https://github.com/edwardlthompson/DevPulse/compare/v0.33.0...v0.34.0) (2026-08-27)
+
+
+### Added
+
+* prepare v0.34.0 DevPulse product release ([ac6945f](https://github.com/edwardlthompson/DevPulse/commit/ac6945fa224989b917e721de66bdfdbf6cdeaf97))
+
+
+### Documentation
+
+* record v0.33.0 ship notes and fold lessons ([51bbc2b](https://github.com/edwardlthompson/DevPulse/commit/51bbc2b7313b81d13c9b8b8b37bb6d6cbca13767))
+
 ## [Unreleased]
 
 ### Added
