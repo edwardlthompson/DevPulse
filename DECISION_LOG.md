@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-27 — v0.34.0 ship
+- **Status:** Accepted
+- **Context:** Sources toggle/Setup, gated starred/search/custom F-Droid, Obtainium envelopes + share/open, and nested menus that keep scroll sat on `main` as `feat:` prepare `ac6945f`.
+- **Decision:** Fold Unreleased onto RP #16; admin-merge when Queue RP failed. RP tagged `v0.34.0`. Release `workflow_dispatch` uploaded `DevPulse-0.34.0.apk` and SBOMs.
+- **Alternatives considered:** Wait only for Queue merge (rejected: same ACTION_REQUIRED pattern). `gh release create` after a missed tag (unnecessary: RP tagged this time).
+- **Consequences:** Tag `v0.34.0` published. Sprint 22–23 `[ADB]` smoke stays open. Recurring Weekly/Monthly/Human rows stay open.
+
 ### 2026-08-26 — v0.33.0 ship
 - **Status:** Accepted
 - **Context:** Nested Obtainium JSON truncated import; GitHub watches never landed in `WatchedRepoStore`. Prepare `9f3bdf8` on `main`. Push token skipped Actions (KB-031). RP missed the tag.
