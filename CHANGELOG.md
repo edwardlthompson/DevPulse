@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Update all streams Play/listing APKs to disk and skips parts over 200MB so large split bundles no longer OOM and stall at 0 of N
+
 ## [0.34.0](https://github.com/edwardlthompson/DevPulse/compare/v0.33.0...v0.34.0) (2026-08-27)
 
 ### Added

@@ -32,7 +32,7 @@ data class UpdateAllSnap(
 
 object UpdateAll {
     const val MAX_FILES = 40
-    const val PARALLEL = 4
+    const val PARALLEL = 2
 
     fun jobs(apps: List<InstalledApp>): List<UpdateAllJob> =
         UpdateAllPick.groups(apps).map { it.first() }

@@ -70,4 +70,21 @@ class ListingPlayTest {
             ),
         )
     }
+
+    @Test
+    fun abortsWhenAPartFetchFails() {
+        val dir = File.createTempFile("play", "dir").apply { delete(); mkdirs() }
+        val files = ListingPlay.write(
+            dir,
+            "com.a",
+            listOf(
+                AuroraPlayFile("https://redirector.gvt1.com/edgedl/android/market/base", base = true),
+                AuroraPlayFile("https://redirector.gvt1.com/edgedl/android/market/split", base = false),
+            ),
+            bytesFor = { url -> if (url.contains("base")) byteArrayOf(0x50, 0x4B, 3) else null },
+            inspect = { ApkInspect("com.a", setOf("a")) },
+        )
+        assertNull(files)
+        assertEquals(0, dir.listFiles()?.size ?: 0)
+    }
 }

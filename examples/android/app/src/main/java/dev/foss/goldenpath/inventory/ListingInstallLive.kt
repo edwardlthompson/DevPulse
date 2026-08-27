@@ -74,14 +74,15 @@ object ListingInstallLive {
         artifact.localPath?.let(::File)?.takeIf { it.isFile }?.let { return listOf(it) }
         val cache = File(context.cacheDir, "updates")
         if (!StorageRoom.enough(cache)) return ListingFail.none()
-        val bytes = ApkHttpFetcher.get(artifact.downloadUrl, onProgress).getOrElse {
+        val dest = ApkFileStore.fileFor(cache, artifact)
+        val written = ApkHttpFetcher.toFile(artifact.downloadUrl, dest, onProgress).getOrElse {
             Log.i("DevPulse", "listing ${source.name} $pkg download fail ${it.message}")
+            dest.delete()
             return ListingFail.none()
         }
-        val file = ListingDownload.write(
-            cache,
+        val file = ListingDownload.keep(
+            written,
             artifact,
-            bytes,
             inspect = { ApkArchiveIdentity.inspect(context.packageManager, it) },
         )
         if (file == null) {
@@ -104,10 +105,10 @@ object ListingInstallLive {
             cache,
             pkg,
             parts,
-            fetch = { url, progress ->
-                ApkHttpFetcher.get(url, progress, AuroraAuth.USER_AGENT).onFailure {
-                    Log.i("DevPulse", "listing Play $pkg part fail ${it.message}")
-                }
+            save = { url, dest, progress ->
+                ApkHttpFetcher.toFile(url, dest, progress, AuroraAuth.USER_AGENT)
+                    .onFailure { Log.i("DevPulse", "listing Play $pkg part fail ${it.message}") }
+                    .isSuccess
             },
             inspect = { ApkArchiveIdentity.inspect(context.packageManager, it) },
             onProgress = onProgress,

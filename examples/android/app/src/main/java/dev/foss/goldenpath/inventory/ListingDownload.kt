@@ -11,7 +11,14 @@ object ListingDownload {
         inspect: (File) -> ApkInspect,
     ): File? {
         if (bytes.isEmpty()) return null
-        val file = ApkFileStore.write(ApkFileStore.fileFor(cacheDir, artifact), bytes)
+        return keep(ApkFileStore.write(ApkFileStore.fileFor(cacheDir, artifact), bytes), artifact, inspect)
+    }
+
+    fun keep(
+        file: File,
+        artifact: UpdateArtifact,
+        inspect: (File) -> ApkInspect,
+    ): File? {
         if (inspect(file).packageName != artifact.packageName) {
             file.delete()
             return null
