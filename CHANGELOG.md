@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.33.0](https://github.com/edwardlthompson/DevPulse/compare/v0.32.0...v0.33.0) (2026-08-27)
+
 ### Added
 
 - Obtainium backup import takes every GitHub watch (nested `apkUrls`/`categories` no longer drop the rest) into watched repos; Sources can pick the JSON file
