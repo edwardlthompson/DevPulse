@@ -2,6 +2,10 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 24 — Obtainium import all GitHub watches (2026-08-26)
+
+- ✅ [AGENT] Bracket-match Obtainium JSON; persist every GitHub watch; OpenDocument picker in Sources
+
 ## Sprint 23 — Obtainium migrate and filters (2026-08-26)
 
 - ✅ [AGENT] Obtainium JSON import (skip secrets/unknown sources); per-app prerelease + length-capped APK regex; direct HTTPS APK via `ApkDownloadUrl.httpsFile` + cert/package gate

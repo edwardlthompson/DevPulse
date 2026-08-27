@@ -11,6 +11,15 @@
 
 ## Entries
 
+### KB-032 — `gh release create --target` needs `main` or a full SHA
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `gh release create vX.Y.Z --target a1fc775` returns HTTP 422 `tag_name is not a valid tag` / `target_commitish is invalid` |
+| **Cause** | GitHub rejects a short commit SHA as `target_commitish` |
+| **Fix** | `gh release create vX.Y.Z --target main` or the full 40-character SHA |
+| **Prevention** | Do not pass `git log --oneline` shorts to `--target` |
+
 ### KB-031 — Local git push token does not start Actions
 
 | Field | Detail |

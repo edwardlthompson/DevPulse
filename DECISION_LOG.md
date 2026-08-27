@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-26 — v0.33.0 ship
+- **Status:** Accepted
+- **Context:** Nested Obtainium JSON truncated import; GitHub watches never landed in `WatchedRepoStore`. Prepare `9f3bdf8` on `main`. Push token skipped Actions (KB-031). RP missed the tag.
+- **Decision:** Dispatch CI/Security/CodeQL. Fold Unreleased onto RP #15; admin-merge. `gh release create v0.33.0 --target main` after a short SHA 422. The published `release` event uploaded APK and SBOMs.
+- **Alternatives considered:** `--target` short SHA (rejected: GitHub 422). Extra `workflow_dispatch` of Release (unnecessary once the published event succeeded).
+- **Consequences:** Tag `v0.33.0` published. Sprint 22–23 `[ADB]` smoke stays open. Recurring Weekly/Monthly/Human rows stay open.
+
 ### 2026-08-26 — v0.32.0 ship
 - **Status:** Accepted
 - **Context:** Sprint 22–23 GitHub-add (aliases, FAB paste, starred scan, Obtainium JSON import) sat on `main` as `feat:` prepare `7f7dcf7`. The local `git push` token did not start Actions. Release Please has no `workflow_dispatch`.

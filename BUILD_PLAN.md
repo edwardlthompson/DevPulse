@@ -105,6 +105,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 | Sprint 19 — Ideas backlog (after v0.29.0) | 2026-08-23 | COMPLETED_TASKS.md @ `92c860a` |
 | Sprint 20 — Ideas backlog (after Sprint 19) | 2026-08-23 | COMPLETED_TASKS.md @ `2b6d448` |
 | Sprint 21 — Ideas backlog (after Sprint 20) | 2026-08-23 | COMPLETED_TASKS.md @ `2b6d448` |
+| Sprint 24 — Obtainium import all GitHub watches | 2026-08-26 | COMPLETED_TASKS.md @ `a1fc775` |
 > **Sprint 11** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 12** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 13** archived in COMPLETED_TASKS.md @ `fd20edd`.
@@ -123,6 +124,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **Sprint 19** archived in COMPLETED_TASKS.md @ `92c860a`.
 > **Sprint 20** archived in COMPLETED_TASKS.md @ `2b6d448`.
 > **Sprint 21** archived in COMPLETED_TASKS.md @ `2b6d448`.
+> **Sprint 24** archived in COMPLETED_TASKS.md @ `a1fc775`.
 
 ## Sprint 22 — GitHub add (uninstall Obtainium)
 
@@ -143,16 +145,6 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 ### Human & device (after automation)
 
 - 🔲 [ADB] Import a recorded Obtainium fixture; listing tap still refuses a mismatched signing cert
-
-## Sprint 24 — Obtainium import all GitHub watches
-
-Nested `apkUrls` / `categories` truncated the backup parse. Every GitHub `owner/repo` must land in `WatchedRepoStore`.
-
-### Sequential
-
-- ✅ [AGENT] Bracket-match Obtainium JSON; persist every GitHub watch; OpenDocument picker in Sources
-
-<!-- parallel_exception: single import-container fix -->
 
 ## Ongoing Maintenance (recurring)
 

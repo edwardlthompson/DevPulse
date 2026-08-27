@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-26 | v0.33.0 /ship | `feat:` prepare; dispatch CI (KB-031); fold Unreleased on RP #15; admin-merge; `gh release create --target main` after short SHA 422; published `release` event uploaded APK/SBOM | Use `--target main` not a short SHA; do not delete a `gh pr edit --body-file` before the edit returns |
 | 2026-08-26 | v0.32.0 /ship | `feat:` prepare; dispatch CI after push token skipped Actions; fold Unreleased on RP #13; admin-merge; `gh release create` after RP missed the tag | Do not `git push` with a token that skips workflow triggers; Release Please has no `workflow_dispatch`; wait for tag-SHA CI before the docs commit (KB-030) |
 | 2026-08-23 | v0.31.0 /ship | `feat:` prepare; fold Unreleased on RP #12; admin-merge after Queue RP failed; History strings in `history.xml` so `strings.xml` stays at 300 | Wait for the tag `Release` workflow SBOM/APK; RP still opens a phantom next-version branch |
 | 2026-08-23 | v0.30.0 /ship | `feat:` prepare; fold Unreleased on RP #11; admin-merge after Queue RP failed; tag `v0.30.0` | Wait for the tag `Release` workflow SBOM/APK; keep `strings.xml` at 300 by reusing keys |
