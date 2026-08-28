@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Same-repo `cursor/*` PRs merge when the six branch-protection check names are green (`ready-pr-automerge.yml`)
+- Release Please accepts `workflow_dispatch` so a bot merge that skips push events can still open the next release PR (KB-031)
 
 ## [0.34.1](https://github.com/edwardlthompson/DevPulse/compare/v0.34.0...v0.34.1) (2026-08-27)
 

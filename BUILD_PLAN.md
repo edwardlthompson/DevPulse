@@ -166,7 +166,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 
 ### Human & device (after automation)
 
-- 🔲 [HUMAN] Optional: Settings → General → Allow auto-merge, and repo secret `AUTOMERGE_TOKEN`, so merge pushes start Actions on `main` (KB-031)
+- 🔲 [HUMAN] Set `AUTOMERGE_TOKEN` or dispatch CI + Release Please on `main` after bot merges (KB-031); then `/ship` for `v0.34.2`
 
 ## Ongoing Maintenance (recurring)
 

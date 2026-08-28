@@ -34,9 +34,9 @@
 | Field | Detail |
 |-------|--------|
 | **Symptom** | `git push origin main` succeeds, but no CI, Security Scan, CodeQL, or Release Please runs on the new SHA |
-| **Cause** | The credentials used for that push are not allowed to create `workflow` events (common with some PAT/app tokens). Release Please also has no `workflow_dispatch` |
-| **Fix** | `gh workflow run CI --ref main` (and Security Scan, CodeQL). Open or update `release-please--branches--main` by hand, then `merge-release-please-pr`. `gh release create` if RP misses the tag |
-| **Prevention** | Prefer a push token that GitHub Actions will honor, or add `workflow_dispatch` to Release Please. Do not treat a quiet Actions tab as green CI |
+| **Cause** | The credentials used for that push are not allowed to create `workflow` events (common with some PAT/app tokens). `GITHUB_TOKEN` automerges have the same gap |
+| **Fix** | `gh workflow run CI --ref main` (and Security Scan, CodeQL, Release Please). Then `merge-release-please-pr`. `gh release create` if RP misses the tag |
+| **Prevention** | Set `AUTOMERGE_TOKEN` (PAT) so merges trigger push workflows. Release Please accepts `workflow_dispatch`. Do not treat a quiet Actions tab as green CI |
 
 ### KB-001 — UTF-16 file corruption on Windows
 
