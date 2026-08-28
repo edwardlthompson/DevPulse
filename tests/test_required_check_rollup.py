@@ -94,6 +94,8 @@ class WorkflowJobNameTests(unittest.TestCase):
         self.assertIn("conclude-required-check.sh", sec)
         self.assertIn("\n    name: CodeQL\n", ql)
         self.assertIn("conclude-required-check.sh", ql)
+        rp = (ROOT / ".github/workflows/release-please.yml").read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", rp)
 
 
 if __name__ == "__main__":

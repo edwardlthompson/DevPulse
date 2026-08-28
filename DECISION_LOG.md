@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-28 — Automerge landed PR #19; push CI still skipped
+- **Status:** Accepted
+- **Context:** Concluding jobs named `CI`, `Security Scan`, and `CodeQL` went green on #19. `ready-pr-automerge.yml` merged with `GITHUB_TOKEN` (`github-actions[bot]`, `69a5e06`). No Actions runs started on that SHA (KB-031). Cloud `ghs_` cannot `workflow_dispatch` (403).
+- **Decision:** Add `workflow_dispatch` to Release Please. Leave `/ship` for `v0.34.2` until a human PAT dispatches CI + RP or `AUTOMERGE_TOKEN` is set.
+- **Alternatives considered:** Empty commit on `main` to start workflows (rejected: same token still skips Actions). Disable required checks (rejected).
+- **Consequences:** Merge automation works. Post-merge CI/RP still need a token that can create `workflow` events.
+
 ### 2026-08-28 — Required-check rollups so merges are automatic
 - **Status:** Accepted
 - **Context:** Branch protection requires `CI`, `Security Scan`, `CodeQL`, `Repo Hygiene`, `Feature Gate`, and `Template Upgrade Simulation (Windows)`. Only the last three exist as job names. GHAS also posts `CodeQL` as `neutral`. `gh pr merge` and `--admin` fail with `2 of 6 required status checks are expected`.
