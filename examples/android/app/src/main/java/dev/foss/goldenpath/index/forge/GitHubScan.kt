@@ -59,6 +59,7 @@ object GitHubScan {
         val verified = mutableListOf<ForgeCandidate>()
         val notesByRepo = HashMap<String, String>()
         val apkByRepo = HashMap<String, String>()
+        val versionByRepo = HashMap<String, String>()
         var blocked = false
         for (candidate in candidates) {
             val page = listReleases(candidate.ownerRepo, releases, pause)
@@ -82,6 +83,7 @@ object GitHubScan {
             )
             hit.notes?.let { notesByRepo[candidate.ownerRepo] = it }
             hit.apkUrl?.let { apkByRepo[candidate.ownerRepo] = it }
+            hit.versionName?.let { versionByRepo[candidate.ownerRepo] = it }
             val exact = hit.haystack.contains(packageName, ignoreCase = true)
             verified += candidate.copy(
                 packageId = if (exact) packageName else candidate.packageId,
@@ -95,6 +97,7 @@ object GitHubScan {
             return RemoteReleaseOffer(
                 source = RemoteReleasedSource.Forge,
                 ms = best.latestReleaseMs ?: best.latestCommitMs,
+                versionName = versionByRepo[best.ownerRepo],
                 pageUrl = ForgeUrl.downloadPage("https://github.com/${best.ownerRepo}"),
             )
         }

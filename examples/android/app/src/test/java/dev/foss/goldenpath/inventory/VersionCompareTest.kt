@@ -9,6 +9,8 @@ class VersionCompareTest {
     fun detectsNewerRemote() {
         assertTrue(VersionCompare.isNewer("2.0", "1.9"))
         assertTrue(VersionCompare.isNewer("1.10.0", "1.9.9"))
+        assertTrue(VersionCompare.isNewer("v1.2.0", "1.1.0"))
+        assertFalse(VersionCompare.isNewer("v1.2.0", "1.2.0"))
         assertFalse(VersionCompare.isNewer("1.2.0", "1.2.0"))
         assertFalse(VersionCompare.isNewer("1.1", "1.2"))
         assertFalse(VersionCompare.isNewer(null, "1.0"))

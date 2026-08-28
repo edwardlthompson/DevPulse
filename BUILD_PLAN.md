@@ -148,6 +148,16 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 
 - 🔲 [ADB] Import a recorded Obtainium fixture; listing tap still refuses a mismatched signing cert
 
+## Sprint 25 — GitHub release versions on Refresh
+
+<!-- parallel_exception: single logic slice; ADB remainder only -->
+
+- ✅ [AGENT] Hinted GitHub repos call `listReleases` for tag/APK so Has update matches Obtainium (`GitHubHintRelease`, `GitHubReleasePick.bound`)
+
+### Human & device (after automation)
+
+- 🔲 [ADB] Refresh a GitHub-only app Obtainium already flags; Has update shows the GitHub tag; listing tap still refuses a mismatched cert
+
 ## Ongoing Maintenance (recurring)
 
 ### Weekly

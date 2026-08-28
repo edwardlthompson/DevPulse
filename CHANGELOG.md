@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- GitHub Refresh reads release tags and APK assets for hinted repos so Has update matches Obtainium instead of a stale F-Droid version (or none)
+
 ## [0.34.1](https://github.com/edwardlthompson/DevPulse/compare/v0.34.0...v0.34.1) (2026-08-27)
 
 ### Fixed

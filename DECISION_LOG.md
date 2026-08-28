@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-28 — GitHub hint Refresh reads releases
+- **Status:** Accepted
+- **Context:** Obtainium showed a GitHub update DevPulse missed. Hint-first listing bound `owner/repo` from F-Droid `sourceCode` / paste / aliases but skipped `listReleases`, so Forge `versionName` stayed the F-Droid suggested name or null. `Has update` requires `VersionCompare.isNewer`, so those rows never flagged. Listing tap also required the package id in the APK filename, which Obtainium does not.
+- **Decision:** Bound GitHub repos `GET /repos/{owner}/{repo}/releases` on Refresh. Use `tag_name` and `published_at` when an APK asset exists; fall back to the hint listing on HTTP failure. `GitHubReleasePick.bound` prefers package evidence then any `.apk`. `VersionCompare` treats a leading `v` as the same version. `searchRepos` stays off for hints. Do not import Obtainium’s HTML scrapers.
+- **Alternatives considered:** Keep F-Droid dates on Refresh and fetch only on listing tap (rejected: Has update stays blind). Name-search every Play miss (rejected: quota, DECISION_LOG 2026-08-26). `/releases/latest` only (rejected: skips prereleases Obtainium can include).
+- **Consequences:** Each hinted GitHub app costs one core-rate request per Refresh. A GitHub token is recommended when many apps are bound. Sprint 25 row on BUILD_PLAN.
+
 ### 2026-08-27 — v0.34.1 ship
 - **Status:** Accepted
 - **Context:** Update all hung at 0 of 22 on OP13 while buffering Play split APKs in RAM; Firefox OOM on a 256MB part.

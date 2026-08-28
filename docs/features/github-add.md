@@ -36,7 +36,7 @@ Types in `dev.foss.goldenpath.index.forge`. Unit tests use fixtures only — no 
 
 1. _Given_ `dev.imranr.obtainium` is installed and the library has `dev.imranr.obtainium.fdroid` → `ImranR98/Obtainium`
 2. _When_ Refresh or FAB paste / starred bind runs
-3. _Then_ Forge lists `https://github.com/ImranR98/Obtainium/releases` with null version until listing tap, and `searchRepos` stays at 0
+3. _Then_ Forge lists `https://github.com/ImranR98/Obtainium/releases` with the GitHub `tag_name` (and APK when present), and `searchRepos` stays at 0
 
 ## Container map
 
@@ -59,7 +59,7 @@ Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fal
 | Race with Refresh | Store locks on TSV files. FAB writes pasted last-wins, then `forgetFetched` + one-package re-probe. Harvest cannot clobber a pasted row because `githubHints` applies pasted last. Test: pasted `owner/repo` wins |
 | Unhandled exceptions | `runCatching` on starred/release/import JSON parse; skipped count; no crash. Test: truncated Obtainium JSON |
 | Alias false positive | Allowlist suffixes only; unique `owner/repo` required; conflict → picker. Test: `org.mozilla.firefox` unchanged; two repos → no auto-bind |
-| Wrong update from sibling F-Droid flavor | SuffixVariant copies `ownerRepo` only, not version/ms. Cert mismatch still refuses install. Test: aliased Obtainium `versionName` null until listing tap |
+| Wrong update from sibling F-Droid flavor | SuffixVariant copies `ownerRepo` only, not version/ms. Refresh `listReleases` supplies the GitHub tag. Cert mismatch still refuses install. Test: aliased Obtainium `versionName` from tag, not the `.fdroid` record |
 | Re-probe restamps Forge miss | `AppReprobeLive` uses `GithubHintFiles.hint`; hint short-circuits `storeSettled`. Test: Play known-miss + aliased hint → Forge listed, zero `searchRepos` |
 | Starred quota / privacy | Token required; 5-page cap; no per-star HTTP; opt-in Settings; `docs/PRIVACY.md`; never log token or star list |
 | Obtainium import secrets | Parse url+id only; skip tokens. None (`settings: null`), Exclude secrets, and All all import GitHub apps. Test: dummy PAT / `github-creds` never reach stores |
