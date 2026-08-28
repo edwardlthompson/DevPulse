@@ -6,21 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.34.2](https://github.com/edwardlthompson/DevPulse/compare/v0.34.1...v0.34.2) (2026-08-28)
-
-
-### Fixed
-
-* read GitHub release tags for hinted repos on Refresh ([ac7c777](https://github.com/edwardlthompson/DevPulse/commit/ac7c777c5bcf89acd84706370ac1628b6790fcb6))
-* read GitHub release tags on Refresh ([69a5e06](https://github.com/edwardlthompson/DevPulse/commit/69a5e0601c0dd950cf5331da9a38d289c75a802b))
-
-
-### Documentation
-
-* record /ship block on main branch protection ([4a1f6ab](https://github.com/edwardlthompson/DevPulse/commit/4a1f6ab0fe70451b85eeec05ee08b6f5cf259249))
-* record v0.34.1 ship notes and fold lessons ([efa452b](https://github.com/edwardlthompson/DevPulse/commit/efa452b9687bf7ac02f8f1d9606f579b43f0703c))
-
 ## [Unreleased]
+
+## [0.34.2](https://github.com/edwardlthompson/DevPulse/compare/v0.34.1...v0.34.2) (2026-08-28)
 
 ### Fixed
 
