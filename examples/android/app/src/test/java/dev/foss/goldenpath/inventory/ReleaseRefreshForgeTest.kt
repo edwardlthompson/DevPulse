@@ -40,17 +40,17 @@ class ReleaseRefreshForgeTest {
     }
 
     @Test
-    fun izzyGithubHintListsWithoutGithubHttp() {
+    fun izzyGithubHintReadsReleaseTag() {
         val hits = intArrayOf(0, 0)
         val pkg = "uk.org.platitudes.wipefiles"
         val json = """{"apps":[{"packageName":"$pkg","lastUpdated":1700000000000,"suggestedVersionName":"0.3","sourceCode":"https://github.com/peterhearty/WipeFiles"}]}"""
-        val forge = runForge(pkg, json, izzy, countClient(hits)).getValue(pkg).offers.single { it.source == RemoteReleasedSource.Forge }
+        val releases = """[{"tag_name":"v0.4","published_at":"2024-06-01T00:00:00Z","assets":[{"browser_download_url":"https://github.com/peterhearty/WipeFiles/releases/download/v0.4/WipeFiles.apk"}]}]"""
+        val forge = runForge(pkg, json, izzy, countClient(hits, releases)).getValue(pkg).offers.single { it.source == RemoteReleasedSource.Forge }
         assertTrue(forge.listed)
         assertEquals("https://github.com/peterhearty/WipeFiles/releases", forge.pageUrl)
-        assertEquals(1_700_000_000_000L, forge.ms)
-        assertEquals("0.3", forge.versionName)
+        assertEquals("v0.4", forge.versionName)
         assertEquals(0, hits[0])
-        assertEquals(0, hits[1])
+        assertEquals(1, hits[1])
     }
 
     @Test
@@ -93,7 +93,7 @@ class ReleaseRefreshForgeTest {
     private val official = FdroidRepo("official", FdroidRepoKind.Official, "https://example/index.json", true)
     private val izzy = FdroidRepo("izzy", FdroidRepoKind.Izzy, "https://example/izzy.json", true)
 
-    private fun countClient(hits: IntArray) = object : GitHubSearchClient, GitHubReleaseClient {
+    private fun countClient(hits: IntArray, releaseBody: String = "[]") = object : GitHubSearchClient, GitHubReleaseClient {
         override fun searchRepos(query: String): GitHubSearchPage {
             hits[0] += 1
             return GitHubSearchPage(200, """{"items":[]}""")
@@ -101,7 +101,7 @@ class ReleaseRefreshForgeTest {
 
         override fun listReleases(ownerRepo: String): GitHubSearchPage {
             hits[1] += 1
-            return GitHubSearchPage(200, "[]")
+            return GitHubSearchPage(200, releaseBody)
         }
     }
 

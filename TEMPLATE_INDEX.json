@@ -253,6 +253,27 @@
       "owner": "maintainer"
     },
     {
+      "path": "scripts/conclude-required-check.sh",
+      "purpose": "Fail unless needed Actions jobs succeeded; optional required-check status",
+      "read_when": "validation",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": "scripts/merge-ready-pr.sh",
+      "purpose": "Merge a PR when required branch-protection check names are success",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
+      "path": ".github/workflows/ready-pr-automerge.yml",
+      "purpose": "Merge same-repo cursor/* PRs after required check names are green",
+      "read_when": "release",
+      "update_when": "milestone_boundary",
+      "owner": "maintainer"
+    },
+    {
       "path": "scripts/check-template-version-sync.sh",
       "purpose": "Fail when .template-version drifts from release-please manifest",
       "read_when": "validation",
@@ -1731,7 +1752,7 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "purpose": "Primary CI matrix: lint, test, build, hygiene, feature gate",
+      "purpose": "Primary CI matrix plus a concluding job named CI for branch protection",
       "read_when": "release",
       "update_when": "milestone_boundary",
       "owner": "maintainer"

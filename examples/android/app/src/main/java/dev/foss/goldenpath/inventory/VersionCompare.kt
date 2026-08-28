@@ -19,8 +19,10 @@ object VersionCompare {
         return 0
     }
 
-    private fun parts(raw: String): List<Long> =
-        raw.split('.', '-', '_').mapNotNull { token ->
+    private fun parts(raw: String): List<Long> {
+        val cleaned = raw.trim().trimStart { it == 'v' || it == 'V' }
+        return cleaned.split('.', '-', '_').mapNotNull { token ->
             token.takeWhile { it.isDigit() }.toLongOrNull()
         }
+    }
 }

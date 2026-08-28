@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-28 | Required-check rollups | Job names `CI` / `Security Scan` / `CodeQL` plus `merge-ready-pr.sh` so cursor PRs merge without admin | Set `allow_auto_merge` + `AUTOMERGE_TOKEN` so merge pushes start Actions (KB-031); GHAS `CodeQL` stays `neutral` |
 | 2026-08-27 | v0.34.1 /ship | `fix:` prepare; push started Actions; fold Unreleased on RP #17; admin-merge after Queue RP failed; RP tagged; Release workflow_dispatch for APK/SBOM | Queue RP still ACTION_REQUIRED; wait for tag-SHA CI before the docs commit (KB-030) |
 | 2026-08-27 | v0.34.0 /ship | `feat:` prepare; push started Actions; fold Unreleased on RP #16; admin-merge after Queue RP failed; RP tagged; Release workflow_dispatch uploaded APK/SBOM | Queue RP still ACTION_REQUIRED; wait for tag-SHA CI before the docs commit (KB-030) |
 | 2026-08-26 | v0.33.0 /ship | `feat:` prepare; dispatch CI (KB-031); fold Unreleased on RP #15; admin-merge; `gh release create --target main` after short SHA 422; published `release` event uploaded APK/SBOM | Use `--target main` not a short SHA; do not delete a `gh pr edit --body-file` before the edit returns |

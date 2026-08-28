@@ -22,14 +22,14 @@ object ForgeListing {
     fun fromReleases(packageName: String, json: String, opt: GithubAppOpt? = null): UpdateArtifact? {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return null
-        val rec = GitHubReleaseParser.firstWithPackage(
+        val rec = GitHubReleasePick.bound(
             pkg,
             json,
             includePrereleases = opt?.includePrereleases ?: true,
             apkRegex = opt?.apkRegex,
         )
         val url = rec?.apkUrl ?: return null
-        GitHubNotes.rememberApk(pkg, url)
+        GitHubNotes.rememberApk(pkg, url, rec.versionName)
         return UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.Forge)
     }
 }

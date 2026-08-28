@@ -67,6 +67,7 @@ class GitHubScanTest {
         val offer = GitHubScan.toOffer("uk.org.platitudes.wipefiles", "Wipe Files", search, releases, searchUnknowns = true)
         assertTrue(offer.listed)
         assertEquals("https://github.com/platitudes/WipeFiles/releases", offer.pageUrl)
+        assertEquals("v0.3", offer.versionName)
         assertEquals("Fixed crash", UpdateNotesMemory.get("uk.org.platitudes.wipefiles")?.text)
     }
 

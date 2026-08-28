@@ -11,6 +11,15 @@
 
 ## Entries
 
+### KB-033 — Required checks `CI` / `Security Scan` / `CodeQL` never appear as job names
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `gh pr merge` or `git push origin main` fails: `2 of 6 required status checks are expected` even when Feature Gate / Repo Hygiene / Windows simulation are green |
+| **Cause** | Branch protection lists workflow rollup names, but Actions only publishes **job** names. GHAS also posts a `CodeQL` check with conclusion `neutral`, which does not satisfy required success |
+| **Fix** | Concluding jobs named `CI`, `Security Scan`, and `CodeQL` (`conclude-required-check.sh`). Merge with `scripts/merge-ready-pr.sh` or `ready-pr-automerge.yml` after those six names are success |
+| **Prevention** | Do not require a workflow display name unless a job uses that exact `name:`. Keep GHAS default setup; treat Actions `CodeQL` success as the required signal |
+
 ### KB-032 — `gh release create --target` needs `main` or a full SHA
 
 | Field | Detail |

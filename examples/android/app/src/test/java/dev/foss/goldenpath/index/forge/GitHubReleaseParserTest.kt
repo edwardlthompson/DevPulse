@@ -61,4 +61,18 @@ class GitHubReleaseParserTest {
             overlong?.apkUrl,
         )
     }
+
+    @Test
+    fun firstApkAllowsFilenameWithoutPackage() {
+        val json = """
+            [{"tag_name":"v2.0","assets":[{"browser_download_url":"https://github.com/a/b/releases/download/v2.0/app-release.apk"}]}]
+        """.trimIndent()
+        assertNull(GitHubReleaseParser.firstWithPackage("com.example.app", json))
+        val hit = GitHubReleaseParser.firstApk(json)
+        assertEquals("v2.0", hit?.versionName)
+        assertEquals(
+            "https://github.com/a/b/releases/download/v2.0/app-release.apk",
+            GitHubReleasePick.bound("com.example.app", json)?.apkUrl,
+        )
+    }
 }

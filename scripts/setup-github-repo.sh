@@ -53,6 +53,7 @@ MANUAL SETUP CHECKLIST (GitHub UI - API returned 422 or insufficient permissions
      github-actions[bot] / Release Please PRs (required checks stay ACTION_REQUIRED)
   5c. Do not attach GitHub Environments to CI, Security Scan, or CodeQL
      (github-pages on Pages deploy is the exception)
+  5d. Settings → General → Allow auto-merge: ON (Release Please / Dependabot / cursor PRs)
   6. Re-run: bash scripts/setup-github-repo.sh
 EOF
 }
@@ -179,6 +180,12 @@ if gh repo edit "$REPO" --enable-discussions >/dev/null 2>&1; then
   echo "OK   GitHub Discussions enabled (point Q&A at SUPPORT.md)"
 else
   echo "SKIP Discussions (gh could not enable — [HUMAN] Settings → General → Features → Discussions)"
+fi
+
+if gh api --method PATCH "repos/${REPO}" -F allow_auto_merge=true >/dev/null 2>&1; then
+  echo "OK   allow_auto_merge enabled"
+else
+  echo "SKIP allow_auto_merge ([HUMAN] Settings → General → Allow auto-merge)"
 fi
 
 warn_required_check_environments() {

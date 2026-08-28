@@ -3,6 +3,7 @@ package dev.foss.goldenpath.inventory
 import dev.foss.goldenpath.index.fdroid.FdroidAppRecord
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
 import dev.foss.goldenpath.index.forge.GitHubSearchPage
+import dev.foss.goldenpath.index.forge.GitHubReleaseClient
 import dev.foss.goldenpath.index.forge.GithubHint
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -74,7 +75,8 @@ class ReleaseRefreshGithubAddTest {
     @Test
     fun aliasedHintListsForgeDespitePlayMiss() {
         val now = 1_720_000_000_000L
-        val fetches = AtomicInteger(0)
+        val searches = AtomicInteger(0)
+        val releases = AtomicInteger(0)
         RemoteReleaseMemory.putAll(
             mapOf(
                 "dev.imranr.obtainium" to RemoteReleaseRollup.from(
@@ -89,16 +91,31 @@ class ReleaseRefreshGithubAddTest {
                 ),
             ),
         )
+        val client = object : GitHubSearchClient, GitHubReleaseClient {
+            override fun searchRepos(query: String): GitHubSearchPage {
+                searches.incrementAndGet()
+                return GitHubSearchPage(200, """{"items":[]}""")
+            }
+
+            override fun listReleases(ownerRepo: String): GitHubSearchPage {
+                releases.incrementAndGet()
+                return GitHubSearchPage(
+                    200,
+                    """[{"tag_name":"v1.2.0","assets":[{"browser_download_url":"https://github.com/ImranR98/Obtainium/releases/download/v1.2.0/app-release.apk"}]}]""",
+                )
+            }
+        }
         val offer = ReleaseRefreshProbes.github(
             "dev.imranr.obtainium",
             "Obtainium",
-            GitHubSearchClient { fetches.incrementAndGet(); GitHubSearchPage(200, """{"items":[]}""") },
+            client,
             hint = GithubHint("ImranR98/Obtainium"),
             nowMs = now + 1_000L,
         )
         assertTrue(offer.listed)
-        assertEquals(null, offer.versionName)
-        assertEquals(0, fetches.get())
+        assertEquals("v1.2.0", offer.versionName)
+        assertEquals(0, searches.get())
+        assertEquals(1, releases.get())
         assertEquals("https://github.com/ImranR98/Obtainium/releases", offer.pageUrl)
     }
 }
