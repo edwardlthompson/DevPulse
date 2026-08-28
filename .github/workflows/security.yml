@@ -38,3 +38,25 @@ jobs:
       - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job name must be exactly Security Scan — branch protection requires that check context.
+  security-rollup:
+    name: Security Scan
+    if: always()
+    needs: [trivy, gitleaks]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Publish Security Scan required check
+        env:
+          CONCLUDE_CONTEXT: Security Scan
+          CONCLUDE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          JOB_RESULTS: |
+            trivy=${{ needs.trivy.result }}
+            gitleaks=${{ needs.gitleaks.result }}
+        run: bash scripts/conclude-required-check.sh

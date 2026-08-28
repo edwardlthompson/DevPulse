@@ -158,6 +158,16 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 
 - 🔲 [ADB] Refresh a GitHub-only app Obtainium already flags; Has update shows the GitHub tag; listing tap still refuses a mismatched cert
 
+## Sprint 26 — Required-check rollups
+
+<!-- parallel_exception: CI wiring only; no product slice -->
+
+- ✅ [AGENT] Concluding jobs named `CI` / `Security Scan` / `CodeQL` plus `ready-pr-automerge.yml` for same-repo `cursor/*` PRs
+
+### Human & device (after automation)
+
+- 🔲 [HUMAN] Optional: Settings → General → Allow auto-merge, and repo secret `AUTOMERGE_TOKEN`, so merge pushes start Actions on `main` (KB-031)
+
 ## Ongoing Maintenance (recurring)
 
 ### Weekly

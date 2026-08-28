@@ -569,3 +569,71 @@ jobs:
       - run: test -z "$(gofmt -l .)"
       - run: go test ./...
 
+  # Job name must be exactly CI — branch protection requires that check context.
+  ci-rollup:
+    name: CI
+    if: always()
+    needs:
+      - stack-presence
+      - path-changes
+      - encoding-check
+      - file-limits
+      - repo-hygiene
+      - feature-gate
+      - validate-index
+      - workflow-actions
+      - validate-bootstrap
+      - web
+      - python
+      - node
+      - android-structure
+      - android-build
+      - android-instrumented
+      - coverage-comment
+      - upgrade-simulation
+      - upgrade-simulation-windows
+      - template-update-check
+      - pr-title
+      - android-release
+      - lightroom
+      - rust
+      - go
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Publish CI required check
+        env:
+          CONCLUDE_CONTEXT: CI
+          CONCLUDE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          JOB_RESULTS: |
+            stack-presence=${{ needs.stack-presence.result }}
+            path-changes=${{ needs.path-changes.result }}
+            encoding-check=${{ needs.encoding-check.result }}
+            file-limits=${{ needs.file-limits.result }}
+            repo-hygiene=${{ needs.repo-hygiene.result }}
+            feature-gate=${{ needs.feature-gate.result }}
+            validate-index=${{ needs.validate-index.result }}
+            workflow-actions=${{ needs.workflow-actions.result }}
+            validate-bootstrap=${{ needs.validate-bootstrap.result }}
+            web=${{ needs.web.result }}
+            python=${{ needs.python.result }}
+            node=${{ needs.node.result }}
+            android-structure=${{ needs.android-structure.result }}
+            android-build=${{ needs.android-build.result }}
+            android-instrumented=${{ needs.android-instrumented.result }}
+            coverage-comment=${{ needs.coverage-comment.result }}
+            upgrade-simulation=${{ needs.upgrade-simulation.result }}
+            upgrade-simulation-windows=${{ needs.upgrade-simulation-windows.result }}
+            template-update-check=${{ needs.template-update-check.result }}
+            pr-title=${{ needs.pr-title.result }}
+            android-release=${{ needs.android-release.result }}
+            lightroom=${{ needs.lightroom.result }}
+            rust=${{ needs.rust.result }}
+            go=${{ needs.go.result }}
+        run: bash scripts/conclude-required-check.sh
+

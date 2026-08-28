@@ -4,4 +4,4 @@
 
 ## 2026-08-28 — `/ship` blocked on main merge
 
-- ❌ [HUMAN] Merge https://github.com/edwardlthompson/DevPulse/pull/19 (admin bypass). Cloud `ghs_` token cannot push `main` or `gh pr merge --admin`: GitHub returns `2 of 6 required status checks are expected`. Same pattern as v0.34.1 (merged by `edwardlthompson`). After merge, re-run `/ship` to cut `v0.34.2`.
+- 🔲 [HUMAN] Only if `ready-pr-automerge.yml` still cannot merge https://github.com/edwardlthompson/DevPulse/pull/19 after the concluding jobs are green: admin-merge (same as RP #17). Then re-run `/ship` for `v0.34.2`. Optional: enable Allow auto-merge + `AUTOMERGE_TOKEN` (Sprint 26).

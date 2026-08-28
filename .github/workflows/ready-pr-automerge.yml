@@ -1,0 +1,31 @@
+name: Ready PR auto-merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  automerge:
+    name: Queue ready cursor PR merge
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+      statuses: read
+    if: |
+      !github.event.pull_request.draft &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.head_ref, 'cursor/')
+    steps:
+      - uses: actions/checkout@v7
+      - name: Wait for required checks and merge
+        env:
+          GH_TOKEN: ${{ secrets.AUTOMERGE_TOKEN || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          bash scripts/merge-ready-pr.sh "$PR_NUMBER" --wait 2400
+          echo "Prefer AUTOMERGE_TOKEN (PAT) so the merge push triggers CI on main."
