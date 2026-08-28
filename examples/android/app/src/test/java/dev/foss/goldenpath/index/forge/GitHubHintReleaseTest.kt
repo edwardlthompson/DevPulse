@@ -1,6 +1,7 @@
 package dev.foss.goldenpath.index.forge
 
 import dev.foss.goldenpath.inventory.InstalledApp
+import dev.foss.goldenpath.inventory.ListingDirect
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import dev.foss.goldenpath.inventory.UpdateInventory
@@ -71,6 +72,23 @@ class GitHubHintReleaseTest {
         assertEquals("1.0", offer.versionName)
         assertEquals(9L, offer.ms)
         assertEquals("https://github.com/ImranR98/Obtainium/releases", offer.pageUrl)
+    }
+
+    @Test
+    fun listingTapFindsApkWhenFilenameOmitsPackage() {
+        val json = """
+            [{"tag_name":"v2","assets":[{"browser_download_url":"https://github.com/o/r/releases/download/v2/app-release.apk"}]}]
+        """.trimIndent()
+        val artifact = ListingDirect.resolve(
+            "dev.imranr.obtainium",
+            RemoteReleasedSource.Forge,
+            pageUrl = "https://github.com/ImranR98/Obtainium/releases",
+            fetchReleases = { json },
+        )
+        assertEquals(
+            "https://github.com/o/r/releases/download/v2/app-release.apk",
+            artifact?.downloadUrl,
+        )
     }
 
     @Test

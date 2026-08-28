@@ -66,23 +66,6 @@ class ListingDirectTest {
     }
 
     @Test
-    fun forgeUsesApkWhenFilenameOmitsPackage() {
-        val json = """
-            [{"tag_name":"v2","assets":[{"browser_download_url":"https://github.com/o/r/releases/download/v2/app-release.apk"}]}]
-        """.trimIndent()
-        val artifact = ListingDirect.resolve(
-            "dev.imranr.obtainium",
-            RemoteReleasedSource.Forge,
-            pageUrl = "https://github.com/ImranR98/Obtainium/releases",
-            fetchReleases = { json },
-        )
-        assertEquals(
-            "https://github.com/o/r/releases/download/v2/app-release.apk",
-            artifact?.downloadUrl,
-        )
-    }
-
-    @Test
     fun forgeDirectApkSkipsReleasesAndRejectsLinkLocal() {
         val href = "https://github.com/o/r/releases/download/v1/app.apk"
         val artifact = ListingDirect.resolve(
