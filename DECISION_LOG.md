@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-28 — v0.34.2 ship
+- **Status:** Accepted
+- **Context:** Cloud agent PRs #19/#20 were on `main` (GitHub hint Refresh + required-check rollups) but no tag existed. Latest GitHub Release was still `v0.34.1`.
+- **Decision:** Dispatch CI/RP on `main` (KB-031). Fold Unreleased onto RP #18. Merge #18. After RP missed the tag, `gh release create v0.34.2 --target` the full merge SHA. The published `release` event uploaded `DevPulse-0.34.2.apk` and SBOMs. Close phantom RP #22.
+- **Alternatives considered:** Merge stale #18 before dispatching RP (rejected: changelog would omit the GitHub tags fix). Wait only for RP to tag (rejected: KB-027).
+- **Consequences:** Tag `v0.34.2` published. Sprint 22–23 and 25 `[ADB]` smoke stays open. Optional `AUTOMERGE_TOKEN` still unset.
+
 ### 2026-08-28 — Automerge landed PR #19; push CI still skipped
 - **Status:** Accepted
 - **Context:** Concluding jobs named `CI`, `Security Scan`, and `CodeQL` went green on #19. `ready-pr-automerge.yml` merged with `GITHUB_TOKEN` (`github-actions[bot]`, `69a5e06`). No Actions runs started on that SHA (KB-031). Cloud `ghs_` cannot `workflow_dispatch` (403).

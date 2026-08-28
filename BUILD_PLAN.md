@@ -80,6 +80,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **v0.27.0** tag archived in COMPLETED_TASKS.md @ `a2663a3`.
 > **v0.34.0** tagged via RP #16 @ `eef4eb9`.
 > **v0.34.1** tagged via RP #17 @ `f3e22f0`.
+> **v0.34.2** tagged via RP #18 @ `068f210` (RP missed the tag; `gh release create` + published event uploaded APK/SBOM).
 
 ### Archived Sprints
 
@@ -166,7 +167,7 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 
 ### Human & device (after automation)
 
-- 🔲 [HUMAN] Set `AUTOMERGE_TOKEN` or dispatch CI + Release Please on `main` after bot merges (KB-031); then `/ship` for `v0.34.2`
+- ✅ [HUMAN] Dispatch CI + Release Please on `main` after bot merges (KB-031); `/ship` cut `v0.34.2`
 
 ## Ongoing Maintenance (recurring)
 
