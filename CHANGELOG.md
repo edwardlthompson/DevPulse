@@ -6,6 +6,118 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.35.0](https://github.com/edwardlthompson/DevPulse/compare/v0.34.2...v0.35.0) (2026-08-28)
+
+
+### Added
+
+* prepare v0.22.0 DevPulse product release ([8943815](https://github.com/edwardlthompson/DevPulse/commit/89438154641d45d56b7062ee6352e78b7f4c36ef))
+* prepare v0.24.0 DevPulse product release ([7588adc](https://github.com/edwardlthompson/DevPulse/commit/7588adc5fc7fcccce2cc1edaacfc4b1baa7ea21d))
+* prepare v0.25.0 DevPulse product release ([9853d4f](https://github.com/edwardlthompson/DevPulse/commit/9853d4fbf524f93efd5ce303217fbbbe6eff6804))
+* prepare v0.26.0 DevPulse product release ([fafdbed](https://github.com/edwardlthompson/DevPulse/commit/fafdbed225fdce32328c434046ffd97130a8440f))
+* prepare v0.27.0 DevPulse product release ([1848373](https://github.com/edwardlthompson/DevPulse/commit/1848373c7afa606498c81816c1287884fb62396f))
+* prepare v0.28.0 DevPulse product release ([3ba27f0](https://github.com/edwardlthompson/DevPulse/commit/3ba27f0a93917fa3048d6c3ce509ffbb71a0f22a))
+* prepare v0.29.0 DevPulse product release ([ac36304](https://github.com/edwardlthompson/DevPulse/commit/ac363040953609ab0062dde943e98430b694a11c))
+* prepare v0.30.0 DevPulse product release ([25d33b1](https://github.com/edwardlthompson/DevPulse/commit/25d33b154cf901a6f994a492d8135e2b428089b6))
+* prepare v0.31.0 DevPulse product release ([20f470d](https://github.com/edwardlthompson/DevPulse/commit/20f470d9772c0adf7c00122fca0349dc975fe012))
+* prepare v0.32.0 DevPulse product release ([7f7dcf7](https://github.com/edwardlthompson/DevPulse/commit/7f7dcf7a80a183c98713c616c629255c806e4ff3))
+* prepare v0.33.0 DevPulse product release ([9f3bdf8](https://github.com/edwardlthompson/DevPulse/commit/9f3bdf892db55ee907a436acf9c9a5a53527fd67))
+* prepare v0.34.0 DevPulse product release ([ac6945f](https://github.com/edwardlthompson/DevPulse/commit/ac6945fa224989b917e721de66bdfdbf6cdeaf97))
+
+
+### Fixed
+
+* make instrumented settings and About tests match the grown UI ([4b818af](https://github.com/edwardlthompson/DevPulse/commit/4b818afaaf8f3e9b17b462aeddd91b21ab31bf4c))
+* prepare v0.34.1 DevPulse product release ([4819da6](https://github.com/edwardlthompson/DevPulse/commit/4819da67df2e4cdc40d3deb13c0de9ff9571a77b))
+* read GitHub release tags for hinted repos on Refresh ([ac7c777](https://github.com/edwardlthompson/DevPulse/commit/ac7c777c5bcf89acd84706370ac1628b6790fcb6))
+* read GitHub release tags on Refresh ([69a5e06](https://github.com/edwardlthompson/DevPulse/commit/69a5e0601c0dd950cf5331da9a38d289c75a802b))
+* skip CodeQL JS after pruning web and node stacks ([8fbe9ae](https://github.com/edwardlthompson/DevPulse/commit/8fbe9aef85193d4777751bcb1ec835c2561de3e5))
+* skip pruned stack CI and stabilize donation tests ([7884f61](https://github.com/edwardlthompson/DevPulse/commit/7884f617a366163622d13afd604705c0210e8d8e))
+* skip web About gate and scroll settings inset tests ([f8b8ebe](https://github.com/edwardlthompson/DevPulse/commit/f8b8ebe20adb5632ba0734202d76eb2f90298a30))
+* walk the Settings hub in instrumented smoke tests ([4bf97e9](https://github.com/edwardlthompson/DevPulse/commit/4bf97e9781ef551ac83408572207eb8e20b4b173))
+
+
+### Changed
+
+* fold product notes into v0.22.0 changelog ([10334b5](https://github.com/edwardlthompson/DevPulse/commit/10334b55557dea18705ab84c1da4be52c06387e5))
+* fold product notes into v0.23.0 changelog ([a0c4b56](https://github.com/edwardlthompson/DevPulse/commit/a0c4b565d7495055fd3e30b38024fa2f109d8d6b))
+* fold product notes into v0.24.0 changelog ([39c2030](https://github.com/edwardlthompson/DevPulse/commit/39c20300b6b9b834de77424d0f0d2fa52bc3cecb))
+* fold product notes into v0.25.0 changelog ([ecf55ea](https://github.com/edwardlthompson/DevPulse/commit/ecf55ea9845b63129fd223fba9b06bf309db5efc))
+* fold product notes into v0.26.0 changelog ([624cc41](https://github.com/edwardlthompson/DevPulse/commit/624cc41d1c97b4845d815acadc603040c636151e))
+* fold product notes into v0.27.0 changelog ([e6386a5](https://github.com/edwardlthompson/DevPulse/commit/e6386a56c6dcf276da1f47bc47b61f0e375f8f4f))
+* fold product notes into v0.28.0 changelog ([cf24f64](https://github.com/edwardlthompson/DevPulse/commit/cf24f64e7cf58e55e24994ae87cbe93f36bd987c))
+* fold product notes into v0.29.0 changelog ([25fac9b](https://github.com/edwardlthompson/DevPulse/commit/25fac9bfc88698056f2078405b1224e5e740762a))
+* fold product notes into v0.30.0 changelog ([bf3b512](https://github.com/edwardlthompson/DevPulse/commit/bf3b512df8422a7e3e6f55c10d30986d858504ec))
+* fold product notes into v0.31.0 changelog ([5f7eaf0](https://github.com/edwardlthompson/DevPulse/commit/5f7eaf0c3d2e13a05dc89a53304bff2e6b4bc7aa))
+* fold product notes into v0.32.0 changelog ([a5e0d3e](https://github.com/edwardlthompson/DevPulse/commit/a5e0d3ee61d00486aa1e2612c8d887221abd5f64))
+* fold product notes into v0.33.0 changelog ([2a12891](https://github.com/edwardlthompson/DevPulse/commit/2a12891315b4b827bbd69e2a18b03885d59b0655))
+* fold product notes into v0.34.0 changelog ([42010c9](https://github.com/edwardlthompson/DevPulse/commit/42010c95a124c3f7a71df523338c5bec659c82d1))
+* fold product notes into v0.34.1 changelog ([a1075d8](https://github.com/edwardlthompson/DevPulse/commit/a1075d8c39a3310b706c3469131f8ba851169f0d))
+* fold product notes into v0.34.2 changelog ([579a73b](https://github.com/edwardlthompson/DevPulse/commit/579a73b1d6ece5c9f938e54e3cf92b41c4b4d495))
+* **main:** release 0.22.0 ([e53283a](https://github.com/edwardlthompson/DevPulse/commit/e53283aa5c70a782f1b85bd98953e4b825eeaa01))
+* **main:** release 0.22.0 ([d7d51d9](https://github.com/edwardlthompson/DevPulse/commit/d7d51d9af269e74a397fe335d22a93695329cb81))
+* **main:** release 0.22.1 ([f24cc0c](https://github.com/edwardlthompson/DevPulse/commit/f24cc0cdbb4159f796468d1e4a5f51e3fa5bca8b))
+* **main:** release 0.23.0 ([d24324b](https://github.com/edwardlthompson/DevPulse/commit/d24324b78253eeff8ad9d642fe0dc2202d01b83d))
+* **main:** release 0.24.0 ([36d12cc](https://github.com/edwardlthompson/DevPulse/commit/36d12cc8ef670cc3529a60a1346ad70b4c7bdd42))
+* **main:** release 0.24.0 ([cb97ecf](https://github.com/edwardlthompson/DevPulse/commit/cb97ecf7d93995bee510b10367de4ae10433bfdb))
+* **main:** release 0.25.0 ([90b6249](https://github.com/edwardlthompson/DevPulse/commit/90b624996c6cc764f6e12a53a9802d377f9c438a))
+* **main:** release 0.25.0 ([e8b85d3](https://github.com/edwardlthompson/DevPulse/commit/e8b85d354b79719da26dc2a152ee3fcd74ddd924))
+* **main:** release 0.26.0 ([a8f2c44](https://github.com/edwardlthompson/DevPulse/commit/a8f2c44a8872eb5c70d1800aeab3b3e78af6bdec))
+* **main:** release 0.26.0 ([abf1796](https://github.com/edwardlthompson/DevPulse/commit/abf17965a090ee2f31504cc24306526fded8a9e9))
+* **main:** release 0.27.0 ([a2663a3](https://github.com/edwardlthompson/DevPulse/commit/a2663a389e3ef5c147cf3cae8b09c6ee3e6ec227))
+* **main:** release 0.27.0 ([e8a4bba](https://github.com/edwardlthompson/DevPulse/commit/e8a4bbaeebf57a1bdd99e1aee2bdf0e4c3d85f6e))
+* **main:** release 0.28.0 ([7c0185e](https://github.com/edwardlthompson/DevPulse/commit/7c0185e77db55ad0b38f17f8cfab40123424555e))
+* **main:** release 0.28.0 ([1ad5f79](https://github.com/edwardlthompson/DevPulse/commit/1ad5f795e8ceb701f37f4f9d0b1942ca41e2b316))
+* **main:** release 0.29.0 ([3603cde](https://github.com/edwardlthompson/DevPulse/commit/3603cdec91cd6c252e6490fca035a361905884bd))
+* **main:** release 0.29.0 ([7d82683](https://github.com/edwardlthompson/DevPulse/commit/7d826836114b8e1eb15ce7c69d09ace3a48da8f4))
+* **main:** release 0.30.0 ([2b6d448](https://github.com/edwardlthompson/DevPulse/commit/2b6d4486b04de2d98e1a8e7298b411c3793ba5e9))
+* **main:** release 0.30.0 ([19731ea](https://github.com/edwardlthompson/DevPulse/commit/19731ea356ec0ccd981d73acb6ecaff9c723914b))
+* **main:** release 0.31.0 ([47e1359](https://github.com/edwardlthompson/DevPulse/commit/47e13596d057e3915355387c747a3e742305250e))
+* **main:** release 0.31.0 ([13a0ddf](https://github.com/edwardlthompson/DevPulse/commit/13a0ddf0399e0acbafe9370e966c8e3fca8b3c91))
+* **main:** release 0.32.0 ([29040a3](https://github.com/edwardlthompson/DevPulse/commit/29040a3aaaa667e5c078e7b468b28b1be39ca6f8))
+* **main:** release 0.32.0 ([6dfcf58](https://github.com/edwardlthompson/DevPulse/commit/6dfcf58c355e6c46d6bbb461035a6634c5091c2e))
+* **main:** release 0.33.0 ([a1fc775](https://github.com/edwardlthompson/DevPulse/commit/a1fc7754bc93a120c13d01bb030bfe0938bcf818))
+* **main:** release 0.33.0 ([c769023](https://github.com/edwardlthompson/DevPulse/commit/c769023579530fd6d92269211d78839e6aba8440))
+* **main:** release 0.34.0 ([eef4eb9](https://github.com/edwardlthompson/DevPulse/commit/eef4eb9bd176304f0610d8301d381df7980fdd58))
+* **main:** release 0.34.0 ([58872bb](https://github.com/edwardlthompson/DevPulse/commit/58872bb8ed43a99ed56541a023186aafe3e9febc))
+* **main:** release 0.34.1 ([f3e22f0](https://github.com/edwardlthompson/DevPulse/commit/f3e22f0ffa05f6270df0f757c558ab963f2d0072))
+* **main:** release 0.34.1 ([8047be2](https://github.com/edwardlthompson/DevPulse/commit/8047be26d86f86378d49d829c30d86a12d8122f4))
+* **main:** release 0.34.2 ([068f210](https://github.com/edwardlthompson/DevPulse/commit/068f2103dc39edcd653cbd935767bc4b7912d98c))
+* **main:** release 0.34.2 ([dd0e4e0](https://github.com/edwardlthompson/DevPulse/commit/dd0e4e04b863f7e6f09a7b28ae451b785ef6f988))
+* **release:** prepare v0.23.0 release ([ab50ba5](https://github.com/edwardlthompson/DevPulse/commit/ab50ba582b93108e0125e5ae6cd9374048db6b82))
+* sync template version files for release PR ([3bbcc95](https://github.com/edwardlthompson/DevPulse/commit/3bbcc95bc65a124dff1bbed2f90147f1856025ad))
+* sync template version files for release PR ([8978043](https://github.com/edwardlthompson/DevPulse/commit/8978043247c00168a88ff9005c205da2b706aaa0))
+* sync template version files for release PR ([003e122](https://github.com/edwardlthompson/DevPulse/commit/003e122066f022bfd1c291d70a0d135f945f4d43))
+* sync template version files for release PR ([07cbfe6](https://github.com/edwardlthompson/DevPulse/commit/07cbfe6798b64757479f0c41352bd8556b2c6747))
+* sync template version files for release PR ([a5f2fb2](https://github.com/edwardlthompson/DevPulse/commit/a5f2fb210450efbc1e5ebeeac3bf6cdbc9c3104e))
+* sync template version files for release PR ([a655b62](https://github.com/edwardlthompson/DevPulse/commit/a655b6265ea9d34710ce940ce3f95755c63e6329))
+* sync template version files for release PR ([c3e523d](https://github.com/edwardlthompson/DevPulse/commit/c3e523d023cc069506c0d5c32e7022587b934275))
+* sync template version files for release PR ([305ab59](https://github.com/edwardlthompson/DevPulse/commit/305ab597543c44a4003de6e20db8b5c9b81d1fca))
+* sync template version files for release PR ([5fb6a86](https://github.com/edwardlthompson/DevPulse/commit/5fb6a86c9bf5d62f2e07f0f3874732a0c8948537))
+* sync template version files for release PR ([7876aee](https://github.com/edwardlthompson/DevPulse/commit/7876aeec22779ec0ed68023e5e674f1b8f5b27f1))
+* sync template version files for release PR ([4d30648](https://github.com/edwardlthompson/DevPulse/commit/4d3064890091d2afe0bd91dda3565abf92dd2de9))
+
+
+### Documentation
+
+* record /ship block on main branch protection ([4a1f6ab](https://github.com/edwardlthompson/DevPulse/commit/4a1f6ab0fe70451b85eeec05ee08b6f5cf259249))
+* record KB-030 cancelled CI failing SBOM poll ([f0faba5](https://github.com/edwardlthompson/DevPulse/commit/f0faba5e87c3a0e5d61dc27c32e2e8518b886128))
+* record v0.22.0 ship notes and pruned-stack CI lessons ([2a77e6d](https://github.com/edwardlthompson/DevPulse/commit/2a77e6d4b2c71471ff989e9d206ef1c3d86aa929))
+* record v0.23.0 ship notes and dump-store lessons ([fd20edd](https://github.com/edwardlthompson/DevPulse/commit/fd20edd9a120129b544fde5a12eb168003ad3beb))
+* record v0.24.0 ship notes and fold lessons ([5f96a88](https://github.com/edwardlthompson/DevPulse/commit/5f96a88956aa36e915ae81459c4e6cf13401ef26))
+* record v0.25.0 ship notes and fold lessons ([cd674ab](https://github.com/edwardlthompson/DevPulse/commit/cd674abd2b52a8080c8048bb49a663007f2e3e5b))
+* record v0.26.0 ship notes and fold lessons ([4447349](https://github.com/edwardlthompson/DevPulse/commit/44473491b72838bfdd09e2fb29d33542016b6df9))
+* record v0.27.0 ship notes and fold lessons ([0804566](https://github.com/edwardlthompson/DevPulse/commit/0804566e05a2e622143232ca27bc6f8ce4c36da6))
+* record v0.27.0 ship regressions ([cc6b97b](https://github.com/edwardlthompson/DevPulse/commit/cc6b97b1c3dd3781a80b873db6c918e8f752f0e0))
+* record v0.28.0 ship notes and fold lessons ([a7697d3](https://github.com/edwardlthompson/DevPulse/commit/a7697d39008822f10a05d338752d115d54f3bbfc))
+* record v0.29.0 ship notes and fold lessons ([92c860a](https://github.com/edwardlthompson/DevPulse/commit/92c860ad9c118145fd09d444bef6ee17357d08d4))
+* record v0.30.0 ship notes and fold lessons ([943c891](https://github.com/edwardlthompson/DevPulse/commit/943c8913747e2a66a334d394ca6c03b000d7df44))
+* record v0.31.0 ship notes and fold lessons ([fdd5903](https://github.com/edwardlthompson/DevPulse/commit/fdd59035bbd858cd56ea313d1655527fdb01ba8f))
+* record v0.32.0 ship notes and fold lessons ([1537c42](https://github.com/edwardlthompson/DevPulse/commit/1537c429939728c565153d5636ce71ebe710fb3c))
+* record v0.33.0 ship notes and fold lessons ([51bbc2b](https://github.com/edwardlthompson/DevPulse/commit/51bbc2b7313b81d13c9b8b8b37bb6d6cbca13767))
+* record v0.34.0 ship notes and fold lessons ([37cacfb](https://github.com/edwardlthompson/DevPulse/commit/37cacfbd7e2c98badc9cafbdb70bcc8209bd414c))
+* record v0.34.1 ship notes and fold lessons ([efa452b](https://github.com/edwardlthompson/DevPulse/commit/efa452b9687bf7ac02f8f1d9606f579b43f0703c))
+
 ## [Unreleased]
 
 ## [0.34.2](https://github.com/edwardlthompson/DevPulse/compare/v0.34.1...v0.34.2) (2026-08-28)
