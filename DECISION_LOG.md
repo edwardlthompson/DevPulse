@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-28 — /ship blocked on main protection
+- **Status:** Accepted
+- **Context:** `/ship` after PR #19 CI green. `pre-release-gate` passed Feature Gate, license, and HEAD CI/Security/CodeQL/Scorecard. Dependabot alerts and `verify-branch-protection` 403 on the cloud `ghs_` token (`security_events` / admin). `git push origin main` and `gh pr merge --admin` both failed: `2 of 6 required status checks are expected`.
+- **Decision:** Leave PR #19 ready. Do not invent a tag. Human admin-merges #19 (same as RP #17 / v0.34.1), then re-runs `/ship` for Release Please `v0.34.2`.
+- **Alternatives considered:** Force-push `main` (rejected: destructive-ops). Disable required checks (rejected: instructed-only, needs admin).
+- **Consequences:** No `v0.34.2` tag this session. `HUMAN_BACKLOG.md` records the merge.
+
 ### 2026-08-28 — GitHub hint Refresh reads releases
 - **Status:** Accepted
 - **Context:** Obtainium showed a GitHub update DevPulse missed. Hint-first listing bound `owner/repo` from F-Droid `sourceCode` / paste / aliases but skipped `listReleases`, so Forge `versionName` stayed the F-Droid suggested name or null. `Has update` requires `VersionCompare.isNewer`, so those rows never flagged. Listing tap also required the package id in the APK filename, which Obtainium does not.
