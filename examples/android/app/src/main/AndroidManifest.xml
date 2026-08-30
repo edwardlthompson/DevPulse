@@ -45,6 +45,10 @@
             android:name=".inventory.ReleaseRefreshService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
         <receiver
             android:name=".inventory.InstallStatusReceiver"
             android:exported="false">

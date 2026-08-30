@@ -8,8 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Version history section displaying the last 5 versions per app on the app detail card with one-tap rollback support via staged APK download and installer handoff
+- Daily background scan interval option in scan settings and periodic update notifications on completion
+
 ### Fixed
 
+- Android 14+ foreground service crash when scheduling periodic background WorkManager scans by declaring `dataSync` foreground service type
 - Staged APK installation after uninstall in signer-replace flow commits package installer session directly without UI blocking or losing queued downloads
 - IgnoredUpdates records download and scraping failures from batch updates to prevent unserviceable listings from re-prompting
 - Version delta line only displays when an actionable update exists, preventing ghost update deltas for unserviceable listings

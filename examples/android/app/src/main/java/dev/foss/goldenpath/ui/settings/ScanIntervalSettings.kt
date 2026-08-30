@@ -50,6 +50,7 @@ fun ScanIntervalSettings(modifier: Modifier = Modifier) {
                             text = stringResource(
                                 when (mode) {
                                     ScanInterval.OnDemand -> R.string.scan_interval_on_demand
+                                    ScanInterval.Daily -> R.string.scan_interval_daily
                                     ScanInterval.Weekly -> R.string.scan_interval_weekly
                                     ScanInterval.Monthly -> R.string.scan_interval_monthly
                                 },

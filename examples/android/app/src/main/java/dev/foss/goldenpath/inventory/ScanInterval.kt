@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit
 
 enum class ScanInterval {
     OnDemand,
+    Daily,
     Weekly,
     Monthly,
 }
@@ -20,6 +21,7 @@ object ScanSchedule {
 
     fun checkKey(interval: ScanInterval): String = when (interval) {
         ScanInterval.OnDemand -> "off"
+        ScanInterval.Daily -> "daily"
         ScanInterval.Weekly -> "weekly"
         ScanInterval.Monthly -> "monthly"
     }
@@ -33,7 +35,12 @@ object ScanSchedule {
             workManager.cancelUniqueWork(WORK_NAME)
             return
         }
-        val days = if (interval == ScanInterval.Weekly) 7L else 30L
+        val days = when (interval) {
+            ScanInterval.Daily -> 1L
+            ScanInterval.Weekly -> 7L
+            ScanInterval.Monthly -> 30L
+            ScanInterval.OnDemand -> return
+        }
         val request = PeriodicWorkRequestBuilder<ReleaseRefreshWorker>(days, TimeUnit.DAYS)
             .setConstraints(
                 Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),

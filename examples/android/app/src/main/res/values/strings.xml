@@ -153,8 +153,9 @@
     <string name="inventory_origin_sideload">Sideloaded</string>
     <string name="inventory_origin_preinstalled">Preinstalled</string>
     <string name="scan_interval_title">Release-date scan</string>
-    <string name="scan_interval_body">On demand uses only the refresh button. Weekly and monthly also run in the background when the network is up. The first scan takes longer; later scans reuse recent listings and finish faster.</string>
+    <string name="scan_interval_body">On demand uses only the refresh button. Daily, weekly, and monthly also run in the background when the network is up. The first scan takes longer; later scans reuse recent listings and finish faster.</string>
     <string name="scan_interval_on_demand">On demand</string>
+    <string name="scan_interval_daily">Once a day</string>
     <string name="scan_interval_weekly">Once a week</string>
     <string name="scan_interval_monthly">Once a month</string>
     <string name="fdroid_repo_archive">F-Droid Archive</string>
@@ -297,4 +298,12 @@
     <string name="opportunity_self">DevPulse last release: %1$s</string>
     <string name="forge_paste_save">Save pasted repo</string>
     <string name="widget_description">Red stale app count</string>
+    <string name="version_history_title">Version history</string>
+    <string name="version_history_subtitle">Recent versions across sources</string>
+    <string name="version_history_current">Installed</string>
+    <string name="version_history_newer">Newer</string>
+    <string name="version_history_rollback">Roll back</string>
+    <string name="version_history_downloading">Downloading…</string>
+    <string name="version_history_no_link">No direct APK</string>
+    <string name="version_history_empty">No version history available</string>
 </resources>

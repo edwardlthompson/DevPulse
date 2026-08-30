@@ -8,6 +8,7 @@ import androidx.work.WorkerParameters
 import dev.foss.goldenpath.network.NetworkUnmetered
 import dev.foss.goldenpath.notify.RefreshNotifier
 import dev.foss.goldenpath.notify.RefreshNotifyCopy
+import dev.foss.goldenpath.notify.UpdatesNotify
 import kotlinx.coroutines.flow.first
 
 class ReleaseRefreshWorker(
@@ -54,6 +55,10 @@ class ReleaseRefreshWorker(
                 ReleaseRefreshRuntime.finish()
             }
         }
+        val apps = PackageManagerPackageCatalog(applicationContext.packageManager)
+            .listInstalled()
+            .map(RemoteReleaseMemory::merge)
+        UpdatesNotify.post(applicationContext, apps)
         return Result.success()
     }
 }

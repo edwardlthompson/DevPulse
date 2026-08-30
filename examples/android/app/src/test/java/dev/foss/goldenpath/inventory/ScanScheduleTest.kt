@@ -12,9 +12,12 @@ class ScanScheduleTest {
     }
 
     @Test
-    fun weeklyAndMonthlyHonorElapsedTime() {
+    fun periodicIntervalsHonorElapsedTime() {
         val now = 1_700_000_000_000L
         val day = 86_400_000L
+        assertTrue(ScanSchedule.due(ScanInterval.Daily, null, now))
+        assertFalse(ScanSchedule.due(ScanInterval.Daily, now - day / 2, now))
+        assertTrue(ScanSchedule.due(ScanInterval.Daily, now - 2 * day, now))
         assertTrue(ScanSchedule.due(ScanInterval.Weekly, null, now))
         assertFalse(ScanSchedule.due(ScanInterval.Weekly, now - day, now))
         assertTrue(ScanSchedule.due(ScanInterval.Weekly, now - 8 * day, now))

@@ -130,6 +130,7 @@ fun InventoryDetailScreen(
         DetailGithubOpts(app.packageName)
         UpdateNotesSection(app.packageName)
         DownloadUpdateSection(app)
+        VersionHistorySection(app)
         AlternativesSection(app = app, inventory = inventory)
         TextButton(onClick = onBack, modifier = Modifier.bottomInsetPadding()) {
             Text(stringResource(R.string.inventory_detail_back))
