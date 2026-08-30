@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.35.0](https://github.com/edwardlthompson/DevPulse/compare/v0.34.2...v0.35.0) (2026-08-30)
+
+
+### Added
+
+* **inventory:** signer replace installation flow and ignored updates management ([a615863](https://github.com/edwardlthompson/DevPulse/commit/a615863a5a6bca216cee2556338a1ff4426fda5e))
+* **inventory:** version history and one-tap rollback support ([1252a88](https://github.com/edwardlthompson/DevPulse/commit/1252a880c7e7f5240af94482fd542533f94b9671))
+
+
+### Documentation
+
+* record v0.34.2 ship notes and fold lessons ([b21762e](https://github.com/edwardlthompson/DevPulse/commit/b21762e34f514955da6cdfff918ed6c8737d7e05))
+
 ## [Unreleased]
 
 ### Added
