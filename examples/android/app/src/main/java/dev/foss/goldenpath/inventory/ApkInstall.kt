@@ -25,7 +25,7 @@ object ApkInstall {
                 shell = shell,
             )
         }
-        if (used == InstallMethod.Root || Looper.myLooper() == Looper.getMainLooper()) {
+        if (used != InstallMethod.System || Looper.myLooper() == Looper.getMainLooper()) {
             return runCatching(work).getOrElse { ApkInstallResult.Failed(it.javaClass.simpleName) }
         }
         val latch = CountDownLatch(1)

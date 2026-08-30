@@ -9,5 +9,14 @@
     <string name="history_last_ok">Last success</string>
     <string name="history_last_fail">Stopped or skipped</string>
     <string name="history_apps">%1$d apps</string>
+    <string name="history_update_log">Failed updates</string>
+    <string name="history_downloaded">Downloaded %1$s</string>
+    <string name="history_failed_download">Failed downloads %1$s</string>
+    <string name="history_failed_install">Failed installs %1$s</string>
+    <string name="history_failed_empty">No failed downloads or installs in this log.</string>
+    <string name="history_retry_downloads">Retry failed downloads</string>
+    <string name="history_retry_installs">Retry failed installs</string>
+    <string name="history_retry_ignored">Reset ignored listings</string>
+    <string name="history_ignored_count">Ignored update listings (%1$d)</string>
     <string name="inventory_source_leftover">GitLab</string>
 </resources>

@@ -73,7 +73,7 @@ fun InventoryRow(
                 color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = VersionDelta.line(app.versionName, VersionDelta.newest(app)) ?: dateText,
+                text = VersionDelta.line(app.versionName, VersionDelta.newest(app), app.versionCode) ?: dateText,
                 style = MaterialTheme.typography.bodySmall,
             )
         }

@@ -95,6 +95,7 @@ internal fun sampleApp(
     remoteReleasedSource: RemoteReleasedSource = RemoteReleasedSource.None,
     remoteVersionName: String? = null,
     latestListings: List<UpdateLink> = emptyList(),
+    origin: AppOrigin = AppOrigin.Unknown,
 ): InstalledApp = InstalledApp(
     packageName = packageName,
     label = label,
@@ -105,6 +106,7 @@ internal fun sampleApp(
     minSdk = 26,
     targetSdk = 37,
     isSystemApp = isSystemApp,
+    origin = origin,
     installedAtMs = installedAtMs,
     installedAtSource = if (installedAtMs == null) {
         InstalledDateSource.Unknown

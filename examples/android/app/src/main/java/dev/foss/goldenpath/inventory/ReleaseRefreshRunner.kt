@@ -7,6 +7,7 @@ import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideHttpFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideUpdatesHttp
 import dev.foss.goldenpath.index.aurora.AuroraPlayLive
+import dev.foss.goldenpath.index.aurora.AuroraPlayWarm
 import dev.foss.goldenpath.index.fdroid.FdroidEnabledRepos
 import dev.foss.goldenpath.index.fdroid.FdroidIndexHttpFetcher
 import dev.foss.goldenpath.index.fdroid.FdroidIndexStore
@@ -34,11 +35,11 @@ object ReleaseRefreshRunner {
         wanted: Collection<String> = emptySet(),
     ): Int {
         RefreshTrace.emit = { Log.i("DevPulse", it) }
-        AppliedUpdates.clear()
         val prefs = InventoryPreferences(context)
         val playOn = prefs.playLookupEnabled.first()
         val forgeOn = prefs.forgeLookupEnabled.first()
         val searchUnknowns = prefs.forgeLookupSearchUnknowns.first()
+        if (playOn) AuroraPlayWarm.session(context)
         WaybackPlay.client = WaybackHttpFetcher.takeIf { playOn }
         val paceFile = File(context.filesDir, "refresh_pace.tsv")
         val successFile = File(context.filesDir, "refresh_success.tsv")
@@ -115,6 +116,7 @@ object ReleaseRefreshRunner {
         result.size
         } finally {
             WaybackPlay.client = null
+            AuroraPlayLive.releaseSession()
         }
     }
 

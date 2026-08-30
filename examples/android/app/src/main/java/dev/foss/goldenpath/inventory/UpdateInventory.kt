@@ -2,12 +2,13 @@ package dev.foss.goldenpath.inventory
 
 object UpdateInventory {
     fun hasUpdate(app: InstalledApp): Boolean {
-        if (AppliedUpdates.settled(app.packageName)) return false
+        if (AppliedUpdates.hides(app)) return false
         if (usable(app).isNotEmpty()) return true
         if (app.latestListings.any { it.listed }) return false
+        if (app.origin == AppOrigin.Play && app.remoteVersionSource != RemoteReleasedSource.Play) return false
         val remote = app.remoteVersionName
         if (IgnoredUpdates.has(app.packageName, app.remoteVersionSource, remote)) return false
-        return VersionCompare.isNewer(remote, app.versionName)
+        return VersionCompare.isNewer(remote, app.versionName, app.versionCode)
     }
 
     fun withUpdates(apps: List<InstalledApp>): List<InstalledApp> = apps.filter(::hasUpdate)
@@ -16,9 +17,10 @@ object UpdateInventory {
         app.latestListings.filter { link ->
             link.listed &&
                 UpdateAll.fetchable(link.source, app.packageName) &&
-                VersionCompare.isNewer(link.versionName, app.versionName) &&
+                VersionCompare.isNewer(link.versionName, app.versionName, app.versionCode) &&
                 !IgnoredUpdates.has(app.packageName, link.source, link.versionName) &&
-                ListingFit.allow(link, deviceSdk, deviceAbis)
+                ListingFit.allow(link, deviceSdk, deviceAbis) &&
+                (app.origin != AppOrigin.Play || link.source == RemoteReleasedSource.Play)
         }
 
     fun canOpen(
@@ -27,10 +29,11 @@ object UpdateInventory {
         installedVersion: String? = null,
         deviceSdk: Int = 0,
         deviceAbis: Set<String> = emptySet(),
+        installedCode: Long = 0,
     ): Boolean =
         link.listed &&
             !IgnoredUpdates.has(packageName, link.source, link.versionName) &&
-            ListingNewer.allow(link.versionName, installedVersion) &&
+            ListingNewer.allow(link.versionName, installedVersion, installedCode) &&
             ListingFit.allow(link, deviceSdk, deviceAbis)
 
     fun listingsFor(pick: RemoteReleasePick, packageName: String = ""): List<UpdateLink> =

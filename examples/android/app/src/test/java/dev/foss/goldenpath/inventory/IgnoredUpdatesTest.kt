@@ -24,6 +24,12 @@ class IgnoredUpdatesTest {
     }
 
     @Test
+    fun dropsLegacyThreeColumnRows() {
+        assertEquals(null, IgnoredUpdates.parse("app.x\tPlay\t2.0"))
+        assertTrue(IgnoredUpdates.parse("app.x\tPlay\t2.0\tkeep") != null)
+    }
+
+    @Test
     fun skipsBlankVersionAndReloadsFile() {
         IgnoredUpdates.add("app.x", RemoteReleasedSource.Play, "  ")
         assertFalse(IgnoredUpdates.has("app.x", RemoteReleasedSource.Play, "1.0"))

@@ -40,7 +40,7 @@ fun SettingsExportSection(
             }
         }
         TextButton(onClick = { IgnoredUpdates.clearPersisted(context.filesDir) }) {
-            Text(stringResource(R.string.forge_token_cleared))
+            Text(stringResource(R.string.history_retry_ignored))
         }
         TextButton(
             onClick = {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="signer_replace_title">Replace %1$s?</string>
+    <string name="signer_replace_body">The %1$s file is signed by a different publisher than the app on this phone. Android cannot update it in place.\n\nUninstalling %2$s deletes its data and sign-in. You will confirm uninstall on the next screen. DevPulse then installs the new file.</string>
+    <string name="signer_replace_confirm">Uninstall, then install</string>
+    <string name="signer_replace_cancel">Keep the current app</string>
+    <string name="signer_replace_finish">The old copy of %1$s is gone. Completing the installer now.</string>
+    <string name="signer_replace_cancelled">Uninstall was cancelled. The app on the phone was not replaced.</string>
+    <string name="signer_replace_missing">The old app was removed but the new file is gone. Open the listing again to download it. Nothing was installed.</string>
+    <string name="signer_replace_no_space">Not enough space to keep the install file. Nothing was uninstalled.</string>
+    <string name="signer_replace_wait">Complete the system installer for %1$s.</string>
+    <string name="signer_replace_waiting">Waiting for Android to finish uninstalling %1$s. DevPulse will then install the downloaded file. Keep the current app if you cancelled uninstall.</string>
+    <string name="signer_replace_list">Signing replacements (%1$d)</string>
+    <string name="signer_replace_list_body">Update all installed matching publishers first. These files need uninstall then install because Android will not replace a different signature. Tap one when you are ready. Data and sign-in for that app will be wiped.</string>
+</resources>

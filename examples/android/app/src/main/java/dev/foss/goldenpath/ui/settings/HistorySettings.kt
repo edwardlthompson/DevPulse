@@ -14,10 +14,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.AirplaneCopy
 import dev.foss.goldenpath.inventory.AirplaneMode
+import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.OutletLabels
 import dev.foss.goldenpath.inventory.PulseHistory
 import dev.foss.goldenpath.inventory.PulseHistoryFormat
 import dev.foss.goldenpath.inventory.PulseHistoryView
+import dev.foss.goldenpath.inventory.UpdateAllLog
 import dev.foss.goldenpath.inventory.RefreshFailBook
 import dev.foss.goldenpath.inventory.RefreshOutletEta
 import dev.foss.goldenpath.inventory.RefreshPaceFile
@@ -34,18 +36,22 @@ fun HistorySettings(modifier: Modifier = Modifier) {
     remember {
         RefreshSuccessBook.hydrate(RefreshPaceFile.load(File(context.filesDir, "refresh_success.tsv")))
         RefreshFailBook.hydrate(RefreshPaceFile.load(File(context.filesDir, "refresh_fail.tsv")))
+        IgnoredUpdates.hydrate(context.filesDir)
     }
     val rev by RemoteReleaseMemory.revision.collectAsStateWithLifecycle(0)
-    val pulses = remember(rev) {
-        PulseHistoryFormat.newestFirst(PulseHistory.load(PulseHistory.file(context.filesDir)))
-    }
+    val pulses = PulseHistoryFormat.newestFirst(PulseHistory.load(PulseHistory.file(context.filesDir)))
     val ok = remember(rev) { RefreshSuccessBook.snapshot().entries.sortedBy { it.key } }
     val fail = remember(rev) { RefreshFailBook.snapshot().entries.sortedBy { it.key } }
-    if (pulses.isEmpty() && ok.isEmpty() && fail.isEmpty()) {
+    val ignoredRev by IgnoredUpdates.revision.collectAsStateWithLifecycle(0)
+    val hasUpdateLog = remember(ignoredRev) {
+        UpdateAllLog.failed(UpdateAllLog.file(context.filesDir)).isNotEmpty() || IgnoredUpdates.rows.isNotEmpty()
+    }
+    if (pulses.isEmpty() && ok.isEmpty() && fail.isEmpty() && !hasUpdateLog) {
         Text(text = stringResource(R.string.history_empty), modifier = modifier)
         return
     }
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingSm)) {
+        UpdateAllHistory()
         if (ok.isNotEmpty()) {
             SettingsGroup {
                 Text(text = stringResource(R.string.history_last_ok), style = MaterialTheme.typography.titleSmall)
@@ -100,6 +106,21 @@ private fun PulseEvent(view: PulseHistoryView) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+    view.notes.forEach { (key, value) ->
+        Text(
+            text = noteLine(key, value),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun noteLine(key: String, value: String): String = when (key) {
+    "downloaded" -> stringResource(R.string.history_downloaded, value)
+    "failDl" -> stringResource(R.string.history_failed_download, value)
+    "failIns" -> stringResource(R.string.history_failed_install, value)
+    else -> stringResource(R.string.inventory_listing_line, key, value)
 }
 
 @Composable

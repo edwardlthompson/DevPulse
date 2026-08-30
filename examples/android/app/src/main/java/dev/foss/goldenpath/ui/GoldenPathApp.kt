@@ -16,6 +16,7 @@ import dev.foss.goldenpath.network.NetworkStatusMonitor
 import dev.foss.goldenpath.settings.SettingsLogic
 import dev.foss.goldenpath.ui.about.ProductUpdateHost
 import dev.foss.goldenpath.ui.insets.NavigationModeProvider
+import dev.foss.goldenpath.ui.inventory.SignerReplaceHost
 import dev.foss.goldenpath.ui.inventory.rememberInventoryUiModel
 import dev.foss.goldenpath.ui.scan.rememberScanSession
 import dev.foss.goldenpath.ui.theme.GoldenPathTheme
@@ -47,6 +48,7 @@ fun GoldenPathApp(
 
     GoldenPathTheme(themeMode = themeMode) {
         NavigationModeProvider {
+            SignerReplaceHost()
             ProductUpdateHost(context = context, isOnline = isOnline, currentVersion = appVersion)
             GoldenPathScreen(
                 snackbarHostState = snackbarHostState,

@@ -39,6 +39,8 @@ class UpdateAllTest {
         val job = UpdateAll.jobs(listOf(app)).single()
         assertEquals(RemoteReleasedSource.Play, job.source)
         assertEquals("app.play", job.packageName)
+        val withoutAurora = UpdateAllPick.candidates(app, auroraPlay = false).single()
+        assertEquals(RemoteReleasedSource.Fdroid, withoutAurora.source)
     }
 
     @Test

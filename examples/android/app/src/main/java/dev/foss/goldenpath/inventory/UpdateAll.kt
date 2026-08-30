@@ -17,7 +17,7 @@ data class UpdateAllJob(
     val versionName: String? = null,
 )
 
-enum class UpdateAllPhase { Wait, Fetch, Apply, Ok, Fail }
+enum class UpdateAllPhase { Wait, Fetch, Ready, Apply, Ok, Fail }
 
 data class UpdateAllSnap(
     val packageName: String,
@@ -27,11 +27,11 @@ data class UpdateAllSnap(
     val received: Long = 0,
     val expected: Long = -1,
     val failDownload: Boolean = false,
+    val failWhy: InstallWhy = InstallWhy.NoFile,
     val stay: Boolean = true,
 )
 
 object UpdateAll {
-    const val MAX_FILES = 40
     const val PARALLEL = 2
 
     fun jobs(apps: List<InstalledApp>): List<UpdateAllJob> =
@@ -52,6 +52,7 @@ object UpdateAll {
         onSnap: (UpdateAllSnap) -> Unit = {},
         filesDir: File? = null,
         groups: List<List<UpdateAllJob>>? = null,
+        clash: (UpdateAllJob, List<File>) -> Boolean = { _, _ -> false },
     ): UpdateAllResult {
         val startedAt = System.currentTimeMillis()
         val counts = intArrayOf(0, 0, 0, 0)
@@ -70,18 +71,31 @@ object UpdateAll {
                 }
             }
             if (wave.isEmpty()) break
-            val fetched = ReleaseRefreshParallel.map(wave, PARALLEL) { job ->
-                if (UpdateAllCancel.requested()) return@map job to null
+            val ready = mutableListOf<Pair<UpdateAllJob, List<File>>>()
+            val lock = Any()
+            ReleaseRefreshParallel.map(wave, PARALLEL) { job ->
+                if (UpdateAllCancel.requested()) return@map UpdateAllFetched(job, null)
                 RefreshTrace.line("update all try ${job.source.name} ${job.packageName} ${job.versionName}")
                 onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Fetch))
-                job to prepare(job) { read, total ->
-                    onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Fetch, read, total))
+                ListingFail.why = InstallWhy.NoFile
+                val files = runCatching {
+                    prepare(job) { read, total ->
+                        onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Fetch, read, total))
+                    }
+                }.getOrElse {
+                    RefreshTrace.line("update all dl error ${job.source.name} ${job.packageName} ${it.message}")
+                    ListingFail.none()
                 }
+                val item = UpdateAllFetched(job, files, ListingFail.why)
+                val outcome = if (files.isNullOrEmpty()) "fail" else "ok"
+                RefreshTrace.line("update all dl $outcome ${job.source.name} ${job.packageName}")
+                synchronized(lock) {
+                    ready += UpdateAllQueue.takeDownloads(listOf(item), open, filesDir, onSnap, counts)
+                }
+                item
             }
             if (UpdateAllCancel.requested()) break
-            val ready = UpdateAllQueue.takeDownloads(fetched, open, filesDir, onSnap, counts)
-            if (UpdateAllCancel.requested()) break
-            UpdateAllQueue.installReady(ready, open, settled, install, filesDir, onSnap, counts)
+            UpdateAllQueue.installReady(ready, open, settled, install, filesDir, onSnap, counts, clash)
             UpdateAllResume.checkpoint(filesDir, open, settled)
         }
         UpdateAllResume.checkpoint(filesDir, open, settled)
@@ -98,8 +112,13 @@ object UpdateAll {
         return result
     }
 
-    internal fun fetchable(source: RemoteReleasedSource, packageName: String = ""): Boolean = when (source) {
+    internal fun fetchable(
+        source: RemoteReleasedSource,
+        packageName: String = "",
+        auroraPlay: Boolean = true,
+    ): Boolean = when (source) {
         RemoteReleasedSource.None -> false
+        RemoteReleasedSource.Play -> auroraPlay
         RemoteReleasedSource.ApkMirror -> cachedMirror(packageName)
         else -> true
     }

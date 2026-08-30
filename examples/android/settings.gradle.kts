@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "golden-path-android"
 include(":app")
+include(":signtest")

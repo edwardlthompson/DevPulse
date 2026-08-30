@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Staged APK installation after uninstall in signer-replace flow commits package installer session directly without UI blocking or losing queued downloads
+- IgnoredUpdates records download and scraping failures from batch updates to prevent unserviceable listings from re-prompting
+- Version delta line only displays when an actionable update exists, preventing ghost update deltas for unserviceable listings
+- Play Store installed apps are restricted from offering unlisted non-Play remote update sources
+
+### Added
+
+- Ignored update listings view in Settings History with package, source, and version details
+- One-tap Reset ignored listings action in Settings History and Settings Inventory
+
+
 ## [0.34.2](https://github.com/edwardlthompson/DevPulse/compare/v0.34.1...v0.34.2) (2026-08-28)
 
 ### Fixed

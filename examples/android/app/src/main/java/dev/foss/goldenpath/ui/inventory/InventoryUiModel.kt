@@ -29,6 +29,8 @@ import dev.foss.goldenpath.inventory.PackageManagerPackageCatalog
 import dev.foss.goldenpath.inventory.QueryAllPackagesGate
 import dev.foss.goldenpath.inventory.FileRemoteReleaseStore
 import dev.foss.goldenpath.inventory.IgnoredUpdates
+import dev.foss.goldenpath.inventory.AppliedUpdates
+import dev.foss.goldenpath.inventory.SignerReplaceQueue
 import dev.foss.goldenpath.inventory.WelcomeHome
 import dev.foss.goldenpath.inventory.WelcomeNeeds
 import dev.foss.goldenpath.inventory.WelcomePrefs
@@ -99,6 +101,8 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     remember {
         RemoteReleaseMemory.hydrate(FileRemoteReleaseStore(File(context.filesDir, "remote_releases.json")))
         IgnoredUpdates.hydrate(context.filesDir)
+        AppliedUpdates.hydrate(context.filesDir)
+        SignerReplaceQueue.hydrate(context.filesDir)
     }
     val welcomePrefs = remember { WelcomePrefs(context) }
     val welcomeSeen by welcomePrefs.seen.collectAsStateWithLifecycle(null as Boolean?)

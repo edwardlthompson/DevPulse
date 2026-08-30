@@ -119,7 +119,9 @@ fun InventoryDetailScreen(
             Text(text = stringResource(R.string.inventory_no_listings))
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(SpacingSm)) {
-                listings.forEach { StoreListingRow(it, app.packageName, app.versionName) }
+                listings.forEach {
+                    StoreListingRow(it, app.packageName, app.versionName, app.versionCode, app.label, app.isSystemApp)
+                }
             }
         }
         DetailForget(app.packageName)

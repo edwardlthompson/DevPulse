@@ -41,7 +41,9 @@ object GitHubReleaseParser {
                 apkUrl = urls.firstOrNull(),
                 prerelease = prerelease.find(chunk)?.groupValues?.get(1) == "true",
                 apkUrls = urls,
-                versionName = tag.ifEmpty { names.firstOrNull()?.trim().orEmpty() }.ifEmpty { null },
+                versionName = tag.ifEmpty {
+                    names.firstOrNull { !it.endsWith(".apk", ignoreCase = true) }?.trim().orEmpty()
+                }.ifEmpty { null },
             )
         }
     }

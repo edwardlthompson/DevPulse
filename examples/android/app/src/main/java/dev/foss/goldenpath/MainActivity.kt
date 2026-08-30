@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import dev.foss.goldenpath.about.AppUpdatePreferences
 import dev.foss.goldenpath.inventory.ObtainiumImportLaunch
 import dev.foss.goldenpath.inventory.RefreshLaunch
+import dev.foss.goldenpath.inventory.SignerReplaceLaunch
 import dev.foss.goldenpath.network.NetworkStatusMonitor
 import dev.foss.goldenpath.ui.GoldenPathApp
 import dev.foss.goldenpath.ui.refresh.DisplayRefresh
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
             )
         }
         RefreshLaunch.maybeStart(this, intent)
+        SignerReplaceLaunch.maybeStart(this, intent)
         ObtainiumImportLaunch.maybeStart(this, intent)
     }
 
@@ -53,6 +55,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         RefreshLaunch.maybeStart(this, intent)
+        SignerReplaceLaunch.maybeStart(this, intent)
         ObtainiumImportLaunch.maybeStart(this, intent)
     }
 

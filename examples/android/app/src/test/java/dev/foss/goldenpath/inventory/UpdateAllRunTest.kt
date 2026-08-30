@@ -42,6 +42,9 @@ class UpdateAllRunTest {
         assertEquals(setOf("dl:app.a", "dl:app.b"), order.take(firstIns).toSet())
         assertTrue(order.drop(firstIns).all { it.startsWith("ins:") })
         assertTrue(snaps.contains(UpdateAllPhase.Ok))
+        val firstApply = snaps.indexOf(UpdateAllPhase.Apply)
+        assertTrue(firstApply > 0)
+        assertTrue(snaps.take(firstApply).contains(UpdateAllPhase.Ready))
     }
 
     @Test
@@ -68,7 +71,7 @@ class UpdateAllRunTest {
     }
 
     @Test
-    fun failedNewestTriesNextVersionThenIgnores() {
+    fun failedNewestTriesNextVersion() {
         val play = UpdateAllJob("app.a", "A", RemoteReleasedSource.Play, null, "3.0")
         val fdroid = UpdateAllJob("app.a", "A", RemoteReleasedSource.Fdroid, null, "2.0")
         val tried = mutableListOf<String>()
@@ -84,7 +87,7 @@ class UpdateAllRunTest {
         assertEquals(listOf("Play:3.0", "Fdroid:2.0"), tried)
         assertEquals(1, result.downloaded)
         assertEquals(1, result.installed)
-        assertTrue(IgnoredUpdates.has("app.a", RemoteReleasedSource.Play, "3.0"))
+        assertFalse(IgnoredUpdates.has("app.a", RemoteReleasedSource.Play, "3.0"))
         assertFalse(IgnoredUpdates.has("app.a", RemoteReleasedSource.Fdroid, "2.0"))
         assertTrue(AppliedUpdates.settled("app.a"))
     }

@@ -11,5 +11,7 @@ class VersionDeltaTest {
         assertNull(VersionDelta.line("2.0", "2.0"))
         assertNull(VersionDelta.line("2.0", "1.0"))
         assertNull(VersionDelta.line("", "2.0"))
+        assertNull(VersionDelta.line("1.2332", "FairEmail-v1.2332a-large-release.apk"))
+        assertNull(VersionDelta.line("2023", "2023", 8))
     }
 }

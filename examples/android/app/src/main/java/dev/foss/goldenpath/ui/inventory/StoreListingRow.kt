@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -26,7 +27,10 @@ import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.inventory.ListingFetch
+import dev.foss.goldenpath.inventory.ListingFetchOutcome
+import dev.foss.goldenpath.inventory.PlayStoreIntent
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
+import dev.foss.goldenpath.inventory.SignerReplaceStore
 import dev.foss.goldenpath.inventory.UpdateInventory
 import dev.foss.goldenpath.inventory.UpdateLink
 import dev.foss.goldenpath.inventory.WelcomeNeeds
@@ -37,7 +41,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-internal fun StoreListingRow(link: UpdateLink, packageName: String, installedVersion: String? = null) {
+internal fun StoreListingRow(
+    link: UpdateLink,
+    packageName: String,
+    installedVersion: String? = null,
+    installedCode: Long = 0,
+    label: String,
+    systemApp: Boolean,
+) {
     val context = LocalContext.current
     val prefs = remember { InventoryPreferences(context) }
     val method by prefs.installMethod.collectAsStateWithLifecycle(InstallMethod.System)
@@ -70,7 +81,7 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String, installedVer
     }
     val deviceSdk = android.os.Build.VERSION.SDK_INT
     val deviceAbis = android.os.Build.SUPPORTED_ABIS.toSet()
-    val canOpen = UpdateInventory.canOpen(link, packageName, installedVersion, deviceSdk, deviceAbis)
+    val canOpen = UpdateInventory.canOpen(link, packageName, installedVersion, deviceSdk, deviceAbis, installedCode)
     val tone = when {
         ignored -> MaterialTheme.colorScheme.tertiary
         link.listed -> MaterialTheme.colorScheme.onSurface
@@ -85,10 +96,39 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String, installedVer
         scope.launch {
             failRes = runCatching {
                 withContext(Dispatchers.IO) {
-                    ListingFetch.run(context, packageName, link, installedVersion, method) { read, total ->
-                        scope.launch(Dispatchers.Main.immediate) {
-                            received = read
-                            expected = total
+                    when (
+                        val out = ListingFetch.run(
+                            context,
+                            packageName,
+                            link,
+                            installedVersion,
+                            installedCode,
+                            method,
+                            systemApp,
+                        ) { read, total ->
+                            scope.launch(Dispatchers.Main.immediate) {
+                                received = read
+                                expected = total
+                            }
+                        }
+                    ) {
+                        ListingFetchOutcome.Ok -> null
+                        is ListingFetchOutcome.Failed -> {
+                            IgnoredUpdates.add(packageName, link.source, link.versionName, context.filesDir)
+                            out.res
+                        }
+                        is ListingFetchOutcome.Replace -> if (
+                            SignerReplaceStore.capture(
+                                context.filesDir,
+                                packageName,
+                                label,
+                                link.source,
+                                out.files,
+                            )
+                        ) {
+                            null
+                        } else {
+                            R.string.signer_replace_no_space
                         }
                     }
                 }
@@ -137,6 +177,11 @@ internal fun StoreListingRow(link: UpdateLink, packageName: String, installedVer
         }
         failRes?.let { res ->
             Text(text = stringResource(res), color = MaterialTheme.colorScheme.error)
+            if (res == R.string.update_all_play_purchase || res == R.string.update_all_play_store) {
+                TextButton(onClick = { PlayStoreIntent.open(context, packageName) }) {
+                    Text(text = stringResource(R.string.update_all_play_purchase_open))
+                }
+            }
         }
     }
 }

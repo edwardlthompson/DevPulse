@@ -14,12 +14,18 @@ object SessionApkInstall {
 
     fun start(context: Context, apkFile: File) = start(context, listOf(apkFile))
 
+    fun commit(context: Context, apkFiles: List<File>): Boolean {
+        if (!SignerClash.filesReady(apkFiles)) return false
+        return runCatching { start(context.applicationContext, apkFiles) }.isSuccess
+    }
+
     fun start(context: Context, apkFiles: List<File>) {
+        val app = context.applicationContext
         val files = apkFiles.filter { it.isFile }
         if (files.isEmpty()) error("apk")
-        val installer = context.packageManager.packageInstaller
+        val installer = app.packageManager.packageInstaller
         val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
-        applyOwnership(context, files.first(), params)
+        applyOwnership(app, files.first(), params)
         val sessionId = installer.createSession(params)
         installer.openSession(sessionId).use { session ->
             files.forEachIndexed { index, apkFile ->
@@ -32,9 +38,9 @@ object SessionApkInstall {
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or
                 if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_MUTABLE else 0
             val sender = PendingIntent.getBroadcast(
-                context,
+                app,
                 sessionId,
-                Intent(context, InstallStatusReceiver::class.java).setAction(ACTION),
+                Intent(app, InstallStatusReceiver::class.java).setAction(ACTION),
                 flags,
             ).intentSender
             session.commit(sender)
@@ -67,13 +73,19 @@ class InstallStatusReceiver : BroadcastReceiver() {
             return
         }
         if (status != PackageInstaller.STATUS_PENDING_USER_ACTION) {
+            android.util.Log.i("DevPulse", "signer replace install status $status")
             InstallAwait.signal(false)
             return
         }
         InstallAwait.markPending()
         @Suppress("DEPRECATION")
-        val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT) ?: return
+        val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)
+        if (confirm == null) {
+            android.util.Log.i("DevPulse", "signer replace install ui missing")
+            return
+        }
         confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(confirm)
+        runCatching { context.startActivity(confirm) }
+            .onFailure { android.util.Log.i("DevPulse", "signer replace install ui ${it.message}") }
     }
 }

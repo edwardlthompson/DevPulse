@@ -2,11 +2,14 @@ package dev.foss.goldenpath.ui.inventory
 
 import android.content.Context
 import android.util.Log
+import dev.foss.goldenpath.index.aurora.AuroraPlayLive
+import dev.foss.goldenpath.index.aurora.AuroraPlayWarm
 import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.ListingInstallLive
 import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.SessionThenSystem
+import dev.foss.goldenpath.inventory.SignerReplaceLive
 import dev.foss.goldenpath.inventory.UpdateAll
 import dev.foss.goldenpath.inventory.UpdateAllJob
 import dev.foss.goldenpath.inventory.UpdateAllSnap
@@ -29,23 +32,29 @@ internal fun startUpdateAll(
         withContext(Dispatchers.IO) {
             Log.i("DevPulse", "update all start ${queue.size}")
             RefreshTrace.emit = { Log.i("DevPulse", it) }
-            val result = UpdateAll.run(
-                jobs = queue,
-                groups = groups,
-                prepare = { job, progress ->
-                    ListingInstallLive.prepare(context, job.packageName, job.source, job.pageUrl, progress)
-                },
-                install = { files ->
-                    val used = method.effective(WelcomeNeeds.installGranted(context))
-                    if (used == InstallMethod.Session) {
-                        SessionThenSystem.run(context, files)
-                    } else {
-                        ListingInstallLive.install(context, files, used) == OneClickResult.Installed
-                    }
-                },
-                onSnap = onSnap,
-                filesDir = context.filesDir,
-            )
+            AuroraPlayWarm.session(context)
+            val result = try {
+                UpdateAll.run(
+                    jobs = queue,
+                    groups = groups,
+                    prepare = { job, progress ->
+                        ListingInstallLive.prepare(context, job.packageName, job.source, job.pageUrl, progress)
+                    },
+                    install = { files ->
+                        val used = method.effective(WelcomeNeeds.installGranted(context))
+                        if (used == InstallMethod.Session) {
+                            SessionThenSystem.run(context, files)
+                        } else {
+                            ListingInstallLive.install(context, files, used) == OneClickResult.Installed
+                        }
+                    },
+                    clash = { job, files -> SignerReplaceLive.clash(context, job.packageName, files) },
+                    onSnap = onSnap,
+                    filesDir = context.filesDir,
+                )
+            } finally {
+                AuroraPlayLive.releaseSession()
+            }
             Log.i(
                 "DevPulse",
                 "update all done downloaded=${result.downloaded} installed=${result.installed} failDl=${result.failedDownload} failIns=${result.failedInstall}",

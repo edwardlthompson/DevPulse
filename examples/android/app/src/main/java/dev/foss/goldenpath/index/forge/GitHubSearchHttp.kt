@@ -21,9 +21,9 @@ class GitHubSearchHttp(private val token: String? = null) : GitHubSearchClient, 
     private fun pathSeg(raw: String): String =
         URLEncoder.encode(raw, Charsets.UTF_8.name()).replace("+", "%20")
 
-    private fun get(url: String): GitHubSearchPage {
+    private fun get(url: String): GitHubSearchPage = runCatching {
         val conn = URL(url).openConnection() as HttpURLConnection
-        return try {
+        try {
             conn.instanceFollowRedirects = true
             conn.requestMethod = "GET"
             conn.setRequestProperty("User-Agent", GitHubFetchPolicy.USER_AGENT)
@@ -40,5 +40,5 @@ class GitHubSearchHttp(private val token: String? = null) : GitHubSearchClient, 
         } finally {
             conn.disconnect()
         }
-    }
+    }.getOrElse { GitHubSearchPage(0, "") }
 }

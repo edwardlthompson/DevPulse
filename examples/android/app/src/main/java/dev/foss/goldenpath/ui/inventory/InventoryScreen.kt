@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import dev.foss.goldenpath.R
-import dev.foss.goldenpath.inventory.UpdateAllResume
 import dev.foss.goldenpath.inventory.WelcomeHome
 import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
@@ -87,8 +86,9 @@ fun InventoryScreen(
             )
         }
         val context = LocalContext.current
-        val selected = remember { mutableStateOf(UpdateAllResume.load(context.filesDir).toSet()) }
+        val selected = remember { mutableStateOf(emptySet<String>()) }
         InstallPermissionBanner()
+        SignerReplaceInbox()
         UpdateAllButton(apps = model.apps, selected = selected.value)
         if (model.apps.isEmpty()) {
             Text(text = stringResource(R.string.inventory_empty))

@@ -3,4 +3,5 @@
     <!-- cache_root: Robolectric + FileProvider root resolution (see UpdateApplierTest) -->
     <cache-path name="cache_root" path="." />
     <cache-path name="updates" path="updates/" />
+    <files-path name="signer_replace" path="signer-replace/" />
 </paths>

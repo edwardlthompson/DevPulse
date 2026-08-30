@@ -22,19 +22,24 @@ import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.ApkArchiveIdentity
 import dev.foss.goldenpath.inventory.ApkHttpFetcher
 import dev.foss.goldenpath.inventory.ApkInstall
+import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.InstalledIdentity
 import dev.foss.goldenpath.inventory.InstalledApp
+import dev.foss.goldenpath.inventory.InstallWhy
 import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.InventoryPreferences
-import dev.foss.goldenpath.index.apkpure.ApkPureDirect
-import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
-import dev.foss.goldenpath.index.aurora.AuroraPlayDirect
-import dev.foss.goldenpath.index.aurora.AuroraPlayLive
 import dev.foss.goldenpath.inventory.OneClickKind
 import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.OneClickUpdate
 import dev.foss.goldenpath.inventory.PlayStoreIntent
+import dev.foss.goldenpath.inventory.RemoteReleasedSource
+import dev.foss.goldenpath.inventory.SignerClash
+import dev.foss.goldenpath.inventory.SignerReplaceStore
+import dev.foss.goldenpath.index.apkpure.ApkPureDirect
+import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
+import dev.foss.goldenpath.index.aurora.AuroraPlayDirect
+import dev.foss.goldenpath.index.aurora.AuroraPlayLive
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import dev.foss.goldenpath.inventory.WelcomeNeeds
 import dev.foss.goldenpath.ui.theme.SpacingSm
@@ -101,7 +106,41 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
                     }
                     busy = false
                     failRes = when (result) {
-                        is OneClickResult.Failed -> InventoryCopy.failRes(result.why)
+                        is OneClickResult.Failed -> {
+                            val apk = result.files.firstOrNull()?.let {
+                                ApkArchiveIdentity.inspect(context.packageManager, it)
+                            }
+                            val device = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
+                            if (
+                                result.why == InstallWhy.Signing &&
+                                result.files.isNotEmpty() &&
+                                apk != null &&
+                                SignerClash.offer(
+                                    app.packageName,
+                                    apk.packageName,
+                                    apk.signers,
+                                    device?.signers.orEmpty(),
+                                    app.isSystemApp,
+                                ) &&
+                                SignerReplaceStore.capture(
+                                    context.filesDir,
+                                    app.packageName,
+                                    app.label,
+                                    when (kind) {
+                                        is OneClickKind.Direct -> kind.artifact.source
+                                        is OneClickKind.Play -> RemoteReleasedSource.Play
+                                        is OneClickKind.ApkPure -> RemoteReleasedSource.ApkPure
+                                        OneClickKind.None -> RemoteReleasedSource.None
+                                    },
+                                    result.files,
+                                )
+                            ) {
+                                IgnoredUpdates.drop(app.packageName, context.filesDir)
+                                null
+                            } else {
+                                InventoryCopy.failRes(result.why)
+                            }
+                        }
                         else -> null
                     }
                 }
@@ -119,6 +158,11 @@ fun DownloadUpdateSection(app: InstalledApp, modifier: Modifier = Modifier) {
         }
         failRes?.let { res ->
             Text(text = stringResource(res), color = MaterialTheme.colorScheme.error)
+            if (res == R.string.update_all_play_purchase || res == R.string.update_all_play_store) {
+                TextButton(onClick = { PlayStoreIntent.open(context, app.packageName) }) {
+                    Text(text = stringResource(R.string.update_all_play_purchase_open))
+                }
+            }
         }
     }
 }

@@ -6,14 +6,16 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object ApkSizeCap {
-    fun allow(contentLength: Long, maxBytes: Long = ApkHttpFetcher.MAX_BYTES): Boolean =
-        contentLength <= 0L || contentLength <= maxBytes
+    fun allow(contentLength: Long, maxBytes: Long = ApkHttpFetcher.MAX_BYTES): Boolean {
+        if (maxBytes <= 0L) return true
+        return contentLength <= 0L || contentLength <= maxBytes
+    }
 }
 
 object ApkHttpFetcher : ApkBytesFetcher {
     const val CONNECT_TIMEOUT_MS = 15_000
     const val READ_TIMEOUT_MS = 60_000
-    const val MAX_BYTES = 200L * 1024 * 1024
+    const val MAX_BYTES = 0L
     const val USER_AGENT = "DevPulse/0.23 (https://github.com/edwardlthompson/DevPulse)"
 
     override fun get(url: String): Result<ByteArray> = get(url, null)
@@ -33,6 +35,25 @@ object ApkHttpFetcher : ApkBytesFetcher {
         dest: File,
         onProgress: ((Long, Long) -> Unit)?,
         userAgent: String = USER_AGENT,
+    ): Result<File> {
+        val first = write(url, dest, onProgress, userAgent)
+        if (first.isSuccess || !retryable(first.exceptionOrNull()?.message)) return first
+        dest.delete()
+        RefreshTrace.line("apk retry ${first.exceptionOrNull()?.message}")
+        return write(url, dest, onProgress, userAgent)
+    }
+
+    internal fun retryable(message: String?): Boolean {
+        val msg = message.orEmpty().lowercase()
+        if ("cancelled" in msg || "too large" in msg) return false
+        return "connection reset" in msg || "broken pipe" in msg || "read timed out" in msg
+    }
+
+    private fun write(
+        url: String,
+        dest: File,
+        onProgress: ((Long, Long) -> Unit)?,
+        userAgent: String,
     ): Result<File> = open(url, userAgent) { conn, total ->
         dest.parentFile?.mkdirs()
         dest.outputStream().use { out ->
@@ -73,17 +94,8 @@ object ApkHttpFetcher : ApkBytesFetcher {
         onProgress: ((Long, Long) -> Unit)?,
         write: (ByteArray, Int) -> Unit,
     ) {
-        val buf = ByteArray(16 * 1024)
-        var read = 0L
         conn.inputStream.use { input ->
-            while (true) {
-                val n = input.read(buf)
-                if (n < 0) break
-                if (read + n > MAX_BYTES) error("apk too large")
-                write(buf, n)
-                read += n
-                onProgress?.invoke(read, total)
-            }
+            ApkStreamCopy.run(input, total, onProgress, write)
         }
     }
 }

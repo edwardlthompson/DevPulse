@@ -63,7 +63,7 @@ class OneClickUpdateTest {
             installed = InstalledIdentity("app.one", setOf("aa")),
             resolveAurora = { null },
         )
-        assertEquals(OneClickResult.PlayOpened, miss)
+        assertEquals(OneClickResult.Failed(InstallWhy.PlayStore), miss)
         assertEquals("app.one", opened)
     }
 
@@ -128,6 +128,7 @@ class OneClickUpdateTest {
         )
         assertEquals(OneClickResult.Installed, result)
         assertTrue(installed.endsWith(".apk"))
+        assertTrue(AppliedUpdates.settled("app.one"))
     }
 
     @Test
@@ -144,5 +145,6 @@ class OneClickUpdateTest {
             installed = InstalledIdentity("app.one", setOf("aa")),
         )
         assertEquals(OneClickResult.Failed(InstallWhy.Signing), result)
+        assertTrue(result is OneClickResult.Failed && result.files.isEmpty())
     }
 }

@@ -37,8 +37,11 @@ class InventoryCopyTest {
         assertEquals(R.string.sources_no_install, InventoryCopy.failRes(InstallWhy.Signing))
         assertEquals(R.string.about_debug_navigation_mode, InventoryCopy.failRes(InstallWhy.Timeout))
         assertEquals(R.string.update_cache_failed, InventoryCopy.failRes(InstallWhy.NoFile))
+        assertEquals(R.string.update_all_no_space, InventoryCopy.failRes(InstallWhy.NoSpace))
         assertEquals(R.string.about_update_current, InventoryCopy.failRes(InstallWhy.Older))
         assertEquals(R.string.inventory_sdk_risk, InventoryCopy.failRes(InstallWhy.Sdk))
+        assertEquals(R.string.update_all_play_purchase, InventoryCopy.failRes(InstallWhy.PlayPurchase))
+        assertEquals(R.string.update_all_play_store, InventoryCopy.failRes(InstallWhy.PlayStore))
         assertEquals(
             R.string.aptoide_body,
             InventoryCopy.failRes(InstallWhy.Signing, RemoteReleasedSource.Aptoide),

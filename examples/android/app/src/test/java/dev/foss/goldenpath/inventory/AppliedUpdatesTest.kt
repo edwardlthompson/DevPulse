@@ -23,6 +23,46 @@ class AppliedUpdatesTest {
     }
 
     @Test
+    fun filenameAndVersionCodeListingsAreNotUpdates() {
+        assertFalse(
+            UpdateInventory.hasUpdate(
+                listed("eu.faircode.email", RemoteReleasedSource.Forge, "FairEmail-v1.2332a-large-release.apk")
+                    .copy(versionName = "1.2332", versionCode = 2332L),
+            ),
+        )
+        assertFalse(
+            UpdateInventory.hasUpdate(
+                listed("net.kollnig.missioncontrol", RemoteReleasedSource.Fdroid, "2026080501")
+                    .copy(versionName = "2026.08.05", versionCode = 2026080501L),
+            ),
+        )
+        assertFalse(
+            UpdateInventory.hasUpdate(
+                listed(
+                    "com.akylas.documentscanner",
+                    RemoteReleasedSource.Forge,
+                    "com.akylas.documentscanner/android/github/1.25.0/160",
+                ).copy(versionName = "1.25.0.160", versionCode = 160L),
+            ),
+        )
+    }
+
+    @Test
+    fun persistSurvivesClearAndHydrate() {
+        val dir = java.io.File.createTempFile("applied", "dir").apply { delete(); mkdirs() }
+        AppliedUpdates.settle("app.x", "2.0", 20L, dir)
+        AppliedUpdates.clear()
+        assertFalse(AppliedUpdates.settled("app.x"))
+        AppliedUpdates.hydrate(dir)
+        assertTrue(AppliedUpdates.settled("app.x"))
+        val same = listed("app.x", RemoteReleasedSource.Play, "2.0").copy(versionName = "2.0", versionCode = 20L)
+        assertTrue(AppliedUpdates.hides(same))
+        val newer = listed("app.x", RemoteReleasedSource.Play, "3.0").copy(versionName = "2.0", versionCode = 20L)
+        assertFalse(AppliedUpdates.hides(newer))
+        assertTrue(UpdateInventory.hasUpdate(newer))
+    }
+
+    @Test
     fun apkMirrorOnlyIsNotAnUpdate() {
         val app = listed("app.m", RemoteReleasedSource.ApkMirror, "9.0")
         assertFalse(UpdateInventory.hasUpdate(app))

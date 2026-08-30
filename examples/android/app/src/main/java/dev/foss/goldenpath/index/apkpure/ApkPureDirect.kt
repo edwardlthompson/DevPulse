@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.apkpure
 
+import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.UpdateArtifact
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
@@ -10,7 +11,10 @@ object ApkPureDirect {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return null
         UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.ApkPure)?.let { return it }
-        val json = fetch.fetch(listOf(pkg)).getOrNull() ?: return null
+        val json = fetch.fetch(listOf(pkg)).getOrElse {
+            RefreshTrace.line("listing ApkPure $pkg ${it.message}")
+            return null
+        }
         ApkPureMetaParser.parseMany(json)
         return UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.ApkPure)
     }

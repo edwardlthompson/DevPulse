@@ -1,6 +1,7 @@
 package dev.foss.goldenpath.inventory
 
 import java.io.File
+import dev.foss.goldenpath.index.aurora.AuroraPlayLive
 
 sealed class OneClickKind {
     data class Direct(val artifact: UpdateArtifact) : OneClickKind()
@@ -13,7 +14,7 @@ sealed class OneClickResult {
     data object Installed : OneClickResult()
     data object PlayOpened : OneClickResult()
     data object ApkPureOpened : OneClickResult()
-    data class Failed(val why: InstallWhy) : OneClickResult()
+    data class Failed(val why: InstallWhy, val files: List<File> = emptyList()) : OneClickResult()
     data object None : OneClickResult()
 }
 
@@ -53,7 +54,11 @@ object OneClickUpdate {
                     applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
                 } else {
                     openPlay(kind.packageName)
-                    OneClickResult.PlayOpened
+                    if (AuroraPlayLive.why(kind.packageName) == InstallWhy.PlayPurchase) {
+                        OneClickResult.Failed(InstallWhy.PlayPurchase)
+                    } else {
+                        OneClickResult.Failed(InstallWhy.PlayStore)
+                    }
                 }
             }
             is OneClickKind.ApkPure -> {
@@ -67,7 +72,18 @@ object OneClickUpdate {
             }
             is OneClickKind.Direct -> applyDirect(kind.artifact, cacheDir, fetch, install, inspect, installed)
         }
-        if (result is OneClickResult.Failed) {
+        if (result == OneClickResult.Installed) {
+            when (kind) {
+                is OneClickKind.Direct ->
+                    AppliedUpdates.settle(kind.artifact.packageName, kind.artifact.versionName, filesDir = filesDir)
+                is OneClickKind.Play -> AppliedUpdates.settle(kind.packageName, filesDir = filesDir)
+                is OneClickKind.ApkPure -> AppliedUpdates.settle(kind.packageName, filesDir = filesDir)
+                OneClickKind.None -> Unit
+            }
+        }
+        if (result is OneClickResult.Failed && result.files.isEmpty() &&
+            result.why != InstallWhy.PlayPurchase && result.why != InstallWhy.PlayStore
+        ) {
             rememberFail(kind, filesDir)
         }
         filesDir?.let {
@@ -97,12 +113,20 @@ object OneClickUpdate {
         val file = cached ?: run {
             val bytes = fetch.get(artifact.downloadUrl).getOrElse { return OneClickResult.Failed(InstallWhy.NoFile) }
             UpdateCache.stage(cacheDir, artifact, bytes, inspect, installed).getOrElse {
-                val why = if (it.message == "identity") InstallWhy.Signing else InstallWhy.NoFile
-                return OneClickResult.Failed(why)
+                val kept = ApkFileStore.fileFor(cacheDir, artifact).takeIf { file -> file.isFile }
+                val why = if (it.message == "identity" || it.message == "signing") {
+                    InstallWhy.Signing
+                } else {
+                    InstallWhy.NoFile
+                }
+                return OneClickResult.Failed(
+                    why,
+                    if (it.message == "signing" && kept != null) listOf(kept) else emptyList(),
+                )
             }
         }
         if (!ApkIdentity.signersMatch(inspect(file).signers, installed.signers)) {
-            return OneClickResult.Failed(InstallWhy.Signing)
+            return OneClickResult.Failed(InstallWhy.Signing, listOf(file))
         }
         return install(file).toClick()
     }

@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.IgnoredUpdates
+import dev.foss.goldenpath.inventory.SignerReplaceQueue
 import dev.foss.goldenpath.inventory.InstallAwait
 import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.InstalledApp
@@ -28,6 +29,7 @@ import dev.foss.goldenpath.inventory.UpdateAllCancel
 import dev.foss.goldenpath.inventory.UpdateAllPick
 import dev.foss.goldenpath.inventory.UpdateAllPhase
 import dev.foss.goldenpath.inventory.UpdateAllSnap
+import dev.foss.goldenpath.inventory.UpdateAllTally
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,24 +42,30 @@ fun UpdateAllButton(
 ) {
     val revision by UpdateArtifactMemory.revision.collectAsStateWithLifecycle()
     val ignoredRev by IgnoredUpdates.revision.collectAsStateWithLifecycle(0)
+    val signingRev by SignerReplaceQueue.revision.collectAsStateWithLifecycle(0)
     val deviceSdk = android.os.Build.VERSION.SDK_INT
     val deviceAbis = remember { android.os.Build.SUPPORTED_ABIS.toSet() }
-    val groups = remember(apps, selected, revision, ignoredRev) {
-        UpdateAllPick.groups(apps, selected, deviceSdk, deviceAbis)
-    }
-    val queue = remember(groups) { groups.map { it.first() } }
-    if (queue.isEmpty()) return
     val context = LocalContext.current
     val prefs = remember { InventoryPreferences(context) }
     val method by prefs.installMethod.collectAsStateWithLifecycle(InstallMethod.System)
+    val aurora by prefs.auroraPlayEnabled.collectAsStateWithLifecycle(false)
+    val groups = remember(apps, selected, revision, ignoredRev, signingRev, aurora) {
+        UpdateAllPick.groups(apps, selected, deviceSdk, deviceAbis, aurora)
+    }
+    val queue = remember(groups) { groups.map { it.first() } }
+    if (queue.isEmpty()) return
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
     var show by remember { mutableStateOf(false) }
     var metered by remember { mutableStateOf(false) }
     val snaps = remember { mutableStateListOf<UpdateAllSnap>() }
-    val finished = snaps.count { !it.stay }
+    val tally = UpdateAllTally.of(snaps)
     val label = if (busy) {
-        stringResource(R.string.update_all_busy, finished, queue.size)
+        stringResource(
+            R.string.update_all_busy,
+            tally.downloadedOk + tally.downloadedFail,
+            tally.total.coerceAtLeast(queue.size),
+        )
     } else {
         stringResource(R.string.update_all, queue.size)
     }

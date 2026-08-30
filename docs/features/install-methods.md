@@ -30,6 +30,7 @@ Types in `dev.foss.goldenpath.inventory`. No live `su` in unit tests. Default is
 - ✅ Listing rows show known APK size and F-Droid anti-features before download
 - ✅ Aptoide listing tap picks Store or Games catalog before fetch
 - ✅ Install is refused before the system installer when the APK signing cert does not match the installed app
+- ✅ A cert clash from a listing tap offers uninstall-then-install; Update all never uninstalls and instead lists those apps for a later replace
 - ✅ Session confirm-pending falls back to System when the session wait fails after launch
 
 ## Smoke scenario

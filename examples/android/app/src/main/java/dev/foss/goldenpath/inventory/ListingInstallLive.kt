@@ -21,8 +21,13 @@ object ListingInstallLive {
     ): OneClickResult {
         val startedAt = System.currentTimeMillis()
         val files = prepare(context, packageName, source, pageUrl, onProgress = onProgress)
+        if (files == null && source == RemoteReleasedSource.Play && ListingFail.why != InstallWhy.NoSpace) PlayStoreIntent.open(context, packageName)
         val result = install(context, files, method)
-        if (result == OneClickResult.Installed) AppliedUpdates.settle(packageName)
+        if (result == OneClickResult.Installed) {
+            val ver = RemoteReleaseMemory.byPackage[packageName]?.offers
+                ?.firstOrNull { it.source == source }?.versionName
+            AppliedUpdates.settle(packageName, ver, filesDir = context.filesDir)
+        }
         note(context, startedAt, result)
         return result
     }
@@ -46,11 +51,15 @@ object ListingInstallLive {
         pageUrl: String?,
         onProgress: (Long, Long) -> Unit = { _, _ -> },
         installedVersion: String? = null,
+        installedCode: Long = 0,
     ): List<File>? {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return ListingFail.none()
         val listed = RemoteReleaseMemory.byPackage[pkg]?.offers?.firstOrNull { it.source == source }?.versionName
-        if (!ListingNewer.allow(listed, installedVersion)) return ListingFail.older()
+        if (!ListingNewer.allow(listed, installedVersion, installedCode)) {
+            Log.i("DevPulse", "listing ${source.name} $pkg older listed=$listed")
+            return ListingFail.older()
+        }
         if (source == RemoteReleasedSource.Play) return play(context, pkg, onProgress)
         val artifact = ListingDirect.resolve(
             packageName = pkg,
@@ -73,7 +82,10 @@ object ListingInstallLive {
         }
         artifact.localPath?.let(::File)?.takeIf { it.isFile }?.let { return listOf(it) }
         val cache = File(context.cacheDir, "updates")
-        if (!StorageRoom.enough(cache)) return ListingFail.none()
+        if (!StorageRoom.enough(cache)) {
+            Log.i("DevPulse", "listing ${source.name} $pkg no space ${StorageRoom.bytes(cache)}")
+            return ListingFail.space()
+        }
         val dest = ApkFileStore.fileFor(cache, artifact)
         val written = ApkHttpFetcher.toFile(artifact.downloadUrl, dest, onProgress).getOrElse {
             Log.i("DevPulse", "listing ${source.name} $pkg download fail ${it.message}")
@@ -87,7 +99,7 @@ object ListingInstallLive {
         )
         if (file == null) {
             Log.i("DevPulse", "listing ${source.name} $pkg package mismatch")
-            return ListingFail.signing()
+            return ListingFail.none()
         }
         return listOf(file)
     }
@@ -96,11 +108,14 @@ object ListingInstallLive {
         val parts = AuroraPlayBundle.files(pkg, AuroraPlayLive.files(context))
         if (parts.isEmpty()) {
             Log.i("DevPulse", "listing Play $pkg no file")
-            return ListingFail.none()
+            return if (AuroraPlayLive.why(pkg) == InstallWhy.PlayPurchase) ListingFail.playPurchase() else ListingFail.none()
         }
         Log.i("DevPulse", "listing Play $pkg files=${parts.size}")
         val cache = File(context.cacheDir, "updates")
-        if (!StorageRoom.enough(cache)) return ListingFail.none()
+        if (!StorageRoom.enough(cache)) {
+            Log.i("DevPulse", "listing Play $pkg no space ${StorageRoom.bytes(cache)}")
+            return ListingFail.space()
+        }
         val files = ListingPlay.download(
             cache,
             pkg,
@@ -114,13 +129,12 @@ object ListingInstallLive {
             onProgress = onProgress,
         )
         Log.i("DevPulse", "listing Play $pkg kept=${files?.size ?: 0}")
-        return files ?: ListingFail.signing()
+        return files ?: ListingFail.none()
     }
 
     private fun signerOk(context: Context, file: File): Boolean {
         val apk = ApkArchiveIdentity.inspect(context.packageManager, file)
-        val device = apk.packageName?.let { ApkArchiveIdentity.installed(context.packageManager, it) }
-        return ApkIdentity.signersMatch(apk.signers, device?.signers)
+        return ApkIdentity.signersMatch(apk.signers, apk.packageName?.let { ApkArchiveIdentity.installed(context.packageManager, it) }?.signers)
     }
 
     private fun note(context: Context, startedAt: Long, result: OneClickResult) {

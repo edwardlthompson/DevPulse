@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_all_downloaded">Downloaded %1$d of %2$d · %3$d failed</string>
+    <string name="update_all_installed">Installed %1$d of %2$d · %3$d failed</string>
+    <string name="update_all_bytes_of">%1$s / %2$s</string>
+    <string name="update_all_ready">Downloaded — waiting to install</string>
+    <string name="update_all_no_space">Not enough free space to download this APK.</string>
+    <string name="update_all_play_purchase">This is a purchased or licensed Google Play app. DevPulse cannot download it until the Google Play Store verifies the purchase on this account. Open the Play Store listing to confirm the license and update there.</string>
+    <string name="update_all_play_store">DevPulse could not download this Google Play app. Open the Play Store listing to update it there.</string>
+    <string name="update_all_play_purchase_open">Open Play Store</string>
+</resources>

@@ -59,8 +59,11 @@ object InventoryCopy {
             InstallWhy.Signing -> R.string.sources_no_install
             InstallWhy.Timeout -> R.string.about_debug_navigation_mode
             InstallWhy.NoFile -> R.string.update_cache_failed
+            InstallWhy.NoSpace -> R.string.update_all_no_space
             InstallWhy.Older -> R.string.about_update_current
             InstallWhy.Sdk -> R.string.inventory_sdk_risk
+            InstallWhy.PlayPurchase -> R.string.update_all_play_purchase
+            InstallWhy.PlayStore -> R.string.update_all_play_store
         }
     }
 

@@ -34,8 +34,13 @@ object IgnoredUpdates {
     }
 
     fun has(packageName: String, source: RemoteReleasedSource, versionName: String?): Boolean {
-        val key = key(packageName, source, versionName) ?: return false
-        return key in rows
+        val pkg = packageName.trim()
+        if (pkg.isEmpty()) return false
+        val ver = versionName?.trim().orEmpty()
+        if (ver.isNotEmpty()) {
+            return key(pkg, source, ver) in rows
+        }
+        return rows.any { it.packageName == pkg && (source == RemoteReleasedSource.None || it.source == source) }
     }
 
     fun add(
@@ -102,13 +107,13 @@ object IgnoredUpdates {
 
     internal fun parse(line: String): IgnoredUpdate? {
         val parts = line.split('\t')
-        if (parts.size < 3) return null
+        if (parts.size < 4) return null
         val source = runCatching { RemoteReleasedSource.valueOf(parts[1].trim()) }.getOrNull() ?: return null
         return key(parts[0], source, parts[2])
     }
 
     internal fun encode(row: IgnoredUpdate): String =
-        listOf(row.packageName, row.source.name, row.versionName).joinToString("\t")
+        listOf(row.packageName, row.source.name, row.versionName, "keep").joinToString("\t")
 
     private fun save(file: File, rows: Set<IgnoredUpdate>) {
         file.parentFile?.mkdirs()
