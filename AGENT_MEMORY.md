@@ -41,6 +41,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 | Date | Milestone | What worked | What to improve |
 |------|-----------|-------------|-----------------|
+| 2026-08-31 | v0.37.0 /ship | Implemented scrubbable year scrollbar with callouts (`AppListScroller`), natural gesture back navigation with state memory, Ideas in settings hub, and removed radar scan button; auto-persisted settings across updates; Release Please merged PR #25; tag `v0.37.0` created and signed APK uploaded to GitHub release | Reconfigure UTF-8 stdout on helper scripts on Windows; keep `[Unreleased]` at top of `CHANGELOG.md` after release |
 | 2026-08-28 | v0.34.2 /ship | Reviewed cloud PRs #19/#20; dispatched CI/RP on `main`; fold Unreleased on RP #18; auto-merge queued; `gh release create --target` full SHA after RP missed the tag; published event uploaded signed APK/SBOM; closed phantom #22 | Set `AUTOMERGE_TOKEN` so bot merges start Actions; RP still opens a phantom next-version PR when it misses the tag (KB-027) |
 | 2026-08-28 | Required-check rollups | Job names `CI` / `Security Scan` / `CodeQL` plus `merge-ready-pr.sh` so cursor PRs merge without admin | Set `allow_auto_merge` + `AUTOMERGE_TOKEN` so merge pushes start Actions (KB-031); GHAS `CodeQL` stays `neutral` |
 | 2026-08-27 | v0.34.1 /ship | `fix:` prepare; push started Actions; fold Unreleased on RP #17; admin-merge after Queue RP failed; RP tagged; Release workflow_dispatch for APK/SBOM | Queue RP still ACTION_REQUIRED; wait for tag-SHA CI before the docs commit (KB-030) |
