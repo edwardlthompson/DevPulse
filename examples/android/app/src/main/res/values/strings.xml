@@ -40,6 +40,7 @@
     <string name="settings_section_stores">External pages</string>
     <string name="settings_hub_appearance">Theme</string>
     <string name="settings_hub_inventory">What to list, scan interval, and export</string>
+    <string name="settings_hub_ideas">Category gaps and opportunities to build or replace</string>
     <string name="settings_hub_updates">Install method, prefetch, and DevPulse updates</string>
     <string name="settings_hub_sources">Play, F-Droid, Aptoide, dump sites, and GitHub</string>
     <string name="settings_hub_stores">Play Store fallback and APKMirror pages</string>
@@ -254,6 +255,9 @@
     <string name="stale_notify_text">%1$d apps crossed %2$d days</string>
     <string name="forge_lookup_leftover_body">Refresh also searches GitLab and Codeberg when F-Droid has no GitHub source link.</string>
     <string name="sources_title">Sources — links only</string>
+    <string name="sources_select_all">All sources</string>
+    <string name="sources_select_all_action">Select all</string>
+    <string name="sources_deselect_all">Deselect all</string>
     <string name="sources_no_install">Signing does not match this installed app.</string>
     <string name="update_notes_title">What changed</string>
     <string name="update_notes_expand">Show full notes</string>

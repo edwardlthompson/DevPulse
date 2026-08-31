@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-08-31 — v0.37.0 UI overhaul: scrubbable year scrollbar, navigation cleanup, and ideas in settings
+- **Status:** Accepted
+- **Context:** User requested removing redundant in-screen "Back to settings" and "Back to apps" buttons in favor of natural hardware/gesture back navigation while retaining full menu state history; requested a scrubbable scrollbar with animated year callouts on the main inventory list; requested moving the top-bar ideas menu into settings; and requested removing the non-functional legacy local scan button.
+- **Decision:** Implemented `AppListScroller` and `AppYearScrubber` with dynamic year callout bubble, year keypoint ticks, and touch scrubbing on the main app list. Integrated "What to build" into the Settings Hub. Cleaned up top bar actions to Refresh, Search, Filters, and Settings. Implemented `SettingsPersistence` and backup extraction rules for settings retention across reinstall/update. Enabled Aurora Play downloads by default with multi-source fallback before Play Store redirect.
+- **Alternatives considered:** Keep floating action buttons or bottom nav (rejected: top bar + hub pattern is cleaner). Retain radar button with a toast (rejected: user requested eliminating it as redundant to Refresh).
+- **Consequences:** Navigation is smoother and adheres to standard Android back stack behavior. The main app list can be navigated rapidly across years.
+
 ### 2026-08-28 — v0.34.2 ship
 - **Status:** Accepted
 - **Context:** Cloud agent PRs #19/#20 were on `main` (GitHub hint Refresh + required-check rollups) but no tag existed. Latest GitHub Release was still `v0.34.1`.

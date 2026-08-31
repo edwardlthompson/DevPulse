@@ -18,9 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.InventoryExportFormat
 import dev.foss.goldenpath.settings.SettingsPage
 import dev.foss.goldenpath.ui.components.MenuOverlay
+import dev.foss.goldenpath.ui.opportunity.OpportunityPane
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.ThemeMode
 
@@ -34,6 +36,7 @@ fun SettingsScreen(
     onAboutOpen: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    apps: List<InstalledApp> = emptyList(),
 ) {
     var page by remember { mutableStateOf<SettingsPage?>(null) }
     val childOpen = page != null
@@ -71,6 +74,16 @@ fun SettingsScreen(
                     SettingsGroup { ScanIntervalSettings() }
                     SettingsGroup { StaleNotifySettings() }
                     SettingsGroup { SettingsExportSection(onExport = onExport) }
+                }
+                SettingsPage.Ideas -> SettingsPane(
+                    title = stringResource(R.string.opportunity_title),
+                    onBack = { page = null },
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    OpportunityPane(
+                        apps = apps,
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 }
                 SettingsPage.History -> SettingsPane(
                     title = stringResource(R.string.settings_section_history),

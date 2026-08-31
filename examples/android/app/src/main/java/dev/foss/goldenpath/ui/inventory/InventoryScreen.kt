@@ -93,26 +93,24 @@ fun InventoryScreen(
         if (model.apps.isEmpty()) {
             Text(text = stringResource(R.string.inventory_empty))
         } else {
-            LazyColumn(modifier = Modifier.weight(1f).highRefreshScroll(), state = listState) {
-                items(model.apps, key = { it.packageName }) { app ->
-                    InventoryRow(
-                        app = app,
-                        selected = app.packageName in selected.value,
-                        onToggleSelect = {
-                            selected.value = if (app.packageName in selected.value) {
-                                selected.value - app.packageName
-                            } else {
-                                selected.value + app.packageName
-                            }
-                        },
-                        onOpen = {
-                            focusManager.clearFocus()
-                            keyboard?.hide()
-                            model.onSelect(app.packageName)
-                        },
-                    )
-                }
-            }
+            AppListScroller(
+                apps = model.apps,
+                listState = listState,
+                selected = selected.value,
+                onToggleSelect = { pkg ->
+                    selected.value = if (pkg in selected.value) {
+                        selected.value - pkg
+                    } else {
+                        selected.value + pkg
+                    }
+                },
+                onOpen = { app ->
+                    focusManager.clearFocus()
+                    keyboard?.hide()
+                    model.onSelect(app.packageName)
+                },
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }

@@ -38,7 +38,7 @@ class InventoryPreferencesTest {
         assertFalse(prefs.apkMirrorLookupEnabled.first())
         assertFalse(prefs.apkPureLookupEnabled.first())
         assertTrue(prefs.playLookupEnabled.first())
-        assertFalse(prefs.auroraPlayEnabled.first())
+        assertTrue(prefs.auroraPlayEnabled.first())
         assertTrue(prefs.forgeLookupEnabled.first())
         assertFalse(prefs.forgeLookupSearchUnknowns.first())
         assertEquals(ScanInterval.OnDemand, prefs.scanInterval.first())

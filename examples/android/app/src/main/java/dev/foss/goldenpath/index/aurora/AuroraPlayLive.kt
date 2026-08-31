@@ -51,6 +51,7 @@ object AuroraPlayLive {
         lookupMany(context, names)
     }
 
+    @Synchronized
     private fun lookupMany(context: Context, names: List<String>): Map<String, AuroraPlayApp> {
         val wanted = names.map { it.trim() }.filter { it.isNotEmpty() }
         if (wanted.isEmpty()) return emptyMap()
@@ -75,11 +76,12 @@ object AuroraPlayLive {
                 }.toMap()
             page(wanted)
         }.getOrElse {
-            RefreshTrace.line("aurora lookup fail ${it.javaClass.simpleName}: ${it.message}")
+            RefreshTrace.line("aurora lookup fail ${it.javaClass.simpleName}: ${it.message} at ${it.stackTrace.take(8).joinToString(" -> ") { el -> "${el.className}.${el.methodName}:${el.lineNumber}" }}")
             wanted.associateWith { AuroraPlayApp(AuroraPlayStatus.Unknown) }
         }
     }
 
+    @Synchronized
     private fun purchase(context: Context, packageName: String, refresh: Boolean): List<AuroraPlayFile> {
         val pkg = packageName.trim()
         return runCatching {
@@ -95,12 +97,26 @@ object AuroraPlayLive {
                 return emptyList()
             }
             val app = AppDetailsHelper(auth).using(AuroraPlayHttp).getAppByPackageName(pkg)
+            RefreshTrace.line("aurora $pkg details: vCode=${app.versionCode} vName=${app.versionName} offerType=${app.offerType}")
             if (app.packageName.isBlank() || app.versionCode <= 0) {
                 RefreshTrace.line("aurora $pkg no details")
                 return emptyList()
             }
-            val bought = PurchaseHelper(auth).using(AuroraPlayHttp)
-                .purchase(app.packageName, app.versionCode, app.offerType)
+            val purchaseHelper = PurchaseHelper(auth).using(AuroraPlayHttp)
+            val purchaseMethods = purchaseHelper.javaClass.declaredMethods
+                .filter { it.name in listOf("purchase", "getDeliveryResponse", "acquire", "getDeliveryToken") }
+                .map { m -> "${m.name}(${m.parameterTypes.map { p -> p.simpleName }.joinToString(",")})" }
+            RefreshTrace.line("aurora PurchaseHelper sigs: $purchaseMethods")
+            val rawFiles = purchaseHelper.purchase(app.packageName, app.versionCode, app.offerType)
+            val fileFields = if (rawFiles.isNotEmpty()) {
+                val f0 = rawFiles.first()
+                f0.javaClass.declaredFields.map { f ->
+                    f.isAccessible = true
+                    "${f.name}=${f.get(f0)}"
+                }
+            } else emptyList()
+            RefreshTrace.line("aurora $pkg rawFiles=${rawFiles.size} fields=$fileFields")
+            val bought = rawFiles
                 .filter { it.type == PlayFile.Type.BASE || it.type == PlayFile.Type.SPLIT }
                 .mapNotNull { file ->
                     val url = file.url.trim()
@@ -115,7 +131,7 @@ object AuroraPlayLive {
         }.onFailure {
             val mapped = AuroraPlayWhy.of(it)
             note(pkg, mapped)
-            RefreshTrace.line("aurora $pkg ${it.javaClass.simpleName}: ${it.message}")
+            RefreshTrace.line("aurora $pkg ${it.javaClass.simpleName}: ${it.message} at ${it.stackTrace.take(8).joinToString(" -> ") { el -> "${el.className}.${el.methodName}:${el.lineNumber}" }}")
         }.getOrDefault(emptyList())
     }
 

@@ -18,7 +18,6 @@ import dev.foss.goldenpath.ui.about.ProductUpdateHost
 import dev.foss.goldenpath.ui.insets.NavigationModeProvider
 import dev.foss.goldenpath.ui.inventory.SignerReplaceHost
 import dev.foss.goldenpath.ui.inventory.rememberInventoryUiModel
-import dev.foss.goldenpath.ui.scan.rememberScanSession
 import dev.foss.goldenpath.ui.theme.GoldenPathTheme
 import dev.foss.goldenpath.ui.theme.ThemeMode
 import dev.foss.goldenpath.ui.theme.ThemePreferences
@@ -44,7 +43,6 @@ fun GoldenPathApp(
     val appVersion = BuildConfig.VERSION_NAME
     val snackbarHostState = remember { SnackbarHostState() }
     val inventory = rememberInventoryUiModel(context, scope)
-    val scan = rememberScanSession(inventory.apps)
 
     GoldenPathTheme(themeMode = themeMode) {
         NavigationModeProvider {
@@ -63,7 +61,6 @@ fun GoldenPathApp(
                 donations = donations,
                 canApplyUpdate = false,
                 inventory = inventory,
-                scan = scan,
                 onThemeModeSelect = { mode -> scope.launch { themePreferences.setThemeMode(mode) } },
                 onAboutOpen = { showAbout = true },
                 onAboutClose = { showAbout = false },

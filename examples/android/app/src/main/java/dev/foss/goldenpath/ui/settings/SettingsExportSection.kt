@@ -8,6 +8,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -16,8 +17,10 @@ import dev.foss.goldenpath.inventory.CacheWipe
 import dev.foss.goldenpath.inventory.IgnoreBackup
 import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.InventoryExportFormat
+import dev.foss.goldenpath.inventory.SettingsPersistence
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import java.io.File
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -26,6 +29,7 @@ fun SettingsExportSection(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
         Text(text = stringResource(R.string.inventory_export))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(SpacingMd)) {
@@ -46,6 +50,7 @@ fun SettingsExportSection(
             onClick = {
                 val raw = IgnoreBackup.export(context.filesDir)
                 File(context.filesDir, "settings_backup.txt").writeText(raw)
+                scope.launch { SettingsPersistence.backup(context) }
             },
         ) { Text(stringResource(R.string.export_title)) }
         TextButton(onClick = { CacheWipe.remotes(context.filesDir) }) {

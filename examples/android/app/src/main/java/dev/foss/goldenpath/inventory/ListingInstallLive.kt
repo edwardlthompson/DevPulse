@@ -24,8 +24,7 @@ object ListingInstallLive {
         if (files == null && source == RemoteReleasedSource.Play && ListingFail.why != InstallWhy.NoSpace) PlayStoreIntent.open(context, packageName)
         val result = install(context, files, method)
         if (result == OneClickResult.Installed) {
-            val ver = RemoteReleaseMemory.byPackage[packageName]?.offers
-                ?.firstOrNull { it.source == source }?.versionName
+            val ver = RemoteReleaseMemory.byPackage[packageName]?.offers?.firstOrNull { it.source == source }?.versionName
             AppliedUpdates.settle(packageName, ver, filesDir = context.filesDir)
         }
         note(context, startedAt, result)
@@ -60,23 +59,27 @@ object ListingInstallLive {
             Log.i("DevPulse", "listing ${source.name} $pkg older listed=$listed")
             return ListingFail.older()
         }
-        if (source == RemoteReleasedSource.Play) return play(context, pkg, onProgress)
+        if (source == RemoteReleasedSource.Play) {
+            val files = play(context, pkg, onProgress)
+            if (!files.isNullOrEmpty()) return files
+            val fallback = UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.ApkPure)
+                ?: UpdateArtifactMemory.best(pkg)?.takeUnless { it.source == RemoteReleasedSource.Play }
+            if (fallback != null && fallback.downloadUrl.isNotBlank()) {
+                Log.i("DevPulse", "listing Play fallback to ${fallback.source.name} $pkg")
+                val fallbackFiles = prepare(context, pkg, fallback.source, fallback.downloadUrl, onProgress, installedVersion, installedCode)
+                if (!fallbackFiles.isNullOrEmpty()) return fallbackFiles
+            }
+            return if (AuroraPlayLive.why(pkg) == InstallWhy.PlayPurchase) ListingFail.playPurchase() else ListingFail.none()
+        }
         val artifact = ListingDirect.resolve(
-            packageName = pkg,
-            source = source,
-            pageUrl = pageUrl,
-            fetchPage = ListingPageHttp::get,
+            packageName = pkg, source = source, pageUrl = pageUrl, fetchPage = ListingPageHttp::get,
             fetchReleases = { repo -> ListingInstallFetch.releases(context, repo) },
             resolveApkPure = { ApkPureDirect.resolve(it, ApkPureHttpFetcher) },
             resolveAptoide = { ListingInstallFetch.aptoide(it) },
             resolvePlay = { AuroraPlayDirect.resolve(it, AuroraPlayLive.files(context)) },
-            fdroidCache = { name, src ->
-                DownloadLaunch.fromFdroidCache(File(context.filesDir, "fdroid-index"), name, System.currentTimeMillis(), src)
-            },
-            githubOpt = ListingForgeFiles.opt(context.filesDir, pkg),
-            directApkUrl = ListingForgeFiles.apk(context.filesDir, pkg),
-        )
-        if (artifact == null) {
+            fdroidCache = { name, src -> DownloadLaunch.fromFdroidCache(File(context.filesDir, "fdroid-index"), name, System.currentTimeMillis(), src) },
+            githubOpt = ListingForgeFiles.opt(context.filesDir, pkg), directApkUrl = ListingForgeFiles.apk(context.filesDir, pkg),
+        ) ?: run {
             Log.i("DevPulse", "listing ${source.name} $pkg no file")
             return ListingFail.none()
         }
@@ -92,15 +95,11 @@ object ListingInstallLive {
             dest.delete()
             return ListingFail.none()
         }
-        val file = ListingDownload.keep(
-            written,
-            artifact,
-            inspect = { ApkArchiveIdentity.inspect(context.packageManager, it) },
-        )
-        if (file == null) {
-            Log.i("DevPulse", "listing ${source.name} $pkg package mismatch")
-            return ListingFail.none()
-        }
+        val file = ListingDownload.keep(written, artifact, inspect = { ApkArchiveIdentity.inspect(context.packageManager, it) })
+            ?: run {
+                Log.i("DevPulse", "listing ${source.name} $pkg package mismatch")
+                return ListingFail.none()
+            }
         return listOf(file)
     }
 
@@ -110,25 +109,20 @@ object ListingInstallLive {
             Log.i("DevPulse", "listing Play $pkg no file")
             return if (AuroraPlayLive.why(pkg) == InstallWhy.PlayPurchase) ListingFail.playPurchase() else ListingFail.none()
         }
-        Log.i("DevPulse", "listing Play $pkg files=${parts.size}")
         val cache = File(context.cacheDir, "updates")
         if (!StorageRoom.enough(cache)) {
             Log.i("DevPulse", "listing Play $pkg no space ${StorageRoom.bytes(cache)}")
             return ListingFail.space()
         }
         val files = ListingPlay.download(
-            cache,
-            pkg,
-            parts,
+            cache, pkg, parts,
             save = { url, dest, progress ->
                 ApkHttpFetcher.toFile(url, dest, progress, AuroraAuth.USER_AGENT)
-                    .onFailure { Log.i("DevPulse", "listing Play $pkg part fail ${it.message}") }
-                    .isSuccess
+                    .onFailure { Log.i("DevPulse", "listing Play $pkg part fail ${it.message}") }.isSuccess
             },
             inspect = { ApkArchiveIdentity.inspect(context.packageManager, it) },
             onProgress = onProgress,
         )
-        Log.i("DevPulse", "listing Play $pkg kept=${files?.size ?: 0}")
         return files ?: ListingFail.none()
     }
 
@@ -138,13 +132,6 @@ object ListingInstallLive {
     }
 
     private fun note(context: Context, startedAt: Long, result: OneClickResult) {
-        PulseHistory.note(
-            context.filesDir,
-            "update",
-            System.currentTimeMillis() - startedAt,
-            if (result == OneClickResult.Installed) 1 else 0,
-            "result=${result::class.simpleName}",
-        )
+        PulseHistory.note(context.filesDir, "update", System.currentTimeMillis() - startedAt, if (result == OneClickResult.Installed) 1 else 0, "result=${result::class.simpleName}")
     }
 }
-

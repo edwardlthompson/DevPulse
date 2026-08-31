@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import dev.foss.goldenpath.about.AppUpdatePreferences
 import dev.foss.goldenpath.inventory.ObtainiumImportLaunch
 import dev.foss.goldenpath.inventory.RefreshLaunch
+import dev.foss.goldenpath.inventory.SettingsPersistence
 import dev.foss.goldenpath.inventory.SignerReplaceLaunch
 import dev.foss.goldenpath.network.NetworkStatusMonitor
 import dev.foss.goldenpath.ui.GoldenPathApp
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
         networkStatusMonitor = NetworkStatusMonitor(applicationContext).also { it.start() }
 
         lifecycleScope.launch {
+            SettingsPersistence.restoreIfEmpty(applicationContext)
             appUpdatePreferences.clearPendingRestart()
             appUpdatePreferences.ensureInstalledFormat()
         }
@@ -49,6 +51,11 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         DisplayRefresh.apply(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        lifecycleScope.launch { SettingsPersistence.backup(applicationContext) }
     }
 
     override fun onNewIntent(intent: Intent) {

@@ -4,9 +4,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -41,22 +44,83 @@ fun SourcesToggleList(onSetup: (SourceSetup) -> Unit, modifier: Modifier = Modif
     val tokenPresent = remember { EncryptedForgeTokenStore.wrap(context).getToken() != null }
     val customUrl by repos.customIndexUrl.collectAsStateWithLifecycle("")
     val gate = SourceGateState(tokenPresent, customUrl)
+
+    val playOn by prefs.playLookupEnabled.collectAsStateWithLifecycle(true)
+    val auroraOn by prefs.auroraPlayEnabled.collectAsStateWithLifecycle(true)
+    val forgeOn by prefs.forgeLookupEnabled.collectAsStateWithLifecycle(true)
+    val aptoideOn by prefs.aptoideLookupEnabled.collectAsStateWithLifecycle(false)
+    val apkMirrorOn by prefs.apkMirrorLookupEnabled.collectAsStateWithLifecycle(false)
+    val apkPureOn by prefs.apkPureLookupEnabled.collectAsStateWithLifecycle(false)
+    val defaultRepos = remember { FdroidRepoCatalog.defaults() }
+    val repoStates = defaultRepos.associate { repo ->
+        repo.id to repos.repoEnabled(repo.id).collectAsStateWithLifecycle(repo.enabled).value
+    }
+    val allSelected = playOn && auroraOn && forgeOn && aptoideOn && apkMirrorOn && apkPureOn && repoStates.values.all { it }
+
     SettingsGroup(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.sources_select_all),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            TextButton(
+                onClick = {
+                    val target = !allSelected
+                    scope.launch {
+                        prefs.setPlayLookupEnabled(target)
+                        prefs.setAuroraPlayEnabled(target)
+                        prefs.setForgeLookupEnabled(target)
+                        prefs.setAptoideLookupEnabled(target)
+                        prefs.setApkMirrorLookupEnabled(target)
+                        prefs.setApkPureLookupEnabled(target)
+                        defaultRepos.forEach { repo ->
+                            repos.setRepoEnabled(repo.id, target)
+                        }
+                        if (target && SourceToggleGate.allowOn(SourceToggleId.CustomFdroid, gate)) {
+                            repos.setCustomEnabled(true)
+                        } else if (!target) {
+                            repos.setCustomEnabled(false)
+                        }
+                        if (target && SourceToggleGate.allowOn(SourceToggleId.SearchUnknowns, gate)) {
+                            prefs.setForgeLookupSearchUnknowns(true)
+                        } else if (!target) {
+                            prefs.setForgeLookupSearchUnknowns(false)
+                        }
+                        if (target && SourceToggleGate.allowOn(SourceToggleId.Starred, gate)) {
+                            starred.setEnabled(true)
+                        } else if (!target) {
+                            starred.setEnabled(false)
+                        }
+                    }
+                },
+            ) {
+                Text(
+                    text = stringResource(
+                        if (allSelected) R.string.sources_deselect_all else R.string.sources_select_all_action,
+                    ),
+                )
+            }
+        }
+        HorizontalDivider()
         SourceSwitch(
             label = stringResource(R.string.play_lookup_enable),
-            checked = prefs.playLookupEnabled.collectAsStateWithLifecycle(true).value,
+            checked = playOn,
             setup = SourceSetup.Play,
             onSetup = onSetup,
             onCheckedChange = { scope.launch { prefs.setPlayLookupEnabled(it) } },
         )
         SourceSwitch(
             label = stringResource(R.string.aurora_play_enable),
-            checked = prefs.auroraPlayEnabled.collectAsStateWithLifecycle(false).value,
+            checked = auroraOn,
             setup = SourceSetup.Play,
             onSetup = onSetup,
             onCheckedChange = { scope.launch { prefs.setAuroraPlayEnabled(it) } },
         )
-        FdroidRepoCatalog.defaults().forEach { repo ->
+        defaultRepos.forEach { repo ->
             val on by repos.repoEnabled(repo.id).collectAsStateWithLifecycle(repo.enabled)
             SourceSwitch(
                 label = stringResource(fdroidRepoTitleRes(repo.id)),
@@ -78,7 +142,7 @@ fun SourcesToggleList(onSetup: (SourceSetup) -> Unit, modifier: Modifier = Modif
         )
         SourceSwitch(
             label = stringResource(R.string.forge_lookup_enable),
-            checked = prefs.forgeLookupEnabled.collectAsStateWithLifecycle(true).value,
+            checked = forgeOn,
             setup = SourceSetup.Forge,
             onSetup = onSetup,
             onCheckedChange = { scope.launch { prefs.setForgeLookupEnabled(it) } },
@@ -105,21 +169,21 @@ fun SourcesToggleList(onSetup: (SourceSetup) -> Unit, modifier: Modifier = Modif
         )
         SourceSwitch(
             label = stringResource(R.string.aptoide_enable),
-            checked = prefs.aptoideLookupEnabled.collectAsStateWithLifecycle(false).value,
+            checked = aptoideOn,
             setup = SourceSetup.Aptoide,
             onSetup = onSetup,
             onCheckedChange = { scope.launch { prefs.setAptoideLookupEnabled(it) } },
         )
         SourceSwitch(
             label = stringResource(R.string.apkmirror_enable),
-            checked = prefs.apkMirrorLookupEnabled.collectAsStateWithLifecycle(false).value,
+            checked = apkMirrorOn,
             setup = SourceSetup.Dump,
             onSetup = onSetup,
             onCheckedChange = { scope.launch { prefs.setApkMirrorLookupEnabled(it) } },
         )
         SourceSwitch(
             label = stringResource(R.string.apkpure_enable),
-            checked = prefs.apkPureLookupEnabled.collectAsStateWithLifecycle(false).value,
+            checked = apkPureOn,
             setup = SourceSetup.Dump,
             onSetup = onSetup,
             onCheckedChange = { scope.launch { prefs.setApkPureLookupEnabled(it) } },

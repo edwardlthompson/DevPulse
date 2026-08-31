@@ -60,7 +60,7 @@ fun OpportunityScreen(
 @Composable
 fun OpportunityPane(
     apps: List<InstalledApp>,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -95,7 +95,6 @@ fun OpportunityPane(
         }
     }
     Column(modifier = modifier.padding(SpacingMd), verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
-        TextButton(onClick = onBack) { Text(stringResource(R.string.opportunity_close)) }
         OpportunityScreen(gaps = gaps)
         pulse?.let { Text(text = stringResource(R.string.opportunity_self, it)) }
         val quietFile = File(context.filesDir, "quiet_last.txt")
@@ -122,9 +121,6 @@ fun OpportunityPane(
                 },
                 label = { Text(stringResource(R.string.opportunity_note, app.label)) },
             )
-        }
-        TextButton(onClick = onBack, modifier = Modifier.bottomInsetPadding()) {
-            Text(stringResource(R.string.opportunity_close))
         }
     }
 }

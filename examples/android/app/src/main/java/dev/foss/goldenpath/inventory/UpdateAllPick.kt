@@ -14,10 +14,10 @@ object UpdateAllPick {
                 UpdateAllJob(app.packageName, app.label, link.source, link.url, link.versionName)
             }.toMutableList()
             val seenSources = jobs.map { it.source }.toSet()
-            UpdateArtifactMemory.forSource(app.packageName, RemoteReleasedSource.ApkPure)?.let { alt ->
+            UpdateArtifactMemory.byPackage[app.packageName]?.forEach { alt ->
                 if (alt.source !in seenSources && !IgnoredUpdates.has(app.packageName, alt.source, alt.versionName)) {
                     if (VersionCompare.isNewer(alt.versionName, app.versionName, app.versionCode, alt.versionCode)) {
-                        jobs.add(UpdateAllJob(app.packageName, app.label, alt.source, null, alt.versionName))
+                        jobs.add(UpdateAllJob(app.packageName, app.label, alt.source, alt.downloadUrl, alt.versionName))
                     }
                 }
             }

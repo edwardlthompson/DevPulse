@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="file" path="." />
+    <include domain="database" path="." />
+    <include domain="sharedpref" path="." />
+    <exclude domain="sharedpref" path="forge_tokens.xml" />
+    <exclude domain="sharedpref" path="aurora_auth.xml" />
+    <exclude domain="file" path="fdroid-index" />
+    <exclude domain="file" path="scan-history" />
+</full-backup-content>

@@ -39,7 +39,7 @@ class InventoryPreferences(private val context: Context) {
     val apkMirrorLookupEnabled: Flow<Boolean> = store.booleanPref(APKMIRROR_LOOKUP, false)
     val apkPureLookupEnabled: Flow<Boolean> = store.booleanPref(APKPURE_LOOKUP, false)
     val playLookupEnabled: Flow<Boolean> = store.booleanPref(PLAY_LOOKUP, true)
-    val auroraPlayEnabled: Flow<Boolean> = store.booleanPref(AURORA_PLAY, false)
+    val auroraPlayEnabled: Flow<Boolean> = store.booleanPref(AURORA_PLAY, true)
     val forgeLookupEnabled: Flow<Boolean> = store.booleanPref(FORGE_LOOKUP, true)
     val forgeLookupSearchUnknowns: Flow<Boolean> = store.booleanPref(FORGE_LOOKUP_SEARCH_UNKNOWNS, false)
 

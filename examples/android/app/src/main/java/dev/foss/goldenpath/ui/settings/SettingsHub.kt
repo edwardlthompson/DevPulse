@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
@@ -104,6 +105,7 @@ private fun iconFor(row: SettingsHubRow): ImageVector = when (row.page) {
     SettingsPage.Appearance -> Icons.Filled.Palette
     SettingsPage.Permissions -> Icons.Filled.Security
     SettingsPage.Inventory -> Icons.Filled.Apps
+    SettingsPage.Ideas -> Icons.Filled.Lightbulb
     SettingsPage.History -> Icons.Filled.History
     SettingsPage.Updates -> Icons.Filled.SystemUpdate
     SettingsPage.Sources -> Icons.Filled.TravelExplore

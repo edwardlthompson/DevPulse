@@ -17,7 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -63,12 +62,10 @@ fun InventoryDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .highRefreshScroll()
-            .padding(SpacingMd),
+            .padding(SpacingMd)
+            .bottomInsetPadding(),
         verticalArrangement = Arrangement.spacedBy(SpacingMd),
     ) {
-        TextButton(onClick = onBack) {
-            Text(stringResource(R.string.inventory_detail_back))
-        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -132,9 +129,6 @@ fun InventoryDetailScreen(
         DownloadUpdateSection(app)
         VersionHistorySection(app)
         AlternativesSection(app = app, inventory = inventory)
-        TextButton(onClick = onBack, modifier = Modifier.bottomInsetPadding()) {
-            Text(stringResource(R.string.inventory_detail_back))
-        }
     }
 }
 

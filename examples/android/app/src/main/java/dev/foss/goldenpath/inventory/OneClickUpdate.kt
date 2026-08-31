@@ -50,6 +50,8 @@ object OneClickUpdate {
             is OneClickKind.None -> OneClickResult.None
             is OneClickKind.Play -> {
                 val artifact = resolveAurora(kind.packageName)
+                    ?: resolveApkPure(kind.packageName)
+                    ?: UpdateArtifactMemory.best(kind.packageName)?.takeIf { it.source != RemoteReleasedSource.Play }
                 if (artifact != null) {
                     applyDirect(artifact, cacheDir, fetch, install, inspect, installed)
                 } else {

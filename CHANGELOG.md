@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Interactive scrubbable scrollbar on the main app inventory list with live scrubbing and animated year callout badges (`AppListScroller` and `AppYearScrubber`)
+- Integrated "What to build" (Ideas) into the Settings Hub with category gap tracking and quiet app analysis
+- "Select All" / "Deselect All" sources toggle action in Sources settings for streamlined repository selection
+- Automatic settings and data persistence backup/restore across updates (`SettingsPersistence` and backup extraction rules)
+
+### Changed
+
+- Removed redundant "Back to settings" / "Back to apps" buttons across menus and app details in favor of natural Android back navigation with preserved menu history
+- Removed redundant legacy Local Scan radar action in top bar in favor of full multi-source Refresh (`⟳`)
+
+### Fixed
+
+- Default `auroraPlayEnabled` to `true` and prioritize direct download resolution before Play Store redirect fallback
+
 ## [0.36.0](https://github.com/edwardlthompson/DevPulse/compare/v0.35.0...v0.36.0) (2026-08-31)
 
 
