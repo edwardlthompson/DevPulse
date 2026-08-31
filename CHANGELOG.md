@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [0.36.0](https://github.com/edwardlthompson/DevPulse/compare/v0.35.0...v0.36.0) (2026-08-31)
 
 
@@ -18,18 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **build:** ensure release build type is deterministic when keystore is unset ([aba5d96](https://github.com/edwardlthompson/DevPulse/commit/aba5d96dda3ca038435bb96b86e59f4ad9167039))
 
-## [Unreleased]
-
-### Added
-
-- Secondary store/mirror download fallback in UpdateAll when primary Play direct download fails or is unavailable
-- APKPure JSON parser preserving direct APK asset download URLs and numerical version codes
-- Aurora Store client headers update to 4.8.4-76 with session rotation on manual refresh
-
-### Fixed
-
-- Enhanced Aurora Store `versionCode` matching for Play Store updates
-- Curated forge hints and bypass global rate limit skip for known hints (OBDForge, Obtainium)
 
 ## [0.35.0](https://github.com/edwardlthompson/DevPulse/compare/v0.34.2...v0.35.0) (2026-08-30)
 
