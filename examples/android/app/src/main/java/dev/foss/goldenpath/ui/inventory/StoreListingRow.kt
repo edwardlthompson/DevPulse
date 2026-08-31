@@ -28,6 +28,8 @@ import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.inventory.ListingFetch
 import dev.foss.goldenpath.inventory.ListingFetchOutcome
+import dev.foss.goldenpath.inventory.ListingFit
+import dev.foss.goldenpath.inventory.ListingNewer
 import dev.foss.goldenpath.inventory.PlayStoreIntent
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.SignerReplaceStore
@@ -81,7 +83,8 @@ internal fun StoreListingRow(
     }
     val deviceSdk = android.os.Build.VERSION.SDK_INT
     val deviceAbis = android.os.Build.SUPPORTED_ABIS.toSet()
-    val canOpen = UpdateInventory.canOpen(link, packageName, installedVersion, deviceSdk, deviceAbis, installedCode)
+    val canOpen = UpdateInventory.canOpen(link, packageName, installedVersion, deviceSdk, deviceAbis, installedCode) ||
+        (link.listed && ignored && ListingNewer.allow(link.versionName, installedVersion, installedCode) && ListingFit.allow(link, deviceSdk, deviceAbis))
     val tone = when {
         ignored -> MaterialTheme.colorScheme.tertiary
         link.listed -> MaterialTheme.colorScheme.onSurface
@@ -93,6 +96,9 @@ internal fun StoreListingRow(
         failRes = null
         received = 0L
         expected = -1L
+        if (ignored) {
+            IgnoredUpdates.remove(packageName, link.source, link.versionName, context.filesDir)
+        }
         scope.launch {
             failRes = runCatching {
                 withContext(Dispatchers.IO) {

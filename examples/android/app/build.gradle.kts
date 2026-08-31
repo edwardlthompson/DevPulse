@@ -55,8 +55,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            if (pulseStore != null) {
-                signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (pulseStore != null) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
             }
         }
     }

@@ -73,4 +73,22 @@ class IgnoredUpdatesTest {
         )
         assertTrue(UpdateInventory.hasUpdate(newer))
     }
+
+    @Test
+    fun removeSpecificIgnoredEntry() {
+        val dir = File.createTempFile("ignored", "dir").apply { delete(); mkdirs() }
+        IgnoredUpdates.add("app.x", RemoteReleasedSource.Forge, "v1.6.14", dir)
+        IgnoredUpdates.add("app.x", RemoteReleasedSource.Play, "2.0", dir)
+        assertTrue(IgnoredUpdates.has("app.x", RemoteReleasedSource.Forge, "v1.6.14"))
+        assertTrue(IgnoredUpdates.has("app.x", RemoteReleasedSource.Play, "2.0"))
+
+        IgnoredUpdates.remove("app.x", RemoteReleasedSource.Forge, "v1.6.14", dir)
+        assertFalse(IgnoredUpdates.has("app.x", RemoteReleasedSource.Forge, "v1.6.14"))
+        assertTrue(IgnoredUpdates.has("app.x", RemoteReleasedSource.Play, "2.0"))
+
+        IgnoredUpdates.clear()
+        IgnoredUpdates.hydrate(dir)
+        assertFalse(IgnoredUpdates.has("app.x", RemoteReleasedSource.Forge, "v1.6.14"))
+        assertTrue(IgnoredUpdates.has("app.x", RemoteReleasedSource.Play, "2.0"))
+    }
 }

@@ -45,7 +45,8 @@ object UpdateArtifactMemory {
         if (pkg.isEmpty()) return
         val clean = artifact.copy(packageName = pkg, downloadUrl = url)
         synchronized(lock) {
-            val next = (byPackage[pkg].orEmpty() + clean).distinctBy { it.source to it.downloadUrl }
+            val existing = byPackage[pkg].orEmpty().filterNot { it.source == clean.source }
+            val next = existing + clean
             byPackage = byPackage + (pkg to next)
             revisionState.value += 1
         }

@@ -6,7 +6,15 @@ object VersionCompare {
         RegexOption.IGNORE_CASE,
     )
 
-    fun isNewer(remoteName: String?, installedName: String?, installedCode: Long = 0): Boolean {
+    fun isNewer(
+        remoteName: String?,
+        installedName: String?,
+        installedCode: Long = 0,
+        remoteCode: Long? = null,
+    ): Boolean {
+        if (remoteCode != null && remoteCode > 0 && installedCode > 0 && remoteCode > installedCode) {
+            return true
+        }
         val remote = remoteName?.trim().orEmpty()
         val installed = installedName?.trim().orEmpty()
         if (remote.isEmpty()) return false

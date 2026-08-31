@@ -15,6 +15,8 @@ class VersionCompareTest {
         assertFalse(VersionCompare.isNewer("1.2.0", "1.2.0"))
         assertFalse(VersionCompare.isNewer("1.1", "1.2"))
         assertFalse(VersionCompare.isNewer(null, "1.0"))
+        assertTrue(VersionCompare.isNewer(null, "1.0", installedCode = 118L, remoteCode = 120L))
+        assertTrue(VersionCompare.isNewer("2.4.1", "2.4.1", installedCode = 118L, remoteCode = 120L))
     }
 
     @Test

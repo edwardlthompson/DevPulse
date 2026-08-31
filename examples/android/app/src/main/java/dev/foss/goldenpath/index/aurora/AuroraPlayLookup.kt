@@ -15,6 +15,7 @@ data class AuroraPlayApp(
     val status: AuroraPlayStatus,
     val versionName: String? = null,
     val updatedOnMs: Long? = null,
+    val versionCode: Long? = null,
 )
 
 fun interface AuroraPlayDetails {
@@ -45,6 +46,7 @@ object AuroraPlayLookup {
             status = AuroraPlayStatus.Listed,
             versionName = version,
             updatedOnMs = parseUpdatedOn(updatedOn, nowMs),
+            versionCode = versionCode.takeIf { it > 0 },
         )
     }
 

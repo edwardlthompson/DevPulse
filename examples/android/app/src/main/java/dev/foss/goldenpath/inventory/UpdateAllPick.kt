@@ -10,14 +10,31 @@ object UpdateAllPick {
         val listed = UpdateInventory.usable(app, deviceSdk, deviceAbis)
             .filter { it.source != RemoteReleasedSource.Play || auroraPlay }
         if (listed.isNotEmpty()) {
-            return listed.sortedWith(::byNewest).map { link ->
+            val jobs = listed.sortedWith(::byNewest).map { link ->
                 UpdateAllJob(app.packageName, app.label, link.source, link.url, link.versionName)
+            }.toMutableList()
+            val seenSources = jobs.map { it.source }.toSet()
+            UpdateArtifactMemory.forSource(app.packageName, RemoteReleasedSource.ApkPure)?.let { alt ->
+                if (alt.source !in seenSources && !IgnoredUpdates.has(app.packageName, alt.source, alt.versionName)) {
+                    if (VersionCompare.isNewer(alt.versionName, app.versionName, app.versionCode, alt.versionCode)) {
+                        jobs.add(UpdateAllJob(app.packageName, app.label, alt.source, null, alt.versionName))
+                    }
+                }
             }
+            return jobs
         }
         if (app.latestListings.any {
-                it.listed && VersionCompare.isNewer(it.versionName, app.versionName, app.versionCode)
+                it.listed && VersionCompare.isNewer(it.versionName, app.versionName, app.versionCode, it.versionCode)
             }
         ) {
+            val alt = UpdateArtifactMemory.best(app.packageName)?.takeUnless {
+                IgnoredUpdates.has(app.packageName, it.source, it.versionName ?: app.remoteVersionName)
+            }
+            if (alt != null && VersionCompare.isNewer(alt.versionName, app.versionName, app.versionCode, alt.versionCode)) {
+                return listOf(
+                    UpdateAllJob(app.packageName, app.label, alt.source, null, alt.versionName ?: app.remoteVersionName),
+                )
+            }
             return emptyList()
         }
         UpdateArtifactMemory.best(app.packageName)?.takeUnless {

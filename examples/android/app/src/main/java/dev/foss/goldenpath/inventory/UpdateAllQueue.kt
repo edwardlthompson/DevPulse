@@ -19,19 +19,20 @@ internal object UpdateAllQueue {
             if (item.files.isNullOrEmpty()) {
                 counts[2] += 1
                 if (item.why == InstallWhy.PlayPurchase) group.clear()
+                val hasFallback = more(group)
                 val why = if (
                     item.why == InstallWhy.NoFile &&
                     job.source == RemoteReleasedSource.Play &&
-                    !more(group)
+                    !hasFallback
                 ) {
                     InstallWhy.PlayStore
                 } else {
                     item.why
                 }
-                if (filesDir != null && item.why != InstallWhy.PlayPurchase) {
+                if (filesDir != null && item.why != InstallWhy.PlayPurchase && !hasFallback) {
                     IgnoredUpdates.add(job.packageName, job.source, job.versionName, filesDir)
                 }
-                fail(job, filesDir, onSnap, more(group), download = true, why = why)
+                fail(job, filesDir, onSnap, hasFallback, download = true, why = why)
             } else {
                 counts[0] += 1
                 onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Ready))

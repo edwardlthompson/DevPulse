@@ -16,6 +16,7 @@ data class InstalledApp(
     val remoteReleasedAtMs: Long? = null,
     val remoteReleasedSource: RemoteReleasedSource = RemoteReleasedSource.None,
     val remoteVersionName: String? = null,
+    val remoteVersionCode: Long? = null,
     val remoteVersionSource: RemoteReleasedSource = RemoteReleasedSource.None,
     val latestListings: List<UpdateLink> = emptyList(),
     val updateLinks: List<UpdateLink> = emptyList(),

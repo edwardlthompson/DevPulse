@@ -21,7 +21,7 @@ object GitHubHintRelease {
             versionName = hint.versionName,
             pageUrl = ForgeUrl.downloadPage("https://github.com/$ownerRepo"),
         )
-        if (RefreshSkip.stopped(RefreshOutletIds.GITHUB)) return fallback
+        // Do not skip known hints on global skip
         val page = runCatching { GitHubScan.listReleases(ownerRepo, releases, pause) }.getOrElse {
             RefreshTrace.line("github $packageName hint releases fail ${it.javaClass.simpleName}")
             return fallback

@@ -12,6 +12,6 @@ object GitHubReleasePick {
             packageName, json, includePrereleases, apkRegex,
         )
         if (!named?.apkUrl.isNullOrEmpty()) return named
-        return GitHubReleaseParser.firstApk(json, includePrereleases, apkRegex)
+        return GitHubReleaseParser.firstApk(json, includePrereleases, apkRegex, packageName)
     }
 }

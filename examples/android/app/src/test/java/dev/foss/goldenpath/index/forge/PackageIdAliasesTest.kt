@@ -26,6 +26,12 @@ class PackageIdAliasesTest {
     }
 
     @Test
+    fun curatedHintsResolveObdforgeAndObtainium() {
+        val hint = PackageIdAliases.hint("dev.foss.obdforge", emptyMap())
+        assertEquals("edwardlthompson/OBDForge", hint?.ownerRepo)
+    }
+
+    @Test
     fun conflictingSuffixReposDoNotAutoBind() {
         val library = mapOf(
             "org.app.fdroid" to GithubHint("one/repo"),

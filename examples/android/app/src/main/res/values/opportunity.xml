@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="alternatives_title">Alternatives</string>
+    <string name="alternatives_empty">No maintained neighbor in the same category</string>
+    <string name="alternatives_open">Open %1$s</string>
+    <string name="opportunity_note">Note for %1$s</string>
+    <string name="opportunity_export">Share quiet titles</string>
+    <string name="opportunity_self">DevPulse last release: %1$s</string>
+</resources>

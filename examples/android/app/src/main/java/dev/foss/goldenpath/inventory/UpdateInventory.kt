@@ -8,7 +8,7 @@ object UpdateInventory {
         if (app.origin == AppOrigin.Play && app.remoteVersionSource != RemoteReleasedSource.Play) return false
         val remote = app.remoteVersionName
         if (IgnoredUpdates.has(app.packageName, app.remoteVersionSource, remote)) return false
-        return VersionCompare.isNewer(remote, app.versionName, app.versionCode)
+        return VersionCompare.isNewer(remote, app.versionName, app.versionCode, app.remoteVersionCode)
     }
 
     fun withUpdates(apps: List<InstalledApp>): List<InstalledApp> = apps.filter(::hasUpdate)
@@ -17,7 +17,7 @@ object UpdateInventory {
         app.latestListings.filter { link ->
             link.listed &&
                 UpdateAll.fetchable(link.source, app.packageName) &&
-                VersionCompare.isNewer(link.versionName, app.versionName, app.versionCode) &&
+                VersionCompare.isNewer(link.versionName, app.versionName, app.versionCode, link.versionCode) &&
                 !IgnoredUpdates.has(app.packageName, link.source, link.versionName) &&
                 ListingFit.allow(link, deviceSdk, deviceAbis) &&
                 (app.origin != AppOrigin.Play || link.source == RemoteReleasedSource.Play)
@@ -33,7 +33,7 @@ object UpdateInventory {
     ): Boolean =
         link.listed &&
             !IgnoredUpdates.has(packageName, link.source, link.versionName) &&
-            ListingNewer.allow(link.versionName, installedVersion, installedCode) &&
+            ListingNewer.allow(link.versionName, installedVersion, installedCode, link.versionCode) &&
             ListingFit.allow(link, deviceSdk, deviceAbis)
 
     fun listingsFor(pick: RemoteReleasePick, packageName: String = ""): List<UpdateLink> =
@@ -48,6 +48,7 @@ object UpdateInventory {
                     source = offer.source,
                     url = if (offer.listed) offer.pageUrl else null,
                     versionName = offer.versionName,
+                    versionCode = offer.versionCode,
                     releasedAtMs = offer.ms,
                     listed = offer.listed,
                     known = offer.known,

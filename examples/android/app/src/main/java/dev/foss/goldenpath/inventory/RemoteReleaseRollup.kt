@@ -32,6 +32,7 @@ object RemoteReleaseRollup {
         val newest = usable.filter { (it.ms ?: 0L) > 0L }.maxByOrNull { it.ms ?: 0L }
         val versions = usable.mapNotNull { it.versionName?.trim()?.takeIf(String::isNotEmpty) }
         val highest = versions.maxWithOrNull { left, right -> VersionCompare.compare(left, right) }
+        val highestCode = usable.mapNotNull { it.versionCode }.maxOrNull()
         val versionOffer = highest?.let { ver ->
             usable.filter { offer ->
                 val name = offer.versionName?.trim().orEmpty()
@@ -42,6 +43,7 @@ object RemoteReleaseRollup {
             ms = newest?.ms,
             source = newest?.source ?: RemoteReleasedSource.None,
             versionName = highest,
+            versionCode = highestCode,
             pageUrl = versionOffer?.pageUrl,
             versionSource = versionOffer?.source ?: RemoteReleasedSource.None,
             offers = offers,

@@ -59,6 +59,22 @@ object IgnoredUpdates {
         }
     }
 
+    fun remove(
+        packageName: String,
+        source: RemoteReleasedSource,
+        versionName: String?,
+        filesDir: File? = null,
+    ) {
+        val key = key(packageName, source, versionName) ?: return
+        synchronized(lock) {
+            if (key !in rows) return
+            rows = rows - key
+            if (filesDir != null) persist = file(filesDir)
+            persist?.let { save(it, rows) }
+            revisionState.value += 1
+        }
+    }
+
     fun drop(packageName: String, filesDir: File? = null) {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return

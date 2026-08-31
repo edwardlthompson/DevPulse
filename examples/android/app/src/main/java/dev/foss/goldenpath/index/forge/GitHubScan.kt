@@ -72,6 +72,9 @@ object GitHubScan {
                 break
             }
             val hit = GitHubReleaseParser.firstWithPackage(packageName, page.body)
+                ?: if (candidate.ownerRepo.contains(packageName.substringAfterLast('.'), ignoreCase = true)) {
+                    GitHubReleaseParser.firstApk(page.body, packageName = packageName)
+                } else null
             if (hit == null) {
                 RefreshTrace.line(
                     "github $packageName releases ${candidate.ownerRepo} http ${page.statusCode} missing ${page.body.length}B",

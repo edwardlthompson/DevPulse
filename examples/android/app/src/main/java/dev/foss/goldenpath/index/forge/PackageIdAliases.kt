@@ -19,12 +19,20 @@ object PackageIdAliases {
         return base.takeIf { '.' in it }
     }
 
+    private val curatedHints = mapOf(
+        "dev.foss.obdforge" to "edwardlthompson/OBDForge",
+        "dev.imranr.obtainium" to "ImranR98/Obtainium",
+        "dev.imranr.obtainium.fdroid" to "ImranR98/Obtainium",
+    )
+
     fun hint(packageName: String, library: Map<String, GithubHint>): GithubHint? {
         val pkg = packageName.trim()
         if (pkg.isEmpty()) return null
         library[pkg]?.let { return it }
+        curatedHints[pkg]?.let { return GithubHint(it) }
         val repos = keys(pkg).drop(1).mapNotNull { key ->
             library[key]?.ownerRepo?.trim()?.takeIf { it.contains('/') }
+                ?: curatedHints[key]?.takeIf { it.contains('/') }
         }.distinct()
         if (repos.size != 1) return null
         return GithubHint(repos.single())

@@ -17,7 +17,8 @@ object RemoteReleaseCodec {
                 append(esc(offer.versionName)).append('\t')
                 append(esc(offer.pageUrl)).append('\t')
                 append(listingFlag(offer)).append('\t')
-                append(offer.fetchedAtMs ?: "").append('\n')
+                append(offer.fetchedAtMs ?: "").append('\t')
+                append(offer.versionCode ?: "").append('\n')
             }
         }
     }
@@ -62,6 +63,7 @@ object RemoteReleaseCodec {
             ms = cols[2].toLongOrNull(),
             versionName = unesc(cols[3]).ifEmpty { null },
             pageUrl = unesc(cols[4]).ifEmpty { null },
+            versionCode = cols.getOrNull(7)?.toLongOrNull(),
             listed = flag == "1" || flag == "true",
             known = flag !in setOf("?", "unknown", "403", "parse"),
             fetchedAtMs = cols.getOrNull(6)?.toLongOrNull(),

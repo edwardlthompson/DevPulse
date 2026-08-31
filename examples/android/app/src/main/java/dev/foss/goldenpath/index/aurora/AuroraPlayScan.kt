@@ -12,6 +12,7 @@ object AuroraPlayScan {
             source = RemoteReleasedSource.Play,
             ms = app.updatedOnMs,
             versionName = app.versionName,
+            versionCode = app.versionCode,
             pageUrl = UpdateUrls.play(packageName),
             listed = true,
         )

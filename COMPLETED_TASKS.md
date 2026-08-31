@@ -2,6 +2,23 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Sprint 27 — Store update detection, APKPure parser, and download fallback (2026-08-31)
+
+- ✅ [AGENT] Update `AuroraAuth.USER_AGENT` (`4.8.4-76`), `AuroraDeviceProps` client profile, and session rotation on manual refresh / reprobe (`examples/android/app/src/main/java/dev/foss/goldenpath/index/aurora/AuroraAuth.kt`, `AuroraDeviceProps.kt`, `AuroraPlayWarm.kt`)
+- ✅ [AGENT] Replace regex chunking in ApkPureMetaParser with nested JSON object parser to preserve asset download URLs and version codes
+- ✅ [AGENT] Add secondary store/mirror download fallback in UpdateAll when primary Play direct download yields empty files
+- ✅ [ADB] Refresh and Update All on OP13/OP12 confirms APKPure fallback captures MapGenie 2.4.2 and updated client headers query latest Play rollout cohorts
+
+## Sprint 26 — Required-check rollups (2026-08-26)
+
+- ✅ [AGENT] Concluding jobs named `CI` / `Security Scan` / `CodeQL` plus `ready-pr-automerge.yml` for same-repo `cursor/*` PRs
+- ✅ [HUMAN] Dispatch CI + Release Please on `main` after bot merges (KB-031); `/ship` cut `v0.34.2`
+
+## Sprint 25 — GitHub release versions on Refresh (2026-08-26)
+
+- ✅ [AGENT] Hinted GitHub repos call `listReleases` for tag/APK so Has update matches Obtainium (`GitHubHintRelease`, `GitHubReleasePick.bound`)
+- ✅ [ADB] Refresh a GitHub-only app Obtainium already flags; Has update shows the GitHub tag; listing tap still refuses a mismatched cert
+
 ## Sprint 24 — Obtainium import all GitHub watches (2026-08-26)
 
 - ✅ [AGENT] Bracket-match Obtainium JSON; persist every GitHub watch; OpenDocument picker in Sources
@@ -12,6 +29,7 @@
 - ✅ [AGENT] Feature spec `docs/features/github-add.md`; DECISION_LOG alias vs storeSettled vs no APKUpdater map; PRIVACY starred row
 - ✅ [AGENT] Import, opts, direct APK + tests
 - ✅ [AGENT] Feature spec
+- ✅ [ADB] Import a recorded Obtainium fixture; listing tap still refuses a mismatched signing cert
 
 ## Sprint 22 — GitHub add (uninstall Obtainium) (2026-08-26)
 
@@ -21,6 +39,7 @@
 - ✅ [AGENT] Logic + alias tests
 - ✅ [AGENT] FAB + dialog + i18n
 - ✅ [AGENT] Starred + privacy
+- ✅ [ADB] GitHub Obtainium lists on Refresh; FAB paste binds; cert refuse still blocks a mismatched APK
 
 ## Sprint 21 — Ideas backlog (after Sprint 20) (2026-08-23)
 

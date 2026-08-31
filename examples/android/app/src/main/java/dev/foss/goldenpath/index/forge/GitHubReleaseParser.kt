@@ -23,9 +23,8 @@ object GitHubReleaseParser {
     fun parse(json: String): List<GitHubReleaseRecord> {
         val trimmed = json.trim()
         if (trimmed.isEmpty() || trimmed == "[]" || trimmed == "{}") return emptyList()
-        val inner = trimmed.removePrefix("[").removeSuffix("]").trim()
-        if (inner.isEmpty()) return emptyList()
-        return inner.split(Regex("\\}\\s*,\\s*\\{")).map { chunk ->
+        val objects = GitHubReleaseJsonHelper.splitObjects(trimmed)
+        return objects.map { chunk ->
             val rawBody = body.find(chunk)?.groupValues?.get(1)
             val names = name.findAll(chunk).map { it.groupValues[1] }.toList()
             val bits = names + listOf(
@@ -53,7 +52,7 @@ object GitHubReleaseParser {
         json: String,
         includePrereleases: Boolean = true,
         apkRegex: String? = null,
-    ): GitHubReleaseRecord? = pick(json, includePrereleases, apkRegex) { rec ->
+    ): GitHubReleaseRecord? = pick(json, includePrereleases, apkRegex, packageName) { rec ->
         ForgePackageEvidence.inText(packageName, rec.haystack)
     }
 
@@ -61,7 +60,8 @@ object GitHubReleaseParser {
         json: String,
         includePrereleases: Boolean = true,
         apkRegex: String? = null,
-    ): GitHubReleaseRecord? = pick(json, includePrereleases, apkRegex) { rec ->
+        packageName: String = "",
+    ): GitHubReleaseRecord? = pick(json, includePrereleases, apkRegex, packageName) { rec ->
         rec.apkUrls.isNotEmpty()
     }
 
@@ -69,6 +69,7 @@ object GitHubReleaseParser {
         json: String,
         includePrereleases: Boolean,
         apkRegex: String?,
+        packageName: String = "",
         pred: (GitHubReleaseRecord) -> Boolean,
     ): GitHubReleaseRecord? {
         val pattern = GithubAppOptCodec.regexOrNull(apkRegex)
@@ -80,12 +81,15 @@ object GitHubReleaseParser {
             }
             true
         }?.let { rec ->
-            if (pattern == null) rec
-            else rec.copy(
-                apkUrl = rec.apkUrls.first {
-                    pattern.containsMatchIn(GithubAppOptCodec.filename(it))
-                },
-            )
+            val bestUrl = if (pattern != null) {
+                rec.apkUrls.firstOrNull { pattern.containsMatchIn(GithubAppOptCodec.filename(it)) }
+            } else {
+                bestApkUrl(rec.apkUrls, packageName)
+            }
+            rec.copy(apkUrl = bestUrl ?: rec.apkUrls.firstOrNull())
         }
     }
+
+    fun bestApkUrl(urls: List<String>, packageName: String = ""): String? =
+        GitHubApkScore.bestApkUrl(urls, packageName)
 }

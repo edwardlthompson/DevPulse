@@ -1,9 +1,5 @@
 package dev.foss.goldenpath.inventory
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-
 enum class RemoteReleasedSource {
     Play,
     Fdroid,
@@ -29,6 +25,7 @@ data class RemoteReleaseOffer(
     val ms: Long? = null,
     val versionName: String? = null,
     val pageUrl: String? = null,
+    val versionCode: Long? = null,
     val listed: Boolean = true,
     val known: Boolean = true,
     val fetchedAtMs: Long? = null,
@@ -47,6 +44,7 @@ data class UpdateLink(
     val antiFeatures: List<String> = emptyList(),
     val minSdk: Int? = null,
     val nativeCodes: Set<String> = emptySet(),
+    val versionCode: Long? = null,
 )
 
 data class RemoteReleasePick(
@@ -56,6 +54,7 @@ data class RemoteReleasePick(
     val pageUrl: String? = null,
     val versionSource: RemoteReleasedSource = RemoteReleasedSource.None,
     val offers: List<RemoteReleaseOffer> = emptyList(),
+    val versionCode: Long? = null,
 )
 
 object RemoteRelease {
@@ -81,70 +80,10 @@ object RemoteRelease {
             remoteReleasedAtMs = pick.ms,
             remoteReleasedSource = pick.source,
             remoteVersionName = pick.versionName,
+            remoteVersionCode = pick.versionCode,
             remoteVersionSource = pick.versionSource,
             latestListings = listings,
             updateLinks = UpdateInventory.linksFor(app.versionName, pick),
         )
     }
-}
-
-object RemoteReleaseMemory {
-    @Volatile
-    var byPackage: Map<String, RemoteReleasePick> = emptyMap()
-        private set
-
-    private val lock = Any()
-    private val revisionState = MutableStateFlow(0)
-    val revision: StateFlow<Int> = revisionState.asStateFlow()
-
-    fun putAll(updates: Map<String, RemoteReleasePick>) {
-        if (updates.isEmpty()) return
-        synchronized(lock) {
-            byPackage = buildMap {
-                putAll(byPackage)
-                updates.forEach { (pkg, pick) ->
-                    put(pkg, RemoteReleaseRollup.merge(this[pkg], pick))
-                }
-            }
-            persist?.save(byPackage)
-            revisionState.value += 1
-        }
-    }
-
-    fun hydrate(store: RemoteReleaseStore) {
-        synchronized(lock) {
-            persist = store
-            if (byPackage.isNotEmpty()) return
-            val loaded = store.load()
-            if (loaded.isEmpty()) return
-            byPackage = loaded
-            revisionState.value += 1
-        }
-    }
-
-    fun merge(app: InstalledApp): InstalledApp {
-        val pick = byPackage[app.packageName]
-        val dated = if (pick != null) RemoteRelease.apply(app, pick) else app
-        return dated.copy(origin = AppOriginResolver.refine(dated.origin, pick?.source))
-    }
-
-    fun drop(packageName: String) {
-        val pkg = packageName.trim()
-        if (pkg.isEmpty()) return
-        synchronized(lock) {
-            if (pkg !in byPackage) return
-            byPackage = byPackage - pkg
-            persist?.save(byPackage)
-            revisionState.value += 1
-        }
-    }
-
-    fun clear() {
-        synchronized(lock) {
-            byPackage = emptyMap()
-            revisionState.value += 1
-        }
-    }
-
-    private var persist: RemoteReleaseStore? = null
 }

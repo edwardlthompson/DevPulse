@@ -6,7 +6,7 @@ import com.google.gson.JsonParser
 
 object AuroraAuth {
     const val AUTH_URL = "https://auroraoss.com/api/auth"
-    const val USER_AGENT = "com.aurora.store-4.4.2-56"
+    const val USER_AGENT = "com.aurora.store-4.8.4-76"
 
     fun emailOf(json: String): String? {
         val text = json.trim()
@@ -28,8 +28,12 @@ object AuroraAuth {
     }
 
     fun refresh(store: EncryptedAuroraAuthStore?, propsJson: ByteArray): AuthData? {
-        if (propsJson.isEmpty()) return null
-        val response = runCatching { AuroraPlayHttp.postAuth(AUTH_URL, propsJson) }.getOrNull() ?: return null
+        val response = runCatching {
+            val postResp = if (propsJson.isNotEmpty()) {
+                runCatching { AuroraPlayHttp.postAuth(AUTH_URL, propsJson) }.getOrNull()
+            } else null
+            if (postResp != null && postResp.isSuccessful) postResp else AuroraPlayHttp.getAuth(AUTH_URL)
+        }.getOrNull() ?: return null
         if (!response.isSuccessful) return null
         val json = response.responseBytes.toString(Charsets.UTF_8)
         val auth = parse(json) ?: return null

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="version_history_title">Version history</string>
+    <string name="version_history_subtitle">Recent versions across sources</string>
+    <string name="version_history_current">Installed</string>
+    <string name="version_history_newer">Newer</string>
+    <string name="version_history_rollback">Roll back</string>
+    <string name="version_history_downloading">Downloading…</string>
+    <string name="version_history_no_link">No direct APK</string>
+    <string name="version_history_empty">No version history available</string>
+</resources>

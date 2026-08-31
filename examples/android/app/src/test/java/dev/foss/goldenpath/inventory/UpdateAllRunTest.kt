@@ -22,7 +22,7 @@ class UpdateAllRunTest {
             UpdateAllJob("app.a", "A", RemoteReleasedSource.Fdroid, "https://f-droid.org/packages/a/"),
             UpdateAllJob("app.b", "B", RemoteReleasedSource.Izzy, "https://apt.izzysoft.de/fdroid/index/apk/b"),
         )
-        val order = mutableListOf<String>()
+        val order = java.util.Collections.synchronizedList(mutableListOf<String>())
         val snaps = mutableListOf<UpdateAllPhase>()
         val result = UpdateAll.run(
             jobs = jobs,

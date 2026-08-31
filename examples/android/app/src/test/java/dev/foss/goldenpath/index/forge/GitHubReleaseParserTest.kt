@@ -75,4 +75,31 @@ class GitHubReleaseParserTest {
             GitHubReleasePick.bound("com.example.app", json)?.apkUrl,
         )
     }
+
+    @Test
+    fun obtainiumFlavorsSelectCorrectApkForPackage() {
+        val json = """
+            [{
+              "tag_name":"v1.6.14",
+              "assets":[
+                {"browser_download_url":"https://github.com/ImranR98/Obtainium/releases/download/v1.6.14/app-arm64-v8a-fdroid-release.apk"},
+                {"browser_download_url":"https://github.com/ImranR98/Obtainium/releases/download/v1.6.14/app-arm64-v8a-release.apk"},
+                {"browser_download_url":"https://github.com/ImranR98/Obtainium/releases/download/v1.6.14/app-release.apk"},
+                {"browser_download_url":"https://github.com/ImranR98/Obtainium/releases/download/v1.6.14/app-x86_64-release.apk"}
+              ]
+            }]
+        """.trimIndent()
+
+        val mainAppHit = GitHubReleasePick.bound("dev.imranr.obtainium", json)
+        assertEquals(
+            "https://github.com/ImranR98/Obtainium/releases/download/v1.6.14/app-arm64-v8a-release.apk",
+            mainAppHit?.apkUrl,
+        )
+
+        val fdroidAppHit = GitHubReleasePick.bound("dev.imranr.obtainium.fdroid", json)
+        assertEquals(
+            "https://github.com/ImranR98/Obtainium/releases/download/v1.6.14/app-arm64-v8a-fdroid-release.apk",
+            fdroidAppHit?.apkUrl,
+        )
+    }
 }

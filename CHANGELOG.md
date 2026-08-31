@@ -6,20 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.35.0](https://github.com/edwardlthompson/DevPulse/compare/v0.34.2...v0.35.0) (2026-08-30)
+## [Unreleased]
 
+### Added
+
+- Secondary store/mirror download fallback in UpdateAll when primary Play direct download fails or is unavailable
+- APKPure JSON parser preserving direct APK asset download URLs and numerical version codes
+- Aurora Store client headers update to 4.8.4-76 with session rotation on manual refresh
+
+### Fixed
+
+- Enhanced Aurora Store `versionCode` matching for Play Store updates
+- Curated forge hints and bypass global rate limit skip for known hints (OBDForge, Obtainium)
+
+## [0.35.0](https://github.com/edwardlthompson/DevPulse/compare/v0.34.2...v0.35.0) (2026-08-30)
 
 ### Added
 
 * **inventory:** signer replace installation flow and ignored updates management ([a615863](https://github.com/edwardlthompson/DevPulse/commit/a615863a5a6bca216cee2556338a1ff4426fda5e))
 * **inventory:** version history and one-tap rollback support ([1252a88](https://github.com/edwardlthompson/DevPulse/commit/1252a880c7e7f5240af94482fd542533f94b9671))
 
-
 ### Documentation
 
 * record v0.34.2 ship notes and fold lessons ([b21762e](https://github.com/edwardlthompson/DevPulse/commit/b21762e34f514955da6cdfff918ed6c8737d7e05))
 
-## [Unreleased]
+## [0.34.2](https://github.com/edwardlthompson/DevPulse/compare/v0.34.1...v0.34.2) (2026-08-30)
 
 ### Added
 
@@ -38,7 +49,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ignored update listings view in Settings History with package, source, and version details
 - One-tap Reset ignored listings action in Settings History and Settings Inventory
-
 
 ## [0.34.2](https://github.com/edwardlthompson/DevPulse/compare/v0.34.1...v0.34.2) (2026-08-28)
 

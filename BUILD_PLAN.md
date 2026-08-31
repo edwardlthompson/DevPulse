@@ -108,7 +108,12 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 | Sprint 19 — Ideas backlog (after v0.29.0) | 2026-08-23 | COMPLETED_TASKS.md @ `92c860a` |
 | Sprint 20 — Ideas backlog (after Sprint 19) | 2026-08-23 | COMPLETED_TASKS.md @ `2b6d448` |
 | Sprint 21 — Ideas backlog (after Sprint 20) | 2026-08-23 | COMPLETED_TASKS.md @ `2b6d448` |
+| Sprint 22 — GitHub add (uninstall Obtainium) | 2026-08-26 | COMPLETED_TASKS.md @ `29040a3` |
+| Sprint 23 — Obtainium migrate and filters | 2026-08-26 | COMPLETED_TASKS.md @ `29040a3` |
 | Sprint 24 — Obtainium import all GitHub watches | 2026-08-26 | COMPLETED_TASKS.md @ `a1fc775` |
+| Sprint 25 — GitHub release versions on Refresh | 2026-08-26 | COMPLETED_TASKS.md @ `4894cda` |
+| Sprint 26 — Required-check rollups | 2026-08-26 | COMPLETED_TASKS.md @ `4894cda` |
+| Sprint 27 — Store update detection, APKPure parser, and download fallback | 2026-08-31 | COMPLETED_TASKS.md @ `4894cda` |
 > **Sprint 11** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 12** archived in COMPLETED_TASKS.md @ `fd20edd`.
 > **Sprint 13** archived in COMPLETED_TASKS.md @ `fd20edd`.
@@ -127,47 +132,12 @@ When **Sprint 0** ends: stop re-reading `docs/INITIALIZATION_PROMPT.md` as the d
 > **Sprint 19** archived in COMPLETED_TASKS.md @ `92c860a`.
 > **Sprint 20** archived in COMPLETED_TASKS.md @ `2b6d448`.
 > **Sprint 21** archived in COMPLETED_TASKS.md @ `2b6d448`.
+> **Sprint 22** archived in COMPLETED_TASKS.md @ `29040a3`.
+> **Sprint 23** archived in COMPLETED_TASKS.md @ `29040a3`.
 > **Sprint 24** archived in COMPLETED_TASKS.md @ `a1fc775`.
-
-## Sprint 22 — GitHub add (uninstall Obtainium)
-
-> **Sprint 22 AGENT** archived in COMPLETED_TASKS.md @ `29040a3`.
-
-<!-- parallel_exception: ADB smoke remainder only -->
-
-### Human & device (after automation)
-
-- 🔲 [ADB] GitHub Obtainium lists on Refresh; FAB paste binds; cert refuse still blocks a mismatched APK
-
-## Sprint 23 — Obtainium migrate and filters
-
-> **Sprint 23 AGENT** archived in COMPLETED_TASKS.md @ `29040a3`.
-
-<!-- parallel_exception: ADB smoke remainder only -->
-
-### Human & device (after automation)
-
-- 🔲 [ADB] Import a recorded Obtainium fixture; listing tap still refuses a mismatched signing cert
-
-## Sprint 25 — GitHub release versions on Refresh
-
-<!-- parallel_exception: single logic slice; ADB remainder only -->
-
-- ✅ [AGENT] Hinted GitHub repos call `listReleases` for tag/APK so Has update matches Obtainium (`GitHubHintRelease`, `GitHubReleasePick.bound`)
-
-### Human & device (after automation)
-
-- 🔲 [ADB] Refresh a GitHub-only app Obtainium already flags; Has update shows the GitHub tag; listing tap still refuses a mismatched cert
-
-## Sprint 26 — Required-check rollups
-
-<!-- parallel_exception: CI wiring only; no product slice -->
-
-- ✅ [AGENT] Concluding jobs named `CI` / `Security Scan` / `CodeQL` plus `ready-pr-automerge.yml` for same-repo `cursor/*` PRs
-
-### Human & device (after automation)
-
-- ✅ [HUMAN] Dispatch CI + Release Please on `main` after bot merges (KB-031); `/ship` cut `v0.34.2`
+> **Sprint 25** archived in COMPLETED_TASKS.md @ `4894cda`.
+> **Sprint 26** archived in COMPLETED_TASKS.md @ `4894cda`.
+> **Sprint 27** archived in COMPLETED_TASKS.md @ `4894cda`.
 
 ## Ongoing Maintenance (recurring)
 

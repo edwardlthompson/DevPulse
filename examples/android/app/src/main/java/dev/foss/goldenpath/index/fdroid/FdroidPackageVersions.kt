@@ -1,18 +1,15 @@
 package dev.foss.goldenpath.index.fdroid
 
-data class FdroidVersionRecord(
-    val versionName: String,
-    val versionCode: Long? = null,
-    val apkName: String? = null,
-    val sha256: String? = null,
-    val sizeBytes: Long? = null,
-    val addedMs: Long? = null,
-    val minSdk: Int? = null,
-)
-
 object FdroidPackageVersions {
     private val pkgKey = Regex(""""([a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z0-9_]+)+)"\s*:\s*\[""")
     private val token = Regex(""""versionName"\s*:\s*"([^"]+)"|"versionCode"\s*:\s*(-?\d+)""")
+    private val vNameRegex = Regex(""""versionName"\s*:\s*"([^"]+)"""")
+    private val vCodeRegex = Regex(""""versionCode"\s*:\s*(-?\d+)""")
+    private val aNameRegex = Regex(""""apkName"\s*:\s*"([^"]+)"""")
+    private val hashRegex = Regex(""""hash"\s*:\s*"([0-9a-fA-F]{64})"""")
+    private val sizeRegex = Regex(""""size"\s*:\s*(\d+)""")
+    private val addedRegex = Regex(""""added"\s*:\s*(\d+)""")
+    private val minSdkRegex = Regex(""""minSdkVersion"\s*:\s*(\d+)""")
 
     fun allFor(raw: ByteArray, packageName: String): List<FdroidVersionRecord> {
         val start = FdroidIndexBytes.indexOf(raw, "\"packages\"")
@@ -25,22 +22,14 @@ object FdroidPackageVersions {
         val bracket = FdroidIndexBytes.indexOfByte(raw, '['.code.toByte(), colon)
         if (bracket < 0) return emptyList()
         val from = bracket + 1
-        val to = endOfArray(raw, from)
+        val to = FdroidIndexJsonHelper.endOfArray(raw, from)
         val body = FdroidIndexBytes.utf8(raw, from, to)
         return allIn(body)
     }
 
-    private val vNameRegex = Regex(""""versionName"\s*:\s*"([^"]+)"""")
-    private val vCodeRegex = Regex(""""versionCode"\s*:\s*(-?\d+)""")
-    private val aNameRegex = Regex(""""apkName"\s*:\s*"([^"]+)"""")
-    private val hashRegex = Regex(""""hash"\s*:\s*"([0-9a-fA-F]{64})"""")
-    private val sizeRegex = Regex(""""size"\s*:\s*(\d+)""")
-    private val addedRegex = Regex(""""added"\s*:\s*(\d+)""")
-    private val minSdkRegex = Regex(""""minSdkVersion"\s*:\s*(\d+)""")
-
     fun allIn(body: String): List<FdroidVersionRecord> {
         val results = mutableListOf<FdroidVersionRecord>()
-        val objects = splitObjects(body)
+        val objects = FdroidIndexJsonHelper.splitObjects(body)
         for (chunk in objects) {
             val vName = vNameRegex.find(chunk)?.groupValues?.get(1)
             val vCode = vCodeRegex.find(chunk)?.groupValues?.get(1)?.toLongOrNull()
@@ -62,34 +51,6 @@ object FdroidPackageVersions {
             }
         }
         return results
-    }
-
-    private fun splitObjects(body: String): List<String> {
-        val list = mutableListOf<String>()
-        var depth = 0
-        var inStr = false
-        var escape = false
-        var start = -1
-        for (i in body.indices) {
-            val c = body[i]
-            when {
-                escape -> escape = false
-                inStr && c == '\\' -> escape = true
-                c == '"' -> inStr = !inStr
-                !inStr && c == '{' -> {
-                    if (depth == 0) start = i
-                    depth++
-                }
-                !inStr && c == '}' -> {
-                    depth--
-                    if (depth == 0 && start >= 0) {
-                        list += body.substring(start, i + 1)
-                        start = -1
-                    }
-                }
-            }
-        }
-        return list
     }
 
     fun highestByPackage(raw: String): Map<String, String> {
@@ -131,7 +92,7 @@ object FdroidPackageVersions {
             while (i < raw.size && raw[i].toInt().toChar().isWhitespace()) i++
             if (i >= raw.size || raw[i] != bracket) continue
             val from = i + 1
-            val to = endOfArray(raw, from)
+            val to = FdroidIndexJsonHelper.endOfArray(raw, from)
             i = to
             if (name in wanted) {
                 highestIn(FdroidIndexBytes.utf8(raw, from, to))?.let { result[name] = it }
@@ -161,24 +122,5 @@ object FdroidPackageVersions {
             }
         }
         return bestName
-    }
-
-    private fun endOfArray(raw: ByteArray, from: Int): Int {
-        var depth = 1
-        var inStr = false
-        var escape = false
-        var i = from
-        while (i < raw.size && depth > 0) {
-            val c = raw[i].toInt().toChar()
-            when {
-                escape -> escape = false
-                inStr && c == '\\' -> escape = true
-                c == '"' -> inStr = !inStr
-                !inStr && c == '[' -> depth++
-                !inStr && c == ']' -> depth--
-            }
-            i++
-        }
-        return i
     }
 }

@@ -66,7 +66,12 @@ object AuroraPlayLive {
                 helper.getAppByPackageName(names).mapNotNull { app ->
                     val pkg = app.packageName.trim()
                     if (pkg.isEmpty()) null
-                    else pkg to AuroraPlayLookup.fromFields(app.versionName, app.versionCode, app.updatedOn, now)
+                    else {
+                        if (pkg.contains("ingress", ignoreCase = true) || pkg.contains("niantic", ignoreCase = true) || pkg.contains("temu", ignoreCase = true) || pkg.contains("mapgenie", ignoreCase = true) || pkg.contains("komoot", ignoreCase = true) || pkg.contains("tachyon", ignoreCase = true)) {
+                            RefreshTrace.line("aurora target: pkg=$pkg vName=${app.versionName} vCode=${app.versionCode} updatedOn=${app.updatedOn}")
+                        }
+                        pkg to AuroraPlayLookup.fromFields(app.versionName, app.versionCode, app.updatedOn, now)
+                    }
                 }.toMap()
             page(wanted)
         }.getOrElse {
