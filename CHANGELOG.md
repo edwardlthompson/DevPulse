@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36.0](https://github.com/edwardlthompson/DevPulse/compare/v0.35.0...v0.36.0) (2026-08-31)
+
+
+### Added
+
+* **inventory:** add APKPure parser and secondary store download fallback ([be54622](https://github.com/edwardlthompson/DevPulse/commit/be5462216f4e97fd5abe17443bf67f534aae4a6a))
+
+
+### Fixed
+
+* **build:** ensure release build type is deterministic when keystore is unset ([aba5d96](https://github.com/edwardlthompson/DevPulse/commit/aba5d96dda3ca038435bb96b86e59f4ad9167039))
+
 ## [Unreleased]
 
 ### Added
