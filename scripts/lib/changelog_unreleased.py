@@ -5,6 +5,11 @@ import re
 import sys
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 UNRELEASED = re.compile(r"^## \[Unreleased\]\s*$", re.M)
 VERSION = re.compile(r"^## \[", re.M)
 SECTION = re.compile(r"^## \[Unreleased\][ \t]*\n(.*?)(?=^## |\Z)", re.S | re.M)
