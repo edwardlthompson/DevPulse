@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.0](https://github.com/edwardlthompson/DevPulse/compare/v0.36.0...v0.37.0) (2026-08-31)
+
+
+### Added
+
+* **ui:** add scrubbable year scrollbar, clean navigation flow, and move ideas to settings ([916f11e](https://github.com/edwardlthompson/DevPulse/commit/916f11eda54621d5aa54a201265ab83ab839eb56))
+
+
+### Changed
+
+* normalize CHANGELOG unreleased heading after v0.36.0 release ([e5fe764](https://github.com/edwardlthompson/DevPulse/commit/e5fe764b9ed829d27d6bc227f2e88b39267b1ff7))
+
 ## [Unreleased]
 
 ### Added
