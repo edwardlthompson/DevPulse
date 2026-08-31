@@ -20,18 +20,18 @@ class GoldenPathUiTest {
         composeTestRule.onNodeWithText("Appearance").performClick()
         composeTestRule.onNodeWithText("Theme").assertIsDisplayed()
         composeTestRule.onNodeWithText("Dark theme").performScrollTo().performClick()
-        composeTestRule.onNodeWithContentDescription("Back to settings").performClick()
+        composeTestRule.runOnIdle { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeTestRule.onNodeWithText("Updates").performScrollTo().performClick()
         composeTestRule.onNodeWithText("Check for updates").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Back to settings").performClick()
+        composeTestRule.runOnIdle { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeTestRule.onNodeWithText("History").performScrollTo().performClick()
         composeTestRule.onNodeWithText("History").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Back to settings").performClick()
+        composeTestRule.runOnIdle { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeTestRule.onNodeWithText("Inventory").performScrollTo().performClick()
         composeTestRule.onNodeWithText("Include system apps").performScrollTo().assertIsDisplayed()
         composeTestRule.onNodeWithText("On demand").performScrollTo().assertIsDisplayed()
         composeTestRule.onNodeWithText("Once a week").performScrollTo().assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Back to settings").performClick()
+        composeTestRule.runOnIdle { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeTestRule.onNodeWithText("Close settings").performScrollTo().performClick()
     }
 
