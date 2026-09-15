@@ -1,5 +1,5 @@
 {
-  "template_version": "1.5.0",
+  "template_version": "0.37.2",
   "project": {
     "name": "DevPulse",
     "purpose": "Scan installed Android apps across Google Play, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.",

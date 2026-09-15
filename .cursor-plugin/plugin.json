@@ -1,7 +1,7 @@
 {
   "name": "agent-project-bootstrap-foss",
   "description": "FOSS Cursor stack from agent-project-bootstrap (rules, skills, agents, commands, hooks). Pack with scripts/pack-cursor-plugin.sh before local install \u2014 do not symlink the repo root.",
-  "version": "1.5.0",
+  "version": "0.37.2",
   "author": {
     "name": "agent-project-bootstrap"
   }

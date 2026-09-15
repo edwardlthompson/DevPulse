@@ -9,7 +9,7 @@
 <p align="center"><strong>See which of your apps still have a heartbeat.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/template-1.5.0-656d76?style=flat-square" alt="template" />
+  <img src="https://img.shields.io/badge/template-0.37.2-656d76?style=flat-square" alt="template" />
   <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-2ea043?style=flat-square" alt="GPL-3.0-or-later" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
   <img src="https://img.shields.io/badge/status-active-39FF14?style=flat-square" alt="status" />

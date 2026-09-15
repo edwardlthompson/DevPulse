@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.37.2](https://github.com/edwardlthompson/DevPulse/compare/v0.37.1...v0.37.2) (2026-09-15)
 
+
 ### Changed
 
 * **deps:** bump the android-dependencies group across 1 directory with 5 updates ([#14](https://github.com/edwardlthompson/DevPulse/issues/14)) ([939540c](https://github.com/edwardlthompson/DevPulse/commit/939540c7a0a9ecd8a2ec575e6e1bdbf6360ee2dc))
@@ -17,13 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.37.1](https://github.com/edwardlthompson/DevPulse/compare/v0.37.0...v0.37.1) (2026-08-31)
 
+
 ### Fixed
 
 * **scripts:** reconfigure UTF-8 encoding on stdout/stderr in changelog_unreleased ([882c997](https://github.com/edwardlthompson/DevPulse/commit/882c99727936b5a674db4f3fe30155c3c59efb22))
 
+
 ### Changed
 
 * normalize CHANGELOG unreleased heading after v0.37.0 release ([5136d4a](https://github.com/edwardlthompson/DevPulse/commit/5136d4a379e40b2290fde17c146fa00a0141a8b8))
+
 
 ### Documentation
 
