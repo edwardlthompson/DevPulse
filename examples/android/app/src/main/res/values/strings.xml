@@ -26,8 +26,8 @@
     <string name="about_update_prompt_body">DevPulse %1$s is on GitHub. Install it when you are ready — this prompt is only about the app, not donations.</string>
     <string name="about_update_current">You are on the latest version.</string>
     <string name="about_update_available">Update available: %1$s</string>
-    <string name="about_update_no_compatible">Aptoide Games</string>
-    <string name="about_update_restarting">Clear cached listings</string>
+    <string name="aptoide_games">Aptoide Games</string>
+    <string name="settings_clear_listings">Clear cached listings</string>
     <string name="about_update_apply">Apply update</string>
     <string name="settings_title">Settings</string>
     <string name="settings_open">Settings</string>
@@ -283,7 +283,7 @@
     <string name="install_method_root">Root silent</string>
     <string name="install_method_failed">Allow Install unknown apps for DevPulse, then try again.</string>
     <string name="update_prefetch_title">Prefetch update files</string>
-    <string name="update_prefetch_body">Off by default. On Wi-Fi, cache direct APKs after Refresh. A file is ready only when the package, signing cert, and sha256 match. APKMirror stays page-only. Play files need the Aurora toggle. DevPulse never auto-installs.</string>
+    <string name="update_prefetch_body">On by default. On Wi-Fi, cache direct APKs after Refresh. A file is ready only when the package, signing cert, and sha256 match. APKMirror stays page-only. Play files need the Aurora toggle. DevPulse never auto-installs.</string>
     <string name="update_prefetch_enable">Refresh only on Wi-Fi</string>
     <string name="store_clients_title">External pages</string>
     <string name="store_clients_body">Only Google Play (Aurora fallback) and APKMirror still open outside DevPulse. F-Droid family APKs download in-app.</string>

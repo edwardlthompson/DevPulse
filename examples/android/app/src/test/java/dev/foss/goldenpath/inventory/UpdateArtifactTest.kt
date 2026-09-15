@@ -28,4 +28,16 @@ class UpdateArtifactTest {
         assertEquals(3, file.length())
         assertEquals("app.one-1.apk", file.name)
     }
+
+    @Test
+    fun keepsKnownNativesWhenRefreshOmitsThem() {
+        val url = "https://pool.apk.aptoide.com/apps/a.apk"
+        UpdateArtifactMemory.add(
+            UpdateArtifact("app.one", RemoteReleasedSource.Aptoide, url, "2.0", 20L, nativeCodes = setOf("x86")),
+        )
+        UpdateArtifactMemory.add(
+            UpdateArtifact("app.one", RemoteReleasedSource.Aptoide, url, "2.0", 20L),
+        )
+        assertEquals(setOf("x86"), UpdateArtifactMemory.forSource("app.one", RemoteReleasedSource.Aptoide)?.nativeCodes)
+    }
 }

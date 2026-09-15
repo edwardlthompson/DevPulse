@@ -25,9 +25,12 @@ fun interface GitHubReleaseClient {
 
 object GitHubSearchQuery {
     fun repositories(packageName: String, label: String): String {
-        val name = label.trim()
-        if (name.isNotEmpty()) return if (name.any { it.isWhitespace() }) "\"$name\"" else name
         val pkg = packageName.trim()
-        return if (pkg.isNotEmpty()) "\"$pkg\"" else ""
+        val name = label.trim()
+        val pkgQ = pkg.takeIf { it.isNotEmpty() }?.let { "\"$it\"" }
+        val nameQ = name.takeIf { it.isNotEmpty() && !it.equals(pkg, ignoreCase = true) }?.let { raw ->
+            if (raw.any { it.isWhitespace() }) "\"$raw\"" else raw
+        }
+        return listOfNotNull(pkgQ, nameQ).joinToString(" OR ")
     }
 }

@@ -19,6 +19,9 @@ class AptoideUpdatesParserTest {
         assertEquals(expected, parsed.getValue("cm.aptoide.pt").updatedOnMs)
         assertEquals("9.22.0", parsed.getValue("cm.aptoide.pt").publishedVersion)
         assertEquals("aptoide", parsed.getValue("cm.aptoide.pt").uname)
+        assertEquals("https://pool.apk.aptoide.com/example/a.apk", parsed.getValue("cm.aptoide.pt").fileUrl)
+        assertEquals(9220L, parsed.getValue("cm.aptoide.pt").versionCode)
+        assertEquals(setOf("x86"), parsed.getValue("cm.aptoide.pt").nativeCodes)
         assertEquals("1.21.0", parsed.getValue("org.fdroid.fdroid").publishedVersion)
     }
 

@@ -60,7 +60,7 @@ class ReleaseRefreshForgeTest {
         val json = """{"apps":[{"packageName":"$pkg","lastUpdated":1610000000000}]}"""
         val forge = runForge(pkg, json, official, countClient(hits)).getValue(pkg).offers.single { it.source == RemoteReleasedSource.Forge }
         assertFalse(forge.listed)
-        assertTrue(forge.known)
+        assertFalse(forge.known)
         assertEquals(0, hits[0])
         assertEquals(0, hits[1])
     }

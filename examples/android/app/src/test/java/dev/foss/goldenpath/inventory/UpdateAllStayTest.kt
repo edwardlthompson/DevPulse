@@ -96,24 +96,48 @@ class UpdateAllStayTest {
     }
 
     @Test
-    fun laterMatchingSourceDropsSigningHold() {
+    fun signingClashDoesNotTryTheNextSource() {
         val dir = File.createTempFile("uafall", "dir").apply { delete(); mkdirs() }
         val play = UpdateAllJob("app.a", "A", RemoteReleasedSource.Play, null, "3.0")
         val fdroid = UpdateAllJob("app.a", "A", RemoteReleasedSource.Fdroid, null, "2.0")
         val playApk = File.createTempFile("play", ".apk").also { it.writeBytes(byteArrayOf(1, 2, 3, 4)) }
         val fdroidApk = File.createTempFile("fdroid", ".apk").also { it.writeBytes(byteArrayOf(5, 6, 7, 8)) }
+        val tried = mutableListOf<String>()
+        var installed = 0
         UpdateAll.run(
             jobs = listOf(play),
             groups = listOf(listOf(play, fdroid)),
-            prepare = { job, _ -> if (job.source == RemoteReleasedSource.Play) listOf(playApk) else listOf(fdroidApk) },
-            install = { files -> files.first().name.startsWith("fdroid") },
-            clash = { job, _ -> job.source == RemoteReleasedSource.Play },
+            prepare = { job, _ ->
+                tried += job.source.name
+                if (job.source == RemoteReleasedSource.Play) listOf(playApk) else listOf(fdroidApk)
+            },
+            install = { installed += 1; true },
+            clash = { _, _ -> true },
             filesDir = dir,
         )
-        assertFalse(SignerReplaceQueue.has("app.a"))
-        assertTrue(AppliedUpdates.settled("app.a"))
+        assertEquals(listOf("Play"), tried)
+        assertEquals(0, installed)
+        assertTrue(SignerReplaceQueue.has("app.a"))
+        assertFalse(AppliedUpdates.settled("app.a"))
         playApk.delete()
         fdroidApk.delete()
+        dir.deleteRecursively()
+    }
+
+    @Test
+    fun resolveMissWritesLogAndIsNotIgnored() {
+        val dir = File.createTempFile("uaresolve", "dir").apply { delete(); mkdirs() }
+        val job = UpdateAllJob("app.a", "A", RemoteReleasedSource.Aptoide, null, "2.0")
+        UpdateAll.run(
+            jobs = listOf(job),
+            prepare = { _, _ -> ListingFail.resolveMiss() },
+            install = { false },
+            filesDir = dir,
+        )
+        val row = UpdateAllLog.load(UpdateAllLog.file(dir)).single()
+        assertEquals("failDl", row.result)
+        assertEquals("ResolveMiss", row.why)
+        assertFalse(IgnoredUpdates.has("app.a", RemoteReleasedSource.Aptoide, "2.0"))
         dir.deleteRecursively()
     }
 }

@@ -3,6 +3,20 @@ package dev.foss.goldenpath.inventory
 object RootPmInstall {
     private val unsafe = Regex("[\"'\\n\\r;|&$`]")
 
+    @Volatile
+    private var suCached: Boolean? = null
+
+    fun available(shell: InstallShell = ProcessInstallShell): Boolean {
+        suCached?.let { return it }
+        val ok = shell.run(listOf("su", "-c", "id")).exitCode == 0
+        suCached = ok
+        return ok
+    }
+
+    fun resetAvailable() {
+        suCached = null
+    }
+
     fun args(apkPath: String): List<String>? {
         val path = apkPath.trim()
         if (path.isEmpty() || !path.endsWith(".apk", ignoreCase = true)) return null
@@ -21,9 +35,22 @@ object RootPmInstall {
 
 object ProcessInstallShell : InstallShell {
     override fun run(args: List<String>): InstallShellResult {
-        val process = ProcessBuilder(args).redirectErrorStream(true).start()
-        val output = process.inputStream.bufferedReader().use { it.readText() }
-        val code = process.waitFor()
-        return InstallShellResult(code, output)
+        return try {
+            val process = ProcessBuilder(args).redirectErrorStream(true).start()
+            val probe = args.getOrNull(2) == "id"
+            if (probe) {
+                val finished = process.waitFor(800, java.util.concurrent.TimeUnit.MILLISECONDS)
+                val output = process.inputStream.bufferedReader().use { it.readText() }
+                if (!finished) {
+                    process.destroyForcibly()
+                    return InstallShellResult(124, "timeout")
+                }
+                return InstallShellResult(process.exitValue(), output)
+            }
+            val output = process.inputStream.bufferedReader().use { it.readText() }
+            InstallShellResult(process.waitFor(), output)
+        } catch (e: Exception) {
+            InstallShellResult(127, e.message.orEmpty().take(200))
+        }
     }
 }

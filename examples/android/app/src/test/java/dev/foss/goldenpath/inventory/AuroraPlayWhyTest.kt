@@ -21,6 +21,9 @@ class AuroraPlayWhyTest {
         val nested = RuntimeException("wrap", RuntimeException("AppNotPurchased"))
         assertEquals(InstallWhy.PlayPurchase, AuroraPlayWhy.of(nested))
         assertEquals(InstallWhy.NoFile, AuroraPlayWhy.of(null))
+        val npe = NullPointerException("getDefaultHeaders")
+        assertTrue(AuroraPlayWhy.headersBroken(npe))
+        assertFalse(AuroraPlayWhy.headersBroken(RuntimeException("denied")))
     }
 
     @Test

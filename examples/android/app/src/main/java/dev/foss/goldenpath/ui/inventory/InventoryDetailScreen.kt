@@ -1,6 +1,5 @@
 package dev.foss.goldenpath.ui.inventory
 
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,31 +16,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
-import dev.foss.goldenpath.query.PinPreferences
 import dev.foss.goldenpath.inventory.AppDetailsIntent
 import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.RemoteReleasedSource
 import dev.foss.goldenpath.inventory.StoreSelection
-import kotlinx.coroutines.launch
-import dev.foss.goldenpath.staleness.Staleness
+import dev.foss.goldenpath.query.PinPreferences
 import dev.foss.goldenpath.ui.insets.bottomInsetPadding
 import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.SpacingSm
 import java.text.DateFormat
 import java.util.Date
+import kotlinx.coroutines.launch
 
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun InventoryDetailScreen(
     app: InstalledApp,
@@ -54,9 +56,8 @@ fun InventoryDetailScreen(
     val scope = rememberCoroutineScope()
     val pins by pinPrefs.pins.collectAsStateWithLifecycle(emptySet())
     val pinned = app.packageName in pins
-    val version = app.versionName ?: stringResource(R.string.inventory_version_unknown)
-    val sdkRisk = Staleness.compatibilityWarning(app.targetSdk, Build.VERSION.SDK_INT)
     val listings = StoreSelection.visible(app.latestListings, rememberEnabledSources())
+    var advanced by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -95,21 +96,8 @@ fun InventoryDetailScreen(
                 )
             }
         }
-        DetailCallout(stringResource(R.string.inventory_callout_package), app.packageName)
-        DetailCopy(app.packageName, app.signingSha1)
-        DetailCallout(stringResource(R.string.inventory_callout_origin), stringResource(InventoryCopy.originRes(app)))
-        DetailCallout(stringResource(R.string.inventory_callout_installed), version)
-        DetailCallout(stringResource(R.string.inventory_callout_installed_date), localDate(app.installedAtMs))
-        DetailCallout(stringResource(R.string.inventory_callout_latest), latestText(app))
-        DetailCallout(stringResource(R.string.inventory_callout_last_release), lastReleaseText(app))
-        DetailCallout(
-            label = stringResource(R.string.inventory_callout_sdk),
-            value = stringResource(R.string.inventory_sdk, app.minSdk, app.targetSdk),
-            warn = sdkRisk,
-        )
-        if (sdkRisk) {
-            Text(text = stringResource(R.string.inventory_sdk_risk), color = MaterialTheme.colorScheme.error)
-        }
+        InventoryDetailCallout(stringResource(R.string.inventory_callout_package), app.packageName)
+        InventoryDetailCallout(stringResource(R.string.inventory_callout_last_release), inventoryLastReleaseText(app))
         Text(text = stringResource(R.string.inventory_listings_title), style = MaterialTheme.typography.titleMedium)
         ReprobeButton(app)
         if (listings.isEmpty()) {
@@ -121,38 +109,28 @@ fun InventoryDetailScreen(
                 }
             }
         }
-        DetailForget(app.packageName)
-        DetailPasteRepo(app.packageName)
-        DetailDirectApk(app.packageName)
-        DetailGithubOpts(app.packageName)
-        UpdateNotesSection(app.packageName)
-        DownloadUpdateSection(app)
-        VersionHistorySection(app)
-        AlternativesSection(app = app, inventory = inventory)
+        TextButton(onClick = { advanced = !advanced }) {
+            Text(stringResource(R.string.inventory_advanced))
+        }
+        if (advanced) {
+            InventoryDetailAdvanced(app = app, inventory = inventory)
+        }
     }
 }
 
 @Composable
-private fun DetailCallout(label: String, value: String, warn: Boolean = false) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = label, style = MaterialTheme.typography.labelSmall)
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = if (warn) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
-@Composable
-private fun latestText(app: InstalledApp): String {
+internal fun inventoryLatestText(app: InstalledApp): String {
     val remote = app.remoteVersionName
     if (remote.isNullOrBlank()) return stringResource(R.string.inventory_latest_unknown)
-    return stringResource(R.string.inventory_latest_ver, remote, stringResource(InventoryCopy.sourceRes(app.remoteVersionSource)))
+    return stringResource(
+        R.string.inventory_latest_ver,
+        remote,
+        stringResource(InventoryCopy.sourceRes(app.remoteVersionSource)),
+    )
 }
 
 @Composable
-private fun lastReleaseText(app: InstalledApp): String {
+internal fun inventoryLastReleaseText(app: InstalledApp): String {
     val ms = app.remoteReleasedAtMs
     if (ms == null || app.remoteReleasedSource == RemoteReleasedSource.None) {
         return stringResource(R.string.inventory_last_release_unknown)
@@ -165,8 +143,7 @@ private fun lastReleaseText(app: InstalledApp): String {
 }
 
 @Composable
-private fun localDate(ms: Long?): String {
+internal fun inventoryLocalDate(ms: Long?): String {
     if (ms == null) return stringResource(R.string.inventory_updated_unknown)
     return DateFormat.getDateInstance().format(Date(ms))
 }
-

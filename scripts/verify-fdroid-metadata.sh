@@ -38,18 +38,29 @@ if [ ! -f "$GRADLE" ]; then
 else
   VERSION_CODE="$(python3 - <<'PY'
 from pathlib import Path
+import json
 import re
+
+def code_from(ver: str) -> int:
+    parts = ver.split("-", 1)[0].split("+", 1)[0].split(".")
+    major = int(parts[0]) if parts and parts[0].isdigit() else 0
+    minor = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0
+    patch = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
+    return major * 10000 + minor * 100 + patch
+
 text = Path("examples/android/app/build.gradle.kts").read_text(encoding="utf-8")
 m = re.search(r"versionCode\s*=\s*(\d+)", text)
 if m:
     print(m.group(1))
     raise SystemExit(0)
+sot = Path("schemas/golden-path/app-version.json")
+if sot.is_file():
+    raw = json.loads(sot.read_text(encoding="utf-8")).get("version")
+    if isinstance(raw, str) and raw.strip():
+        print(code_from(raw.strip()))
+        raise SystemExit(0)
 ver = Path(".template-version").read_text(encoding="utf-8").strip() if Path(".template-version").is_file() else "0.1.0"
-parts = ver.split("-", 1)[0].split("+", 1)[0].split(".")
-major = int(parts[0]) if parts and parts[0].isdigit() else 0
-minor = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0
-patch = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
-print(major * 10000 + minor * 100 + patch)
+print(code_from(ver))
 PY
 )"
   if [ -z "${VERSION_CODE:-}" ]; then

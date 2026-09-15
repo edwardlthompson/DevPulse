@@ -4,4 +4,5 @@ enum class ListingMiss {
     Never,
     Forbidden,
     Parse,
+    Searched,
 }

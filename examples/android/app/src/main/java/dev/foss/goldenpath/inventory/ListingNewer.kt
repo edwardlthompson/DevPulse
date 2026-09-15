@@ -9,8 +9,8 @@ object ListingNewer {
     ): Boolean {
         val want = listing?.trim().orEmpty()
         val have = installed?.trim().orEmpty()
-        if (remoteCode != null && remoteCode > 0 && installedCode > 0 && remoteCode > installedCode) {
-            return true
+        if (remoteCode != null && remoteCode > 0 && installedCode > 0) {
+            return remoteCode > installedCode
         }
         if (want.isEmpty() || (have.isEmpty() && installedCode <= 0L)) return true
         return VersionCompare.isNewer(want, have, installedCode, remoteCode)

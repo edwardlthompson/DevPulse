@@ -79,6 +79,9 @@ After Sequential API lock: unit tests live under `examples/android/app/src/test/
 
 ## Notes
 
+- Sprint 28 empty kinds, honest `failRes`, slim Refresh bar, Hide vs Stop: `docs/features/ux-honesty.md`
+- Sprint 29 pulse rows and filter sheet: `docs/features/ux-pulse.md`
+- Sprint 30 detail Advanced: `docs/features/ux-detail.md`
 - No Play, F-Droid, or forge calls in this slice
 - Include-system lives in Settings. Top-bar Refresh probes every enabled outlet in parallel and counts each F-Droid index plus apps × enabled Play/Aptoide/GitHub probes. Search and sort chips stay behind icons.
 - The visible list reloads when a package is installed, uninstalled, or replaced (and again on resume). Store dates for a new app stay unknown until the next Refresh.

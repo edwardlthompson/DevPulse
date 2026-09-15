@@ -32,7 +32,11 @@ data class UpdateAllSnap(
 )
 
 object UpdateAll {
-    const val PARALLEL = 2
+    const val PARALLEL = 6
+    const val SNAP_MS = 300L
+
+    @Volatile
+    private var lastSnapAt = 0L
 
     fun jobs(apps: List<InstalledApp>): List<UpdateAllJob> =
         UpdateAllPick.groups(apps).map { it.first() }
@@ -55,51 +59,7 @@ object UpdateAll {
         clash: (UpdateAllJob, List<File>) -> Boolean = { _, _ -> false },
     ): UpdateAllResult {
         val startedAt = System.currentTimeMillis()
-        val counts = intArrayOf(0, 0, 0, 0)
-        val open = (groups ?: jobs.map { listOf(it) }).map { group ->
-            (group.firstOrNull()?.packageName.orEmpty()) to group.toMutableList()
-        }
-        val settled = mutableSetOf<String>()
-        UpdateAllResume.checkpoint(filesDir, open, settled)
-        while (!UpdateAllCancel.requested()) {
-            val wave = open.mapNotNull { (pkg, group) ->
-                if (pkg.isEmpty() || pkg in settled) {
-                    group.clear()
-                    null
-                } else {
-                    group.firstOrNull { !IgnoredUpdates.has(it.packageName, it.source, it.versionName) }
-                }
-            }
-            if (wave.isEmpty()) break
-            val ready = mutableListOf<Pair<UpdateAllJob, List<File>>>()
-            val lock = Any()
-            ReleaseRefreshParallel.map(wave, PARALLEL) { job ->
-                if (UpdateAllCancel.requested()) return@map UpdateAllFetched(job, null)
-                RefreshTrace.line("update all try ${job.source.name} ${job.packageName} ${job.versionName}")
-                onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Fetch))
-                ListingFail.why = InstallWhy.NoFile
-                val files = runCatching {
-                    prepare(job) { read, total ->
-                        onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Fetch, read, total))
-                    }
-                }.getOrElse {
-                    RefreshTrace.line("update all dl error ${job.source.name} ${job.packageName} ${it.message}")
-                    ListingFail.none()
-                }
-                val item = UpdateAllFetched(job, files, ListingFail.why)
-                val outcome = if (files.isNullOrEmpty()) "fail" else "ok"
-                RefreshTrace.line("update all dl $outcome ${job.source.name} ${job.packageName}")
-                synchronized(lock) {
-                    ready += UpdateAllQueue.takeDownloads(listOf(item), open, filesDir, onSnap, counts)
-                }
-                item
-            }
-            if (UpdateAllCancel.requested()) break
-            UpdateAllQueue.installReady(ready, open, settled, install, filesDir, onSnap, counts, clash)
-            UpdateAllResume.checkpoint(filesDir, open, settled)
-        }
-        UpdateAllResume.checkpoint(filesDir, open, settled)
-        val result = UpdateAllResult(counts[0], counts[1], counts[2], counts[3])
+        val result = UpdateAllPipe.run(jobs, prepare, install, onSnap, filesDir, groups, clash)
         filesDir?.let {
             PulseHistory.note(
                 it,
@@ -128,5 +88,12 @@ object UpdateAll {
             ?.downloadUrl
             .orEmpty()
         return url.contains("download.php", ignoreCase = true)
+    }
+
+    internal fun snapBytes(read: Long, total: Long, nowMs: Long = System.currentTimeMillis()): Boolean {
+        if (read == 0L || (total > 0L && read == total)) return true
+        if (nowMs - lastSnapAt < SNAP_MS) return false
+        lastSnapAt = nowMs
+        return true
     }
 }

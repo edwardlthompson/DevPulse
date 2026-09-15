@@ -27,12 +27,22 @@ data class UpdateAllCounts(
 }
 
 object UpdateAllTally {
+    fun visible(snaps: List<UpdateAllSnap>): List<UpdateAllSnap> = snaps.filter { snap ->
+        snap.stay ||
+            snap.phase == UpdateAllPhase.Ok ||
+            snap.phase == UpdateAllPhase.Fail ||
+            snap.phase == UpdateAllPhase.Ready ||
+            snap.phase == UpdateAllPhase.Apply ||
+            snap.phase == UpdateAllPhase.Fetch
+    }
+
     fun of(snaps: List<UpdateAllSnap>): UpdateAllCounts {
+        val rows = visible(snaps)
         var downloadedOk = 0
         var downloadedFail = 0
         var installedOk = 0
         var installedFail = 0
-        for (snap in snaps) {
+        for (snap in rows) {
             when (snap.phase) {
                 UpdateAllPhase.Wait, UpdateAllPhase.Fetch -> Unit
                 UpdateAllPhase.Ready, UpdateAllPhase.Apply -> downloadedOk++
@@ -48,17 +58,16 @@ object UpdateAllTally {
                 }
             }
         }
-        return UpdateAllCounts(snaps.size, downloadedOk, downloadedFail, installedOk, installedFail)
+        return UpdateAllCounts(rows.size, downloadedOk, downloadedFail, installedOk, installedFail)
     }
 
-    fun ranked(snaps: List<UpdateAllSnap>): List<UpdateAllSnap> = snaps.sortedBy { snap ->
+    fun ranked(snaps: List<UpdateAllSnap>): List<UpdateAllSnap> = visible(snaps).sortedBy { snap ->
         when (snap.phase) {
-            UpdateAllPhase.Fetch -> 0
-            UpdateAllPhase.Apply -> 1
-            UpdateAllPhase.Ready -> 2
-            UpdateAllPhase.Wait -> 3
-            UpdateAllPhase.Fail -> 4
-            UpdateAllPhase.Ok -> 5
+            UpdateAllPhase.Fetch, UpdateAllPhase.Apply -> 0
+            UpdateAllPhase.Ready -> 1
+            UpdateAllPhase.Wait -> 2
+            UpdateAllPhase.Fail -> 3
+            UpdateAllPhase.Ok -> 4
         }
     }
 }

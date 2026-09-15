@@ -28,7 +28,7 @@ internal fun AptoideCatalogDialog(onPicked: () -> Unit, onDismiss: () -> Unit) {
                     AptoideCatalog.pick(games = true)
                     onPicked()
                 },
-            ) { Text(stringResource(R.string.about_update_no_compatible)) }
+            ) { Text(stringResource(R.string.aptoide_games)) }
         },
     )
 }

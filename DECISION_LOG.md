@@ -17,6 +17,48 @@
 
 ## Entries
 
+### 2026-09-15 — Merge Release Please #29 (v0.37.2)
+- **Status:** Accepted
+- **Context:** User asked `/cleanup`, then automate the HUMAN `/ship` row, then merge the remaining AGENT Open PR. Sprints 33–36 were ✅. #29 was MERGEABLE but BLOCKED (no required checks on the Release Please branch). Local Unreleased still describes uncommitted product UX.
+- **Decision:** Smoke and archive Sprints 33–36. `attempt-build-plan-row` for Approve release tag (release already exists). Admin-merge #29. Fold Unreleased onto the PR as a comment only, then restore those notes locally so 0.37.2 stays deps-only. Dispatch CI, Security Scan, CodeQL, and Release Please on `main` (KB-031).
+- **Alternatives considered:** Full `/ship` of local UX into this tag (rejected: uncommitted product work is a later version). Wait for required checks on the RP branch (rejected: that branch does not post them).
+- **Consequences:** `v0.37.2` is tagged. SBOMs uploaded. Signed APK job failed (same as 0.37.1). BUILD_PLAN remaining is 0. Product inventory/UX stays uncommitted.
+
+### 2026-09-15 — GitHub repo map plus background leftover search
+- **Status:** Accepted
+- **Context:** APKUpdater is fast because it ships a package→repo table and only calls `listReleases` for installed hits. DevPulse leftover Search inside Refresh hit the 10/min cap. Users wanted a shared map that ships in the APK and grows without GitHub sign-in.
+- **Decision:** Steal that architecture, not rumboalla’s list. Ship `assets/github-repos/verified.tsv` from F-Droid `sourceCode` harvest. Devices pull newer rows from this GitHub repo (GET only). Refresh uses hints/`listReleases`. Leftover Search runs after scan+update (5 packages/run), persists hits, and skips misses for 30 days. Do not upload the device inventory. Do not curated-add Continuum.
+- **Alternatives considered:** Vendor APKUpdater `GitHubApps` (rejected: prior FOSS-policy). Crowdsource mappings from devices (rejected: telemetry). Raise anonymous Search above 10/min (impossible).
+- **Consequences:** First Refresh is store+hint speed. GitHub-only apps fill in over background runs. Merge #29 and `/ship` stay open.
+
+### 2026-09-15 — Leftover GitHub search at 10/min (no token)
+- **Status:** Accepted
+- **Context:** Continuum Calendar (`org.continuumcalendar.app`) has GitHub releases but Play recorded a known miss, so `storeSettled` skipped GitHub name-search. Enabling search for every Play miss would 403. Unauthenticated Search is 10/min; there is no faster anonymous API. Continuum’s APK does not embed its repo URL (Fossify library noise).
+- **Decision:** Skip GitHub search only when another store **listed** the app. Leftovers get one `"package" OR label` search, paced at 10/min, then `listReleases` (per_page 10) and slug+APK bind so SBOM-only latest tags still find an APK. Persist hits. `io.github.Owner.Repo` is a hint without search. Do not add Continuum to the curated map. Chrome WebAPKs and `app.devpulse` are skipped. Old skip-stamped Forge `Never` misses are searched again; empty leftover search caches `ListingMiss.Searched` for 7 days.
+- **Alternatives considered:** Raise Search quota without a token (impossible). Scrape github.com HTML (rejected: ToS). Harvest GitHub URLs from the APK (rejected: Continuum only has library URLs). Always-on name-search for Play-listed apps (rejected: Instagram-class quota).
+- **Consequences:** First Refresh after this change searches ~dozens of store-less apps (~2 min at 10/min), then later scans are hint `listReleases` only. Merge #29 and `/ship` stay open.
+
+### 2026-09-15 — One-tap scan and update
+- **Status:** Accepted
+- **Context:** Fast Update All still wasted ApkPure fetches after Play Older, downloaded Drive from three stores after a signing hold, and required a second tap (Update N) after scan. Users wanted one window with per-app download and install bars.
+- **Decision:** Drop APKPure/APKMirror after Play Older; clear remaining sources after a signing hold; log Older/Sdk as `skip`. Refresh auto-starts Update All in the same dialog. Each row has download and install bars; busy rows stay above finished ones.
+- **Alternatives considered:** Keep scan lookup-only (superseded). Try the next store after a signing clash (superseded: it re-downloaded the same unusable APK).
+- **Consequences:** F-Droid/GitHub can still follow Play Older. Install confirms stay one-at-a-time. Merge #29 and `/ship` stay open.
+
+### 2026-09-15 — Fast Update All slot pool
+- **Status:** Accepted
+- **Context:** Update All took ~19 minutes because a 2-job download wave waited for a multi-GB APK. Play listings older than installed stayed on Updates. Scan complete had no Update action.
+- **Decision:** Six download slots (installs still one at a time). Silently persist Older/Sdk to ignored updates. Prefetch `toFile` including Play when Aurora is on after scan `finish()`. Scan-complete Update N starts the same batch as home. Live list magnets to the top until the user scrolls.
+- **Alternatives considered:** Unbounded parallel downloads (rejected: Play CDN / Protect). Auto-install when scan finishes (rejected: scan stays scan).
+- **Consequences:** Typical apps can finish while a whale still downloads. Ghost Older rows leave Update N. Merge #29 and `/ship` stay open.
+
+### 2026-09-15 — Merge open PRs #26, #28, #14
+- **Status:** Accepted
+- **Context:** User asked to merge the three Open PRs on the board. #26 was MERGEABLE but BLOCKED (no CI on `release-please--branches--main`). #14 was UNSTABLE only because Dependabot auto-merge failed; required CI/CodeQL/Security Scan passed. #28 was CLEAN.
+- **Decision:** Admin-merge #26 (`--merge --delete-branch`) so Release Please can tag `v0.37.1`. Squash-merge #28 then #14. Leave newly opened #29 (0.37.2) open — it appeared after the tag plus the dep bumps, and Unreleased product UX is still local. Do not `/ship`.
+- **Alternatives considered:** Merge #29 in the same pass (rejected: not one of the requested PRs; would cut 0.37.2 without the local UX). Wait for required checks on #26 (rejected: that branch never posted checks).
+- **Consequences:** `v0.37.1` is published (SBOMs; Signed APK job failed). Board remaining is `/ship` plus #29. Product UX stays uncommitted on `chore/template-upgrade-v1.5.0`.
+
 ### 2026-08-31 — v0.37.0 UI overhaul: scrubbable year scrollbar, navigation cleanup, and ideas in settings
 - **Status:** Accepted
 - **Context:** User requested removing redundant in-screen "Back to settings" and "Back to apps" buttons in favor of natural hardware/gesture back navigation while retaining full menu state history; requested a scrubbable scrollbar with animated year callouts on the main inventory list; requested moving the top-bar ideas menu into settings; and requested removing the non-functional legacy local scan button.
@@ -538,3 +580,11 @@ _Seed template ADR: `docs/adr/0000-template-baseline.md`. Child repos use `docs/
 ## Autonomous /build approval (2026-08-19T14:26:58+00:00)
 
 - QUERY_ALL_PACKAGES rationale is in-app; inventory does not scan until acknowledged
+
+## 2026-09-15 — HUMAN/ADB UX rows automated on OP13
+
+- **Status:** Accepted
+- **Context:** Sprint 28–32 HUMAN/ADB rows had no `/build` rules; generic TalkBack connected tests still expected a bottom Close settings control.
+- **Decision:** Add `human_task_devpulse.py` rules (source + unit tests + `GoldenPathUiTest` on CPH2583). Settings close is the gear content description. Bottom nav skipped. Crash/UnifiedPush stay default off. Set `AUTOMERGE_TOKEN` via `setup-automerge-token.sh`. Do not `/ship` while Unreleased UX is uncommitted.
+- **Alternatives considered:** Mark ADB done from host tests only (rejected: OP13 was attached). Merge Open PRs from this pass (rejected: not HUMAN device work).
+- **Consequences:** Live board HUMAN/ADB sprint rows are closed. Next product tag still needs `/ship`.

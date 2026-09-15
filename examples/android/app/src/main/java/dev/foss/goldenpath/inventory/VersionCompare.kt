@@ -12,8 +12,8 @@ object VersionCompare {
         installedCode: Long = 0,
         remoteCode: Long? = null,
     ): Boolean {
-        if (remoteCode != null && remoteCode > 0 && installedCode > 0 && remoteCode > installedCode) {
-            return true
+        if (remoteCode != null && remoteCode > 0 && installedCode > 0) {
+            return remoteCode > installedCode
         }
         val remote = remoteName?.trim().orEmpty()
         val installed = installedName?.trim().orEmpty()

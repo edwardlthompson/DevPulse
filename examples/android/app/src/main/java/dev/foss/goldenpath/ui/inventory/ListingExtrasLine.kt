@@ -15,8 +15,9 @@ internal fun ListingExtrasLine(
     installedVersion: String?,
     deviceSdk: Int = 0,
     deviceAbis: Set<String> = emptySet(),
+    installedCode: Long = 0,
 ) {
-    if (!ListingNewer.allow(link.versionName, installedVersion) && link.listed) {
+    if (!ListingNewer.allow(link.versionName, installedVersion, installedCode, link.versionCode) && link.listed) {
         Text(
             text = stringResource(R.string.about_update_current),
             style = MaterialTheme.typography.bodySmall,

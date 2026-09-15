@@ -15,7 +15,7 @@ examples/android/
     res/values-{lang}/           # add when shipping translations
     java/.../ui/
       theme/                     # GoldenPathTheme, generated Color.kt / Type.kt / Dimens.kt
-      components/                # ThemeToggle, etc. — labels via stringResource()
+      components/                # shared chrome — labels via stringResource()
       screens/                   # GoldenPathScreen, etc.
 
 ```

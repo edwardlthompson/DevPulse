@@ -2,6 +2,8 @@ package dev.foss.goldenpath.ui.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +12,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.ui.components.MenuOverlay
+import dev.foss.goldenpath.ui.forge.AddRepoDialog
 
 enum class SourceSetup {
     Play,
@@ -24,8 +28,13 @@ enum class SourceSetup {
 }
 
 @Composable
-fun SourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun SourcesScreen(
+    onBack: () -> Unit,
+    apps: List<InstalledApp> = emptyList(),
+    modifier: Modifier = Modifier,
+) {
     var setup by remember { mutableStateOf<SourceSetup?>(null) }
+    var showAdd by remember { mutableStateOf(false) }
     val childOpen = setup != null
     BackHandler(enabled = childOpen) { setup = null }
     MenuOverlay(
@@ -36,7 +45,12 @@ fun SourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 title = stringResource(R.string.settings_section_sources),
                 onBack = onBack,
                 modifier = Modifier.fillMaxSize(),
-            ) { SourcesToggleList(onSetup = { setup = it }) }
+            ) {
+                TextButton(onClick = { showAdd = true }) {
+                    Text(stringResource(R.string.forge_add))
+                }
+                SourcesToggleList(onSetup = { setup = it })
+            }
         },
         child = {
             when (val open = setup) {
@@ -49,6 +63,13 @@ fun SourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             }
         },
     )
+    if (showAdd) {
+        AddRepoDialog(
+            installed = apps,
+            onDismiss = { showAdd = false },
+            onMessage = {},
+        )
+    }
 }
 
 @Composable

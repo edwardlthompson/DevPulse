@@ -35,7 +35,9 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 - ✅ i18n: `update_notes_*` (cache strings wait for the APK row)
 - ✅ User never has to open a website to fetch an APK we already have a direct URL for
 - ✅ Prefetch defaults on and stays user-toggleable. Identity-safe candidate only (same cert + ABI/locale). Unmetered-only. Silent install is Root-only after the user picks it
-- ✅ APKMirror stays page-only; Play downloads only when the opt-in Aurora toggle is on
+- ✅ APKMirror stays page-only; Play files prefetch when the Aurora toggle is on
+- ✅ Prefetch writes to disk via `toFile` (not an 8 MB in-memory `get`); it runs in WorkManager after scan `finish()` so it does not keep the scan foreground service or Scan and update window alive
+- ✅ Prefetch and Update all share `ApkFileStore.fileFor` dest files
 - ✅ i18n: `update_cache_*`
 
 ## Smoke scenario
@@ -62,7 +64,6 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 | Race (two Refresh jobs) | Existing `ReleaseRefreshRuntime.tryBegin()` |
 | Unhandled download exception | `Result` + ignore that sha256; user can retry |
 | Wrong-market APK | Cert + locale inspect before the file is marked ready |
-
 ## Container map
 
 | Layer | Path |
@@ -71,7 +72,6 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 | View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
 | Tests | `examples/android/app/src/test/` |
 | Wiring | `GoldenPathApp.kt` ≤10 lines |
-
 ## Tests
 - Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
 

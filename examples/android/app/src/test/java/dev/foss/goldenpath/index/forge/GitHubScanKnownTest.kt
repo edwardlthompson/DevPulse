@@ -2,6 +2,7 @@ package dev.foss.goldenpath.index.forge
 
 import dev.foss.goldenpath.inventory.RefreshOutletIds
 import dev.foss.goldenpath.inventory.RefreshSkip
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
@@ -11,6 +12,11 @@ class GitHubScanKnownTest {
     @Before
     fun reset() {
         GitHubSearchPace.reset()
+        RefreshSkip.reset()
+    }
+
+    @After
+    fun clearSkip() {
         RefreshSkip.reset()
     }
 

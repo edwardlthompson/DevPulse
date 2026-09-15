@@ -27,6 +27,10 @@ class InstallWhyTest {
         assertEquals(InstallWhy.NoSpace, ListingFail.why)
         ListingFail.playPurchase()
         assertEquals(InstallWhy.PlayPurchase, ListingFail.why)
+        ListingFail.resolveMiss()
+        assertEquals(InstallWhy.ResolveMiss, ListingFail.why)
+        ListingFail.timeout()
+        assertEquals(InstallWhy.Timeout, ListingFail.why)
     }
 
     @Test

@@ -27,4 +27,26 @@ object ListingDownload {
         UpdateArtifactMemory.markLocal(artifact.packageName, artifact.source, file.absolutePath)
         return file
     }
+
+    fun files(
+        file: File,
+        artifact: UpdateArtifact,
+        inspect: (File) -> ApkInspect,
+        unpackDir: File,
+    ): List<File>? {
+        val got = inspect(file).packageName
+        if (got == artifact.packageName) {
+            return keep(file, artifact, inspect)?.let { listOf(it) }
+        }
+        if (got != null) {
+            file.delete()
+            return null
+        }
+        val expanded = XapkUnpack.expand(file, artifact.packageName, unpackDir, inspect)
+        file.delete()
+        if (expanded.isNullOrEmpty()) return null
+        UpdateArtifactMemory.add(artifact)
+        UpdateArtifactMemory.markLocal(artifact.packageName, artifact.source, expanded.first().absolutePath)
+        return expanded
+    }
 }

@@ -30,6 +30,7 @@ object PackageIdAliases {
         if (pkg.isEmpty()) return null
         library[pkg]?.let { return it }
         curatedHints[pkg]?.let { return GithubHint(it) }
+        encoded(pkg)?.let { return GithubHint(it) }
         val repos = keys(pkg).drop(1).mapNotNull { key ->
             library[key]?.ownerRepo?.trim()?.takeIf { it.contains('/') }
                 ?: curatedHints[key]?.takeIf { it.contains('/') }
@@ -46,5 +47,15 @@ object PackageIdAliases {
             hint(pkg, library)?.let { out[pkg] = it }
         }
         return out
+    }
+
+    fun encoded(packageName: String): String? {
+        val parts = packageName.trim().split('.')
+        if (parts.size < 4) return null
+        if (!parts[0].equals("io", true) || !parts[1].equals("github", true)) return null
+        val owner = parts[2].trim()
+        val repo = parts.drop(3).joinToString("-").trim()
+        if (owner.isEmpty() || repo.isEmpty() || '/' in owner || '/' in repo) return null
+        return "$owner/$repo"
     }
 }

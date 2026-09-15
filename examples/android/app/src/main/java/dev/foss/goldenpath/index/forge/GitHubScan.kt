@@ -40,76 +40,20 @@ object GitHubScan {
         val outcome = if (candidates.isEmpty()) "missing" else "candidates"
         RefreshTrace.line("github $packageName search http ${page.statusCode} $outcome ${page.body.length}B")
         if (candidates.isEmpty()) {
-            return RemoteReleaseOffer(RemoteReleasedSource.Forge, listed = false, known = true)
+            return RemoteReleaseOffer(
+                RemoteReleasedSource.Forge,
+                listed = false,
+                known = true,
+                miss = ListingMiss.Searched,
+            )
         }
-        return runCatching { verify(packageName, candidates, releases, pause) }.getOrElse {
-            fail(packageName, it)
-        }
+        return runCatching {
+            GitHubScanVerify.releases(packageName, label, candidates, releases, pause)
+        }.getOrElse { fail(packageName, it) }
     }
 
     fun pick(packageName: String, label: String, candidates: List<ForgeCandidate>): ForgeCandidate? =
         ForgeMatcher.rank(packageName, label, candidates)?.candidate
-
-    private fun verify(
-        packageName: String,
-        candidates: List<ForgeCandidate>,
-        releases: GitHubReleaseClient,
-        pause: (Long) -> Unit,
-    ): RemoteReleaseOffer {
-        val verified = mutableListOf<ForgeCandidate>()
-        val notesByRepo = HashMap<String, String>()
-        val apkByRepo = HashMap<String, String>()
-        val versionByRepo = HashMap<String, String>()
-        var blocked = false
-        for (candidate in candidates) {
-            val page = listReleases(candidate.ownerRepo, releases, pause)
-            if (page.statusCode == 403 || page.statusCode == 429 || page.statusCode !in 200..299) {
-                ForgeRateLimit.noteGithub(page.statusCode, page.retryAfterSec)
-                RefreshTrace.line(
-                    "github $packageName releases ${candidate.ownerRepo} http ${page.statusCode} unknown ${page.body.length}B",
-                )
-                blocked = true
-                break
-            }
-            val hit = GitHubReleaseParser.firstWithPackage(packageName, page.body)
-                ?: if (candidate.ownerRepo.contains(packageName.substringAfterLast('.'), ignoreCase = true)) {
-                    GitHubReleaseParser.firstApk(page.body, packageName = packageName)
-                } else null
-            if (hit == null) {
-                RefreshTrace.line(
-                    "github $packageName releases ${candidate.ownerRepo} http ${page.statusCode} missing ${page.body.length}B",
-                )
-                continue
-            }
-            RefreshTrace.line(
-                "github $packageName releases ${candidate.ownerRepo} http ${page.statusCode} listed ${page.body.length}B",
-            )
-            hit.notes?.let { notesByRepo[candidate.ownerRepo] = it }
-            hit.apkUrl?.let { apkByRepo[candidate.ownerRepo] = it }
-            hit.versionName?.let { versionByRepo[candidate.ownerRepo] = it }
-            val exact = hit.haystack.contains(packageName, ignoreCase = true)
-            verified += candidate.copy(
-                packageId = if (exact) packageName else candidate.packageId,
-                latestReleaseMs = hit.publishedAtMs ?: candidate.latestReleaseMs,
-            )
-        }
-        val best = pickVerified(packageName, verified)
-        if (best != null) {
-            GitHubNotes.remember(packageName, notesByRepo[best.ownerRepo])
-            GitHubNotes.rememberApk(packageName, apkByRepo[best.ownerRepo])
-            return RemoteReleaseOffer(
-                source = RemoteReleasedSource.Forge,
-                ms = best.latestReleaseMs ?: best.latestCommitMs,
-                versionName = versionByRepo[best.ownerRepo],
-                pageUrl = ForgeUrl.downloadPage("https://github.com/${best.ownerRepo}"),
-            )
-        }
-        if (blocked) return unknown(ListingMiss.Forbidden)
-        return RemoteReleaseOffer(RemoteReleasedSource.Forge, listed = false, known = true)
-    }
-
-    private fun pickVerified(packageName: String, verified: List<ForgeCandidate>): ForgeCandidate? =
-        verified.firstOrNull { it.packageId.equals(packageName, ignoreCase = true) } ?: verified.firstOrNull()
 
     private fun search(
         packageName: String,

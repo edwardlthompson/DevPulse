@@ -23,6 +23,11 @@
           "type": "json",
           "path": ".cursor-plugin/plugin.json",
           "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "schemas/golden-path/app-version.json",
+          "jsonpath": "$.version"
         }
       ],
       "include-component-in-tag": false,

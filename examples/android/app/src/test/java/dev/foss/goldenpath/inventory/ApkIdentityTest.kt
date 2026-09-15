@@ -18,7 +18,12 @@ class ApkIdentityTest {
 
     @Test
     fun digestIsSha256Hex() {
-        assertEquals("039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81", ApkIdentity.digest(byteArrayOf(1, 2, 3)))
+        val bytes = byteArrayOf(1, 2, 3)
+        assertEquals("039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81", ApkIdentity.digest(bytes))
+        val file = java.io.File.createTempFile("apksha", ".bin")
+        file.writeBytes(bytes)
+        assertEquals(ApkIdentity.digest(bytes), ApkIdentity.digestFile(file))
+        file.delete()
     }
 
     @Test

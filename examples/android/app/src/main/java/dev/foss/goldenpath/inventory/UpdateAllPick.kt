@@ -15,7 +15,10 @@ object UpdateAllPick {
             }.toMutableList()
             val seenSources = jobs.map { it.source }.toSet()
             UpdateArtifactMemory.byPackage[app.packageName]?.forEach { alt ->
-                if (alt.source !in seenSources && !IgnoredUpdates.has(app.packageName, alt.source, alt.versionName)) {
+                if (alt.source !in seenSources &&
+                    UpdateAllSkip.allowSideloadMirror(app, alt.source) &&
+                    !IgnoredUpdates.has(app.packageName, alt.source, alt.versionName)
+                ) {
                     if (VersionCompare.isNewer(alt.versionName, app.versionName, app.versionCode, alt.versionCode)) {
                         jobs.add(UpdateAllJob(app.packageName, app.label, alt.source, alt.downloadUrl, alt.versionName))
                     }
@@ -30,7 +33,10 @@ object UpdateAllPick {
             val alt = UpdateArtifactMemory.best(app.packageName)?.takeUnless {
                 IgnoredUpdates.has(app.packageName, it.source, it.versionName ?: app.remoteVersionName)
             }
-            if (alt != null && VersionCompare.isNewer(alt.versionName, app.versionName, app.versionCode, alt.versionCode)) {
+            if (alt != null &&
+                UpdateAllSkip.allowSideloadMirror(app, alt.source) &&
+                VersionCompare.isNewer(alt.versionName, app.versionName, app.versionCode, alt.versionCode)
+            ) {
                 return listOf(
                     UpdateAllJob(app.packageName, app.label, alt.source, null, alt.versionName ?: app.remoteVersionName),
                 )
@@ -38,7 +44,8 @@ object UpdateAllPick {
             return emptyList()
         }
         UpdateArtifactMemory.best(app.packageName)?.takeUnless {
-            IgnoredUpdates.has(app.packageName, it.source, it.versionName ?: app.remoteVersionName)
+            IgnoredUpdates.has(app.packageName, it.source, it.versionName ?: app.remoteVersionName) ||
+                !UpdateAllSkip.allowSideloadMirror(app, it.source)
         }?.let {
             return listOf(
                 UpdateAllJob(app.packageName, app.label, it.source, null, it.versionName ?: app.remoteVersionName),
@@ -46,6 +53,7 @@ object UpdateAllPick {
         }
         val source = app.remoteVersionSource
         if (app.origin == AppOrigin.Play && source != RemoteReleasedSource.Play) return emptyList()
+        if (!UpdateAllSkip.allowSideloadMirror(app, source)) return emptyList()
         if (!UpdateAll.fetchable(source, app.packageName, auroraPlay)) return emptyList()
         if (IgnoredUpdates.has(app.packageName, source, app.remoteVersionName)) return emptyList()
         return listOf(UpdateAllJob(app.packageName, app.label, source, null, app.remoteVersionName))

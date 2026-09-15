@@ -16,6 +16,7 @@ object ApkHttpFetcher : ApkBytesFetcher {
     const val CONNECT_TIMEOUT_MS = 15_000
     const val READ_TIMEOUT_MS = 60_000
     const val MAX_BYTES = 0L
+    const val MAX_IN_MEMORY = 8L * 1024 * 1024
     const val USER_AGENT = "DevPulse/0.23 (https://github.com/edwardlthompson/DevPulse)"
 
     override fun get(url: String): Result<ByteArray> = get(url, null)
@@ -25,8 +26,14 @@ object ApkHttpFetcher : ApkBytesFetcher {
         onProgress: ((Long, Long) -> Unit)?,
         userAgent: String = USER_AGENT,
     ): Result<ByteArray> = open(url, userAgent) { conn, total ->
+        if (total > MAX_IN_MEMORY) error("apk too large")
         val out = ByteArrayOutputStream()
-        copy(conn, total, onProgress) { buf, n -> out.write(buf, 0, n) }
+        var held = 0L
+        copy(conn, total, onProgress) { buf, n ->
+            held += n
+            if (held > MAX_IN_MEMORY) error("apk too large")
+            out.write(buf, 0, n)
+        }
         out.toByteArray()
     }
 
@@ -46,7 +53,9 @@ object ApkHttpFetcher : ApkBytesFetcher {
     internal fun retryable(message: String?): Boolean {
         val msg = message.orEmpty().lowercase()
         if ("cancelled" in msg || "too large" in msg) return false
-        return "connection reset" in msg || "broken pipe" in msg || "read timed out" in msg
+        return "connection reset" in msg || "broken pipe" in msg || "read timed out" in msg ||
+            "connection abort" in msg || "unable to resolve host" in msg || "no address associated" in msg ||
+            "unknown host" in msg || "network is unreachable" in msg
     }
 
     private fun write(

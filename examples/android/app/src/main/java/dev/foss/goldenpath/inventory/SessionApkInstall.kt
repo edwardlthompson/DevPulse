@@ -48,7 +48,7 @@ object SessionApkInstall {
     }
 
     internal fun applyOwnership(context: Context, apkFile: File, params: PackageInstaller.SessionParams) {
-        val pkg = ApkArchiveIdentity.inspect(context.packageManager, apkFile).packageName ?: return
+        val pkg = ApkArchiveIdentity.inspect(context.packageManager, apkFile, signing = false).packageName ?: return
         params.setAppPackageName(pkg)
         val installed = ApkArchiveIdentity.installed(context.packageManager, pkg) != null
         val owner = SessionUpdateOwnership.installerPackage(context.packageManager, pkg)

@@ -29,8 +29,8 @@ object AppOriginResolver {
         }
     }
 
-    fun refine(local: AppOrigin, remote: RemoteReleasedSource?): AppOrigin {
-        if (local == AppOrigin.Play) return AppOrigin.Play
+    fun refine(local: AppOrigin, remote: RemoteReleasedSource?, playListed: Boolean = false): AppOrigin {
+        if (playListed || local == AppOrigin.Play) return AppOrigin.Play
         if (local == AppOrigin.Fdroid) return AppOrigin.Fdroid
         return when (remote) {
             RemoteReleasedSource.Fdroid -> AppOrigin.Fdroid

@@ -9,6 +9,11 @@ cd "$ROOT"
 # shellcheck source=lib/resolve-python.sh
 . "$(cd "$(dirname "$0")" && pwd)/lib/resolve-python.sh"
 
+if [ ! -f "$ROOT/examples/web/package.json" ]; then
+  echo "SKIP: About feature gate (examples/web not present)"
+  exit 0
+fi
+
 WEB_SRC="$ROOT/examples/web/src"
 WEB_E2E="$ROOT/examples/web/e2e"
 BACKUP="$(mktemp -d)"

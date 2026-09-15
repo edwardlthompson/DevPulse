@@ -166,7 +166,7 @@ internal fun StoreListingRow(
             color = if (ignored) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurface,
         )
         Text(text = line, style = MaterialTheme.typography.bodySmall, color = tone)
-        ListingExtrasLine(link, installedVersion, deviceSdk, deviceAbis)
+        ListingExtrasLine(link, installedVersion, deviceSdk, deviceAbis, installedCode)
         if (pickAptoide) {
             AptoideCatalogDialog(onPicked = { pickAptoide = false; startFetch() }, onDismiss = { pickAptoide = false })
         }

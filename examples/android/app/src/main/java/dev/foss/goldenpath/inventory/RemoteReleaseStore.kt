@@ -89,6 +89,7 @@ object RemoteReleaseCodec {
         offer.listed -> "1"
         offer.miss == ListingMiss.Forbidden -> "403"
         offer.miss == ListingMiss.Parse -> "parse"
+        offer.miss == ListingMiss.Searched -> "s"
         !offer.known -> "?"
         else -> "0"
     }
@@ -96,6 +97,7 @@ object RemoteReleaseCodec {
     private fun missOf(flag: String): ListingMiss? = when (flag) {
         "403" -> ListingMiss.Forbidden
         "parse" -> ListingMiss.Parse
+        "s" -> ListingMiss.Searched
         "0" -> ListingMiss.Never
         else -> null
     }

@@ -41,7 +41,7 @@ internal fun startUpdateAll(
                         ListingInstallLive.prepare(context, job.packageName, job.source, job.pageUrl, progress)
                     },
                     install = { files ->
-                        val used = method.effective(WelcomeNeeds.installGranted(context))
+                        val used = method.onDevice(WelcomeNeeds.installGranted(context))
                         if (used == InstallMethod.Session) {
                             SessionThenSystem.run(context, files)
                         } else {

@@ -4,6 +4,15 @@ import dev.foss.goldenpath.index.aurora.AuroraPlayFile
 import java.io.File
 
 object ListingPlay {
+    fun newerThanInstalled(
+        parts: List<AuroraPlayFile>,
+        installedName: String?,
+        installedCode: Long,
+    ): Boolean {
+        val part = parts.firstOrNull { it.base } ?: parts.firstOrNull() ?: return false
+        return ListingNewer.allow(part.versionName, installedName, installedCode, part.versionCode)
+    }
+
     fun download(
         cacheDir: File,
         packageName: String,
@@ -54,7 +63,7 @@ object ListingPlay {
                 return null
             }
             val name = inspect(dest).packageName
-            val keep = name == pkg || (name == null && zipMagic(dest))
+            val keep = name == pkg || (name == null && ApkZip.ok(dest))
             if (!keep) {
                 dest.delete()
                 continue
@@ -63,9 +72,5 @@ object ListingPlay {
         }
         if (out.isEmpty()) return null
         return out
-    }
-
-    private fun zipMagic(file: File): Boolean = file.inputStream().use { input ->
-        input.read() == 0x50 && input.read() == 0x4B
     }
 }

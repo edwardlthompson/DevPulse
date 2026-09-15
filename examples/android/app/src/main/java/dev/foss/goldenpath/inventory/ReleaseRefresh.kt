@@ -52,7 +52,8 @@ object ReleaseRefresh {
         wanted: Set<String>,
         verified: Map<String, String> = emptyMap(),
         pasted: Map<String, String> = emptyMap(),
-    ): Map<String, GithubHint> = ReleaseRefreshHints.github(records, wanted, verified, pasted)
+        shipped: Map<String, String> = emptyMap(),
+    ): Map<String, GithubHint> = ReleaseRefreshHints.github(records, wanted, verified, pasted, shipped)
 
     @Suppress("UNUSED_PARAMETER")
     fun run(
@@ -80,6 +81,7 @@ object ReleaseRefresh {
         categoryStore: FdroidCategoryStore? = null,
         pastedStore: PastedRepoStore? = null,
         nameCatalog: FdroidNameCatalog? = null,
+        shippedCatalog: Map<String, String> = emptyMap(),
         aptoideUpdatesFetcher: AptoideUpdatesFetcher = AptoideUpdatesFetcher {
             Result.failure(IllegalStateException("aptoide-batch"))
         },
@@ -127,8 +129,8 @@ object ReleaseRefresh {
             loaded.map { it.repoId to it.githubLibrary },
         )
         val pasted = pastedStore?.load().orEmpty() + PlaySourceHints.snapshot()
-        val merged = library + FdroidGithubHints.hints(records, wantedSet) +
-            PastedRepoCodec.hints(pasted)
+        val merged = shippedCatalog.mapValues { GithubHint(it.value) } + library +
+            FdroidGithubHints.hints(records, wantedSet) + PastedRepoCodec.hints(pasted)
         val knownRepos = PackageIdAliases.expand(wantedSet, merged)
         verifiedStore?.save(knownRepos.mapValues { it.value.ownerRepo })
         RefreshTrace.line("github library ${library.size} persisted")

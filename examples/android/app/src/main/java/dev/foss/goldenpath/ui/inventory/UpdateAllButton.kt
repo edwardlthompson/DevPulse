@@ -4,7 +4,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,7 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.SignerReplaceQueue
-import dev.foss.goldenpath.inventory.InstallAwait
 import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.InstalledApp
 import dev.foss.goldenpath.inventory.InventoryPreferences
@@ -28,6 +29,7 @@ import dev.foss.goldenpath.inventory.WelcomeNeeds
 import dev.foss.goldenpath.inventory.UpdateAllCancel
 import dev.foss.goldenpath.inventory.UpdateAllPick
 import dev.foss.goldenpath.inventory.UpdateAllPhase
+import dev.foss.goldenpath.inventory.UpdateAllSession
 import dev.foss.goldenpath.inventory.UpdateAllSnap
 import dev.foss.goldenpath.inventory.UpdateAllTally
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
@@ -38,6 +40,7 @@ import kotlinx.coroutines.launch
 fun UpdateAllButton(
     apps: List<InstalledApp>,
     selected: Set<String> = emptySet(),
+    startKick: Int = 0,
     modifier: Modifier = Modifier,
 ) {
     val revision by UpdateArtifactMemory.revision.collectAsStateWithLifecycle()
@@ -56,7 +59,6 @@ fun UpdateAllButton(
     if (queue.isEmpty()) return
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
-    var show by remember { mutableStateOf(false) }
     var metered by remember { mutableStateOf(false) }
     val snaps = remember { mutableStateListOf<UpdateAllSnap>() }
     val tally = UpdateAllTally.of(snaps)
@@ -70,29 +72,52 @@ fun UpdateAllButton(
         stringResource(R.string.update_all, queue.size)
     }
     val start = {
-        if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) {
+        if (busy) {
+            UpdateAllSession.show()
+        } else if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) {
             Unit
         } else {
             UpdateAllCancel.arm()
             busy = true
-            show = true
+            UpdateAllSession.busy.value = true
+            UpdateAllSession.rootInstall.value = method == InstallMethod.Root
+            UpdateAllSession.show()
             snaps.clear()
             snaps.addAll(queue.map { UpdateAllSnap(it.packageName, it.label, it.source, UpdateAllPhase.Wait) })
+            UpdateAllSession.snaps.value = snaps.toList()
             startUpdateAll(
                 context, scope, queue, groups, method,
                 onSnap = { snap ->
                     scope.launch(Dispatchers.Main.immediate) {
                         val at = snaps.indexOfFirst { it.packageName == snap.packageName }
                         if (at >= 0) snaps[at] = snap else snaps.add(snap)
+                        UpdateAllSession.snaps.value = snaps.toList()
                     }
                 },
-                onDone = { busy = false },
+                onDone = {
+                    busy = false
+                    UpdateAllSession.busy.value = false
+                },
             )
+        }
+    }
+    var lastKick by remember { mutableIntStateOf(0) }
+    LaunchedEffect(startKick, queue.size) {
+        if (startKick > lastKick && !busy && queue.isNotEmpty()) {
+            lastKick = startKick
+            if (MeteredNet.needsConfirm(MeteredNet.metered(context), queue.size)) {
+                metered = true
+            } else {
+                start()
+            }
         }
     }
     TextButton(
         onClick = {
-            if (busy) return@TextButton
+            if (busy) {
+                UpdateAllSession.show()
+                return@TextButton
+            }
             if (MeteredNet.needsConfirm(MeteredNet.metered(context), queue.size)) {
                 metered = true
             } else {
@@ -106,7 +131,7 @@ fun UpdateAllButton(
         AlertDialog(
             onDismissRequest = { metered = false },
             title = { Text(stringResource(R.string.update_all, queue.size)) },
-            text = { Text(stringResource(R.string.update_prefetch_enable)) },
+            text = { Text(stringResource(R.string.update_all_metered)) },
             confirmButton = {
                 TextButton(onClick = { metered = false; start() }) {
                     Text(stringResource(R.string.inventory_rationale_ack))
@@ -116,17 +141,6 @@ fun UpdateAllButton(
                 TextButton(onClick = { metered = false }) {
                     Text(stringResource(R.string.about_not_now))
                 }
-            },
-        )
-    }
-    if (show) {
-        UpdateAllDialog(
-            snaps = snaps.toList(),
-            complete = !busy,
-            onDismiss = {
-                show = false
-                UpdateAllCancel.request()
-                InstallAwait.signal(false)
             },
         )
     }

@@ -42,7 +42,7 @@ def adb_authorized(root: Path) -> bool:
 
 
 def _gradle_argv(root: Path, *tasks: str) -> list[str] | None:
-    android = root / "examples" / "android"
+    android = (root / "examples" / "android").resolve()
     if os.name == "nt":
         bat = android / "gradlew.bat"
         if bat.is_file():

@@ -29,5 +29,6 @@ class CacheWipeTest {
         assertTrue(!File(dir, "remote_releases.json").exists())
         assertTrue(!File(dir, "fdroid-index").exists())
         assertTrue(!File(dir, "dump_chunk_apkmirror.txt").exists())
+        assertTrue(!File(dir, UpdateArtifactStore.FILE).exists())
     }
 }

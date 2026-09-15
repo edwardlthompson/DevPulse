@@ -15,7 +15,7 @@ class GitHubSearchHttp(private val token: String? = null) : GitHubSearchClient, 
         if (slash <= 0 || slash == ownerRepo.lastIndex) return GitHubSearchPage(200, "[]")
         val owner = pathSeg(ownerRepo.substring(0, slash))
         val repo = pathSeg(ownerRepo.substring(slash + 1))
-        return get("${GitHubFetchPolicy.REPOS_URL}/$owner/$repo/releases?per_page=5")
+        return get("${GitHubFetchPolicy.REPOS_URL}/$owner/$repo/releases?per_page=10")
     }
 
     private fun pathSeg(raw: String): String =

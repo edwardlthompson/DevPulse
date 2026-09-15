@@ -43,7 +43,7 @@ Types in `dev.foss.goldenpath.index.aptoide`. No live network in unit tests. Nev
 | Logic | `examples/android/.../index/aptoide/` |
 | View | Settings toggle |
 | Tests | `src/test/.../index/aptoide/` plus JSON fixtures |
-| Wiring | `rememberScanSession` starts fetch when opted in |
+| Wiring | `ReleaseRefreshRunner` when Aptoide is enabled |
 ## Definition of Done
 
 Fixture parser tests required. Fallback: `bash scripts/feature-gate.sh --stack android`.

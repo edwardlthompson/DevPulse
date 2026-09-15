@@ -20,7 +20,8 @@ object UpdateInventory {
                 VersionCompare.isNewer(link.versionName, app.versionName, app.versionCode, link.versionCode) &&
                 !IgnoredUpdates.has(app.packageName, link.source, link.versionName) &&
                 ListingFit.allow(link, deviceSdk, deviceAbis) &&
-                (app.origin != AppOrigin.Play || link.source == RemoteReleasedSource.Play)
+                (app.origin != AppOrigin.Play || link.source == RemoteReleasedSource.Play) &&
+                UpdateAllSkip.allowSideloadMirror(app, link.source)
         }
 
     fun canOpen(

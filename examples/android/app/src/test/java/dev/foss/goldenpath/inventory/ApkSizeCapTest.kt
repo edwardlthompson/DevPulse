@@ -23,8 +23,12 @@ class ApkSizeCapTest {
     fun retryOnlyTransientTransferDrops() {
         assertTrue(ApkHttpFetcher.retryable("Connection reset"))
         assertTrue(ApkHttpFetcher.retryable("Read timed out"))
+        assertTrue(ApkHttpFetcher.retryable("Software caused connection abort"))
+        assertTrue(ApkHttpFetcher.retryable("Unable to resolve host download.cdnpure.com"))
         assertFalse(ApkHttpFetcher.retryable("apk too large"))
         assertFalse(ApkHttpFetcher.retryable("apk cancelled"))
         assertFalse(ApkHttpFetcher.retryable("apk 404"))
+        assertFalse(ApkSizeCap.allow(ApkHttpFetcher.MAX_IN_MEMORY + 1, maxBytes = ApkHttpFetcher.MAX_IN_MEMORY))
+        assertTrue(ApkSizeCap.allow(ApkHttpFetcher.MAX_IN_MEMORY, maxBytes = ApkHttpFetcher.MAX_IN_MEMORY))
     }
 }

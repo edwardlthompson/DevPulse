@@ -19,6 +19,7 @@ class AptoideMetaParserTest {
         assertEquals("2.1.0", lookup.publishedVersion)
         assertEquals("example-app", lookup.uname)
         assertEquals("https://pool.apk.aptoide.com/example/app.example.apk", lookup.fileUrl)
+        assertEquals(210L, lookup.versionCode)
     }
 
     @Test
@@ -34,6 +35,22 @@ class AptoideMetaParserTest {
         assertEquals(AptoideLookupStatus.UnknownCheckManually, lookup.status)
         assertNull(lookup.updatedOnMs)
         assertEquals("1.0", lookup.publishedVersion)
+    }
+
+    @Test
+    fun pathAltIsUsedWhenPathMissing() {
+        val json = """{"data":{"updated":"2024-06-15 12:00:00","file":{"vername":"2.0","vercode":44,"path_alt":"https://pool.apk.aptoide.com/alt/app.apk"}}}"""
+        val lookup = AptoideMetaParser.parse(json, now)
+        assertEquals(AptoideLookupStatus.Ok, lookup.status)
+        assertEquals("https://pool.apk.aptoide.com/alt/app.apk", lookup.fileUrl)
+        assertEquals(44L, lookup.versionCode)
+    }
+
+    @Test
+    fun readsHardwareCpus() {
+        val json = """{"data":{"updated":"2024-06-15 12:00:00","file":{"vername":"2.0","vercode":1,"path":"https://pool.apk.aptoide.com/a.apk","hardware":{"cpus":["x86","armeabi-v7a"]}}}}"""
+        val lookup = AptoideMetaParser.parse(json, now)
+        assertEquals(setOf("x86", "armeabi-v7a"), lookup.nativeCodes)
     }
 
     @Test

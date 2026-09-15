@@ -1,6 +1,7 @@
 package dev.foss.goldenpath.ui.inventory
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
@@ -60,6 +62,17 @@ fun AppListScroller(
     var scrubFraction by remember { mutableFloatStateOf(0f) }
     var scrubIndex by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
+    val fadeMs = if (
+        android.provider.Settings.Global.getFloat(
+            LocalContext.current.contentResolver,
+            android.provider.Settings.Global.TRANSITION_ANIMATION_SCALE,
+            1f,
+        ) == 0f
+    ) {
+        0
+    } else {
+        220
+    }
 
     val keypoints = remember(apps) { AppYearScrubber.findYearKeypoints(apps) }
 
@@ -127,8 +140,8 @@ fun AppListScroller(
             // Year Callout Bubble
             AnimatedVisibility(
                 visible = isDragging,
-                enter = fadeIn(),
-                exit = fadeOut(),
+                enter = fadeIn(animationSpec = tween(fadeMs)),
+                exit = fadeOut(animationSpec = tween(fadeMs)),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .offset {

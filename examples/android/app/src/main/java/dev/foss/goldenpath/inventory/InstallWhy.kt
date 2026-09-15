@@ -2,7 +2,7 @@ package dev.foss.goldenpath.inventory
 
 import java.io.File
 
-enum class InstallWhy { Permission, Signing, Timeout, NoFile, Older, Sdk, NoSpace, PlayPurchase, PlayStore }
+enum class InstallWhy { Permission, Signing, Timeout, NoFile, Older, Sdk, NoSpace, PlayPurchase, PlayStore, ResolveMiss }
 
 object ListingFail {
     private val held = ThreadLocal.withInitial { InstallWhy.NoFile }
@@ -38,6 +38,16 @@ object ListingFail {
 
     fun playPurchase(): List<File>? {
         why = InstallWhy.PlayPurchase
+        return null
+    }
+
+    fun resolveMiss(): List<File>? {
+        why = InstallWhy.ResolveMiss
+        return null
+    }
+
+    fun timeout(): List<File>? {
+        why = InstallWhy.Timeout
         return null
     }
 }

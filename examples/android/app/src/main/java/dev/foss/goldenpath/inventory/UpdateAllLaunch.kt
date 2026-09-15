@@ -6,6 +6,8 @@ import android.util.Log
 import dev.foss.goldenpath.index.aurora.AuroraPlayLive
 import dev.foss.goldenpath.index.aurora.AuroraPlayWarm
 import java.io.File
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 object UpdateAllLaunch {
     const val EXTRA = "update_all"
@@ -18,6 +20,7 @@ object UpdateAllLaunch {
         AppliedUpdates.hydrate(context.filesDir)
         SignerReplaceQueue.hydrate(context.filesDir)
         RemoteReleaseMemory.hydrate(FileRemoteReleaseStore(File(context.filesDir, "remote_releases.json")))
+        UpdateArtifactStore.hydrate(context.filesDir)
         val apps = PackageManagerPackageCatalog(context.packageManager)
             .listInstalled()
             .map(RemoteReleaseMemory::merge)
@@ -32,6 +35,9 @@ object UpdateAllLaunch {
         RefreshTrace.emit = { Log.i("DevPulse", it) }
         AuroraPlayWarm.session(context)
         val result = try {
+            val method = runBlocking {
+                InventoryPreferences(context).installMethod.first()
+            }
             UpdateAll.run(
                 jobs = queue,
                 groups = groups,
@@ -39,7 +45,7 @@ object UpdateAllLaunch {
                     ListingInstallLive.prepare(context, job.packageName, job.source, job.pageUrl, progress)
                 },
                 install = { files ->
-                    val used = InstallMethod.Session.effective(WelcomeNeeds.installGranted(context))
+                    val used = method.onDevice(WelcomeNeeds.installGranted(context))
                     if (used == InstallMethod.Session) {
                         SessionThenSystem.run(context, files)
                     } else {
@@ -56,5 +62,6 @@ object UpdateAllLaunch {
             "DevPulse",
             "update all done downloaded=${result.downloaded} installed=${result.installed} failDl=${result.failedDownload} failIns=${result.failedInstall}",
         )
+        GitHubDiscoverLaunch.enqueue(context, replace = true)
     }
 }

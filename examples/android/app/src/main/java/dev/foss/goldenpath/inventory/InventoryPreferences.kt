@@ -70,7 +70,7 @@ class InventoryPreferences(private val context: Context) {
         InstallMethod.parse(prefs[INSTALL_METHOD])
     }
 
-    val updatePrefetchEnabled: Flow<Boolean> = store.booleanPref(UPDATE_PREFETCH, false)
+    val updatePrefetchEnabled: Flow<Boolean> = store.booleanPref(UPDATE_PREFETCH, true)
 
     suspend fun setQueryAllPackagesAcknowledged(value: Boolean) {
         store.writeBoolean(QUERY_ALL_PACKAGES_ACK, value)

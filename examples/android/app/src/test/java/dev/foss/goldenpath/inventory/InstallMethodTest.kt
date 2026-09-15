@@ -10,6 +10,8 @@ class InstallMethodTest {
         assertEquals(InstallMethod.Session, InstallMethod.Session.effective(true))
         assertEquals(InstallMethod.System, InstallMethod.System.effective(false))
         assertEquals(InstallMethod.Root, InstallMethod.Root.effective(false))
+        assertEquals(InstallMethod.Session, InstallMethod.Root.effective(true, false))
+        assertEquals(InstallMethod.System, InstallMethod.Root.effective(false, false))
     }
 
     @Test

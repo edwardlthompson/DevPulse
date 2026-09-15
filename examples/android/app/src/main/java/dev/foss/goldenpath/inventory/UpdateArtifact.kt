@@ -39,15 +39,41 @@ object UpdateArtifactMemory {
     private val revisionState = MutableStateFlow(0)
     val revision: StateFlow<Int> = revisionState.asStateFlow()
 
-    fun add(artifact: UpdateArtifact) {
+    fun add(artifact: UpdateArtifact, persistDisk: Boolean = true) {
         val pkg = artifact.packageName.trim()
         val url = ApkDownloadUrl.httpsFile(artifact.downloadUrl) ?: return
         if (pkg.isEmpty()) return
         val clean = artifact.copy(packageName = pkg, downloadUrl = url)
         synchronized(lock) {
-            val existing = byPackage[pkg].orEmpty().filterNot { it.source == clean.source }
-            val next = existing + clean
-            byPackage = byPackage + (pkg to next)
+            val prior = byPackage[pkg].orEmpty().firstOrNull { it.source == clean.source }
+            val merged = if (
+                clean.nativeCodes.isEmpty() &&
+                prior != null &&
+                prior.nativeCodes.isNotEmpty() &&
+                (prior.downloadUrl == clean.downloadUrl || prior.versionCode == clean.versionCode)
+            ) {
+                clean.copy(nativeCodes = prior.nativeCodes)
+            } else {
+                clean
+            }
+            val existing = byPackage[pkg].orEmpty().filterNot { it.source == merged.source }
+            byPackage = byPackage + (pkg to existing + merged)
+            revisionState.value += 1
+        }
+        if (persistDisk) UpdateArtifactStore.saveFromMemory()
+    }
+
+    fun replaceAll(artifacts: List<UpdateArtifact>) {
+        val grouped = linkedMapOf<String, List<UpdateArtifact>>()
+        artifacts.forEach { artifact ->
+            val pkg = artifact.packageName.trim()
+            val url = ApkDownloadUrl.httpsFile(artifact.downloadUrl) ?: return@forEach
+            if (pkg.isEmpty()) return@forEach
+            val clean = artifact.copy(packageName = pkg, downloadUrl = url)
+            grouped[pkg] = grouped[pkg].orEmpty().filterNot { it.source == clean.source } + clean
+        }
+        synchronized(lock) {
+            byPackage = grouped
             revisionState.value += 1
         }
     }

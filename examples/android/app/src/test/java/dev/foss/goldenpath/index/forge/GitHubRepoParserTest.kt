@@ -29,9 +29,9 @@ class GitHubRepoParserTest {
 
     @Test
     fun queryUsesQuotedLabelWhenItHasSpaces() {
-        assertEquals("NewPipe", GitHubSearchQuery.repositories("org.schabi.newpipe", "NewPipe"))
-        assertEquals("\"Wipe Files\"", GitHubSearchQuery.repositories("uk.org.platitudes.wipefiles", "Wipe Files"))
-        assertEquals("app.devpulse", GitHubSearchQuery.repositories("app.devpulse", "app.devpulse"))
+        assertEquals("\"org.schabi.newpipe\" OR NewPipe", GitHubSearchQuery.repositories("org.schabi.newpipe", "NewPipe"))
+        assertEquals("\"uk.org.platitudes.wipefiles\" OR \"Wipe Files\"", GitHubSearchQuery.repositories("uk.org.platitudes.wipefiles", "Wipe Files"))
+        assertEquals("\"app.devpulse\"", GitHubSearchQuery.repositories("app.devpulse", "app.devpulse"))
         assertEquals("\"org.schabi.newpipe\"", GitHubSearchQuery.repositories("org.schabi.newpipe", "  "))
         assertEquals("Instagram", GitHubSearchQuery.repositories("  ", "Instagram"))
     }

@@ -54,7 +54,7 @@ fun SettingsExportSection(
             },
         ) { Text(stringResource(R.string.export_title)) }
         TextButton(onClick = { CacheWipe.remotes(context.filesDir) }) {
-            Text(stringResource(R.string.about_update_restarting))
+            Text(stringResource(R.string.settings_clear_listings))
         }
     }
 }

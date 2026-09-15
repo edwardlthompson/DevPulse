@@ -20,5 +20,7 @@ class ListingNewerTest {
         assertFalse(ListingNewer.allow("2026080501", "2026.08.05", 2026080501L))
         assertTrue(ListingNewer.allow("2026090101", "2026.08.05", 2026080501L))
         assertFalse(ListingNewer.allow("2023", "2023", 8L))
+        assertFalse(ListingNewer.allow("18.3.1", "18.2.4", 175981782L, 175963030L))
+        assertFalse(ListingNewer.allow(null, "18.2.4", 175981782L, 175963030L))
     }
 }

@@ -1,6 +1,7 @@
 package dev.foss.goldenpath.inventory
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -60,5 +61,34 @@ class UpdateAllPlayOriginTest {
         assertEquals(1, result.failedDownload)
         assertEquals(InstallWhy.PlayStore, snaps.last { it.phase == UpdateAllPhase.Fail }.failWhy)
         assertTrue(snaps.last { it.phase == UpdateAllPhase.Fail }.stay.not())
+    }
+
+    @Test
+    fun playCurrentDoesNotSideloadApkPureNewerBuild() {
+        val app = sampleApp(
+            "com.google.android.keep",
+            "Keep Notes",
+            remoteVersionName = "5.26.365.00.90",
+            origin = AppOrigin.SideloadedUnknown,
+            latestListings = listOf(
+                UpdateLink(
+                    RemoteReleasedSource.Play,
+                    UpdateUrls.play("com.google.android.keep"),
+                    "5.26.361.02.90",
+                    listed = true,
+                    versionCode = 220675001,
+                ),
+                UpdateLink(
+                    RemoteReleasedSource.ApkPure,
+                    "https://apkpure.com/search?q=com.google.android.keep",
+                    "5.26.365.00.90",
+                    listed = true,
+                    versionCode = 220675766,
+                ),
+            ),
+        ).copy(versionName = "5.26.361.02.90", versionCode = 220675001)
+        assertFalse(UpdateInventory.hasUpdate(app))
+        assertTrue(UpdateAllPick.candidates(app).isEmpty())
+        assertTrue(UpdateAllPick.groups(listOf(app)).isEmpty())
     }
 }

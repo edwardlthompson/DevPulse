@@ -39,4 +39,29 @@ class ListingDownloadTest {
             ListingDownload.write(dir, artifact, byteArrayOf()) { ApkInspect("com.a", setOf("aa")) },
         )
     }
+
+    @Test
+    fun filesKeepsMatchingApkAndUnpacksZipWithoutIdentity() {
+        val dir = File.createTempFile("keep", "dir").apply { delete(); mkdirs() }
+        val apk = File(dir, "app.apk").apply { writeBytes(byteArrayOf(1, 2, 3)) }
+        val artifact = UpdateArtifact("com.a", RemoteReleasedSource.ApkPure, "https://download.cdnpure.com/b/APK/com.a")
+        val kept = ListingDownload.files(apk, artifact, { ApkInspect("com.a", emptySet()) }, dir)
+        assertEquals(listOf(apk), kept)
+
+        val archive = File(dir, "bundle.xapk")
+        java.util.zip.ZipOutputStream(archive.outputStream()).use { zip ->
+            zip.putNextEntry(java.util.zip.ZipEntry("com.a.apk"))
+            zip.write(byteArrayOf(4, 5, 6))
+            zip.closeEntry()
+        }
+        val unpacked = ListingDownload.files(
+            archive,
+            artifact,
+            { file -> if (file.name == "com.a.apk") ApkInspect("com.a", emptySet()) else ApkInspect(null, emptySet()) },
+            dir,
+        )
+        assertEquals(1, unpacked?.size)
+        assertEquals("com.a.apk", unpacked?.first()?.name)
+        assertTrue(!archive.exists())
+    }
 }

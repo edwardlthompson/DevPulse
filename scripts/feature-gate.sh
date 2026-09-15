@@ -465,7 +465,11 @@ fi
 
 if [ "$STRICT" = true ] && [ "$STACK" = "multi" ]; then
   run_cmd design-cohesion bash scripts/check-design-cohesion.sh
-  run_cmd about-feature-gate bash scripts/verify-about-feature-gate.sh
+  if [ -f examples/web/package.json ]; then
+    run_cmd about-feature-gate bash scripts/verify-about-feature-gate.sh
+  else
+    skip_or_block "Skipping about-feature-gate (examples/web pruned)"
+  fi
 fi
 
 log "Feature gate passed (${#GATES_PASSED[@]} stages)."

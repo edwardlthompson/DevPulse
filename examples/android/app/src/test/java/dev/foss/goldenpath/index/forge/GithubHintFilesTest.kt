@@ -25,4 +25,14 @@ class GithubHintFilesTest {
         assertNull(GithubHintFiles.hint(dir, "org.mozilla.firefox"))
         assertTrue(GithubHintFiles.library(dir).containsKey("dev.imranr.obtainium.fdroid"))
     }
+
+    @Test
+    fun localVerifiedWinsOverShipped() {
+        val dir = tmp.newFolder("overlay")
+        FileGithubVerifiedStore(java.io.File(dir, "github_verified.tsv"))
+            .put("org.app", "me/keep")
+        val hints = GithubHintFiles.load(dir, mapOf("org.app" to "ship/old", "org.other" to "ship/new"))
+        assertEquals("me/keep", hints["org.app"]?.ownerRepo)
+        assertEquals("ship/new", hints["org.other"]?.ownerRepo)
+    }
 }

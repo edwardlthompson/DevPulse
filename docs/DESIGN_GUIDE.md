@@ -9,6 +9,8 @@
 3. **No raw hex in UI code** — use generated CSS variables or Compose `MaterialTheme` colors.
 4. **Layout survives translation** — flexible widths, logical properties, no fixed-height text containers.
 
+5. **Accent is for primary actions** — `color.primary` marks Update and other commits, not decorative chrome or listing status.
+
 ## Token workflow
 
 ```bash
@@ -35,8 +37,8 @@ Both UI stacks support three modes. Default is **system** (follow OS preference)
 | System | `isSystemInDarkTheme()` | `data-theme="system"` + `prefers-color-scheme` |
 | Light | `LightGoldenPathColors` | `data-theme="light"` |
 | Dark | `DarkGoldenPathColors` | `data-theme="dark"` |
-- **Android:** `ThemeToggle` in top app bar; persisted via DataStore (`ThemePreferences`).
-- **Web:** `ThemeToggle` button; persisted in `localStorage` key `gp-theme`; updates `<meta name="theme-color">`.
+- **Android:** theme lives in Settings (dropdown), persisted via DataStore (`ThemePreferences`). Home chrome is Settings-only.
+- **Web:** theme lives in Settings (`data-settings-theme`); persisted in `localStorage` key `gp-theme`; updates `<meta name="theme-color">`.
 
 Accessibility: toggle labels come from i18n keys (`theme.toggle.label`, `theme.mode.*`), not hardcoded English.
 
@@ -48,6 +50,10 @@ Accessibility: toggle labels come from i18n keys (`theme.toggle.label`, `theme.m
 - Spacing via `SpacingMd`, `RadiusMd`, etc. from generated `Dimens.kt`.
 - Alignment: `Alignment.Start` / `End`, not `Left` / `Right`.
 - Buttons: `Modifier.widthIn(min = 48.dp)` minimum touch target; avoid fixed widths for labels.
+- Home rows: 8dp primary pulse when an update exists; TalkBack uses `inventory_update_available` (not color alone).
+- Filter chips live in a `ModalBottomSheet`, not inline above the list.
+- `AppIcon` clips to `RadiusMd`. Update affordance uses `colorScheme.primary`, not error.
+- Reduce-motion (`TRANSITION_ANIMATION_SCALE` 0) skips the year-scrubber fade.
 
 ### Android system bars (edge-to-edge)
 

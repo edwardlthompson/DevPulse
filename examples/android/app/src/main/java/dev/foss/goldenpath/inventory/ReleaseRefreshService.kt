@@ -39,6 +39,7 @@ class ReleaseRefreshService : Service() {
         )
         if (!ReleaseRefreshRuntime.tryBegin()) return START_NOT_STICKY
         val wanted = intent?.getStringArrayListExtra(RefreshScope.EXTRA_PACKAGES).orEmpty()
+            .ifEmpty { intent?.getStringArrayExtra(RefreshScope.EXTRA_PACKAGES)?.toList().orEmpty() }
         scope.launch { runRefresh(wanted) }
         return START_NOT_STICKY
     }

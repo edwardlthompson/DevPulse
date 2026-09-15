@@ -14,6 +14,7 @@ class GitHubScanTest {
     fun resetPace() {
         GitHubSearchPace.reset()
         RefreshSkip.reset()
+        ForgeRateLimit.reset()
     }
 
     @Test

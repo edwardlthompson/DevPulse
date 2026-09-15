@@ -36,6 +36,21 @@ class ReleaseRefreshGithubAddTest {
     }
 
     @Test
+    fun shippedHintFillsGapAndVerifiedWins() {
+        val pkg = "org.continuumcalendar.app"
+        val shipped = mapOf(pkg to "edwardlthompson/continuum-calendar", "org.other" to "other/app")
+        val fromShip = ReleaseRefresh.githubHints(emptyList(), setOf(pkg), shipped = shipped)
+        assertEquals("edwardlthompson/continuum-calendar", fromShip[pkg]?.ownerRepo)
+        val fromLocal = ReleaseRefresh.githubHints(
+            emptyList(),
+            setOf(pkg),
+            verified = mapOf(pkg to "me/keep"),
+            shipped = shipped,
+        )
+        assertEquals("me/keep", fromLocal[pkg]?.ownerRepo)
+    }
+
+    @Test
     fun obtainiumGithubIdAliasesFdroidLibraryWithoutVersion() {
         val githubPkg = "dev.imranr.obtainium"
         val fdroidPkg = "dev.imranr.obtainium.fdroid"

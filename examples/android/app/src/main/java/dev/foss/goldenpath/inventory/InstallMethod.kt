@@ -6,8 +6,15 @@ enum class InstallMethod {
     Root,
     ;
 
-    fun effective(canRequestInstalls: Boolean): InstallMethod =
-        if (this == Session && !canRequestInstalls) System else this
+    fun effective(canRequestInstalls: Boolean, rootAvailable: Boolean = true): InstallMethod =
+        when {
+            this == Root && !rootAvailable -> if (canRequestInstalls) Session else System
+            this == Session && !canRequestInstalls -> System
+            else -> this
+        }
+
+    fun onDevice(canRequestInstalls: Boolean): InstallMethod =
+        effective(canRequestInstalls, RootPmInstall.available())
 
     companion object {
         fun parse(raw: String?): InstallMethod =

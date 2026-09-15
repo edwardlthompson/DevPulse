@@ -16,20 +16,28 @@ object AuroraPlayLive {
     @Volatile
     private var sessionHeld = false
 
+    @Volatile
+    private var headersBroken = false
+
     fun why(packageName: String): InstallWhy =
         lastWhy[packageName.trim()] ?: InstallWhy.NoFile
 
+    fun playHeadersBroken(): Boolean = headersBroken
+
     fun clearWhy() {
         lastWhy.clear()
+        headersBroken = false
     }
 
     fun holdSession() {
         sessionHeld = true
         lastWhy.clear()
+        headersBroken = false
     }
 
     fun releaseSession() {
         sessionHeld = false
+        headersBroken = false
     }
 
     internal fun retryAfterEmpty(why: InstallWhy): Boolean =
@@ -42,6 +50,7 @@ object AuroraPlayLive {
 
     fun files(context: Context): AuroraPlayFiles = AuroraPlayFiles { pkg ->
         note(pkg, InstallWhy.NoFile)
+        if (headersBroken) return@AuroraPlayFiles emptyList()
         val first = purchase(context, pkg, refresh = false)
         if (first.isNotEmpty() || !retryAfterEmpty(why(pkg))) return@AuroraPlayFiles first
         purchase(context, pkg, refresh = true)
@@ -67,12 +76,7 @@ object AuroraPlayLive {
                 helper.getAppByPackageName(names).mapNotNull { app ->
                     val pkg = app.packageName.trim()
                     if (pkg.isEmpty()) null
-                    else {
-                        if (pkg.contains("ingress", ignoreCase = true) || pkg.contains("niantic", ignoreCase = true) || pkg.contains("temu", ignoreCase = true) || pkg.contains("mapgenie", ignoreCase = true) || pkg.contains("komoot", ignoreCase = true) || pkg.contains("tachyon", ignoreCase = true)) {
-                            RefreshTrace.line("aurora target: pkg=$pkg vName=${app.versionName} vCode=${app.versionCode} updatedOn=${app.updatedOn}")
-                        }
-                        pkg to AuroraPlayLookup.fromFields(app.versionName, app.versionCode, app.updatedOn, now)
-                    }
+                    else pkg to AuroraPlayLookup.fromFields(app.versionName, app.versionCode, app.updatedOn, now)
                 }.toMap()
             page(wanted)
         }.getOrElse {
@@ -103,19 +107,8 @@ object AuroraPlayLive {
                 return emptyList()
             }
             val purchaseHelper = PurchaseHelper(auth).using(AuroraPlayHttp)
-            val purchaseMethods = purchaseHelper.javaClass.declaredMethods
-                .filter { it.name in listOf("purchase", "getDeliveryResponse", "acquire", "getDeliveryToken") }
-                .map { m -> "${m.name}(${m.parameterTypes.map { p -> p.simpleName }.joinToString(",")})" }
-            RefreshTrace.line("aurora PurchaseHelper sigs: $purchaseMethods")
             val rawFiles = purchaseHelper.purchase(app.packageName, app.versionCode, app.offerType)
-            val fileFields = if (rawFiles.isNotEmpty()) {
-                val f0 = rawFiles.first()
-                f0.javaClass.declaredFields.map { f ->
-                    f.isAccessible = true
-                    "${f.name}=${f.get(f0)}"
-                }
-            } else emptyList()
-            RefreshTrace.line("aurora $pkg rawFiles=${rawFiles.size} fields=$fileFields")
+            RefreshTrace.line("aurora $pkg files=${rawFiles.size}")
             val bought = rawFiles
                 .filter { it.type == PlayFile.Type.BASE || it.type == PlayFile.Type.SPLIT }
                 .mapNotNull { file ->
@@ -131,6 +124,7 @@ object AuroraPlayLive {
         }.onFailure {
             val mapped = AuroraPlayWhy.of(it)
             note(pkg, mapped)
+            if (AuroraPlayWhy.headersBroken(it)) headersBroken = true
             RefreshTrace.line("aurora $pkg ${it.javaClass.simpleName}: ${it.message} at ${it.stackTrace.take(8).joinToString(" -> ") { el -> "${el.className}.${el.methodName}:${el.lineNumber}" }}")
         }.getOrDefault(emptyList())
     }

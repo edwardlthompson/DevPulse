@@ -1,7 +1,7 @@
 package dev.foss.goldenpath.index.forge
 
 object GitHubSearchPace {
-    const val PER_MINUTE = 30
+    const val PER_MINUTE = 10
     private const val WINDOW_MS = 60_000L
     private val lock = Any()
     private val stamps = ArrayDeque<Long>()

@@ -35,14 +35,14 @@ class NavBarInsetUiTest {
         assertTrue(context.readNavigationMode() == NavigationMode.ThreeButton)
 
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
-        composeTestRule.onNodeWithText("Close settings").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("Donate via Venmo").performScrollTo().assertIsDisplayed()
 
         val decorView = context.window.decorView
         val navInset = ViewCompat.getRootWindowInsets(decorView)
             ?.getInsets(WindowInsetsCompat.Type.navigationBars())
             ?.bottom ?: 0
         val screenHeight = decorView.height
-        val buttonBottom = composeTestRule.onNodeWithText("Close settings")
+        val buttonBottom = composeTestRule.onNodeWithText("Donate via Venmo")
             .fetchSemanticsNode()
             .boundsInRoot
             .bottom
@@ -65,14 +65,14 @@ class NavBarInsetUiTest {
         setNavigationMode(2)
 
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
-        composeTestRule.onNodeWithText("Close settings").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("Donate via Venmo").performScrollTo().assertIsDisplayed()
 
         val decorView = composeTestRule.activity.window.decorView
         val navInset = ViewCompat.getRootWindowInsets(decorView)
             ?.getInsets(WindowInsetsCompat.Type.navigationBars())
             ?.bottom ?: 0
         val screenHeight = decorView.height
-        val buttonBottom = composeTestRule.onNodeWithText("Close settings")
+        val buttonBottom = composeTestRule.onNodeWithText("Donate via Venmo")
             .fetchSemanticsNode()
             .boundsInRoot
             .bottom

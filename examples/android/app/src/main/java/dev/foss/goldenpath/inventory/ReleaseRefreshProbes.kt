@@ -4,6 +4,7 @@ import dev.foss.goldenpath.index.aptoide.AptoideCachePolicy
 import dev.foss.goldenpath.index.aptoide.AptoideMetaFetcher
 import dev.foss.goldenpath.index.aptoide.AptoideScan
 import dev.foss.goldenpath.index.forge.ForgeCachePolicy
+import dev.foss.goldenpath.index.forge.GitHubLeftoverNoise
 import dev.foss.goldenpath.index.forge.GitHubScan
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
 import dev.foss.goldenpath.index.forge.GithubHint
@@ -67,23 +68,31 @@ object ReleaseRefreshProbes {
         }
         cached?.takeIf { it.listed }?.let { return it }
         leftoverHint?.let { return ProbeCache.stamp(LeftoverForgeScan.fromHint(packageName, it), nowMs) }
-        cached?.let { return it }
-        if (storeSettled(packageName)) {
+        if (storeListed(packageName)) {
             RefreshTrace.line("github $packageName skip search (listed)")
-            return ProbeCache.stamp(
-                RemoteReleaseOffer(RemoteReleasedSource.Forge, listed = false, known = true),
-                nowMs,
-            )
+            return GitHubScan.unknown()
         }
+        if (GitHubLeftoverNoise.skip(packageName)) {
+            RefreshTrace.line("github $packageName skip search (noise)")
+            return ProbeCache.stamp(searchedMiss(), nowMs)
+        }
+        cached?.takeIf { it.known && !it.listed && it.miss == ListingMiss.Searched }?.let { return it }
         val offer = GitHubScan.toOffer(
-            packageName, label, client, hint = null, searchUnknowns = true, onVerified = onVerified,
+            packageName, label, client, hint = null, searchUnknowns = searchUnknowns, onVerified = onVerified,
         )
         return ProbeCache.stamp(offer, nowMs)
     }
 
-    internal fun storeSettled(packageName: String): Boolean {
+    internal fun storeListed(packageName: String): Boolean {
         val offers = RemoteReleaseMemory.byPackage[packageName]?.offers.orEmpty()
-        if (offers.any { it.source == RemoteReleasedSource.Play && it.known }) return true
         return offers.any { it.listed && it.source != RemoteReleasedSource.Forge && it.source != RemoteReleasedSource.None }
     }
+
+    private fun searchedMiss(): RemoteReleaseOffer =
+        RemoteReleaseOffer(
+            RemoteReleasedSource.Forge,
+            listed = false,
+            known = true,
+            miss = ListingMiss.Searched,
+        )
 }

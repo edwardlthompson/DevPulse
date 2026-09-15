@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedback_save_crashes">Save crashes on this device</string>
+    <string name="feedback_crash_review">Review the crash before sharing</string>
+    <string name="feedback_crash_discard">Discard crash</string>
+    <string name="feedback_copy">Copy feedback</string>
+    <string name="feedback_open_github">Open GitHub</string>
+    <string name="settings_section_privacy">Privacy</string>
+    <string name="settings_hub_privacy">Save crashes and local report</string>
+</resources>

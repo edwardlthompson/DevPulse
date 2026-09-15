@@ -1,5 +1,5 @@
 // GENERATED — do not edit; run scripts/sync-design-tokens.py
-// source-hash: b64ebb301206
+// source-hash: 88adaa7f4916
 package dev.foss.goldenpath.ui.theme
 
 import androidx.compose.material3.darkColorScheme

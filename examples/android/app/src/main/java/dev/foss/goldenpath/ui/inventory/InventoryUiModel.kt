@@ -31,6 +31,9 @@ import dev.foss.goldenpath.inventory.FileRemoteReleaseStore
 import dev.foss.goldenpath.inventory.IgnoredUpdates
 import dev.foss.goldenpath.inventory.AppliedUpdates
 import dev.foss.goldenpath.inventory.SignerReplaceQueue
+import dev.foss.goldenpath.inventory.UpdateAllPick
+import dev.foss.goldenpath.inventory.UpdateArtifactMemory
+import dev.foss.goldenpath.inventory.UpdateArtifactStore
 import dev.foss.goldenpath.inventory.WelcomeHome
 import dev.foss.goldenpath.inventory.WelcomeNeeds
 import dev.foss.goldenpath.inventory.WelcomePrefs
@@ -73,6 +76,7 @@ class InventoryUiModel(
     val refreshLocation: String,
     val refreshOutlets: List<RefreshOutletSnap>,
     val firstRefresh: Boolean,
+    val updateAllCount: Int,
     val onAcknowledge: () -> Unit,
     val onSkip: () -> Unit,
     val onDismissUsage: () -> Unit,
@@ -103,6 +107,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         IgnoredUpdates.hydrate(context.filesDir)
         AppliedUpdates.hydrate(context.filesDir)
         SignerReplaceQueue.hydrate(context.filesDir)
+        UpdateArtifactStore.hydrate(context.filesDir)
     }
     val welcomePrefs = remember { WelcomePrefs(context) }
     val welcomeSeen by welcomePrefs.seen.collectAsStateWithLifecycle(null as Boolean?)
@@ -115,6 +120,9 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     val sourceFilters by prefs.sourceFilters.collectAsStateWithLifecycle(emptySet())
     val revision by RemoteReleaseMemory.revision.collectAsStateWithLifecycle(0)
     val ignoredRev by IgnoredUpdates.revision.collectAsStateWithLifecycle(0)
+    val artifactRev by UpdateArtifactMemory.revision.collectAsStateWithLifecycle(0)
+    val signingRev by SignerReplaceQueue.revision.collectAsStateWithLifecycle(0)
+    val aurora by prefs.auroraPlayEnabled.collectAsStateWithLifecycle(false)
     val catalogEpoch by InstalledAppsRevision.revision.collectAsStateWithLifecycle(0)
     val refreshing by ReleaseRefreshRuntime.running.collectAsStateWithLifecycle(false)
     val refreshProgress by ReleaseRefreshRuntime.progress.collectAsStateWithLifecycle(RefreshProgress(0, 0))
@@ -183,6 +191,15 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
                 nowMs,
             )
         }
+    val updateAllCount = remember(visible, ignoredRev, artifactRev, signingRev, aurora) {
+        UpdateAllPick.groups(
+            visible,
+            emptySet(),
+            Build.VERSION.SDK_INT,
+            Build.SUPPORTED_ABIS.toSet(),
+            aurora,
+        ).size
+    }
     return InventoryUiModel(
         apps = if (canScan) visible else emptyList(),
         canScan = canScan,
@@ -199,12 +216,13 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         showSearch = showSearch,
         showFilters = showFilters,
         refreshing = refreshing,
-        showRefreshDialog = refreshing || keepRefreshDialog,
+        showRefreshDialog = keepRefreshDialog,
         refreshDone = refreshProgress.done,
         refreshTotal = refreshProgress.total,
         refreshLocation = refreshProgress.location,
         refreshOutlets = refreshProgress.outlets,
         firstRefresh = lastScanAt == null,
+        updateAllCount = updateAllCount,
         onAcknowledge = {
             scope.launch {
                 welcomePrefs.markSeen()

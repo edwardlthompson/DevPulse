@@ -2,6 +2,93 @@
 
 > Archive of finished BUILD_PLAN items.
 
+## Archived sprints
+
+| Sprint | Complete | SHA |
+|--------|----------|-----|
+| 36 — GitHub repo map | 2026-09-15 | `d3684b5` |
+| 35 — Leftover GitHub search | 2026-09-15 | `d3684b5` |
+| 34 — One-tap scan and update | 2026-09-15 | `d3684b5` |
+| 33 — Fast Update All | 2026-09-15 | `d3684b5` |
+| 32 — Golden Path slices (v1.5.0) | 2026-09-15 | `d3684b5` |
+| 31 — Destinations | 2026-09-15 (skipped) | `d3684b5` |
+| 30 — Detail Advanced | 2026-09-15 | `d3684b5` |
+| 29 — UX pulse rows | 2026-09-15 | `d3684b5` |
+| 28 — UX honesty | 2026-09-15 | `d3684b5` |
+## Sprint 36 — GitHub repo map (2026-09-15)
+
+- ✅ [AGENT] Ship `examples/android/app/src/main/assets/github-repos/verified.tsv` from F-Droid harvest; load as hints; daily pull from DevPulse raw TSV
+- ✅ [AGENT] Move leftover Search out of Refresh into post-update WorkManager; persist found vs 30-day skip
+
+## Sprint 35 — Leftover GitHub search (2026-09-15)
+
+- ✅ [AGENT] Leftover GitHub search for store-less apps at 10/min; slug+APK bind; `io.github` package hints; do not curated-add Continuum
+
+## Sprint 34 — One-tap scan and update (2026-09-15)
+
+- ✅ [AGENT] Skip APKPure/APKMirror after Play Older; stop other sources after a signing hold; log Older/Sdk as skip not fail
+- ✅ [AGENT] Same dialog for scan and update; auto-start Update All when scan finds work; per-app download and install bars; busy rows stay above finished ones
+
+## Sprint 33 — Fast Update All (2026-09-15)
+
+- ✅ [AGENT] Six download slots; silent Older/Sdk ignore; prefetch to disk; scan-complete Update N; magnet list
+
+## Open PRs merged (2026-09-15)
+
+- ✅ [AGENT] Merge release [#29](https://github.com/edwardlthompson/DevPulse/pull/29) — tagged [v0.37.2](https://github.com/edwardlthompson/DevPulse/releases/tag/v0.37.2)
+- ✅ [AGENT] Merge release [#26](https://github.com/edwardlthompson/DevPulse/pull/26) — tagged [v0.37.1](https://github.com/edwardlthompson/DevPulse/releases/tag/v0.37.1)
+- ✅ [AUTO] Merge Dependabot [#28](https://github.com/edwardlthompson/DevPulse/pull/28) (github-actions group)
+- ✅ [AUTO] Merge Dependabot [#14](https://github.com/edwardlthompson/DevPulse/pull/14) (android-dependencies group)
+
+## Human & device close-out (2026-09-15)
+
+- ✅ [HUMAN] Approve release tag when product-ready (`/ship`)
+- ✅ [ADB] OP13: empty copy, Hide/Stop, ABI ≠ “No APK file”, slim Refresh bar
+- ✅ [ADB] TalkBack pulse; filters on a small window; reduce-motion skips scrubber fade
+- ✅ [ADB] Detail still reaches paste-repo and GitHub regex; list unchanged
+- ✅ [HUMAN] Revisit Apps/Updates/Settings nav only if home gets crowded later
+- ✅ [HUMAN] Crash/github-feedback/UnifiedPush stay opt-in off
+- ✅ [ADB] OP13: opt-in off = no persist; review never auto-opens GitHub
+- ✅ [HUMAN] Optional: set repo secret `AUTOMERGE_TOKEN`
+
+## Sprint 32 — Golden Path slices (v1.5.0) (2026-09-15)
+
+- ✅ [AGENT] crash-capture — `docs/features/crash-capture.md`
+- ✅ [AGENT] feedback — `docs/features/feedback.md`
+- ✅ [AGENT] github-feedback — `docs/features/github-feedback.md` (after 2)
+- ✅ [AGENT] privacy-report — `docs/features/privacy-report.md`
+- ✅ [AGENT] unifiedpush — `docs/features/unifiedpush.md`
+- ✅ [AGENT] navigation chrome — `docs/features/navigation.md`
+- ✅ [AGENT] screenshot helper — `docs/features/screenshot.md`
+- ✅ [AGENT] settings-chrome — `docs/features/settings-chrome.md` (after 28–31; keep product Settings)
+- ✅ [AGENT] crash-inbox — `docs/features/crash-inbox.md` (after 1; proxy stays off)
+- ✅ [AGENT] deep-link-feedback — `docs/features/deep-link-feedback.md` (after 2–3)
+
+## Sprint 31 — Destinations (skipped) (2026-09-15)
+
+- Skipped (home calm). Archived @ `d3684b5`.
+
+## Sprint 30 — Detail Advanced (2026-09-15)
+
+- ✅ [AGENT] Spec `docs/features/ux-detail.md`: identity + one status + listings; paste/regex/APK under Advanced
+- ✅ [AGENT] Collapse detail Advanced (`ui/inventory/`)
+- ✅ [AGENT] Remove unused ScanScreen (`ui/scan/`)
+
+## Sprint 29 — UX pulse rows (2026-09-15)
+
+- ✅ [AGENT] Spec `docs/features/ux-pulse.md`; add `titleMedium` + `labelSmall`; sync tokens
+- ✅ [AGENT] `listingMarkPrefix` empty; status stays words; update `InventoryCopyTest`
+- ✅ [AGENT] Pulse row, filter sheet, clip icons (`ui/inventory/`)
+- ✅ [AGENT] DESIGN_GUIDE + pulse notes (`docs/`)
+
+## Sprint 28 — UX honesty (2026-09-15)
+
+- ✅ [AGENT] Spec `docs/features/ux-honesty.md` (empty kinds, `failRes`, Hide vs Stop, slim Refresh bar)
+- ✅ [AGENT] Schema + copy keys + `InventoryCopyTest`; `strings.xml` ≤300
+- ✅ [AGENT] Drop FAB; slim Refresh bar; Settings close while open; delete ThemeToggle
+- ✅ [AGENT] Empty/fail/Hide-Stop rows (`ui/inventory/`)
+- ✅ [AGENT] Drop Settings Close; Add-repo on Sources (`ui/settings/`)
+
 ## Sprint 27 — Store update detection, APKPure parser, and download fallback (2026-08-31)
 
 - ✅ [AGENT] Update `AuroraAuth.USER_AGENT` (`4.8.4-76`), `AuroraDeviceProps` client profile, and session rotation on manual refresh / reprobe (`examples/android/app/src/main/java/dev/foss/goldenpath/index/aurora/AuroraAuth.kt`, `AuroraDeviceProps.kt`, `AuroraPlayWarm.kt`)

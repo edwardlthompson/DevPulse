@@ -22,7 +22,7 @@ Types in `dev.foss.goldenpath.index.forge`. Unit tests use fixtures only — no 
 
 - ✅ User-visible: inventory FAB pastes a GitHub URL; Exact/SuffixVariant auto-bind; picker on conflict; unmatched stays watched
 - ✅ GitHub-only apps such as Obtainium list from the `.fdroid` library row without copying F-Droid version/ms
-- ✅ Re-probe uses the same alias lookup so a paste does not vanish after `storeSettled`
+- ✅ Re-probe uses the same alias lookup so a paste does not vanish after a store listing skips GitHub search
 - ✅ Opt-in starred scan (token required, Settings, off Refresh) auto-binds Exact/SuffixVariant and shows matched K of N
 - ✅ Obtainium JSON import skips unknown sources and never writes tokens
 - ✅ Nested Obtainium backups import every GitHub watch into `WatchedRepoStore`; file picker in Sources
@@ -60,7 +60,7 @@ Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fal
 | Unhandled exceptions | `runCatching` on starred/release/import JSON parse; skipped count; no crash. Test: truncated Obtainium JSON |
 | Alias false positive | Allowlist suffixes only; unique `owner/repo` required; conflict → picker. Test: `org.mozilla.firefox` unchanged; two repos → no auto-bind |
 | Wrong update from sibling F-Droid flavor | SuffixVariant copies `ownerRepo` only, not version/ms. Refresh `listReleases` supplies the GitHub tag. Cert mismatch still refuses install. Test: aliased Obtainium `versionName` from tag, not the `.fdroid` record |
-| Re-probe restamps Forge miss | `AppReprobeLive` uses `GithubHintFiles.hint`; hint short-circuits `storeSettled`. Test: Play known-miss + aliased hint → Forge listed, zero `searchRepos` |
+| Re-probe restamps Forge miss | `AppReprobeLive` uses `GithubHintFiles.hint`; hint short-circuits store-listed skip. Test: Play known-miss + aliased hint → Forge listed, zero `searchRepos` |
 | Starred quota / privacy | Token required; 5-page cap; no per-star HTTP; opt-in Settings; `docs/PRIVACY.md`; never log token or star list |
 | Obtainium import secrets | Parse url+id only; skip tokens. None (`settings: null`), Exclude secrets, and All all import GitHub apps. Test: dummy PAT / `github-creds` never reach stores |
 | Nested `]` truncates backup | Bracket-match `apps` array and objects; skip strings. Test: `apkUrls` + `categories` + escaped `]` in additionalSettings |
@@ -74,7 +74,7 @@ Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fal
 ## Notes
 
 - Do not browse F-Droid/Droidify catalogs or import rumboalla’s GitHub map.
-- Do not open GitHub name-search for every Play miss (`storeSettled` unchanged). Aliases + paste + stars cover GitHub-only apps. See `DECISION_LOG.md`.
+- Play-listed apps still skip GitHub name-search. Store-less leftovers search in the background after scan+update (`docs/features/github-discover.md`). Aliases + paste + stars still cover GitHub-only apps that search cannot rank. See `DECISION_LOG.md`.
 - Update all stays user-triggered. Root remains opt-in.
 - `[ADB]` smoke: GitHub Obtainium lists on Refresh; FAB paste binds; cert refuse still blocks a mismatched APK.
 

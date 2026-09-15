@@ -15,6 +15,9 @@ object AptoideMetaParser {
     private val vername = Regex(""""vername"\s*:\s*"([^"]+)"""")
     private val uname = Regex(""""uname"\s*:\s*"([^"]+)"""")
     private val filePath = Regex(""""path"\s*:\s*"(https://[^"]+)"""")
+    private val filePathAlt = Regex(""""path_alt"\s*:\s*"(https://[^"]+)"""")
+    private val vercode = Regex(""""vercode"\s*:\s*(\d+)""")
+    private val cpus = Regex(""""cpus"\s*:\s*\[([^\]]*)\]""")
     private val dateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
     fun parse(json: String, nowMs: Long = System.currentTimeMillis()): AptoideLookup {
@@ -29,12 +32,22 @@ object AptoideMetaParser {
             added.find(json)?.groupValues?.get(1),
         )
         val ms = stamp?.takeIf { InstalledDateResolver.isPlausible(it, nowMs) }
+        val code = vercode.find(json)?.groupValues?.get(1)?.toLongOrNull()?.takeIf { it > 0L }
+        val natives = nativeCodes(json)
         return if (ms == null) {
             unknown(version)
         } else {
-            AptoideLookup(ms, version, AptoideLookupStatus.Ok, slug, filePath.find(json)?.groupValues?.get(1))
+            AptoideLookup(ms, version, AptoideLookupStatus.Ok, slug, fileUrl(json), code, natives)
         }
     }
+
+    internal fun nativeCodes(json: String): Set<String> {
+        val blob = cpus.find(json)?.groupValues?.get(1) ?: return emptySet()
+        return blob.split(',').map { it.trim().trim('"') }.filter { it.isNotEmpty() }.toSet()
+    }
+
+    private fun fileUrl(json: String): String? =
+        filePath.find(json)?.groupValues?.get(1) ?: filePathAlt.find(json)?.groupValues?.get(1)
 
     private fun unknown(version: String? = null) = AptoideLookup(
         updatedOnMs = null,

@@ -10,4 +10,20 @@ object AuroraPlayWhy {
         }
         return InstallWhy.NoFile
     }
+
+    fun headersBroken(error: Throwable?): Boolean {
+        var at = error
+        while (at != null) {
+            val where = at.stackTrace.firstOrNull()?.className.orEmpty()
+            if (at is NullPointerException && (
+                    where.contains("HeaderProvider") ||
+                        at.message.orEmpty().contains("getDefaultHeaders")
+                    )
+            ) {
+                return true
+            }
+            at = at.cause
+        }
+        return false
+    }
 }

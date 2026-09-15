@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.RefreshOutletSnap
@@ -31,10 +33,15 @@ fun RefreshProgressBar(
     firstScan: Boolean = false,
     outlets: List<RefreshOutletSnap> = emptyList(),
     onStopOutlet: (String) -> Unit = {},
+    compact: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val fraction = if (total <= 0) 0f else (done.toFloat() / total).coerceIn(0f, 1f)
-    Column(modifier = modifier.fillMaxWidth().fillMaxHeight()) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(if (compact) Modifier.heightIn(max = 96.dp) else Modifier.fillMaxHeight()),
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,16 +75,28 @@ fun RefreshProgressBar(
                     .padding(start = SpacingSm, top = SpacingSm, end = SpacingSm)
                     .semantics { liveRegion = LiveRegionMode.Polite },
             )
-            RefreshNotifyCopy.firstScanHintRes(firstScan)?.let { hint ->
+            if (location.isNotBlank()) {
                 Text(
-                    text = stringResource(hint),
+                    text = location,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(start = SpacingSm, top = SpacingSm, end = SpacingSm),
                 )
             }
+            if (!compact) {
+                RefreshNotifyCopy.firstScanHintRes(firstScan)?.let { hint ->
+                    Text(
+                        text = stringResource(hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = SpacingSm, top = SpacingSm, end = SpacingSm),
+                    )
+                }
+            }
         }
-        if (outlets.isNotEmpty()) {
+        if (!compact && outlets.isNotEmpty()) {
             RefreshOutletRows(
                 outlets = outlets,
                 onStop = onStopOutlet,

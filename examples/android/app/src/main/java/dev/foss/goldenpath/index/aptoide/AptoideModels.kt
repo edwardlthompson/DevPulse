@@ -11,6 +11,8 @@ data class AptoideLookup(
     val status: AptoideLookupStatus,
     val uname: String? = null,
     val fileUrl: String? = null,
+    val versionCode: Long? = null,
+    val nativeCodes: Set<String> = emptySet(),
 )
 
 object AptoideCachePolicy {

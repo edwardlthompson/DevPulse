@@ -31,6 +31,8 @@ object InstallAwait {
         latch?.countDown()
     }
 
+    fun settled(): Boolean = latch != null && latch?.count == 0L
+
     fun await(timeoutMs: Long = TIMEOUT_MS): Boolean {
         val gate = latch ?: return false
         val done = runCatching { gate.await(timeoutMs, TimeUnit.MILLISECONDS) }.getOrDefault(false)

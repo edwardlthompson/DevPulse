@@ -17,9 +17,25 @@ internal object UpdateAllQueue {
             val group = groupOf(open, job.packageName)
             group.removeAll { it.source == job.source && it.versionName == job.versionName }
             if (item.files.isNullOrEmpty()) {
-                counts[2] += 1
                 if (item.why == InstallWhy.PlayPurchase) group.clear()
+                UpdateAllSkip.dropSideloadAfterPlayOlder(group, item.why, job.source)
                 val hasFallback = more(group)
+                if (item.why == InstallWhy.Older || item.why == InstallWhy.Sdk) {
+                    IgnoredUpdates.add(job.packageName, job.source, job.versionName, filesDir)
+                    if (!hasFallback) {
+                        onSnap(
+                            UpdateAllSnap(
+                                job.packageName,
+                                job.label,
+                                job.source,
+                                UpdateAllPhase.Wait,
+                                stay = false,
+                            ),
+                        )
+                    }
+                    return@forEach
+                }
+                synchronized(counts) { counts[2] += 1 }
                 val why = if (
                     item.why == InstallWhy.NoFile &&
                     job.source == RemoteReleasedSource.Play &&
@@ -29,12 +45,17 @@ internal object UpdateAllQueue {
                 } else {
                     item.why
                 }
-                if (filesDir != null && item.why != InstallWhy.PlayPurchase && !hasFallback) {
+                if (filesDir != null &&
+                    item.why != InstallWhy.PlayPurchase &&
+                    item.why != InstallWhy.ResolveMiss &&
+                    item.why != InstallWhy.Timeout &&
+                    !hasFallback
+                ) {
                     IgnoredUpdates.add(job.packageName, job.source, job.versionName, filesDir)
                 }
                 fail(job, filesDir, onSnap, hasFallback, download = true, why = why)
             } else {
-                counts[0] += 1
+                synchronized(counts) { counts[0] += 1 }
                 onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Ready))
                 ready += job to item.files
             }
@@ -58,14 +79,16 @@ internal object UpdateAllQueue {
             if (clash(job, files)) {
                 RefreshTrace.line("update all signing ${job.packageName}")
                 SignerReplaceQueue.remember(filesDir, job, files)
-                fail(job, filesDir, onSnap, more(groupOf(open, job.packageName)), download = false, why = InstallWhy.Signing)
+                val group = groupOf(open, job.packageName)
+                UpdateAllSkip.stopFallbacks(group)
+                fail(job, filesDir, onSnap, more = false, download = false, why = InstallWhy.Signing)
                 if (UpdateAllCancel.requested()) return
                 return@forEach
             }
             onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Apply))
             val ok = install(files)
             if (ok) {
-                counts[1] += 1
+                synchronized(counts) { counts[1] += 1 }
                 settled += job.packageName
                 AppliedUpdates.settle(job.packageName, job.versionName, filesDir = filesDir)
                 SignerReplaceQueue.drop(filesDir, job.packageName)
@@ -73,7 +96,7 @@ internal object UpdateAllQueue {
                 onSnap(UpdateAllSnap(job.packageName, job.label, job.source, UpdateAllPhase.Ok, stay = false))
                 groupOf(open, job.packageName).clear()
             } else if (!UpdateAllCancel.requested()) {
-                counts[3] += 1
+                synchronized(counts) { counts[3] += 1 }
                 fail(job, filesDir, onSnap, more(groupOf(open, job.packageName)), download = false)
             }
             if (UpdateAllCancel.requested()) return

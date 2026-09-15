@@ -24,27 +24,33 @@ class UpdatePrefetchTest {
 
     @Test
     fun skipsWhenOffOrMetered() {
-        assertTrue(UpdatePrefetch.candidates(false, true, listOf(artifact)) { installed }.isEmpty())
-        assertTrue(UpdatePrefetch.candidates(true, false, listOf(artifact)) { installed }.isEmpty())
+        assertTrue(UpdatePrefetch.candidates(false, true, listOf(artifact), { installed }).isEmpty())
+        assertTrue(UpdatePrefetch.candidates(true, false, listOf(artifact), { installed }).isEmpty())
     }
 
     @Test
-    fun skipsPlayAndWrongAbi() {
+    fun skipsPlayUnlessAuroraOn() {
         val play = artifact.copy(source = RemoteReleasedSource.Play)
         val arm = artifact.copy(nativeCodes = setOf("armeabi-v7a"))
-        assertTrue(UpdatePrefetch.candidates(true, true, listOf(play)) { installed }.isEmpty())
-        assertTrue(UpdatePrefetch.candidates(true, true, listOf(arm)) { installed }.isEmpty())
+        assertTrue(UpdatePrefetch.candidates(true, true, listOf(play), { installed }).isEmpty())
+        assertEquals(1, UpdatePrefetch.candidates(true, true, listOf(play), { installed }, auroraPlay = true).size)
+        assertTrue(UpdatePrefetch.candidates(true, true, listOf(arm), { installed }).isEmpty())
     }
 
     @Test
-    fun stagesOnlyWhenHashAndIdentityMatch() {
+    fun stagesFromFileNotOnlyTinyGet() {
         val dir = File.createTempFile("pref", "dir").apply { delete(); mkdirs() }
+        val payload = byteArrayOf(1, 2, 3)
         val ready = UpdatePrefetch.run(
             enabled = true,
             unmetered = true,
             cacheDir = dir,
             artifacts = listOf(artifact),
-            fetch = { Result.success(byteArrayOf(1, 2, 3)) },
+            fetchFile = { _, dest ->
+                dest.parentFile?.mkdirs()
+                dest.writeBytes(payload)
+                Result.success(dest)
+            },
             inspect = { inspect },
             installed = { installed },
         )
@@ -55,11 +61,22 @@ class UpdatePrefetchTest {
             true,
             dir,
             listOf(artifact.copy(packageName = "app.two", sha256 = "00")),
-            fetch = { Result.success(byteArrayOf(1, 2, 3)) },
+            fetchFile = { _, dest ->
+                dest.parentFile?.mkdirs()
+                dest.writeBytes(payload)
+                Result.success(dest)
+            },
             inspect = { inspect.copy(packageName = "app.two") },
             installed = { installed.copy(packageName = "app.two") },
         )
         assertEquals(0, badHash)
         assertFalse(UpdateArtifactMemory.best("app.two")?.localPath != null)
+    }
+
+    @Test
+    fun scopedKeepsWantedPackagesOnly() {
+        val other = artifact.copy(packageName = "app.two")
+        assertEquals(listOf(artifact), UpdatePrefetch.scoped(listOf(artifact, other), listOf("app.one")))
+        assertEquals(listOf(artifact, other), UpdatePrefetch.scoped(listOf(artifact, other), emptyList()))
     }
 }

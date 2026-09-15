@@ -25,12 +25,12 @@
 | Wiring | `appBootstrap.ts` ≤10 lines | `GoldenPathApp.kt` / `MainActivity` ≤10 lines |
 ## Tests
 
-- Automated: yes — `pendingCrash.test.ts` and `PendingCrashTest.kt`
+- Automated: yes — `PendingCrashTest.kt`
 
 ## Fallback validation
 
 - Why tests are not feasible: N/A (automated tests exist)
-- Command: `python3 scripts/agent-run.py feature-gate --stack <active>`
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`
 
 ## Definition of Done
 

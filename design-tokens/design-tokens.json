@@ -29,10 +29,12 @@
     "fontFamily": { "sans": "system-ui, -apple-system, sans-serif" },
     "scale": {
       "titleLarge": { "sizeSp": 22, "sizeRem": 1.375, "lineHeight": 1.27, "weight": 400 },
+      "titleMedium": { "sizeSp": 16, "sizeRem": 1.0, "lineHeight": 1.5, "weight": 500 },
       "headlineMedium": { "sizeSp": 28, "sizeRem": 1.75, "lineHeight": 1.2, "weight": 400 },
       "bodyLarge": { "sizeSp": 16, "sizeRem": 1.0, "lineHeight": 1.5, "weight": 400 },
       "bodyMedium": { "sizeSp": 14, "sizeRem": 0.875, "lineHeight": 1.43, "weight": 400 },
-      "labelLarge": { "sizeSp": 14, "sizeRem": 0.875, "lineHeight": 1.43, "weight": 500 }
+      "labelLarge": { "sizeSp": 14, "sizeRem": 0.875, "lineHeight": 1.43, "weight": 500 },
+      "labelSmall": { "sizeSp": 11, "sizeRem": 0.688, "lineHeight": 1.45, "weight": 500 }
     }
   },
   "spacing": { "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 32 },

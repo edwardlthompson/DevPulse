@@ -38,6 +38,7 @@ class RefreshNotifier(private val context: Context) {
     }
 
     fun postProgress(done: Int, total: Int, location: String = "") {
+        if (!RefreshNotifyCopy.allowProgress(System.currentTimeMillis())) return
         manager.notify(RefreshNotifyCopy.PROGRESS_ID, progress(done, total, location))
     }
 

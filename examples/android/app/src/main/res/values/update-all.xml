@@ -8,4 +8,11 @@
     <string name="update_all_play_purchase">This is a purchased or licensed Google Play app. DevPulse cannot download it until the Google Play Store verifies the purchase on this account. Open the Play Store listing to confirm the license and update there.</string>
     <string name="update_all_play_store">DevPulse could not download this Google Play app. Open the Play Store listing to update it there.</string>
     <string name="update_all_play_purchase_open">Open Play Store</string>
+    <string name="update_all_metered">You are on a metered network. Download updates anyway?</string>
+    <string name="update_all_hide">Hide</string>
+    <string name="update_all_stop">Stop</string>
+    <string name="update_all_root_wait">Waiting for root install to finish.</string>
+    <string name="update_all_download_bar">Download</string>
+    <string name="update_all_install_bar">Install</string>
+    <string name="pulse_run_title">Scan and update</string>
 </resources>

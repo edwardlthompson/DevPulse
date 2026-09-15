@@ -15,7 +15,7 @@ object ApkInstall {
         method: InstallMethod,
         shell: InstallShell = ProcessInstallShell,
     ): ApkInstallResult {
-        val used = method.effective(WelcomeNeeds.installGranted(context))
+        val used = method.onDevice(WelcomeNeeds.installGranted(context))
         val work = {
             apply(
                 apkFile,

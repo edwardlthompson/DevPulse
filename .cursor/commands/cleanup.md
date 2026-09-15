@@ -13,15 +13,16 @@ Run after BUILD_PLAN execution when local gates pass. Moves finished work off th
 
 ## Step 2 — Archive to COMPLETED_TASKS.md
 
-Prepend a new dated section at the top of @COMPLETED_TASKS.md (immediately after the file header):
+Keep the **Archived sprints** index at the top of @COMPLETED_TASKS.md. Prepend the new dated section immediately after that table (or after the file header if the table is missing):
 
 ```markdown
 ## {Sprint or feature name} ({YYYY-MM-DD})
 
 - ✅ [OWNER] Original description
+
 ```
 
-Copy every ✅ row from the finished block verbatim (keep owner labels and descriptions).
+Copy every ✅ row from the finished block verbatim (keep owner labels and descriptions). Add the sprint to the index table (Sprint, Complete, SHA).
 
 ## Step 3 — Slim BUILD_PLAN.md
 
@@ -29,9 +30,9 @@ Remove the archived ✅ rows from the active board.
 
 **Finished sprint (audit, maintainer, release):**
 
-- Delete or collapse the sprint section on the active board
-- Add a summary line: `> **{Sprint ID}** archived in COMPLETED_TASKS.md @ \`{short-sha}\`.`
-- Append a row to the **Archived Sprints** table (Sprint, Complete, `COMPLETED_TASKS.md`)
+- Delete the finished sprint section from `BUILD_PLAN.md` entirely (no leftover stub, no archive table on the live board)
+- Prepend the ✅ rows (and a skipped-sprint note if needed) to `COMPLETED_TASKS.md`
+- Add or update the **Archived sprints** index table in `COMPLETED_TASKS.md` (Sprint, Complete, SHA)
 
 **Finished feature (Sprint 2+ per-feature block):**
 
@@ -52,6 +53,7 @@ python3 scripts/agent-run.py gc-worktrees -- --apply
 
 ```bash
 python3 scripts/check-file-encoding.py BUILD_PLAN.md COMPLETED_TASKS.md
+
 ```
 
 Active board should contain no ✅ rows except backlogged `[HUMAN]`/`[ADB]` items explicitly left open (see `HUMAN_BACKLOG.md`).

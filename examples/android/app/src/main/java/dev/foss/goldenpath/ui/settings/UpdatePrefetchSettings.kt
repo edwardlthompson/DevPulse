@@ -22,7 +22,7 @@ fun UpdatePrefetchSettings(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val prefs = remember { InventoryPreferences(context) }
     val scope = rememberCoroutineScope()
-    val enabled by prefs.updatePrefetchEnabled.collectAsStateWithLifecycle(false)
+    val enabled by prefs.updatePrefetchEnabled.collectAsStateWithLifecycle(true)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
         Text(text = stringResource(R.string.update_prefetch_title), style = MaterialTheme.typography.titleMedium)
         Text(text = stringResource(R.string.update_prefetch_body), style = MaterialTheme.typography.bodySmall)

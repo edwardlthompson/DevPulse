@@ -29,7 +29,7 @@
 
 ### Project Purpose
 
-DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid (official, Archive, Izzy, Guardian, Calyx), optional Aptoide / APKMirror / APKPure, and GitHub. GitHub listings come from same-object F-Droid `sourceCode` (no token). Leftover GitHub name-search and dump-site lookups are opt-in.
+DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid (official, Archive, Izzy, Guardian, Calyx), optional Aptoide / APKMirror / APKPure, and GitHub. GitHub listings come from a shipped F-Droid harvest TSV, live `sourceCode`, `io.github.Owner.Repo` package ids, paste/stars, and leftover name-search in the background after scan+update (store-less apps only, 10/min, no token). Dump-site lookups stay opt-in.
 
 ### Key Constraints
 
@@ -39,8 +39,12 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 ## Session Retrospectives
 
-| Date | Milestone | What worked | What to improve |
-|------|-----------|-------------|-----------------|
+| 2026-09-15 | Merge #29 / v0.37.2 | Admin-merged Release Please 0.37.2 (deps); dispatched CI/Security/CodeQL/RP on main; Unreleased product notes kept local | Signed APK job failed again; product UX still uncommitted |
+| 2026-09-15 | Sprint 36 GitHub repo map | Shipped F-Droid harvest TSV + daily pull; leftover Search after Update All; 30-day skip | Sideload with `adb install -r` only |
+| 2026-09-15 | Sprint 35 leftover GitHub | Store-less apps: one unauthenticated search at 10/min; persist hits; slug+APK; `io.github` hints; no Continuum curated row | Do not merge #29; sideload with `adb install -r` only |
+| 2026-09-15 | Sprint 34 one-tap scan+update | Same window; auto Update All after Refresh; skip ApkPure after Play Older; stop after signing; per-app download/install bars | Do not merge #29; sideload with `adb install -r` only |
+| 2026-09-15 | Sprint 33 Fast Update All | Six download slots; silent Older/Sdk ignore; prefetch to disk; scan-complete Update N; magnet list | Do not merge #29; sideload with `adb install -r` only |
+| 2026-09-15 | Sprints 28–32 | Honesty, pulse rows, detail Advanced, Golden Path opt-in slices (crash/feedback/Privacy) | ADB/HUMAN device and opt-in confirm still in HUMAN_BACKLOG; do not merge Open PRs from `/build` |
 | 2026-08-31 | v0.37.0 /ship | Implemented scrubbable year scrollbar with callouts (`AppListScroller`), natural gesture back navigation with state memory, Ideas in settings hub, and removed radar scan button; auto-persisted settings across updates; Release Please merged PR #25; tag `v0.37.0` created and signed APK uploaded to GitHub release | Reconfigure UTF-8 stdout on helper scripts on Windows; keep `[Unreleased]` at top of `CHANGELOG.md` after release |
 | 2026-08-28 | v0.34.2 /ship | Reviewed cloud PRs #19/#20; dispatched CI/RP on `main`; fold Unreleased on RP #18; auto-merge queued; `gh release create --target` full SHA after RP missed the tag; published event uploaded signed APK/SBOM; closed phantom #22 | Set `AUTOMERGE_TOKEN` so bot merges start Actions; RP still opens a phantom next-version PR when it misses the tag (KB-027) |
 | 2026-08-28 | Required-check rollups | Job names `CI` / `Security Scan` / `CodeQL` plus `merge-ready-pr.sh` so cursor PRs merge without admin | Set `allow_auto_merge` + `AUTOMERGE_TOKEN` so merge pushes start Actions (KB-031); GHAS `CodeQL` stays `neutral` |

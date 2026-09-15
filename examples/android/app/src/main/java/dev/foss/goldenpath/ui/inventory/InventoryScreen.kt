@@ -5,30 +5,32 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.inventory.InventoryEmpty
 import dev.foss.goldenpath.inventory.WelcomeHome
-import dev.foss.goldenpath.ui.refresh.highRefreshScroll
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryScreen(
     model: InventoryUiModel,
+    onUpdateSelectHint: () -> Unit = {},
+    scanUpdateKick: Int = 0,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -72,26 +74,39 @@ fun InventoryScreen(
             )
         }
         if (model.showFilters) {
-            InventorySortBar(
-                sortMode = model.sortMode,
-                staleOnly = model.staleOnly,
-                updatesOnly = model.updatesOnly,
-                sourceFilters = model.sourceFilters,
-                canRankByUsage = model.canRankByUsage,
-                onSortMode = model.onSortMode,
-                onStaleOnlyChange = model.onStaleOnlyChange,
-                onUpdatesOnlyChange = model.onUpdatesOnlyChange,
-                onToggleSourceFilter = model.onToggleSourceFilter,
-                onOpenUsageAccess = model.onOpenUsageAccess,
-            )
+            ModalBottomSheet(onDismissRequest = model.onToggleFilters) {
+                InventorySortBar(
+                    sortMode = model.sortMode,
+                    staleOnly = model.staleOnly,
+                    updatesOnly = model.updatesOnly,
+                    sourceFilters = model.sourceFilters,
+                    canRankByUsage = model.canRankByUsage,
+                    onSortMode = model.onSortMode,
+                    onStaleOnlyChange = model.onStaleOnlyChange,
+                    onUpdatesOnlyChange = model.onUpdatesOnlyChange,
+                    onToggleSourceFilter = model.onToggleSourceFilter,
+                    onOpenUsageAccess = model.onOpenUsageAccess,
+                    modifier = Modifier.padding(SpacingMd),
+                )
+            }
         }
-        val context = LocalContext.current
         val selected = remember { mutableStateOf(emptySet<String>()) }
         InstallPermissionBanner()
         SignerReplaceInbox()
-        UpdateAllButton(apps = model.apps, selected = selected.value)
+        UpdateAllButton(apps = model.apps, selected = selected.value, startKick = scanUpdateKick)
         if (model.apps.isEmpty()) {
-            Text(text = stringResource(R.string.inventory_empty))
+            Text(
+                text = stringResource(
+                    InventoryEmpty.res(
+                        InventoryEmpty.kind(
+                            canScan = model.canScan,
+                            query = model.query,
+                            filtersOn = model.staleOnly || model.updatesOnly || model.sourceFilters.isNotEmpty(),
+                            visibleCount = 0,
+                        ),
+                    ),
+                ),
+            )
         } else {
             AppListScroller(
                 apps = model.apps,
@@ -103,6 +118,7 @@ fun InventoryScreen(
                     } else {
                         selected.value + pkg
                     }
+                    onUpdateSelectHint()
                 },
                 onOpen = { app ->
                     focusManager.clearFocus()

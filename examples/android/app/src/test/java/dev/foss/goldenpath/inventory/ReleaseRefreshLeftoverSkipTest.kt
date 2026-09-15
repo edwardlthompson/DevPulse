@@ -46,6 +46,7 @@ class ReleaseRefreshLeftoverSkipTest {
             "App",
             GitHubSearchClient { searches.incrementAndGet(); GitHubSearchPage(200, """{"items":[]}""") },
             leftover = leftover,
+            searchUnknowns = true,
         )
         assertEquals(1, searches.get())
         assertEquals(0, leftoverCalls.get())

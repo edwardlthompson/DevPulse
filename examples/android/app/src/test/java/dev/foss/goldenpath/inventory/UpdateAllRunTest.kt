@@ -126,4 +126,17 @@ class UpdateAllRunTest {
         )
         assertFalse(IgnoredUpdates.has("app.a", RemoteReleasedSource.Fdroid, "2.0"))
     }
+
+    @Test
+    fun timeoutDownloadIsNotIgnored() {
+        val dir = File.createTempFile("uatimeout", "dir").apply { delete(); mkdirs() }
+        UpdateAll.run(
+            jobs = listOf(UpdateAllJob("app.n", "N", RemoteReleasedSource.Aptoide, null, "2.0")),
+            prepare = { _, _ -> ListingFail.timeout() },
+            install = { false },
+            filesDir = dir,
+        )
+        assertFalse(IgnoredUpdates.has("app.n", RemoteReleasedSource.Aptoide, "2.0"))
+        dir.deleteRecursively()
+    }
 }

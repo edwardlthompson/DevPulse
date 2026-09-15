@@ -19,6 +19,33 @@ object UpdateCache {
         if (!ApkIdentity.hashesMatch(artifact.sha256, sha)) error("sha256")
         evict(dir, maxFiles = maxFiles)
         val file = ApkFileStore.write(ApkFileStore.fileFor(dir, artifact), bytes)
+        keep(file, artifact, inspect, installed)
+    }
+
+    fun stageFile(
+        dir: File,
+        artifact: UpdateArtifact,
+        file: File,
+        inspect: (File) -> ApkInspect,
+        installed: InstalledIdentity,
+        maxFiles: Int = MAX_FILES,
+    ): Result<File> = runCatching {
+        if (!file.isFile || file.length() <= 0L) error("empty apk")
+        val sha = ApkIdentity.digestFile(file)
+        if (!ApkIdentity.hashesMatch(artifact.sha256, sha)) {
+            file.delete()
+            error("sha256")
+        }
+        evict(dir, maxFiles = maxFiles)
+        keep(file, artifact, inspect, installed)
+    }
+
+    private fun keep(
+        file: File,
+        artifact: UpdateArtifact,
+        inspect: (File) -> ApkInspect,
+        installed: InstalledIdentity,
+    ): File {
         val info = inspect(file)
         val pkg = artifact.packageName.trim()
         if (pkg.isEmpty() || info.packageName != pkg || installed.packageName != pkg) {
@@ -39,7 +66,7 @@ object UpdateCache {
         }
         UpdateArtifactMemory.add(artifact)
         UpdateArtifactMemory.markLocal(artifact.packageName, artifact.source, file.absolutePath)
-        file
+        return file
     }
 
     fun evict(dir: File, maxFiles: Int = MAX_FILES, maxBytes: Long = MAX_BYTES) {

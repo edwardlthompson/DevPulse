@@ -1,5 +1,5 @@
 // GENERATED — do not edit; run scripts/sync-design-tokens.py
-// source-hash: b64ebb301206
+// source-hash: 88adaa7f4916
 package dev.foss.goldenpath.ui.theme
 
 import androidx.compose.material3.Typography
@@ -12,6 +12,11 @@ val GoldenPathTypography = Typography(
         fontSize = 22.sp,
         lineHeight = 27.9.sp,
         fontWeight = FontWeight(400),
+    ),
+    titleMedium = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 24.0.sp,
+        fontWeight = FontWeight(500),
     ),
     headlineMedium = TextStyle(
         fontSize = 28.sp,
@@ -31,6 +36,11 @@ val GoldenPathTypography = Typography(
     labelLarge = TextStyle(
         fontSize = 14.sp,
         lineHeight = 20.0.sp,
+        fontWeight = FontWeight(500),
+    ),
+    labelSmall = TextStyle(
+        fontSize = 11.sp,
+        lineHeight = 15.9.sp,
         fontWeight = FontWeight(500),
     ),
 )

@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.inventory
 
+import dev.foss.goldenpath.index.forge.GitHubSearchPace
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -24,10 +25,10 @@ class RefreshOutletBoardTest {
     }
 
     @Test
-    fun githubEtaUsesThirtyPerMinute() {
+    fun githubEtaUsesTenPerMinute() {
         RefreshOutletBoard.plan(RefreshOutletIds.GITHUB, "GitHub", 388, nowMs = 1L)
         val snap = RefreshOutletBoard.snaps(2L).single()
-        assertEquals(388 * 60_000L / 30, snap.etaMs)
+        assertEquals(388 * 60_000L / GitHubSearchPace.PER_MINUTE, snap.etaMs)
     }
 
     @Test

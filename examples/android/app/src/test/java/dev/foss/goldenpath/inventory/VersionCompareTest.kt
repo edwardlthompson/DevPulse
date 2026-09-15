@@ -61,4 +61,11 @@ class VersionCompareTest {
         assertEquals("2.3.6", VersionCompare.canonical("fdroid-v2.3.6"))
         assertTrue(VersionCompare.isNewer("fdroid-v2.4.0", "2.3.6"))
     }
+
+    @Test
+    fun versionCodesWinOverJunkNames() {
+        assertFalse(VersionCompare.isNewer("100.0.0", "12.24.0", installedCode = 12_240_002L, remoteCode = 12_240_002L))
+        assertFalse(VersionCompare.isNewer("100.0.0", "12.24.0", installedCode = 12_240_002L, remoteCode = 12_000_000L))
+        assertTrue(VersionCompare.isNewer("100.0.0", "12.24.0", installedCode = 12_240_002L, remoteCode = 12_240_003L))
+    }
 }

@@ -19,4 +19,11 @@ class SessionThenSystemTest {
         assertTrue(system == 1)
         assertFalse(SessionThenSystem.finish(sessionOk = false, awaitOk = false) { true })
     }
+
+    @Test
+    fun pendingConfirmTimesOut() {
+        assertTrue(SessionThenSystem.timedOut(elapsedMs = InstallAwait.TIMEOUT_MS * 2))
+        assertTrue(SessionThenSystem.timedOut(elapsedMs = InstallAwait.TIMEOUT_MS))
+        assertFalse(SessionThenSystem.timedOut(elapsedMs = 1_000L))
+    }
 }

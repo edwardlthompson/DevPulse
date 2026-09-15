@@ -7,7 +7,7 @@ object CacheWipe {
     fun remotes(filesDir: File) {
         RemoteReleaseMemory.clear()
         ListingExtraBook.clear()
-        UpdateArtifactMemory.clear()
+        UpdateArtifactStore.wipe(filesDir)
         DumpChunkBook.clear()
         PlaySourceHints.clear()
         RefreshResume.clear()

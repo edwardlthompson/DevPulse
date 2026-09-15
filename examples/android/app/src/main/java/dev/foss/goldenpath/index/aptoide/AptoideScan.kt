@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.aptoide
 
+import dev.foss.goldenpath.inventory.ListingExtra
+import dev.foss.goldenpath.inventory.ListingExtraBook
 import dev.foss.goldenpath.inventory.ProbeCache
 import dev.foss.goldenpath.inventory.RefreshTrace
 import dev.foss.goldenpath.inventory.RemoteReleaseMemory
@@ -20,11 +22,22 @@ object AptoideScan {
             ms = ms,
             versionName = lookup.publishedVersion,
             pageUrl = packageName.takeIf { it.isNotEmpty() }?.let { UpdateUrls.aptoide(it, lookup.uname) },
+            versionCode = lookup.versionCode,
         )
         if (packageName.isNotEmpty() && lookup.fileUrl != null) {
             UpdateArtifactMemory.add(
-                UpdateArtifact(packageName, RemoteReleasedSource.Aptoide, lookup.fileUrl, lookup.publishedVersion),
+                UpdateArtifact(
+                    packageName,
+                    RemoteReleasedSource.Aptoide,
+                    lookup.fileUrl,
+                    lookup.publishedVersion,
+                    lookup.versionCode,
+                    nativeCodes = lookup.nativeCodes,
+                ),
             )
+        }
+        if (packageName.isNotEmpty() && lookup.nativeCodes.isNotEmpty()) {
+            ListingExtraBook.put(packageName, RemoteReleasedSource.Aptoide, ListingExtra(nativeCodes = lookup.nativeCodes))
         }
         return RemoteReleaseRollup.from(listOf(offer))
     }
@@ -87,5 +100,23 @@ object AptoideScan {
             }
         }
         return out
+    }
+
+    fun lookupForInstall(
+        packageName: String,
+        signingSha1: String?,
+        versionCode: Long = 0,
+        updates: AptoideUpdatesFetcher,
+        meta: AptoideMetaFetcher,
+        nowMs: Long,
+    ): UpdateArtifact? {
+        val pkg = packageName.trim()
+        if (pkg.isEmpty()) return null
+        if (!signingSha1.isNullOrBlank()) {
+            applyBatch(listOf(AptoideApkRef(pkg, signingSha1, versionCode)), updates, nowMs)
+        } else {
+            toPick(lookupOne(pkg, meta, nowMs, force = true), pkg)
+        }
+        return UpdateArtifactMemory.forSource(pkg, RemoteReleasedSource.Aptoide)
     }
 }

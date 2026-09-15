@@ -11,7 +11,7 @@ class GitHubSearchPaceTest {
     }
 
     @Test
-    fun thirtyFitInOneMinuteThenWait() {
+    fun tenFitInOneMinuteThenWait() {
         var now = 1_000L
         var slept = 0L
         repeat(GitHubSearchPace.PER_MINUTE) {

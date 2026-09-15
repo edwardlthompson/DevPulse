@@ -2,11 +2,11 @@ package dev.foss.goldenpath.ui.inventory
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.text.format.Formatter
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,17 +15,23 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -35,30 +41,57 @@ import androidx.compose.ui.window.DialogWindowProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.IgnoredUpdates
-import dev.foss.goldenpath.inventory.InstallWhy
-import dev.foss.goldenpath.inventory.InventoryCopy
-import dev.foss.goldenpath.inventory.PlayStoreIntent
+import dev.foss.goldenpath.inventory.RefreshOutletSnap
+import dev.foss.goldenpath.inventory.ReleaseRefreshRuntime
 import dev.foss.goldenpath.inventory.SignerReplaceQueue
 import dev.foss.goldenpath.inventory.SignerReplaceStore
-import dev.foss.goldenpath.inventory.UpdateAllPhase
+import dev.foss.goldenpath.inventory.UpdateAllFollow
 import dev.foss.goldenpath.inventory.UpdateAllSnap
 import dev.foss.goldenpath.inventory.UpdateAllTally
 import dev.foss.goldenpath.ui.theme.ElevationLevel2
 import dev.foss.goldenpath.ui.theme.SpacingMd
 import dev.foss.goldenpath.ui.theme.SpacingSm
 
+data class PulseScanHeader(
+    val done: Int,
+    val total: Int,
+    val location: String,
+    val firstScan: Boolean,
+    val outlets: List<RefreshOutletSnap>,
+    val scanning: Boolean,
+)
+
 @Composable
 fun UpdateAllDialog(
     snaps: List<UpdateAllSnap>,
     complete: Boolean,
-    onDismiss: () -> Unit,
+    rootInstall: Boolean = false,
+    scan: PulseScanHeader? = null,
+    onStopOutlet: (String) -> Unit = {},
+    onHide: () -> Unit,
+    onStop: () -> Unit,
 ) {
     val rows = UpdateAllTally.ranked(snaps)
     val context = LocalContext.current
     val signingRev by SignerReplaceQueue.revision.collectAsStateWithLifecycle(0)
     val holds = remember(signingRev) { SignerReplaceQueue.rows }
+    val userScrolled = remember { mutableStateOf(false) }
+    val follow = UpdateAllFollow.magnet(userScrolled.value)
+    val listState = rememberLazyListState()
+    val magnet = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (source == NestedScrollSource.UserInput) userScrolled.value = true
+                return Offset.Zero
+            }
+        }
+    }
+    val paused by ReleaseRefreshRuntime.paused.collectAsStateWithLifecycle(false)
+    LaunchedEffect(follow, rows.firstOrNull()?.packageName, rows.firstOrNull()?.phase) {
+        if (follow && rows.isNotEmpty()) listState.scrollToItem(0)
+    }
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onHide,
         properties = DialogProperties(
             dismissOnBackPress = true,
             dismissOnClickOutside = false,
@@ -66,7 +99,7 @@ fun UpdateAllDialog(
             decorFitsSystemWindows = false,
         ),
     ) {
-        BackHandler { onDismiss() }
+        BackHandler { onHide() }
         dimBehind()
         Box(
             modifier = Modifier
@@ -83,13 +116,36 @@ fun UpdateAllDialog(
             ) {
                 Column(modifier = Modifier.fillMaxSize().padding(SpacingMd)) {
                     Text(
-                        text = stringResource(R.string.update_all, snaps.size),
+                        text = when {
+                            scan != null -> stringResource(R.string.pulse_run_title)
+                            else -> stringResource(R.string.update_all, rows.size)
+                        },
                         style = MaterialTheme.typography.titleMedium,
                     )
-                    UpdateAllTracks(snaps = snaps, modifier = Modifier.padding(top = SpacingSm))
-                    LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(top = SpacingMd)) {
+                    if (scan != null) {
+                        RefreshProgressBar(
+                            done = scan.done,
+                            total = scan.total,
+                            location = scan.location,
+                            firstScan = false,
+                            outlets = emptyList(),
+                            compact = true,
+                            modifier = Modifier.padding(top = SpacingSm),
+                        )
+                    }
+                    if (rows.isNotEmpty()) {
+                        UpdateAllTracks(snaps = snaps, modifier = Modifier.padding(top = SpacingSm))
+                    }
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(top = SpacingMd)
+                            .nestedScroll(magnet),
+                    ) {
                         items(rows, key = { it.packageName }) { snap ->
-                            UpdateAllRow(snap)
+                            UpdateAllRow(snap, rootInstall)
                         }
                         if (complete && holds.isNotEmpty()) {
                             item(key = "signing-issues") {
@@ -103,94 +159,35 @@ fun UpdateAllDialog(
                                     onReplace = { hold ->
                                         IgnoredUpdates.drop(hold.packageName, context.filesDir)
                                         SignerReplaceStore.save(context.filesDir, hold)
-                                        onDismiss()
+                                        onHide()
                                     },
                                 )
                             }
                         }
                     }
-                    TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
-                        Text(text = stringResource(R.string.about_close))
+                    Row(modifier = Modifier.align(Alignment.End)) {
+                        if (scan?.scanning == true) {
+                            TextButton(
+                                onClick = {
+                                    if (paused) ReleaseRefreshRuntime.resume() else ReleaseRefreshRuntime.pause()
+                                },
+                            ) {
+                                Text(text = stringResource(if (paused) R.string.scan_resume else R.string.scan_pause))
+                            }
+                        }
+                        TextButton(onClick = onHide) {
+                            Text(text = stringResource(R.string.update_all_hide))
+                        }
+                        if (!complete) {
+                            TextButton(onClick = onStop) {
+                                Text(text = stringResource(R.string.update_all_stop))
+                            }
+                        }
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun UpdateAllRow(snap: UpdateAllSnap) {
-    val context = LocalContext.current
-    val status = when (snap.phase) {
-        UpdateAllPhase.Wait -> ""
-        UpdateAllPhase.Fetch -> stringResource(R.string.update_cache_busy)
-        UpdateAllPhase.Ready -> stringResource(R.string.update_all_ready)
-        UpdateAllPhase.Apply -> stringResource(R.string.update_cache_install)
-        UpdateAllPhase.Ok -> stringResource(R.string.store_client_status_installed)
-        UpdateAllPhase.Fail -> stringResource(failStatus(snap))
-    }
-    val bytes = fetchBytes(snap)
-    val playOpen = snap.phase == UpdateAllPhase.Fail &&
-        (snap.failWhy == InstallWhy.PlayPurchase || snap.failWhy == InstallWhy.PlayStore)
-    Column(modifier = Modifier.fillMaxWidth().padding(bottom = SpacingMd)) {
-        Text(text = snap.label, style = MaterialTheme.typography.titleSmall)
-        Text(
-            text = stringResource(InventoryCopy.sourceRes(snap.source)),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        if (status.isNotEmpty()) {
-            Text(
-                text = status,
-                style = MaterialTheme.typography.bodySmall,
-                color = if (snap.phase == UpdateAllPhase.Fail) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-            )
-        }
-        if (playOpen) {
-            TextButton(onClick = { PlayStoreIntent.open(context, snap.packageName) }) {
-                Text(text = stringResource(R.string.update_all_play_purchase_open))
-            }
-        }
-        if (bytes != null) {
-            Text(
-                text = bytes,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        if (snap.phase == UpdateAllPhase.Fetch) {
-            if (snap.expected > 0L) {
-                LinearProgressIndicator(
-                    progress = { (snap.received.toFloat() / snap.expected.toFloat()).coerceIn(0f, 1f) },
-                    modifier = Modifier.fillMaxWidth().padding(top = SpacingSm),
-                )
-            } else {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = SpacingSm))
-            }
-        }
-    }
-}
-
-private fun failStatus(snap: UpdateAllSnap): Int = when (snap.failWhy) {
-    InstallWhy.Signing -> R.string.sources_no_install
-    InstallWhy.Permission -> R.string.install_method_failed
-    InstallWhy.Timeout, InstallWhy.Older, InstallWhy.Sdk, InstallWhy.NoFile -> R.string.update_cache_failed
-    InstallWhy.NoSpace -> R.string.update_all_no_space
-    InstallWhy.PlayPurchase -> R.string.update_all_play_purchase
-    InstallWhy.PlayStore -> R.string.update_all_play_store
-}
-
-@Composable
-private fun fetchBytes(snap: UpdateAllSnap): String? {
-    if (snap.phase != UpdateAllPhase.Fetch || snap.received <= 0L) return null
-    val context = LocalContext.current
-    val have = Formatter.formatFileSize(context, snap.received)
-    if (snap.expected <= 0L) return have
-    return stringResource(R.string.update_all_bytes_of, have, Formatter.formatFileSize(context, snap.expected))
 }
 
 @Composable

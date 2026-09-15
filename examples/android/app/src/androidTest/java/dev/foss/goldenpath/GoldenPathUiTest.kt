@@ -17,6 +17,7 @@ class GoldenPathUiTest {
     fun opensSettingsPanelWithThemeAndUpdateControls() {
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
         composeTestRule.onNodeWithText("Appearance").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Privacy").assertIsDisplayed()
         composeTestRule.onNodeWithText("Appearance").performClick()
         composeTestRule.onNodeWithText("Theme").assertIsDisplayed()
         composeTestRule.onNodeWithText("Dark theme").performScrollTo().performClick()
@@ -32,17 +33,17 @@ class GoldenPathUiTest {
         composeTestRule.onNodeWithText("On demand").performScrollTo().assertIsDisplayed()
         composeTestRule.onNodeWithText("Once a week").performScrollTo().assertIsDisplayed()
         composeTestRule.runOnIdle { composeTestRule.activity.onBackPressedDispatcher.onBackPressed() }
-        composeTestRule.onNodeWithText("Close settings").performScrollTo().performClick()
+        composeTestRule.onNodeWithContentDescription("Close settings").performClick()
+        composeTestRule.onNodeWithContentDescription("Settings").assertIsDisplayed()
     }
 
     @Test
     fun systemBackFromSettingsReturnsToMain() {
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
-        composeTestRule.onNodeWithText("Close settings").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Close settings").assertIsDisplayed()
         composeTestRule.runOnIdle {
             composeTestRule.activity.onBackPressedDispatcher.onBackPressed()
         }
-        composeTestRule.onNodeWithText("Close settings").assertDoesNotExist()
         composeTestRule.onNodeWithContentDescription("Settings").assertIsDisplayed()
     }
 
@@ -51,5 +52,13 @@ class GoldenPathUiTest {
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
         composeTestRule.onNodeWithText("About").performScrollTo().performClick()
         composeTestRule.onNodeWithText("Installed format: apk").assertIsDisplayed()
+    }
+
+    @Test
+    fun privacySaveCrashesStartsOff() {
+        composeTestRule.onNodeWithContentDescription("Settings").performClick()
+        composeTestRule.onNodeWithText("Privacy").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("Save crashes on this device").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Open GitHub").assertIsDisplayed()
     }
 }

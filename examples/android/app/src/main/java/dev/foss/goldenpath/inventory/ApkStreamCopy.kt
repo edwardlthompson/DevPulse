@@ -4,8 +4,7 @@ import java.io.InputStream
 
 internal object ApkStreamCopy {
     const val BUF = 16 * 1024
-    const val STEP = 64L * 1024
-    const val LOG = 8L * 1024 * 1024
+    const val STEP = 512L * 1024
 
     fun run(
         input: InputStream,
@@ -17,7 +16,6 @@ internal object ApkStreamCopy {
         val buf = ByteArray(BUF)
         var read = 0L
         var reported = -1L
-        var logged = 0L
         onProgress?.invoke(0L, total)
         reported = 0L
         while (true) {
@@ -30,10 +28,6 @@ internal object ApkStreamCopy {
             if (read - reported >= STEP || (total > 0L && read == total)) {
                 onProgress?.invoke(read, total)
                 reported = read
-            }
-            if (read - logged >= LOG) {
-                RefreshTrace.line("apk ${read}B")
-                logged = read
             }
         }
         if (read != reported) onProgress?.invoke(read, total)

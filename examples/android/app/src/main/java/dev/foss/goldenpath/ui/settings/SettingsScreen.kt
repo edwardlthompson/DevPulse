@@ -48,7 +48,6 @@ fun SettingsScreen(
             SettingsHub(
                 onOpenPage = { page = it },
                 onAboutOpen = onAboutOpen,
-                onClose = onBack,
                 modifier = Modifier.fillMaxSize(),
             )
         },
@@ -65,6 +64,11 @@ fun SettingsScreen(
                     onBack = { page = null },
                     modifier = Modifier.fillMaxSize(),
                 ) { AppearanceSettings(themeMode, onThemeModeSelect) }
+                SettingsPage.Privacy -> SettingsPane(
+                    title = stringResource(R.string.settings_section_privacy),
+                    onBack = { page = null },
+                    modifier = Modifier.fillMaxSize(),
+                ) { SettingsGroup { PrivacySettings() } }
                 SettingsPage.Inventory -> SettingsPane(
                     title = stringResource(R.string.settings_section_inventory),
                     onBack = { page = null },
@@ -101,6 +105,7 @@ fun SettingsScreen(
                 }
                 SettingsPage.Sources -> SourcesScreen(
                     onBack = { page = null },
+                    apps = apps,
                     modifier = Modifier.fillMaxSize(),
                 )
                 SettingsPage.Stores -> SettingsPane(

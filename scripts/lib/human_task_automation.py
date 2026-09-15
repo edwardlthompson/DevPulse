@@ -53,8 +53,17 @@ from human_task_waiting_gh import (
     automate_private_vuln_reporting,
     automate_push_protection,
 )
+from human_task_devpulse import (
+    automate_devpulse_detail,
+    automate_devpulse_honesty,
+    automate_devpulse_optin,
+    automate_devpulse_pulse,
+    automate_devpulse_skip_nav,
+)
 
 HUMAN_RULES: list[tuple[re.Pattern[str], str, object]] = [
+    (re.compile(r"Revisit Apps/Updates/Settings", re.I), "human", automate_devpulse_skip_nav),
+    (re.compile(r"Crash/github-feedback/UnifiedPush stay opt-in", re.I), "human", automate_devpulse_optin),
     (re.compile(r"Use this template", re.I), "human", automate_use_template),
     (re.compile(r"Fill placeholders.*INITIALIZATION_PROMPT", re.I), "human", automate_init_placeholders),
     (re.compile(r"Pick Cursor mode", re.I), "human", lambda r, c: automate_informational(r, c, "cursor-mode")),
@@ -83,6 +92,10 @@ HUMAN_RULES: list[tuple[re.Pattern[str], str, object]] = [
 ]
 
 ADB_RULES: list[tuple[re.Pattern[str], str, object]] = [
+    (re.compile(r"empty copy|Hide/Stop|slim Refresh", re.I), "adb", automate_devpulse_honesty),
+    (re.compile(r"TalkBack pulse|reduce-motion|filters on a small", re.I), "adb", automate_devpulse_pulse),
+    (re.compile(r"paste-repo|GitHub regex", re.I), "adb", automate_devpulse_detail),
+    (re.compile(r"opt-in off = no persist|never auto-opens GitHub", re.I), "adb", automate_devpulse_optin),
     (re.compile(r"TalkBack", re.I), "adb", automate_talkback_checklist),
     (re.compile(r"UnifiedPush", re.I), "adb", automate_unifiedpush_e2e),
     (re.compile(r"display mode|Preferred display", re.I), "adb", automate_display_mode),

@@ -3,10 +3,11 @@ package dev.foss.goldenpath.index.forge
 import java.io.File
 
 object GithubHintFiles {
-    fun load(filesDir: File): Map<String, GithubHint> {
+    fun load(filesDir: File, shipped: Map<String, String> = emptyMap()): Map<String, GithubHint> {
         val verified = FileGithubVerifiedStore(File(filesDir, "github_verified.tsv")).load()
         val pasted = FilePastedRepoStore(File(filesDir, "pasted_repos.tsv")).load()
-        return verified.mapValues { GithubHint(it.value) } + PastedRepoCodec.hints(pasted)
+        return shipped.mapValues { GithubHint(it.value) } +
+            verified.mapValues { GithubHint(it.value) } + PastedRepoCodec.hints(pasted)
     }
 
     fun library(filesDir: File): Map<String, String> =

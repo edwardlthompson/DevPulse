@@ -3,7 +3,9 @@ package dev.foss.goldenpath.inventory
 import dev.foss.goldenpath.index.aurora.AuroraPlayFile
 import java.io.File
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ListingPlayTest {
@@ -51,7 +53,7 @@ class ListingPlayTest {
             dir,
             "com.a",
             listOf(AuroraPlayFile("https://redirector.gvt1.com/edgedl/android/market/split", base = false)),
-            bytesFor = { byteArrayOf(0x50, 0x4B, 3, 4) },
+            bytesFor = { zipProbe() },
             inspect = { ApkInspect(null, emptySet()) },
         )
         assertEquals(1, files?.size)
@@ -87,4 +89,26 @@ class ListingPlayTest {
         assertNull(files)
         assertEquals(0, dir.listFiles()?.size ?: 0)
     }
+
+    @Test
+    fun refusesPlayFilesOlderThanInstalled() {
+        val parts = listOf(
+            AuroraPlayFile("https://redirector.gvt1.com/edgedl/android/market/base", "18.1.3", 175963030L, true),
+        )
+        assertFalse(ListingPlay.newerThanInstalled(parts, "18.2.4", 175981782L))
+        assertTrue(ListingPlay.newerThanInstalled(parts, "18.1.0", 175900000L))
+    }
+}
+
+private fun zipProbe(): ByteArray {
+    val bytes = ByteArray(40)
+    bytes[0] = 0x50
+    bytes[1] = 0x4B
+    bytes[2] = 3
+    bytes[3] = 4
+    bytes[18] = 0x50
+    bytes[19] = 0x4B
+    bytes[20] = 5
+    bytes[21] = 6
+    return bytes
 }

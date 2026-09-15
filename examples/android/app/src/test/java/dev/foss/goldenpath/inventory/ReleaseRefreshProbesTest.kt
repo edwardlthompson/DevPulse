@@ -19,6 +19,7 @@ class ReleaseRefreshProbesTest {
     @Before
     fun reset() {
         RemoteReleaseMemory.clear()
+        RefreshSkip.reset()
     }
 
     @Test
@@ -89,41 +90,6 @@ class ReleaseRefreshProbesTest {
         )
         assertFalse(offer.listed)
         assertFalse(offer.known)
-    }
-
-    @Test
-    fun githubReusesKnownMiss() {
-        val now = 1_720_000_000_000L
-        val fetches = AtomicInteger(0)
-        RemoteReleaseMemory.putAll(
-            mapOf(
-                "app.x" to RemoteReleaseRollup.from(
-                    listOf(
-                        RemoteReleaseOffer(
-                            RemoteReleasedSource.Forge,
-                            listed = false,
-                            known = true,
-                            fetchedAtMs = now,
-                        ),
-                    ),
-                ),
-            ),
-        )
-        val leftover = LeftoverSearchClient { _, _ ->
-            fetches.incrementAndGet()
-            GitHubSearchPage(200, "[]")
-        }
-        val offer = ReleaseRefreshProbes.github(
-            "app.x",
-            "X",
-            GitHubSearchClient { fetches.incrementAndGet(); GitHubSearchPage(200, """{"items":[]}""") },
-            searchUnknowns = true,
-            leftover = leftover,
-            nowMs = now + 1_000L,
-        )
-        assertEquals(0, fetches.get())
-        assertEquals(false, offer.listed)
-        assertEquals(true, offer.known)
     }
 
     @Test

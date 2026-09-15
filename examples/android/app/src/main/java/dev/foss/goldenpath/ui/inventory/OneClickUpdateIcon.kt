@@ -60,7 +60,7 @@ fun OneClickUpdateIcon(app: InstalledApp, modifier: Modifier = Modifier) {
     Icon(
         imageVector = Icons.Filled.SystemUpdate,
         contentDescription = label,
-        tint = MaterialTheme.colorScheme.error,
+        tint = MaterialTheme.colorScheme.primary,
         modifier = modifier.clickable(enabled = !busy && kind !is OneClickKind.None, role = Role.Button) {
             if (busy) return@clickable
             if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) return@clickable

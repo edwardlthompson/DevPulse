@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.inventory
 
+import java.io.File
 import java.security.MessageDigest
 
 data class ApkInspect(
@@ -18,6 +19,19 @@ object ApkIdentity {
     fun digest(bytes: ByteArray): String {
         val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
         return digest.joinToString("") { byte -> "%02x".format(byte) }
+    }
+
+    fun digestFile(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { input ->
+            val buf = ByteArray(8192)
+            while (true) {
+                val n = input.read(buf)
+                if (n <= 0) break
+                digest.update(buf, 0, n)
+            }
+        }
+        return digest.digest().joinToString("") { byte -> "%02x".format(byte) }
     }
 
     fun hashesMatch(expected: String?, actual: String): Boolean {

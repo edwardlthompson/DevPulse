@@ -64,14 +64,26 @@ class UpdateAllTallyTest {
     }
 
     @Test
-    fun rankedPutsActiveDownloadsFirst() {
+    fun rankedHidesSilentOlderWaits() {
+        val snaps = listOf(
+            UpdateAllSnap("old", "O", RemoteReleasedSource.Play, UpdateAllPhase.Wait, stay = false),
+            snap("fetch", UpdateAllPhase.Fetch),
+        )
+        assertEquals(listOf("fetch"), UpdateAllTally.ranked(snaps).map { it.packageName })
+        assertEquals(1, UpdateAllTally.of(snaps).total)
+    }
+
+    @Test
+    fun rankedPutsBusyRowsAboveFinished() {
         val snaps = listOf(
             snap("ok", UpdateAllPhase.Ok),
             snap("wait", UpdateAllPhase.Wait),
             snap("fetch", UpdateAllPhase.Fetch),
+            snap("apply", UpdateAllPhase.Apply),
+            snap("fail", UpdateAllPhase.Fail, failDownload = true),
         )
         assertEquals(
-            listOf("fetch", "wait", "ok"),
+            listOf("fetch", "apply", "wait", "fail", "ok"),
             UpdateAllTally.ranked(snaps).map { it.packageName },
         )
     }

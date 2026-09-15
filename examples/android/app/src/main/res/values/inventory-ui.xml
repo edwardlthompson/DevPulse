@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inventory_empty_search">No apps match this search.</string>
+    <string name="inventory_empty_filters">No apps match these filters.</string>
+    <string name="inventory_empty_blocked">Grant app-list access in Settings to see installed apps.</string>
+    <string name="install_fail_timeout">Install timed out. Try again.</string>
+    <string name="install_fail_no_file">No APK file for this listing.</string>
+    <string name="install_fail_older">This APK is older than the installed app.</string>
+    <string name="install_fail_incompatible">This APK does not match this device.</string>
+    <string name="listing_skipped">Listing skipped.</string>
+    <string name="listing_abi_mismatch">This listing’s native libraries do not match this device.</string>
+    <string name="inventory_longpress_hint">Long-press an update to include only that app in Update all.</string>
+    <string name="inventory_advanced">Advanced</string>
+</resources>

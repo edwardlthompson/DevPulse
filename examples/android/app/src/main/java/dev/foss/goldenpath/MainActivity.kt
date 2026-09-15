@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import dev.foss.goldenpath.about.AppUpdatePreferences
+import dev.foss.goldenpath.crashcapture.CrashCapture
+import dev.foss.goldenpath.feedback.FeedbackDeepLink
 import dev.foss.goldenpath.inventory.ObtainiumImportLaunch
 import dev.foss.goldenpath.inventory.RefreshLaunch
 import dev.foss.goldenpath.inventory.SettingsPersistence
@@ -23,6 +25,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        CrashCapture.install(this)
         DisplayRefresh.apply(this)
         val themePreferences = ThemePreferences(applicationContext)
         val appUpdatePreferences = AppUpdatePreferences(applicationContext)
@@ -46,6 +49,9 @@ class MainActivity : ComponentActivity() {
         RefreshLaunch.maybeStart(this, intent)
         SignerReplaceLaunch.maybeStart(this, intent)
         ObtainiumImportLaunch.maybeStart(this, intent)
+        if (FeedbackDeepLink.matches(intent.data?.scheme, intent.data?.host)) {
+            return
+        }
     }
 
     override fun onResume() {
@@ -64,6 +70,9 @@ class MainActivity : ComponentActivity() {
         RefreshLaunch.maybeStart(this, intent)
         SignerReplaceLaunch.maybeStart(this, intent)
         ObtainiumImportLaunch.maybeStart(this, intent)
+        if (FeedbackDeepLink.matches(intent.data?.scheme, intent.data?.host)) {
+            return
+        }
     }
 
     override fun onDestroy() {

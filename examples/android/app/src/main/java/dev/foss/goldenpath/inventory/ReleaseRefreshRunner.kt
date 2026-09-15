@@ -24,7 +24,6 @@ import dev.foss.goldenpath.index.forge.LeftoverForgeHttp
 import dev.foss.goldenpath.index.play.PlayHttpFetcher
 import dev.foss.goldenpath.index.play.WaybackHttpFetcher
 import dev.foss.goldenpath.index.play.WaybackPlay
-import dev.foss.goldenpath.network.NetworkUnmetered
 import java.io.File
 import kotlinx.coroutines.flow.first
 
@@ -50,7 +49,11 @@ object ReleaseRefreshRunner {
         RefreshResume.persistDir = context.filesDir
         DumpChunkBook.persistDir = context.filesDir
         DumpChunkBook.hydrate(context.filesDir)
+        UpdateArtifactStore.hydrate(context.filesDir)
         val startedAt = System.currentTimeMillis()
+        val verifiedStore = FileGithubVerifiedStore(File(context.filesDir, "github_verified.tsv"))
+        val shipped = GithubCatalogLive.loadShipped(context)
+        GithubCatalogLive.pullIfDue(context, verifiedStore)
         return try {
         val result = ReleaseRefresh.run(
             apps = RefreshScope.apps(
@@ -67,7 +70,8 @@ object ReleaseRefreshRunner {
             aurora = AuroraPlayLive.details(context).takeIf { playOn },
             gitHubClient = if (forgeOn) GitHubSearchHttp(EncryptedForgeTokenStore.wrap(context).getToken()) else null,
             indexStore = FdroidIndexStore(File(context.filesDir, "fdroid-index")),
-            verifiedStore = FileGithubVerifiedStore(File(context.filesDir, "github_verified.tsv")),
+            verifiedStore = verifiedStore,
+            shippedCatalog = shipped,
             searchUnknowns = searchUnknowns,
             hostResolve = FdroidHostHttp(),
             leftoverClient = leftoverHttp(context),
@@ -102,17 +106,8 @@ object ReleaseRefreshRunner {
             "locations=${progress.total};$outlets",
         )
         ReleaseRefreshRuntime.finish()
-        if (prefs.updatePrefetchEnabled.first()) {
-            UpdatePrefetch.run(
-                enabled = true,
-                unmetered = NetworkUnmetered.isUnmetered(context),
-                cacheDir = File(context.cacheDir, "updates"),
-                artifacts = UpdateArtifactMemory.byPackage.values.flatten(),
-                fetch = ApkHttpFetcher,
-                inspect = { file -> ApkArchiveIdentity.inspect(context.packageManager, file) },
-                installed = { pkg -> ApkArchiveIdentity.installed(context.packageManager, pkg) },
-            )
-        }
+        if (forgeOn) GitHubDiscoverLaunch.enqueue(context, delaySec = 15)
+        UpdatePrefetchLaunch.enqueue(context, wanted)
         result.size
         } finally {
             WaybackPlay.client = null

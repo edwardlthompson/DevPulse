@@ -19,9 +19,16 @@ object RefreshLaunch {
     const val EXTRA_LISTING = "listing_package"
     const val EXTRA_LISTING_SOURCE = "listing_source"
     const val EXTRA_UPDATES_ONLY = "updates_only"
+    const val EXTRA_INSTALL_METHOD = "install_method"
+    const val EXTRA_ACK_QUERY = "query_all_packages"
 
     fun requested(intent: Intent?): Boolean =
         intent?.getBooleanExtra(EXTRA, false) == true
+
+    fun packageNames(intent: Intent?): List<String> {
+        val csv = intent?.getStringExtra(RefreshScope.EXTRA_PACKAGES).orEmpty()
+        return csv.split(',', ' ', ';').map { it.trim() }.filter { it.isNotEmpty() }
+    }
 
     fun listingPackage(intent: Intent?): String? =
         intent?.getStringExtra(EXTRA_LISTING)?.trim()?.ifEmpty { null }
@@ -45,7 +52,10 @@ object RefreshLaunch {
         val source = listingSource(intent)
         val updateAll = UpdateAllLaunch.requested(intent)
         val leftover = UpdateAllResume.load(activity.filesDir)
+        val wanted = packageNames(intent)
         val updatesOnly = flag(intent, EXTRA_UPDATES_ONLY) == true
+        val installMethod = intent?.getStringExtra(EXTRA_INSTALL_METHOD)?.trim()?.ifEmpty { null }
+        val ackQuery = flag(intent, EXTRA_ACK_QUERY) == true
         intent?.removeExtra(EXTRA)
         intent?.removeExtra(EXTRA_ALL_SOURCES)
         intent?.removeExtra(EXTRA_APK_MIRROR)
@@ -56,6 +66,9 @@ object RefreshLaunch {
         intent?.removeExtra(EXTRA_LISTING_SOURCE)
         intent?.removeExtra(UpdateAllLaunch.EXTRA)
         intent?.removeExtra(EXTRA_UPDATES_ONLY)
+        intent?.removeExtra(EXTRA_INSTALL_METHOD)
+        intent?.removeExtra(EXTRA_ACK_QUERY)
+        intent?.removeExtra(RefreshScope.EXTRA_PACKAGES)
         if (updatesOnly) {
             activity.lifecycleScope.launch {
                 InventoryPreferences(activity).setUpdatesOnly(true)
@@ -64,6 +77,11 @@ object RefreshLaunch {
         if (refresh) {
             activity.lifecycleScope.launch {
                 val prefs = InventoryPreferences(activity)
+                if (ackQuery) {
+                    prefs.setQueryAllPackagesAcknowledged(true)
+                    WelcomePrefs(activity).markSeen()
+                }
+                installMethod?.let { prefs.setInstallMethod(InstallMethod.parse(it)) }
                 if (allSources) enableAllSources(activity, prefs)
                 if (mirror != null) prefs.setApkMirrorLookupEnabled(mirror)
                 if (pure != null) prefs.setApkPureLookupEnabled(pure)
@@ -72,8 +90,8 @@ object RefreshLaunch {
                     Log.i("DevPulse", "refresh launch skipped: query-all-packages not acknowledged")
                     return@launch
                 }
-                Log.i("DevPulse", "refresh launch start")
-                ReleaseRefreshService.start(activity)
+                Log.i("DevPulse", "refresh launch start wanted=${wanted.size}")
+                ReleaseRefreshService.start(activity, wanted)
             }
         }
         if (download != null) {
@@ -90,7 +108,8 @@ object RefreshLaunch {
         }
         if (updateAll || leftover.isNotEmpty()) {
             activity.lifecycleScope.launch(Dispatchers.IO) {
-                UpdateAllLaunch.run(activity, if (updateAll) emptySet() else leftover.toSet())
+                val selected = if (updateAll) wanted.toSet() else leftover.toSet()
+                UpdateAllLaunch.run(activity, selected)
             }
         }
     }

@@ -46,7 +46,6 @@ import dev.foss.goldenpath.ui.theme.SpacingMd
 fun SettingsHub(
     onOpenPage: (SettingsPage) -> Unit,
     onAboutOpen: () -> Unit,
-    onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -93,16 +92,12 @@ fun SettingsHub(
             onClick = { runCatching { uriHandler.openUri(ProductUpdate.VENMO_URL) } },
             modifier = Modifier.semantics { contentDescription = donate },
         ) { Text(donate) }
-        val close = stringResource(R.string.settings_close)
-        TextButton(
-            onClick = onClose,
-            modifier = Modifier.semantics { contentDescription = close },
-        ) { Text(close) }
     }
 }
 
 private fun iconFor(row: SettingsHubRow): ImageVector = when (row.page) {
     SettingsPage.Appearance -> Icons.Filled.Palette
+    SettingsPage.Privacy -> Icons.Filled.Security
     SettingsPage.Permissions -> Icons.Filled.Security
     SettingsPage.Inventory -> Icons.Filled.Apps
     SettingsPage.Ideas -> Icons.Filled.Lightbulb

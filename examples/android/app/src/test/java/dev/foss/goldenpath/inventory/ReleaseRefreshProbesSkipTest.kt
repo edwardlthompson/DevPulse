@@ -2,6 +2,7 @@ package dev.foss.goldenpath.inventory
 
 import dev.foss.goldenpath.index.forge.GitHubSearchClient
 import dev.foss.goldenpath.index.forge.GitHubSearchPage
+import dev.foss.goldenpath.index.forge.GitHubSearchPace
 import dev.foss.goldenpath.index.forge.LeftoverSearchClient
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -14,6 +15,8 @@ class ReleaseRefreshProbesSkipTest {
     @Before
     fun reset() {
         RemoteReleaseMemory.clear()
+        GitHubSearchPace.reset()
+        RefreshSkip.reset()
     }
 
     @Test
@@ -35,15 +38,15 @@ class ReleaseRefreshProbesSkipTest {
         )
         assertEquals(0, fetches.get())
         assertFalse(offer.listed)
-        assertTrue(offer.known)
+        assertFalse(offer.known)
     }
 
     @Test
-    fun playMissSkipsGithubSearch() {
+    fun playMissSearchesGithub() {
         val fetches = AtomicInteger(0)
         RemoteReleaseMemory.putAll(
             mapOf(
-                "com.instagram.android" to RemoteReleaseRollup.from(
+                "org.continuumcalendar.app" to RemoteReleaseRollup.from(
                     listOf(
                         RemoteReleaseOffer(
                             RemoteReleasedSource.Play,
@@ -55,13 +58,73 @@ class ReleaseRefreshProbesSkipTest {
             ),
         )
         val offer = ReleaseRefreshProbes.github(
-            "com.instagram.android",
-            "Instagram",
+            "org.continuumcalendar.app",
+            "Continuum Calendar",
             GitHubSearchClient { fetches.incrementAndGet(); GitHubSearchPage(200, """{"items":[]}""") },
             leftover = LeftoverSearchClient { _, _ -> fetches.incrementAndGet(); GitHubSearchPage(200, "[]") },
+            searchUnknowns = true,
         )
-        assertEquals(0, fetches.get())
+        assertEquals(1, fetches.get())
         assertFalse(offer.listed)
         assertTrue(offer.known)
+    }
+
+    @Test
+    fun oldNeverMissDoesNotBlockLeftoverSearch() {
+        val fetches = AtomicInteger(0)
+        val now = 1_720_000_000_000L
+        RemoteReleaseMemory.putAll(
+            mapOf(
+                "org.sideload.app" to RemoteReleaseRollup.from(
+                    listOf(
+                        RemoteReleaseOffer(
+                            RemoteReleasedSource.Forge,
+                            listed = false,
+                            known = true,
+                            miss = ListingMiss.Never,
+                            fetchedAtMs = now,
+                        ),
+                    ),
+                ),
+            ),
+        )
+        ReleaseRefreshProbes.github(
+            "org.sideload.app",
+            "Sideload",
+            GitHubSearchClient { fetches.incrementAndGet(); GitHubSearchPage(200, """{"items":[]}""") },
+            nowMs = now + 1_000L,
+            searchUnknowns = true,
+        )
+        assertEquals(1, fetches.get())
+    }
+
+    @Test
+    fun searchedMissIsCached() {
+        val now = 1_720_000_000_000L
+        val fetches = AtomicInteger(0)
+        RemoteReleaseMemory.putAll(
+            mapOf(
+                "app.x" to RemoteReleaseRollup.from(
+                    listOf(
+                        RemoteReleaseOffer(
+                            RemoteReleasedSource.Forge,
+                            listed = false,
+                            known = true,
+                            miss = ListingMiss.Searched,
+                            fetchedAtMs = now,
+                        ),
+                    ),
+                ),
+            ),
+        )
+        val offer = ReleaseRefreshProbes.github(
+            "app.x",
+            "X",
+            GitHubSearchClient { fetches.incrementAndGet(); GitHubSearchPage(200, """{"items":[]}""") },
+            nowMs = now + 1_000L,
+        )
+        assertEquals(0, fetches.get())
+        assertTrue(offer.known)
+        assertFalse(offer.listed)
     }
 }

@@ -41,7 +41,10 @@ object RemoteReleaseMemory {
     fun merge(app: InstalledApp): InstalledApp {
         val pick = byPackage[app.packageName]
         val dated = if (pick != null) RemoteRelease.apply(app, pick) else app
-        return dated.copy(origin = AppOriginResolver.refine(dated.origin, pick?.source))
+        val playListed = dated.latestListings.any {
+            it.source == RemoteReleasedSource.Play && it.listed
+        }
+        return dated.copy(origin = AppOriginResolver.refine(dated.origin, pick?.source, playListed))
     }
 
     fun drop(packageName: String) {

@@ -99,6 +99,24 @@ class RemoteReleaseCodecTest {
     }
 
     @Test
+    fun searchedMissFlagSurvivesRoundTrip() {
+        val pick = RemoteReleaseRollup.from(
+            listOf(
+                RemoteReleaseOffer(
+                    RemoteReleasedSource.Forge,
+                    listed = false,
+                    known = true,
+                    miss = ListingMiss.Searched,
+                ),
+            ),
+        )
+        val forge = RemoteReleaseCodec.decode(
+            RemoteReleaseCodec.encode(mapOf("org.x" to pick)),
+        ).getValue("org.x").offers.single()
+        assertEquals(ListingMiss.Searched, forge.miss)
+    }
+
+    @Test
     fun emptyAndJunkYieldEmpty() {
         assertEquals(emptyMap<String, RemoteReleasePick>(), RemoteReleaseCodec.decode(""))
         assertEquals(emptyMap<String, RemoteReleasePick>(), RemoteReleaseCodec.decode("not-a-row"))

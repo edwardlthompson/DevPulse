@@ -34,6 +34,7 @@ object InventoryCopy {
         ListingMiss.Forbidden -> R.string.inventory_listing_unknown
         ListingMiss.Parse -> R.string.inventory_listing_status_unknown
         ListingMiss.Never -> R.string.inventory_listing_delisted
+        ListingMiss.Searched -> R.string.inventory_listing_delisted
         null -> if (known) R.string.inventory_listing_delisted else R.string.inventory_listing_status_unknown
     }
 
@@ -43,12 +44,7 @@ object InventoryCopy {
         return if (listed == true) ListingMark.Listed else ListingMark.Missing
     }
 
-    fun listingMarkPrefix(mark: ListingMark): String = when (mark) {
-        ListingMark.Listed -> "✅ "
-        ListingMark.Missing -> "❌ "
-        ListingMark.Unknown -> "❓ "
-        ListingMark.Ignored -> "⚠️ "
-    }
+    fun listingMarkPrefix(mark: ListingMark): String = ""
 
     fun failRes(why: InstallWhy, source: RemoteReleasedSource = RemoteReleasedSource.None): Int {
         if (why == InstallWhy.Signing && source == RemoteReleasedSource.Aptoide) {
@@ -57,11 +53,11 @@ object InventoryCopy {
         return when (why) {
             InstallWhy.Permission -> R.string.install_method_failed
             InstallWhy.Signing -> R.string.sources_no_install
-            InstallWhy.Timeout -> R.string.about_debug_navigation_mode
-            InstallWhy.NoFile -> R.string.update_cache_failed
+            InstallWhy.Timeout -> R.string.install_fail_timeout
+            InstallWhy.NoFile, InstallWhy.ResolveMiss -> R.string.install_fail_no_file
             InstallWhy.NoSpace -> R.string.update_all_no_space
-            InstallWhy.Older -> R.string.about_update_current
-            InstallWhy.Sdk -> R.string.inventory_sdk_risk
+            InstallWhy.Older -> R.string.install_fail_older
+            InstallWhy.Sdk -> R.string.install_fail_incompatible
             InstallWhy.PlayPurchase -> R.string.update_all_play_purchase
             InstallWhy.PlayStore -> R.string.update_all_play_store
         }
