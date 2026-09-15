@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.1](https://github.com/edwardlthompson/DevPulse/compare/v0.37.0...v0.37.1) (2026-08-31)
+
+
+### Fixed
+
+* **scripts:** reconfigure UTF-8 encoding on stdout/stderr in changelog_unreleased ([882c997](https://github.com/edwardlthompson/DevPulse/commit/882c99727936b5a674db4f3fe30155c3c59efb22))
+
+
+### Changed
+
+* normalize CHANGELOG unreleased heading after v0.37.0 release ([5136d4a](https://github.com/edwardlthompson/DevPulse/commit/5136d4a379e40b2290fde17c146fa00a0141a8b8))
+
+
+### Documentation
+
+* record v0.37.0 session retrospective in AGENT_MEMORY ([6f2cee7](https://github.com/edwardlthompson/DevPulse/commit/6f2cee7dc84d3cd842f6e7664cdaa7d5f2cfc41b))
+
 ## [Unreleased]
 
 ## [0.37.0](https://github.com/edwardlthompson/DevPulse/compare/v0.36.0...v0.37.0) (2026-08-31)
