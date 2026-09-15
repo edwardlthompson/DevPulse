@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.2](https://github.com/edwardlthompson/DevPulse/compare/v0.37.1...v0.37.2) (2026-09-15)
+
+
+### Changed
+
+* **deps:** bump the android-dependencies group across 1 directory with 5 updates ([#14](https://github.com/edwardlthompson/DevPulse/issues/14)) ([939540c](https://github.com/edwardlthompson/DevPulse/commit/939540c7a0a9ecd8a2ec575e6e1bdbf6360ee2dc))
+* **deps:** bump the github-actions group across 1 directory with 2 updates ([#28](https://github.com/edwardlthompson/DevPulse/issues/28)) ([e87f728](https://github.com/edwardlthompson/DevPulse/commit/e87f72858eb6bf5f4b0aec9598280fb8b4287938))
+
 ## [0.37.1](https://github.com/edwardlthompson/DevPulse/compare/v0.37.0...v0.37.1) (2026-08-31)
 
 
