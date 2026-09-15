@@ -1,5 +1,5 @@
 {
-  "template_version": "0.37.2",
+  "template_version": "0.38.0",
   "project": {
     "name": "DevPulse",
     "purpose": "Scan installed Android apps across Google Play, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.",
@@ -1132,7 +1132,7 @@
     },
     {
       "path": ".github/workflows/dependency-review.yml",
-      "purpose": "PR dependency review \u2014 fail on new High/Critical vulnerabilities",
+      "purpose": "PR dependency review — fail on new High/Critical vulnerabilities",
       "read_when": "contributing",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
@@ -1846,7 +1846,7 @@
     },
     {
       "path": "scripts/run-codex-review.sh",
-      "purpose": "Local Codex CLI review \u2192 CODE_REVIEW.md",
+      "purpose": "Local Codex CLI review → CODE_REVIEW.md",
       "read_when": "audit",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
