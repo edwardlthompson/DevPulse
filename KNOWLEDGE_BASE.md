@@ -11,6 +11,15 @@
 
 ## Entries
 
+### KB-034 — setup-android@v4 default `tools` package is gone
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | CodeQL Analyze (java-kotlin) and Signed APK fail: `Failed to find package 'tools'` from `cmdline-tools/20.0/bin/sdkmanager` |
+| **Cause** | `android-actions/setup-android@v4` defaults to cmdline-tools 20.0 and still installs obsolete SDK package `tools` |
+| **Fix** | `packages: platform-tools` on every `setup-android@v4` step (CI assemble, CodeQL, Release signed APK) |
+| **Prevention** | Do not rely on the action default package list. After Release Please publishes a tag with `GITHUB_TOKEN`, dispatch `release.yml` with `-f tag=vX.Y.Z` so SBOM/APK still upload |
+
 ### KB-033 — Required checks `CI` / `Security Scan` / `CodeQL` never appear as job names
 
 | Field | Detail |

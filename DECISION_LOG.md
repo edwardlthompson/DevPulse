@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-15 — Ship v0.38.0 signed GitHub APK
+- **Status:** Accepted
+- **Context:** `/ship` after Sprints 33–36. `android-actions/setup-android@v4` default `tools` package is gone on cmdline-tools 20.0, which broke CodeQL and the Signed APK job. Devices still ran a debug-signed 0.37.0, so `adb install -r` of the GitHub APK was signer-incompatible.
+- **Decision:** Pin setup-android `packages: platform-tools` in CI, CodeQL, and Release. Add Fastlane changelogs 3702/3800. Admin-merge RP #30. `gh workflow run release.yml -f tag=v0.38.0` (RP’s `GITHUB_TOKEN` publish does not start Release). Backup debug APKs, uninstall, install `DevPulse-0.38.0.apk` on Sony and CPH2583.
+- **Alternatives considered:** Wait for required `CI` green (rejected: upgrade-sim still expects MIT+web on this GPL Android child). Force-install over debug without backup (rejected: product rule).
+- **Consequences:** Tag `v0.38.0` has the signed APK and SBOMs. `wait-release-sbom --require` still fails (no `openvex.json`). CPH2655 not connected this session.
+
 ### 2026-09-15 — Merge Release Please #29 (v0.37.2)
 - **Status:** Accepted
 - **Context:** User asked `/cleanup`, then automate the HUMAN `/ship` row, then merge the remaining AGENT Open PR. Sprints 33–36 were ✅. #29 was MERGEABLE but BLOCKED (no required checks on the Release Please branch). Local Unreleased still describes uncommitted product UX.
