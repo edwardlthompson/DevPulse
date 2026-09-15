@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.0](https://github.com/edwardlthompson/DevPulse/compare/v0.37.2...v0.38.0) (2026-09-15)
+
+
+### Added
+
+* ship one-tap scan and update with leftover GitHub discovery ([ad6a690](https://github.com/edwardlthompson/DevPulse/commit/ad6a6908266a611c833188b430b3835468cbdb93))
+
+
+### Fixed
+
+* **android:** add Fastlane changelogs for 0.37.2 and 0.38.0 ([29e9d6a](https://github.com/edwardlthompson/DevPulse/commit/29e9d6a46672b5fe62cb69ca9c665f763a941b6d))
+* **ci:** skip obsolete Android SDK tools package on setup-android ([0713455](https://github.com/edwardlthompson/DevPulse/commit/07134556f146e5cf7a67ede416833ed82366bb5f))
+
+
+### Changed
+
+* merge main before 0.38.0 ship ([b3cf81c](https://github.com/edwardlthompson/DevPulse/commit/b3cf81cf0a6419a0adb28f1f9924caed8bd67fcb))
+
 ## [Unreleased]
 
 ## [0.37.2](https://github.com/edwardlthompson/DevPulse/compare/v0.37.1...v0.37.2) (2026-09-15)
