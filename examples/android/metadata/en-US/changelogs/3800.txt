@@ -1,0 +1,1 @@
+DevPulse 0.38.0 — one-tap Scan and update, leftover GitHub discovery from a shipped package map, and unofficial APK mirrors skipped when Play already shows current.

@@ -1,0 +1,1 @@
+DevPulse 0.37.2 — Android and GitHub Actions dependency updates. Same scanner as 0.37.1.
