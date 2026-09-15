@@ -41,6 +41,8 @@ jobs:
       - name: Setup Android SDK
         if: matrix.language == 'java-kotlin'
         uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
       - name: Accept Android SDK licenses
         if: matrix.language == 'java-kotlin'
         run: yes | sdkmanager --licenses

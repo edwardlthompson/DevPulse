@@ -208,6 +208,8 @@ jobs:
 
       - uses: android-actions/setup-android@v4
         if: steps.sign.outputs.present == 'true'
+        with:
+          packages: platform-tools
 
       - name: Accept Android SDK licenses
         if: steps.sign.outputs.present == 'true'
