@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [0.38.0](https://github.com/edwardlthompson/DevPulse/compare/v0.37.2...v0.38.0) (2026-09-15)
 
 
@@ -23,8 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * merge main before 0.38.0 ship ([b3cf81c](https://github.com/edwardlthompson/DevPulse/commit/b3cf81cf0a6419a0adb28f1f9924caed8bd67fcb))
-
-## [Unreleased]
 
 ## [0.37.2](https://github.com/edwardlthompson/DevPulse/compare/v0.37.1...v0.37.2) (2026-09-15)
 
