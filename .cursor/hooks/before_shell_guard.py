@@ -3,10 +3,24 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+
+# `git push` session approval must not cover --force / -f / --force-with-lease.
+_FORCE_FLAG = re.compile(
+    r"(?:^|\s)(?:--force(?:-with-lease)?(?:=[^\s]+)?|-f)(?:\s|$)",
+    re.I,
+)
+
+
+def is_git_force_push(command: str) -> bool:
+    lower = command.lower()
+    if "git push" not in lower:
+        return False
+    return bool(_FORCE_FLAG.search(lower))
 
 
 def main() -> None:
@@ -46,6 +60,21 @@ def main() -> None:
             break
 
     cmd_lower = command.lower()
+    if is_git_force_push(command):
+        print(
+            json.dumps(
+                {
+                    "permission": "deny",
+                    "user_message": f"Blocked destructive command (hook): {command[:120]}",
+                    "agent_message": (
+                        "/push and /ship approve git push only — not git push --force. "
+                        "Force-push stays denied."
+                    ),
+                }
+            )
+        )
+        return
+
     for pat in patterns:
         if pat in cmd_lower:
             for ok in approved:

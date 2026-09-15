@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "provider": "none",
+  "dsn": "",
+  "endpoint": "",
+  "notes": "Child escape hatch after a HUMAN DPIA. Do not enable on the template. Not a live crash-proxy."
+}

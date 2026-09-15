@@ -1,6 +1,5 @@
 ---
 description: Vertical-slice feature containers; one feature per task; autonomous gates
-globs:
 alwaysApply: true
 ---
 
@@ -16,10 +15,18 @@ alwaysApply: true
 ## After every AGENT step
 
 ```bash
-python3 scripts/agent-run.py watch-agent-gates --once --autofix
+python3 scripts/agent-run.py watch-agent-gates --once --autofix --scope auto
 ```
 
 On exit `1`: read gate JSON + `.cursor/agent-progress.json`; **auto-fix** lint/tests in feature scope; re-run until pass or 3-strike.
+
+After the last `[AGENT]`/`[AUTO]` row in the sprint is ✅, do not start the next sprint until:
+
+```bash
+python3 scripts/agent-run.py smoke-sprint --require
+```
+
+That re-smokes every ✅ row (no errors/crashes; startup time and load order). See `docs/SPRINT_SMOKE.md`.
 
 On exit `2`: halt and escalate to human; switch to **Debug Mode** per `docs/CURSOR_MODES.md` when root cause is unclear.
 

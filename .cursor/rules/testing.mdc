@@ -1,5 +1,6 @@
 ---
 description: Test coverage budgets and snapshot conventions
+alwaysApply: false
 globs:
   - "examples/**"
   - "tests/**"
@@ -26,14 +27,15 @@ globs:
 ## Per-feature smoke gate (test pyramid)
 
 - **Unit (many):** required for every new feature's pure logic
-- **Smoke (one):** `python3 scripts/agent-run.py feature-gate` after each AGENT step
+- **Smoke (one):** `watch-agent-gates` after each AGENT step; `smoke-sprint --require` after the sprint/feature is all ✅
 - **E2E (few):** Playwright/Lighthouse at milestone gates, not every feature
 
 ```bash
-python3 scripts/agent-run.py watch-agent-gates --once --autofix
+python3 scripts/agent-run.py watch-agent-gates --once --autofix --scope auto
+python3 scripts/agent-run.py smoke-sprint --require
 ```
 
-Do not start feature B until feature A passes gates and `[HUMAN]` approves.
+Do not start feature B until feature A’s row gates pass and, when the block is all ✅, sprint smoke exits 0.
 
 ## Snapshot Updates
 

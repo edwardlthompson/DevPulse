@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Core Directives
 
-On session start, read docs/START_HERE.md, pick Cursor mode via docs/CURSOR_MODES.md, then edit.
+On session start, read docs/START_HERE.md, pick Cursor mode via docs/CURSOR_MODES.md, name dirty `[Unreleased]` and the next 🔲 `[AGENT]` row, then edit. If `AGENT.md` exists, read it before any sprint row (do not substitute template About/donate).
 
 ## Plan First, Code Second
 

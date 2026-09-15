@@ -18,7 +18,7 @@ Types in `dev.foss.goldenpath.inventory`. No live `su` in unit tests. Default is
 ## Acceptance criteria
 
 - ✅ Settings chips pick the method; default System
-- ✅ Root is silent only when `su` returns Success; otherwise show a failure (no website)
+- ✅ Root is silent only when `su` returns Success; otherwise show a failure (no website). Split APKs use `pm install-create` / `install-write` / `install-commit`.
 - ✅ Session may skip the confirm dialog on Android 12+ only for updates of apps DevPulse already installed; first installs and Play/F-Droid-owned apps still prompt
 - ✅ Accessibility: chips have labels
 - ✅ i18n: `install_method_*`
@@ -31,7 +31,7 @@ Types in `dev.foss.goldenpath.inventory`. No live `su` in unit tests. Default is
 - ✅ Aptoide listing tap picks Store or Games catalog before fetch
 - ✅ Install is refused before the system installer when the APK signing cert does not match the installed app
 - ✅ A cert clash from a listing tap offers uninstall-then-install; Update all never uninstalls and instead lists those apps for a later replace
-- ✅ Session confirm-pending falls back to System when the session wait fails after launch
+- ✅ Session confirm-pending falls back to root `pm install` (including splits) when `su` works, else System
 
 ## Smoke scenario
 
@@ -46,5 +46,22 @@ Types in `dev.foss.goldenpath.inventory`. No live `su` in unit tests. Default is
 | Null/empty APK path | `RootPmInstall.args` returns null; UI keeps the file and shows failure |
 | Network timeout | N/A — install is local |
 | Race (two Install taps) | Detail button disables while busy |
-| Unhandled `su` exception | `Result` + `install_method_root_failed`; fall through is not automatic |
+| Unhandled `su` exception | `ProcessInstallShell` returns exit 127; Root waits only if installed `versionCode` is below the APK, then fails closed |
 | Silent install without consent | Default System; Root only after the user picks it; Session skip only for installer-of-record updates |
+
+## Container map
+
+| Layer | Path |
+|-------|------|
+| Logic | `examples/android/app/src/main/java/dev/foss/goldenpath/` |
+| View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
+| Tests | `examples/android/app/src/test/` |
+| Wiring | `GoldenPathApp.kt` ≤10 lines |
+
+## Tests
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

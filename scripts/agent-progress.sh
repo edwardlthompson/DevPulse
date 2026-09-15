@@ -87,11 +87,25 @@ def parse_record_args(a):
     return out
 
 if not args:
-    print("Usage: agent-progress.sh status|record|next|set-feature|set-step|set-parallel-sprint-done [--json]", file=sys.stderr)
+    print("Usage: agent-progress.sh status|record|next|set-feature|set-step|set-parallel-sprint-done|reset-strikes [--json]", file=sys.stderr)
     sys.exit(1)
 
 cmd = args[0]
 json_out = "--json" in args
+
+if cmd == "reset-strikes":
+    # After an environment fix (pre-commit install, PATH/JDK/SDK), clear halt state
+    # so /build can continue without waiting for a successful feature-gate record.
+    data = load()
+    data["strikes"] = 0
+    data["autofix_attempts"] = 0
+    data["next_action"] = "proceed after env fix (strikes reset)"
+    save(data)
+    if json_out:
+        print(json.dumps({"strikes": 0, "autofix_attempts": 0}, indent=2))
+    else:
+        print("strikes=0 autofix_attempts=0")
+    sys.exit(0)
 
 if cmd == "status":
     data = load()

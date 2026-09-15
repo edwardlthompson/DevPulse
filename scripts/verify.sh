@@ -10,6 +10,7 @@ FULL=false
 for arg in "$@"; do
   case "$arg" in
     --full) FULL=true ;;
+    --quick) FULL=false ;;
   esac
 done
 
@@ -39,3 +40,7 @@ if [ "$FULL" = true ]; then
 fi
 
 echo "Verification harness passed"
+echo "Honesty: verify does not run Android instrumented (connectedDebugAndroidTest)."
+echo "  Unit/Robolectric + :app:compileDebugAndroidTestKotlin run via feature-gate --full / watch-agent-gates."
+echo "  Device/emulator instrumented needs adb device — use /emulator or ANDROID_SERIAL=… ./gradlew connectedDebugAndroidTest."
+echo "Reminder: before a release, run python3 scripts/agent-run.py update-deps (dry-run; do not auto-apply here)."

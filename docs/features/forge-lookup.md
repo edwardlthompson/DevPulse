@@ -80,3 +80,12 @@ Client tests with recorded fixtures. Do not hit live GitHub in unit tests. Fallb
 - APKUpdater (`rumboalla/apkupdater`) is faster because it uses a curated package→repo map. DevPulse does **not** import that list. Opt-in Aurora Play downloads are a separate toggle (`docs/features/aurora-play.md`). We grow our own verified map from F-Droid, IzzyOnDroid, Archive, Guardian, and Calyx `sourceCode` (same-object parse, Wipe Files lesson). GitHub-only apps (Obtainium) bind via allowlist aliases, FAB paste, and opt-in starred scan (`docs/features/github-add.md`) instead of Play-miss name-search.
 - Self-pulse for DevPulse uses a configured repo, not this search
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

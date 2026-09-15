@@ -61,3 +61,12 @@ Isolated parser tests with fixtures are mandatory. Fallback for live Play: manua
 - Refresh probes Play via Aurora `gplayapi` bulk details first (same catalog as Play). A listed/missing Aurora result is a Play listed/miss. First-walk misses get one second Aurora pass. Auth or transport failure is unknown and falls back to the public HTML page. A Play miss does not skip F-Droid, Aptoide, APKMirror, or APKPure. Confirmed misses are reused for 7 days. Update can still open the Play Store.
 - After delisting, `docs/features/play-wayback.md` may recover `datePublished` from archived HTML. The listing stays unlisted.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

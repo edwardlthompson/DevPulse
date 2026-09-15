@@ -13,7 +13,7 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 | `UpdateNotes` | data class | `text`, `source` — only text that came from that source |
 | `UpdateArtifact` | data class | `packageName`, `source`, `downloadUrl`, optional version/sha256/`localPath`/nativeCodes |
 | `ApkIdentity` | object | sha256 + package + signer + ABI overlap before a cache file is ready |
-| `UpdatePrefetch` | object | Opt-in, unmetered-only candidate list; never installs |
+| `UpdatePrefetch` | object | Default-on, unmetered-only candidate list; never installs |
 | `UpdateNotesMemory` | object | In-memory notes by package for the current process |
 | `UpdateArtifactMemory` | object | Direct file URLs by package; best source first |
 ### Functions
@@ -25,7 +25,7 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 | `ApkPureMetaParser` | `asset.url` (APKUpdater); skip `/XAPK`; no invented URL |
 | `FdroidApkUrl.of` | `{repo}/` + `apkName` from index-v1 `packages` |
 | `FdroidApkFiles.namesIn` | Highest `apkName` plus 64-hex `hash` and `nativecode` when present |
-| `AptoideMetaParser` | `file.path` when it is an https APK URL |
+| `AptoideMetaParser` | `file.path` then `file.path_alt` when it is an https APK URL; `vercode` when present |
 | Failed HTTP | No file on disk; listing stays as today |
 ## Acceptance criteria
 
@@ -34,7 +34,7 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 - ✅ Accessibility: expand/collapse is a button with a content description
 - ✅ i18n: `update_notes_*` (cache strings wait for the APK row)
 - ✅ User never has to open a website to fetch an APK we already have a direct URL for
-- ✅ Prefetch is opt-in. Identity-safe candidate only (same cert + ABI/locale). Silent install is Root-only after the user picks it
+- ✅ Prefetch defaults on and stays user-toggleable. Identity-safe candidate only (same cert + ABI/locale). Unmetered-only. Silent install is Root-only after the user picks it
 - ✅ APKMirror stays page-only; Play downloads only when the opt-in Aurora toggle is on
 - ✅ i18n: `update_cache_*`
 
@@ -62,3 +62,20 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.update`. No li
 | Race (two Refresh jobs) | Existing `ReleaseRefreshRuntime.tryBegin()` |
 | Unhandled download exception | `Result` + ignore that sha256; user can retry |
 | Wrong-market APK | Cert + locale inspect before the file is marked ready |
+
+## Container map
+
+| Layer | Path |
+|-------|------|
+| Logic | `examples/android/app/src/main/java/dev/foss/goldenpath/` |
+| View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
+| Tests | `examples/android/app/src/test/` |
+| Wiring | `GoldenPathApp.kt` ≤10 lines |
+
+## Tests
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

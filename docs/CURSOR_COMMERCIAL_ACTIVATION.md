@@ -17,6 +17,17 @@ Requires **Commercial** distribution tier (`--distribution-tier commercial` or `
 7. Review Automations recipes in [`CURSOR_AUTOMATIONS.commercial.md`](CURSOR_AUTOMATIONS.commercial.md) (CI-fail triage, nightly digest, webhook → gates)
 8. Map Bugbot Autofix to local `/fix` expectations in `BUGBOT.md`
 9. For multi-repo or Slack: configure a named Cloud environment in the Cursor dashboard (Slack Jul 2026 multi-repo support) — docs only; no Slack app secrets in-repo
+10. Optional: create Grok Bots from [`GROK_BOTS.md`](GROK_BOTS.md) for always-on Android/R8 scouting and BUILD_PLAN weekly/monthly maintain (read-only git; no signing keys; no `git push`)
+
+## Docs-only dry-run (FOSS template)
+
+No secrets, no tier swap. Walk the checklist on paper:
+
+1. Confirm this repo’s `.cursor/stack-selection.json` still says `"distribution_tier": "foss"` (stop here unless `[HUMAN]` approved commercial).
+2. Read each example path in the checklist without copying: `.cursor/environment.json.commercial.example`, `BUGBOT.md.commercial.example`, `mcp.commercial.example`, `hooks.cloud.commercial.example.json`.
+3. Skim [`CURSOR_AUTOMATIONS.commercial.md`](CURSOR_AUTOMATIONS.commercial.md) and [`GROK_BOTS.md`](GROK_BOTS.md) Monday-cron drill — note which items need billing.
+4. Run (still FOSS): `python3 scripts/agent-run.py check-cursor-integrations -- --tier foss`
+5. Do **not** run `sync-cursor-features.py --tier commercial` during this dry-run.
 
 ## Android commercial patterns
 

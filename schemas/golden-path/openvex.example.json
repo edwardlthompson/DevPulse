@@ -1,0 +1,19 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://openvex.dev/docs/public/agent-project-bootstrap-template",
+  "author": "agent-project-bootstrap maintainers",
+  "role": "Document Creator",
+  "timestamp": "2026-08-27T00:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": { "name": "CVE-1900-0000" },
+      "products": [
+        { "@id": "pkg:generic/agent-project-bootstrap" }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Template placeholder. Copy to gitignored openvex.json and replace statements when triaging a real CVE next to sbom.cyclonedx.json."
+    }
+  ]
+}

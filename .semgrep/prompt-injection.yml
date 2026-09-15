@@ -1,0 +1,42 @@
+# FOSS-only Semgrep prompt-injection pack. Do not set SEMGREP_APP_TOKEN.
+#
+# Android 16 / reflective-API sink notes (pack commentary; not Kotlin rules yet):
+# - Android 16 (API 36) instrumented tests: prefer Espresso 3.7+ (see espresso-android16 skill).
+# - Reflective sinks to watch in app code (manual / future rules): Class.forName,
+#   Method.invoke, getDeclaredMethod on untrusted names; JNI RegisterNatives with
+#   attacker-controlled symbols; WebView addJavascriptInterface without @JavascriptInterface.
+# - Keep FOSS path free of Play Services / Credential Manager reflection helpers.
+# - R8 keep rules that blanket `-keep public class *` hide reflective abuse — review in
+#   docs/features/android-runtime-budget.md rather than silencing Semgrep.
+rules:
+  - id: foss.prompt-injection.ignore-previous
+    languages: [python, typescript, javascript]
+    message: Do not ship jailbreak phrases that override system instructions.
+    severity: ERROR
+    pattern-regex: (?i)ignore (all )?(previous|prior) (instructions|prompts)
+    paths:
+      include:
+        - scripts/lib
+        - examples
+      exclude:
+        - "**/*test*"
+        - "**/test_*.py"
+        - "**/*.test.ts"
+  - id: foss.prompt-injection.shell-true
+    languages: [python]
+    message: Do not run a shell on untrusted text (prompt-injection to the OS).
+    severity: ERROR
+    pattern: subprocess.$FN(..., shell=True, ...)
+    paths:
+      include:
+        - scripts/lib
+        - examples/python
+  - id: foss.prompt-injection.os-system
+    languages: [python]
+    message: Do not call os.system; it is a shell injection sink.
+    severity: ERROR
+    pattern: os.system(...)
+    paths:
+      include:
+        - scripts/lib
+        - examples/python

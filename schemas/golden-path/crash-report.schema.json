@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edwardlthompson.github.io/agent-project-bootstrap/schemas/golden-path/crash-report.schema.json",
+  "title": "Golden Path pending crash payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["message", "stack"],
+  "properties": {
+    "message": { "type": "string" },
+    "stack": { "type": "string" }
+  }
+}

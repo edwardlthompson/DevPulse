@@ -48,6 +48,7 @@ jobs:
       rust: ${{ steps.paths.outputs.rust }}
       go: ${{ steps.paths.outputs.go }}
       lightroom: ${{ steps.paths.outputs.lightroom }}
+      nix: ${{ steps.paths.outputs.nix }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -65,6 +66,11 @@ jobs:
                 echo "${key}=false" >> "$GITHUB_OUTPUT"
               fi
             done
+            if [ -f flake.nix ]; then
+              echo "nix=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "nix=false" >> "$GITHUB_OUTPUT"
+            fi
             exit 0
           fi
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -84,6 +90,11 @@ jobs:
                 echo "${key}=false" >> "$GITHUB_OUTPUT"
               fi
             done
+            if [ -f flake.nix ]; then
+              echo "nix=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "nix=false" >> "$GITHUB_OUTPUT"
+            fi
             exit 0
           fi
           changed() { git diff --name-only "$BASE" "$HEAD" | grep -q "^$1"; }
@@ -103,6 +114,11 @@ jobs:
             echo "android=true" >> "$GITHUB_OUTPUT"
           else
             echo "android=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -f flake.nix ] && git diff --name-only "$BASE" "$HEAD" | grep -qE '^(flake\.nix|flake\.lock|scripts/check-nix-flake\.sh|scripts/lib/nix_flake\.py)$'; then
+            echo "nix=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "nix=false" >> "$GITHUB_OUTPUT"
           fi
 
   encoding-check:
@@ -126,6 +142,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Validate branch name
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: bash scripts/check-ci-refs.sh --branch
       - name: Check tracked artifacts and repo config
         run: bash scripts/check-repo-hygiene.sh
 
@@ -159,6 +179,17 @@ jobs:
         run: chmod +x examples/android/gradlew
       - name: Run feature gate (strict multi-stack)
         run: bash scripts/feature-gate.sh --stack multi --strict --json
+
+  plugin-pack:
+    name: Cursor plugin pack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Pack and validate plugin layout
+        run: |
+          bash scripts/pack-cursor-plugin.sh
+          test -f dist/cursor-plugin/.cursor-plugin/plugin.json
+          test -f dist/cursor-plugin/hooks.json
 
   validate-index:
     name: Validate Template Index
@@ -210,7 +241,18 @@ jobs:
       - name: Bundle size budget
         working-directory: ${{ github.workspace }}
         run: bash scripts/check-bundle-size.sh
-      - run: npx playwright install --with-deps chromium
+      - name: Playwright browser cache
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('examples/web/package-lock.json') }}
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+      - name: Restore Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install chromium
       - run: npx playwright test
       - run: npm run lighthouse
       - name: Upload web coverage
@@ -569,6 +611,30 @@ jobs:
       - run: test -z "$(gofmt -l .)"
       - run: go test ./...
 
+  nix:
+    name: Nix flake (optional)
+    runs-on: ubuntu-latest
+    needs: path-changes
+    if: needs.path-changes.outputs.nix == 'true'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Structure gate (no Nix required)
+        run: bash scripts/check-nix-flake.sh
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+      - name: Evaluate flake apps
+        run: |
+          nix --extra-experimental-features "nix-command flakes" flake show
+          prog="$(nix --extra-experimental-features "nix-command flakes" eval --raw .#apps.x86_64-linux.verify.program)"
+          test -x "$prog"
+
+  sanitize-fixtures:
+    name: Sanitizer fixture parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Cross-stack sanitizer fixtures
+        run: bash scripts/check-sanitize-fixtures.sh
+
   # Job name must be exactly CI — branch protection requires that check context.
   ci-rollup:
     name: CI
@@ -580,6 +646,7 @@ jobs:
       - file-limits
       - repo-hygiene
       - feature-gate
+      - plugin-pack
       - validate-index
       - workflow-actions
       - validate-bootstrap
@@ -598,6 +665,7 @@ jobs:
       - lightroom
       - rust
       - go
+      - sanitize-fixtures
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -617,6 +685,7 @@ jobs:
             file-limits=${{ needs.file-limits.result }}
             repo-hygiene=${{ needs.repo-hygiene.result }}
             feature-gate=${{ needs.feature-gate.result }}
+            plugin-pack=${{ needs.plugin-pack.result }}
             validate-index=${{ needs.validate-index.result }}
             workflow-actions=${{ needs.workflow-actions.result }}
             validate-bootstrap=${{ needs.validate-bootstrap.result }}
@@ -635,5 +704,6 @@ jobs:
             lightroom=${{ needs.lightroom.result }}
             rust=${{ needs.rust.result }}
             go=${{ needs.go.result }}
+            sanitize-fixtures=${{ needs.sanitize-fixtures.result }}
         run: bash scripts/conclude-required-check.sh
 

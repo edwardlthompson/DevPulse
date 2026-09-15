@@ -1,0 +1,5 @@
+{
+  "web_http_ms": 3000,
+  "cli_help_ms": 8000,
+  "android_launch_ms": 15000
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edwardlthompson.github.io/agent-project-bootstrap/schemas/golden-path/settings-bundle.schema.json",
+  "title": "Golden Path Settings export bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "theme", "saveCrashes"],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "theme": { "type": "string", "enum": ["system", "light", "dark"] },
+    "saveCrashes": { "type": "boolean" }
+  }
+}

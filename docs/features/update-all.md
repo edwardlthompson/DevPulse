@@ -10,7 +10,7 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Listing
 
 | Name | Kind | Contract |
 |------|------|----------|
-| `UpdateAll` | object | `jobs(apps)` is every outdated app with a fetchable source; `run` downloads up to `PARALLEL` APKs at once, then queues installs |
+| `UpdateAll` | object | `jobs(apps)` is every outdated app with a fetchable source; `run` downloads up to `PARALLEL` APKs, installs those ready files, then starts the next wave |
 | `UpdateAllResult` | data class | `downloaded`, `installed`, `failedDownload`, `failedInstall` |
 ## Acceptance criteria
 
@@ -24,7 +24,7 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Listing
 - ✅ Play files are queued only when the Aurora toggle is on; otherwise Update all uses the next fetchable source
 - ✅ A successful install settles the package so it leaves the updates list across process death until Refresh finds a newer listing; a failed app stays only while a lower fetchable version remains
 - ✅ Ignored versions persist in `ignored_updates.tsv` so the same false-positive listing does not return until Refresh finds a newer version
-- ✅ Update all downloads up to two APKs at once, then installs the ready files one at a time
+- ✅ Update all downloads up to two APKs at once, then installs those ready files one at a time before the next download wave
 - ✅ There is no cap on how many apps Update all queues, and APK size is limited only by free disk
 - ✅ A cert clash is not installed and is not ignored; it is kept on a signing list after matching-signer installs finish
 - ✅ Uninstall-then-install waits until the package is actually gone before installing; a fast uninstall-UI result does not delete the staged APK
@@ -37,12 +37,16 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Listing
 - ✅ Play-installed apps are not sideloaded from Aptoide/APKPure in Update all; a Play download that returns no file and has no other source offers Open Play Store
 - ✅ Scan and Update all refresh the Aurora Play session once up front so Play file URLs can be fetched on the first pass
 - ✅ A GitHub/F-Droid tag like `fdroid-v2.3.6` is not treated as newer than installed `2.3.6`
+- ✅ Aptoide listings resolve via `listAppsUpdates` + signing SHA-1; a resolve miss is logged as `ResolveMiss` and is not ignored
+- ✅ When both installed and listed version codes are present, those codes decide “newer” (junk Aptoide names do not override)
+- ✅ Listing downloads look up the installed version/code so a same-version extra does not re-download
+- ✅ Play files whose Aurora `versionCode` is not newer than installed are not downloaded; an archive older than installed or whose `lib/` ABI does not overlap the device is dropped (`Older` / `Sdk`). Download fail log lines include that why. Transient DNS/connection drops retry once and stay `Timeout` (not ignored). Remembered Aptoide `lib/` ABIs persist (and survive a later listing that omits `cpus`) so a later Update all does not re-download the same unusable APK.
 
 ## Smoke scenario
 
 1. _Given_ two newer apps (Play-listed and F-Droid-listed)
 2. _When_ Update all runs
-3. _Then_ first-choice APKs download in parallel, installs run one at a time, and a failed source walks the next version in a later wave; successful rows leave the list
+3. _Then_ first-choice APKs download two at a time, those installs run one at a time before the next pair, and a failed source walks the next version in a later wave; successful rows leave the list
 
 ## Container map
 
@@ -64,3 +68,12 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests. Listing
 ## Notes
 
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edwardlthompson.github.io/agent-project-bootstrap/schemas/golden-path/app-update.schema.json",
+  "title": "Golden Path app-update.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["release_repo", "check_interval"],
+  "properties": {
+    "release_repo": { "type": "string" },
+    "manifest_url": { "type": ["string", "null"] },
+    "check_interval": {
+      "type": "string",
+      "enum": ["off", "daily", "weekly", "monthly", "on_session"]
+    },
+    "last_checked": { "type": ["integer", "null"] },
+    "installed_artifact_format": { "type": ["string", "null"] },
+    "product_asset_prefix": { "type": "string" },
+    "notify_method": { "type": "string" },
+    "restart_guard_key": { "type": "string" }
+  }
+}

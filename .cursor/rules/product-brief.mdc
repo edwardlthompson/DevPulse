@@ -1,0 +1,12 @@
+---
+description: Product brief recovery — read AGENT.md before Golden Path About/donate
+alwaysApply: true
+---
+
+# Product brief (do not drift)
+
+If `AGENT.md` exists, read it **before** any sprint row and before Golden Path About, donate, Settings, or template purpose work. Do not substitute this template’s About/donate examples for the product in `AGENT.md`.
+
+Bootstrap stamps `AGENTS.md` only. Never overwrite, delete, or “refresh” `AGENT.md` from `AGENTS.md`.
+
+Recovery: `BUILD_PLAN.md` **Product (do not drift)** block (`<!-- product-brief-sync -->`). If that block disagrees with `AGENT.md`, restore from `AGENT.md`.

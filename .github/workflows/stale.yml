@@ -23,5 +23,5 @@ jobs:
           stale-pr-message: This pull request has been marked stale due to inactivity.
           days-before-stale: 60
           days-before-close: 14
-          exempt-issue-labels: template-improvement
+          exempt-issue-labels: template-improvement,crash,fix-now,needs-repro
           exempt-pr-labels: template-improvement,HUMAN

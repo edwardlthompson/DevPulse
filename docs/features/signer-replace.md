@@ -59,3 +59,12 @@ Types in `dev.foss.goldenpath.inventory`. No live uninstall in unit tests. Updat
 | Batch Update all | Cert clashes skip the installer, keep the APK, and join `SignerReplaceQueue`; Update all never uninstalls |
 | Wrong-package file delete | `SignerReplaceStore.clear` takes the finished package name; Host resets `installingPkg` so the next gone APK can start |
 | Install UI buried | Replace ignores the Settings install-method toggle and always uses `SessionApkInstall.commit`; wait dialog only after returning from the installer |
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

@@ -1,5 +1,6 @@
 ---
 description: Post-push CI poll protocol and gate ordering
+alwaysApply: false
 globs:
   - ".github/workflows/**"
   - "scripts/check-github-ci.*"
@@ -18,10 +19,13 @@ python3 scripts/agent-run.py check-github-ci --wait 300
 
 ## Gate Order (local)
 
-1. `scripts/watch-agent-gates.sh --once --autofix` (after each AGENT feature step)
-2. `scripts/feature-gate.sh --json` (same gate, manual)
-3. `pre-commit run --all-files` (optional if hooks installed)
-4. Push → `scripts/check-github-ci.sh --wait 300`
+1. `python3 scripts/agent-run.py update-deps` (dry-run; `--apply` only from `/update-deps` / `/ship`)
+2. `scripts/watch-agent-gates.sh --once --autofix --scope auto` (after each AGENT feature step; `/gates` stays full)
+3. `scripts/smoke-sprint.sh --require` after the sprint is all ✅ (every checked row; startup + load order). `/gates` uses `--if-complete`.
+4. `scripts/feature-gate.sh --json` (RAM-capped parallel stacks on `multi`; `FEATURE_GATE_JOBS` override)
+5. `pre-commit run --all-files` (optional if hooks installed)
+6. `/prerelease` uses `pre-release-gate.sh --local` (no GitHub wait)
+7. Push → `scripts/check-github-ci.sh --wait 300` (`/push`, `/regress` full gate)
 
 **Autonomous rule:** On gate failure, agent auto-fixes from JSON output within feature scope; re-run until pass or 3-strike. Push still requires human approval.
 

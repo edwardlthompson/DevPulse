@@ -1,0 +1,57 @@
+name: Feedback notify
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  route:
+    name: Label, assign, comment
+    runs-on: ubuntu-latest
+    if: >
+      github.event.action == 'opened' ||
+      (github.event.action == 'labeled' &&
+       contains(fromJSON('["crash","bug","enhancement"]'), github.event.label.name))
+    steps:
+      - name: Route issue
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = (issue.labels || []).map((l) => l.name);
+            const has = (name) => labels.includes(name);
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = issue.number;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 30 });
+            const already = comments.data.some((c) => (c.body || "").includes("/audit") || (c.body || "").includes("/ideas"));
+            const assignees = ["edwardlthompson"];
+            async function ensureLabel(name) {
+              if (has(name)) return;
+              await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [name] }).catch(() => {});
+            }
+            async function assign() {
+              await github.rest.issues.addAssignees({ owner, repo, issue_number, assignees }).catch(() => {});
+            }
+            if (has("crash") || has("bug")) {
+              await ensureLabel("fix-now");
+              await assign();
+              if (!already) {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number,
+                  body: "Labeled as a fix. `/audit` and `/maintain` will pick this up and treat it as immediate work (at most three inbox fixes per run).",
+                }).catch(() => {});
+              }
+            } else if (has("enhancement")) {
+              await ensureLabel("needs-approval");
+              if (!already) {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number,
+                  body: "This is a feature request. It will appear in `/ideas` for ranking and will not be implemented until a maintainer approves a BUILD_PLAN row.",
+                }).catch(() => {});
+              }
+            }

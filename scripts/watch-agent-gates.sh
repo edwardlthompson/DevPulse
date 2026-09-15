@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Gate loop with mechanical autofix and progress tracking for autonomous agents.
-# Usage: watch-agent-gates.sh [--once] [--autofix] [--no-autofix] [--interval SEC] [--max-attempts N] [--wait-ci SEC] [--step LABEL]
+# Usage: watch-agent-gates.sh [--once] [--autofix] [--no-autofix] [--interval SEC]
+#   [--max-attempts N] [--wait-ci SEC] [--step LABEL] [--scope auto|full]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -15,6 +16,12 @@ INTERVAL=0
 MAX_ATTEMPTS=10
 WAIT_CI=0
 STEP=""
+SCOPE="${FEATURE_GATE_SCOPE:-full}"
+SKIP_PREAMBLE_ONCE=false
+PIN_SCOPE=false
+GATE_MODE="full"
+GATE_STACKS=""
+GATE_REASON="default"
 while [ $# -gt 0 ]; do
   case "$1" in
     --once) ONCE=true; shift ;;
@@ -25,6 +32,8 @@ while [ $# -gt 0 ]; do
     --wait-ci) WAIT_CI="${2:-300}"; shift 2 ;;
     --step) STEP="${2:-}"; shift 2 ;;
     --step=*) STEP="${1#*=}"; shift ;;
+    --scope) SCOPE="${2:-full}"; shift 2 ;;
+    --scope=*) SCOPE="${1#*=}"; shift ;;
     *) shift ;;
   esac
 done
@@ -72,16 +81,69 @@ print(",".join(p for p in paths if Path(root / p).exists() or p.endswith("main.t
 PY
 }
 
+scope_autofix_paths() {
+  if [ "$GATE_MODE" = "stacks" ] && [ -n "$GATE_STACKS" ]; then
+    echo "$GATE_STACKS" | $PY -c "import sys; print(','.join('examples/'+s.strip() for s in sys.stdin.read().split(',') if s.strip()))"
+    return
+  fi
+  if [ "$GATE_MODE" = "docs" ]; then
+    echo "docs,.cursor/commands,BUILD_PLAN.md,CHANGELOG.md"
+    return
+  fi
+  feature_autofix_paths
+}
+
+resolve_scope() {
+  if [ "$PIN_SCOPE" = true ]; then
+    return 0
+  fi
+  if [ "$SCOPE" != "auto" ]; then
+    GATE_MODE="full"
+    GATE_STACKS=""
+    GATE_REASON="scope-${SCOPE}"
+    unset FEATURE_GATE_ONLY || true
+    return 0
+  fi
+  eval "$("$PY" "$ROOT/scripts/lib/gate_scope.py" --shell)"
+}
+
+persist_gate_json() {
+  printf '%s\n' "$GATE_JSON" | $PY -c "
+import json, sys
+from pathlib import Path
+t = sys.stdin.read()
+i = t.rfind('{')
+try:
+    d = json.loads(t[i:] if i >= 0 else t)
+except json.JSONDecodeError:
+    d = {'ok': False, 'exit_code': 1, 'failed_stage': None}
+Path('.cursor/last-feature-gate.json').write_text(json.dumps(d, indent=2) + chr(10), encoding='utf-8')
+"
+}
+
 run_gate() {
-  local gate_json gate_exit
-  GATE_ARGS=(--json)
-  [ -n "$STEP" ] && GATE_ARGS+=(--step "$STEP")
+  local extra=(--json)
+  [ -n "$STEP" ] && extra+=(--step "$STEP")
+  if [ "$SKIP_PREAMBLE_ONCE" = true ]; then
+    extra+=(--skip-preamble)
+    SKIP_PREAMBLE_ONCE=false
+  fi
+  unset FEATURE_GATE_ONLY || true
+  case "$GATE_MODE" in
+    docs) extra+=(--stack docs) ;;
+    stacks)
+      case "$GATE_STACKS" in
+        *,*) extra+=(--stack multi); export FEATURE_GATE_ONLY="$GATE_STACKS" ;;
+        "") extra+=(--stack docs) ;;
+        *) extra+=(--stack "$GATE_STACKS") ;;
+      esac
+      ;;
+  esac
+  echo "gate scope: mode=$GATE_MODE stacks=${GATE_STACKS:-all} reason=$GATE_REASON"
   set +e
-  gate_json="$(bash scripts/feature-gate.sh "${GATE_ARGS[@]}" 2>/dev/null)"
-  gate_exit=$?
+  GATE_JSON="$(bash scripts/feature-gate.sh "${extra[@]}" 2>/dev/null)"
+  GATE_EXIT=$?
   set -e
-  GATE_JSON="$gate_json"
-  GATE_EXIT="$gate_exit"
 }
 
 attempt=0
@@ -89,10 +151,13 @@ while [ "$attempt" -lt "$MAX_ATTEMPTS" ]; do
   attempt=$((attempt + 1))
   echo "watch-agent-gates attempt $attempt/$MAX_ATTEMPTS step=${STEP:-none}"
 
+  resolve_scope
   run_gate
+  persist_gate_json
+  bash scripts/render-gates-status.sh >/dev/null 2>&1 || true
 
   if [ "$GATE_EXIT" -eq 0 ]; then
-    echo "$GATE_JSON" | $PY -c "import sys,json; d=json.load(sys.stdin); print('OK', len(d.get('gates_passed',[])), 'stages')" 2>/dev/null || echo "Feature gate passed"
+    echo "$GATE_JSON" | $PY -c "import sys,json; t=sys.stdin.read(); i=t.rfind('{'); d=json.loads(t[i:] if i>=0 else t); print('OK', len(d.get('gates_passed',[])), 'stages')" 2>/dev/null || echo "Feature gate passed"
     if [ "$WAIT_CI" -gt 0 ] && command -v gh >/dev/null 2>&1; then
       echo "Waiting for GitHub CI (${WAIT_CI}s max)..."
       bash scripts/check-github-ci.sh HEAD --wait "$WAIT_CI" || exit 1
@@ -114,18 +179,33 @@ while [ "$attempt" -lt "$MAX_ATTEMPTS" ]; do
   fi
 
   if [ "$AUTOFIX" = true ]; then
-    # Allowlisted stage → mechanical command (never free-text suggested_fixes)
-    echo "$GATE_JSON" >.cursor/last-feature-gate.json 2>/dev/null || true
+    persist_gate_json
     bash scripts/apply-suggested-gate-fixes.sh --json .cursor/last-feature-gate.json || true
 
-    PATHS="$(feature_autofix_paths)"
+    PATHS="$(scope_autofix_paths)"
     if [ -n "$PATHS" ]; then
       bash scripts/feature-autofix.sh --paths "$PATHS" || true
     else
       bash scripts/feature-autofix.sh || true
     fi
     bash scripts/agent-progress.sh record --gate feature-autofix --exit 0 --autofix ${STEP:+--step "$STEP"}
+
+    FAILED="$($PY -c "import json; print(json.load(open('.cursor/last-feature-gate.json',encoding='utf-8')).get('failed_stage') or '')" 2>/dev/null || true)"
+    RETRY="$($PY -c "import sys; sys.path.insert(0,'scripts/lib'); from gate_scope import retry_stack; print(retry_stack(sys.argv[1]) or '')" "$FAILED")"
+    if [ -n "$RETRY" ]; then
+      GATE_MODE=stacks
+      GATE_STACKS=$RETRY
+      GATE_REASON="retry-$RETRY"
+      PIN_SCOPE=true
+      SKIP_PREAMBLE_ONCE=true
+    elif [ "$FAILED" = "stack-parallel" ] && [ "$GATE_MODE" = "stacks" ]; then
+      PIN_SCOPE=true
+      SKIP_PREAMBLE_ONCE=true
+    fi
     run_gate
+    PIN_SCOPE=false
+    persist_gate_json
+    bash scripts/render-gates-status.sh >/dev/null 2>&1 || true
     if [ "$GATE_EXIT" -eq 0 ]; then
       echo "Feature gate passed after autofix"
       exit 0

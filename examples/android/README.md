@@ -22,7 +22,7 @@ examples/android/
 
 **Styles and strings are separate:** theme colors and spacing live in `ui/theme/` (from `design-tokens/`). All copy lives in `strings.xml`, consumed via `stringResource(R.string.*)` in Compose — never `Text("literal")`.
 
-See [`docs/DESIGN_GUIDE.md`](../../docs/DESIGN_GUIDE.md) and [`docs/WEB_PROJECT_LAYOUT.md`](../../docs/WEB_PROJECT_LAYOUT.md) for cross-stack conventions.
+See [`docs/DESIGN_GUIDE.md`](../../docs/DESIGN_GUIDE.md), [`docs/WEB_PROJECT_LAYOUT.md`](../../docs/WEB_PROJECT_LAYOUT.md), and [`docs/ANDROID_SIGNING.md`](../../docs/ANDROID_SIGNING.md) for cross-stack conventions and release signing.
 
 Optional task runner (not required for CI): install [just](https://github.com/casey/just), then `just test` (needs Android SDK).
 

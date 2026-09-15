@@ -38,12 +38,27 @@ jobs:
       - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Repo-root .gitleaks.toml is the fixture baseline (allowlisted sanitizer JSON).
+
+  semgrep:
+    name: Semgrep FOSS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Semgrep
+        run: |
+          python3 -m pip install --user semgrep
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+      - name: Scan FOSS rules (no SaaS)
+        run: semgrep --config .semgrep.yml --config .semgrep/prompt-injection.yml --metrics=off --error
+        env:
+          SEMGREP_SEND_METRICS: "off"
 
   # Job name must be exactly Security Scan — branch protection requires that check context.
   security-rollup:
     name: Security Scan
     if: always()
-    needs: [trivy, gitleaks]
+    needs: [trivy, gitleaks, semgrep]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -59,4 +74,5 @@ jobs:
           JOB_RESULTS: |
             trivy=${{ needs.trivy.result }}
             gitleaks=${{ needs.gitleaks.result }}
+            semgrep=${{ needs.semgrep.result }}
         run: bash scripts/conclude-required-check.sh

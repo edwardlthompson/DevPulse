@@ -52,4 +52,25 @@ if [ -z "$CFF_DATE" ]; then
   exit 1
 fi
 
+PLUGIN="$(python3 -c "import json; print(json.load(open('.cursor-plugin/plugin.json', encoding='utf-8')).get('version',''))")"
+if [ "$PLUGIN" != "$VERSION" ]; then
+  echo "FAIL: .cursor-plugin/plugin.json version ($PLUGIN) != .template-version ($VERSION)"
+  echo "Fix: bash scripts/sync-template-version.sh"
+  exit 1
+fi
+
+RP_PLUGIN="$(python3 -c "
+import json
+cfg = json.load(open('release-please-config.json', encoding='utf-8'))
+ok = False
+for item in cfg['packages']['.']['extra-files']:
+    if isinstance(item, dict) and item.get('path') == '.cursor-plugin/plugin.json' and item.get('jsonpath') == '\$.version':
+        ok = True
+print('ok' if ok else '')
+")"
+if [ "$RP_PLUGIN" != "ok" ]; then
+  echo "FAIL: release-please-config extra-files must bump .cursor-plugin/plugin.json \$.version"
+  exit 1
+fi
+
 echo "Template version sync OK ($VERSION)"

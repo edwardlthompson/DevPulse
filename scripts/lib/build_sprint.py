@@ -12,8 +12,8 @@ from build_sprint_model import (
     next_actionable_row,
     row_action,
 )
-from build_sprint_parse import parse_maintenance_rows, parse_sprint_blocks
-from build_sprint_resolve import resolve_sprint
+from build_sprint_child import child_status as child_lane_status
+from build_sprint_parse import parse_board_queue
 from weekly_health import is_recurring_weekly_auto, weekly_health_succeeded_this_week
 
 
@@ -35,20 +35,6 @@ def _maintainer_idle() -> dict:
     }
 
 
-def _child_status(text: str, progress: dict, backlog_keys: set[str]) -> dict:
-    for title, block_lines in parse_sprint_blocks(text):
-        status = resolve_sprint(title, block_lines, progress, backlog_keys)
-        if not status["sprint_agent_auto_complete"] or status.get("next_row"):
-            status["lane"] = "child"
-            status["chain_continue"] = status["sprint_agent_auto_complete"]
-            status["all_sprints_agent_auto_complete"] = False
-            return status
-    idle = _maintainer_idle()
-    idle["lane"] = "child"
-    idle["sprint"] = None
-    return idle
-
-
 def build_status(root: Path, *, lane: str = "auto") -> dict:
     text = (root / "BUILD_PLAN.md").read_text(encoding="utf-8")
     progress = load_progress(root)
@@ -56,11 +42,15 @@ def build_status(root: Path, *, lane: str = "auto") -> dict:
     template = is_template_repo(root)
     if lane == "auto" and template:
         lane = "maintainer"
+    if lane == "child":
+        tmpl = root / "BUILD_PLAN_TEMPLATE.md"
+        if template and tmpl.is_file():
+            text = tmpl.read_text(encoding="utf-8")
     if lane in ("auto", "child"):
-        child_status = _child_status(text, progress, backlog_keys)
-        if not child_status.get("all_sprints_agent_auto_complete") or lane == "child":
-            return child_status
-    maint_auto, maint_human = parse_maintenance_rows(text)
+        child = child_lane_status(text, progress, backlog_keys, _maintainer_idle())
+        if not child.get("all_sprints_agent_auto_complete") or lane == "child":
+            return child
+    maint_auto, maint_human = parse_board_queue(text, maintainer=True)
     if template and weekly_health_succeeded_this_week(root):
         maint_auto = [row for row in maint_auto if not is_recurring_weekly_auto(row)]
     maint_aa_next = next_actionable_row(maint_auto, backlog_keys)
@@ -68,13 +58,13 @@ def build_status(root: Path, *, lane: str = "auto") -> dict:
         next_actionable_row(maint_human, backlog_keys) if not maint_aa_next else None
     )
     if not maint_next:
-        return _maintainer_idle() if (lane == "maintainer" or template) else _child_status(
-            text, progress, backlog_keys
+        return _maintainer_idle() if (lane == "maintainer" or template) else child_lane_status(
+            text, progress, backlog_keys, _maintainer_idle()
         )
     act = row_action(maint_next.owner) if maint_next.owner in ("HUMAN", "ADB") else "execute"
     return {
         "lane": "maintainer",
-        "sprint": "Ongoing Maintenance",
+        "sprint": maint_next.sprint,
         "sprint_agent_auto_complete": False,
         "sprint_complete": False,
         "open_agent_auto": len([r for r in maint_auto if r.owner in ("AGENT", "AUTO")]),
@@ -84,8 +74,8 @@ def build_status(root: Path, *, lane: str = "auto") -> dict:
         "next_row": {
             "owner": maint_next.owner,
             "task": maint_next.task,
-            "sprint": "Ongoing Maintenance",
-            "phase": "maintenance",
+            "sprint": maint_next.sprint,
+            "phase": maint_next.phase,
             "action": act,
         },
         "action": act,
@@ -124,7 +114,7 @@ def main() -> int:
     print(f"Mode: {mode}")
     if status.get("all_sprints_agent_auto_complete") and not status.get("next_row"):
         if mode == "template":
-            print("No open maintainer AGENT sprint. Child Sprint 0 is the playbook, not this repo.")
+            print("No open maintainer AGENT sprint. Child Sprint 0 is BUILD_PLAN_TEMPLATE.md, not this board.")
         else:
             print("All sprints: no open actionable rows")
     elif status.get("next_row"):

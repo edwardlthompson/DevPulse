@@ -64,3 +64,12 @@ Unit tests for pause/resume state machine. Fallback: `bash scripts/feature-gate.
 
 - Do not implement Play HTML or forge search here
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

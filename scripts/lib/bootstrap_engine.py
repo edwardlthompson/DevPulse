@@ -2,11 +2,13 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = 1
+from bootstrap_defaults import SCHEMA_VERSION, default_config
+
 LICENSES = ("MIT", "Apache-2.0", "GPL-3.0-or-later")
 STACKS = ("web", "python", "android", "node", "multi", "none")
 REQUIRED_TOOLS = ("git",)
@@ -22,48 +24,35 @@ STACK_TOOLS: dict[str, tuple[str, ...]] = {
 CONFIG_NAME = "bootstrap.config.json"
 EXAMPLE_NAME = "bootstrap.config.json.example"
 
+__all__ = [
+    "SCHEMA_VERSION",
+    "LICENSES",
+    "STACKS",
+    "CONFIG_NAME",
+    "android_sdk_present",
+    "default_config",
+    "validate_config",
+    "load_config",
+    "save_config",
+    "tool_present",
+    "python_present",
+    "preflight",
+    "apply_license",
+]
 
-def default_config(
-    *,
-    project_name: str = "",
-    purpose: str = "",
-    stack: str = "none",
-    license_id: str = "MIT",
-    distribution_tier: str = "foss",
-) -> dict[str, Any]:
-    return {
-        "schema_version": SCHEMA_VERSION,
-        "project_name": project_name,
-        "purpose": purpose,
-        "stack": stack,
-        "license": license_id,
-        "distribution_tier": distribution_tier,
-        "agent_adapters": {
-            "cursor_rules": True,
-            "claude": True,
-            "copilot": True,
-            "gemini": True,
-            "windsurf": True,
-            "cline": True,
-            "aider": True,
-            "continue": True,
-        },
-        "security": {
-            "dependabot": True,
-            "code_scanning": True,
-            "secret_detection": True,
-        },
-        "hooks": {
-            "preflight": True,
-            "post_sync_adapters": True,
-            "post_checklist": True,
-            "post_git_init": False,
-            "post_git_commit": False,
-            "post_install_deps": False,
-            "post_run_tests": False,
-            "post_welcome_issue": False,
-        },
-    }
+
+def android_sdk_present(env: dict[str, str] | None = None, home: Path | None = None) -> bool:
+    """True when ANDROID_HOME/SDK_ROOT or a common user SDK has platform-tools."""
+    environ = env if env is not None else os.environ
+    for key in ("ANDROID_HOME", "ANDROID_SDK_ROOT"):
+        raw = (environ.get(key) or "").strip()
+        if raw and (Path(raw).expanduser() / "platform-tools").is_dir():
+            return True
+    base = home if home is not None else Path.home()
+    for candidate in (base / "Android" / "Sdk", base / ".local" / "android"):
+        if (candidate / "platform-tools").is_dir():
+            return True
+    return False
 
 
 def validate_config(cfg: dict[str, Any]) -> list[str]:
@@ -117,14 +106,27 @@ def preflight(stack: str, *, strict: bool = False) -> tuple[list[str], list[str]
         errors.append("git is required. Install Git and retry init.")
     if not python_present():
         errors.append("Python 3 is required. Install python3 (or py -3 on Windows).")
-    extras = STACK_TOOLS.get(stack, ())
-    for name in extras:
+    for name in STACK_TOOLS.get(stack, ()):
         if not tool_present(name):
             msg = f"{name} not found (recommended for stack {stack})"
-            if strict:
+            (errors if strict else warnings).append(msg)
+    if stack in ("android", "multi"):
+        skip = (os.environ.get("SKIP_ANDROID_SDK") or "").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+        )
+        if not android_sdk_present():
+            msg = (
+                "Android SDK not found (set ANDROID_HOME with platform-tools, "
+                "or SKIP_ANDROID_SDK=1 to continue without device tooling)"
+            )
+            if strict and not skip:
                 errors.append(msg)
-            else:
+            elif not skip:
                 warnings.append(msg)
+            else:
+                warnings.append("SKIP_ANDROID_SDK=1 — Android SDK preflight bypassed")
     for name in OPTIONAL_TOOLS:
         if not tool_present(name):
             warnings.append(f"{name} not found (optional)")

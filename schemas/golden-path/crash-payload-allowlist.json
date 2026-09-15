@@ -1,0 +1,4 @@
+{
+  "allowed_keys": ["message", "stack"],
+  "rejected_keys": ["email", "token", "prompt"]
+}

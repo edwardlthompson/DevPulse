@@ -1,0 +1,42 @@
+title: "[ideas]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Ranked backlog only. Type `/ideas` in Cursor, or ask any agent to read
+        [`docs/help/IDEAS.md`](https://github.com/edwardlthompson/agent-project-bootstrap/blob/main/docs/help/IDEAS.md).
+        Do not implement unless a numbered item is chosen.
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+      description: One in-scope feature. Not a bug and not a vulnerability.
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested priority
+      options:
+        - P0
+        - P1
+        - P2
+    validations:
+      required: true
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Effort
+      options:
+        - S
+        - M
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: One sentence plus a BEST_PRACTICES or industry reason
+    validations:
+      required: true

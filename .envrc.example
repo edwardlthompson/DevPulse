@@ -1,0 +1,33 @@
+# direnv example for Linux/macOS local compute
+# Copy to `.envrc` (gitignored) and run: direnv allow
+# Docs: docs/LINUX_DEV.md
+
+# Parallel bootstrap checks (default: RAM-capped CPU count)
+# export BOOTSTRAP_CHECK_JOBS="$(nproc)"
+
+# Parallel feature-gate stacks (use 1 on ≤16GB RAM; CI caps at 2)
+# export FEATURE_GATE_JOBS=2
+
+# Optional per-command timeout (seconds)
+# export FEATURE_GATE_TIMEOUT=600
+
+# Scope dirty stacks only during /build /feature /fix (gates/prerelease stay full)
+# export FEATURE_GATE_SCOPE=auto
+
+# Vitest worker escape hatch if Golden Path races
+# export VITEST_MAX_WORKERS=50%
+
+# Force-skip local emulator recipe
+# export ANDROID_EMULATOR_LOCAL=0
+
+# Android / JDK on apt-locked hosts (user-local installs)
+# export JAVA_HOME="$HOME/.local/micromamba/envs/tools"
+# export ANDROID_HOME="$HOME/Android/Sdk"
+# export ANDROID_SDK_ROOT="$ANDROID_HOME"
+# export PATH="$HOME/.local/bin:$ANDROID_HOME/platform-tools:$JAVA_HOME/bin:$PATH"
+# Optional micromamba tools bin override for agent-run:
+# export BOOTSTRAP_TOOLS_BIN="$HOME/.local/micromamba/envs/tools/bin"
+
+# Optional shared scratch on tmpfs when RAM allows
+# export TMPDIR=/dev/shm/$USER-agent-tmp
+# mkdir -p "$TMPDIR"

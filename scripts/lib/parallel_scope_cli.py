@@ -33,6 +33,26 @@ def cmd_check_overlap(build_plan: Path) -> int:
     return 0
 
 
+def cmd_dry_run(build_plan: Path) -> int:
+    """Print file-ownership conflicts without failing the board when none exist."""
+    text = build_plan.read_text(encoding="utf-8")
+    rows = agent_rows(parse_parallel_rows(text))
+    if not rows:
+        print("scope dry-run: no Parallel AGENT rows (nothing to own)")
+        return 0
+    print("scope dry-run: proposed file ownership")
+    for row in rows:
+        print(f"  {row.owner or 'AGENT'} owns `{row.scope}` — {row.task}")
+    errors = find_overlaps([r.scope for r in rows])
+    if errors:
+        print("scope dry-run: file ownership CONFLICTS:")
+        for e in errors:
+            print(f"  {e}")
+        return 1
+    print("scope dry-run: no ownership conflicts")
+    return 0
+
+
 def cmd_check_build_plan(build_plan: Path, min_agents: int) -> int:
     ok, errors = check_build_plan_parallel(build_plan, min_agents=min_agents)
     if ok:
@@ -90,6 +110,8 @@ def main() -> int:
 
     sub.add_parser("check-overlap", help="Detect overlapping Parallel scopes")
 
+    sub.add_parser("dry-run", help="Print Parallel ownership + conflicts (for /scope)")
+
     bp = sub.add_parser("check-build-plan", help="Validate sprint Parallel tables")
     bp.add_argument("--min-agents", type=int, default=2)
 
@@ -105,6 +127,8 @@ def main() -> int:
 
     if args.command == "check-overlap":
         return cmd_check_overlap(build_plan)
+    if args.command == "dry-run":
+        return cmd_dry_run(build_plan)
     if args.command == "check-build-plan":
         return cmd_check_build_plan(build_plan, args.min_agents)
     if args.command == "manifest":

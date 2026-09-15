@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agent shortcuts — print sheet</title>
+<style>
+body { font-family: Georgia, serif; line-height: 1.35; color: #111; }
+@media screen { body { max-width: 42rem; margin: 1.5rem auto; padding: 0 1rem; } }
+@media print {
+  .no-print { display: none !important; }
+  body { font-size: 11pt; margin: 0.6in; }
+  h2.break { page-break-before: always; }
+  h2.break:first-of-type { page-break-before: avoid; }
+}
+h1 { font-size: 1.4rem; margin-bottom: 0.3rem; }
+.lead { margin-top: 0; }
+.warn { border: 2px solid #111; padding: 0.5rem 0.75rem; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.25rem 0.4rem 0.25rem 0; border-bottom: 1px solid #ccc; }
+th { font-size: 0.85rem; }
+code { font-family: Consolas, "Courier New", monospace; }
+footer { font-size: 0.9rem; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<p class="no-print"><strong>How to print:</strong> open this file in a browser, then use Print (Ctrl+P or Cmd+P). Landscape is optional.</p>
+<h1>Agent shortcuts</h1>
+<p class="lead">Type <code>/</code> in Cursor Agent chat, then pick a name. Slash commands are Cursor-only; other tools read the matching file under <code>docs/help/</code>. First-time autonomous work: Cline in Cursor (review every diff). Do not paste API keys.</p>
+<div class="warn"><strong>Publishing:</strong> <code>/push</code> and <code>/ship</code> send code to GitHub. Run them only when you intend to publish.</div>
+<h2>Big jobs</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/bootstrap</code></td><td>Set up a brand-new project from scratch, then take the tour.</td></tr>
+<tr><td><code>/verify</code></td><td>Check your work (docs, local tests, CI) before you open a pull request.</td></tr>
+<tr><td><code>/build</code></td><td>Work through the task board, one feature at a time.</td></tr>
+<tr><td><code>/ship</code></td><td>Publish a release to GitHub. This pushes your code.</td></tr>
+<tr><td><code>/maintain</code></td><td>Weekly health pass: security, dependencies, and a full review.</td></tr>
+</table>
+<h2 class="break">Getting started</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/tour</code></td><td>A 10-minute walkthrough. Home chrome is Settings-only.</td></tr>
+<tr><td><code>/init</code></td><td>First-time setup: name, stack, and project files.</td></tr>
+<tr><td><code>/setup</code></td><td>Turn on GitHub settings this template expects.</td></tr>
+<tr><td><code>/prune</code></td><td>Keep only the stack you chose; drop unused examples.</td></tr>
+<tr><td><code>/coach</code></td><td>Ask what to do next. Theme, About, and donate stay in Settings (Settings-only).</td></tr>
+<tr><td><code>/ideas</code></td><td>See a short ranked list of possible next features (does not build them).</td></tr>
+<tr><td><code>/allideas</code></td><td>Dump every in-scope idea so you can fill the task board.</td></tr>
+</table>
+<h2>Building</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/plan</code></td><td>Design one feature or decision before coding.</td></tr>
+<tr><td><code>/adr</code></td><td>Write the next numbered architecture decision record.</td></tr>
+<tr><td><code>/feature</code></td><td>Build one feature slice with tests, then run checks.</td></tr>
+<tr><td><code>/fix</code></td><td>Repair failing checks after a build, in the feature you just touched.</td></tr>
+<tr><td><code>/cleanup</code></td><td>Archive finished task-board rows so the list stays short.</td></tr>
+<tr><td><code>/scope</code></td><td>Split work so more than one agent can help without colliding.</td></tr>
+</table>
+<h2>Docs and checks</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/gates</code></td><td>Run the local checks that match CI (no GitHub wait).</td></tr>
+<tr><td><code>/docs</code></td><td>Check README health, tables, and file encoding.</td></tr>
+<tr><td><code>/ci</code></td><td>Wait for GitHub Actions after a push (checks only, no new commit).</td></tr>
+<tr><td><code>/debug</code></td><td>Investigate a bug with logs and evidence (not a full-repo audit).</td></tr>
+</table>
+<h2>Publishing</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/update-deps</code></td><td>Scan and apply safe local dependency bumps.</td></tr>
+<tr><td><code>/prerelease</code></td><td>Run pre-release checks without pushing.</td></tr>
+<tr><td><code>/push</code></td><td>Commit, push to GitHub, and cut a release. This publishes.</td></tr>
+<tr><td><code>/regress</code></td><td>After a release: confirm SBOM, Pages, and the upgrade simulation.</td></tr>
+</table>
+<h2>Local hardware</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/best-of-n</code></td><td>Race a few local copies of a hard fix (never pushes).</td></tr>
+<tr><td><code>/emulator</code></td><td>Run Android emulator tests if an SDK is installed; skip otherwise.</td></tr>
+</table>
+<h2>Maintenance</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/triage</code></td><td>Weekly security pass.</td></tr>
+<tr><td><code>/dependabot</code></td><td>Handle leftover GitHub Dependabot alerts after local updates.</td></tr>
+<tr><td><code>/audit</code></td><td>Full-repo review, then update the task board.</td></tr>
+<tr><td><code>/upgrade</code></td><td>Compare this project to the parent template and plan updates. Does not overwrite your app until you pick items.</td></tr>
+</table>
+<h2>Long sessions</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/compact</code></td><td>Save a checkpoint before you clear a long chat.</td></tr>
+<tr><td><code>/restore</code></td><td>Reload the last saved checkpoint after a new chat.</td></tr>
+<tr><td><code>/resume</code></td><td>After Cloud Agent work: fetch, sync open Dependabot/release PRs into BUILD_PLAN, list cursor/* PRs, name the next AGENT row.</td></tr>
+</table>
+<h2>Advanced (optional)</h2>
+<table>
+<tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
+<tr><td><code>/codex-review</code></td><td>Skip this. First-time path is Cline in Cursor (review every diff).</td></tr>
+</table>
+<footer>Other IDEs: paste <code>Read docs/help/TOUR.md and walk me through it.</code> Bookmark the on-screen list at <code>docs/help/BATCH_COMMANDS.md</code>.</footer>
+</body>
+</html>

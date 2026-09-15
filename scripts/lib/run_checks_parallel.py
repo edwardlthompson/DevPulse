@@ -13,10 +13,15 @@ SCRIPTS = ROOT / "scripts"
 
 
 def worker_count() -> int:
-    env = os.environ.get("BOOTSTRAP_CHECK_JOBS", "").strip()
-    if env.isdigit() and int(env) > 0:
-        return int(env)
-    return max(1, os.cpu_count() or 2)
+    try:
+        from local_resources import InvalidJobs, recommended_check_jobs
+
+        return recommended_check_jobs()
+    except (InvalidJobs, ImportError, OSError, ValueError):
+        env = os.environ.get("BOOTSTRAP_CHECK_JOBS", "").strip()
+        if env.isdigit() and int(env) > 0:
+            return int(env)
+        return max(1, os.cpu_count() or 2)
 
 
 def run_one(script_name: str) -> tuple[str, int, str]:

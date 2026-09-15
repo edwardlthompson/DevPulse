@@ -1,0 +1,20 @@
+# Example Winget singleton — do not submit for this template.
+# Child desktop apps copy this shape, then replace identity, URL, and SHA-256.
+PackageIdentifier: Foss.GoldenPath
+PackageVersion: 0.0.0
+PackageLocale: en-US
+Publisher: FOSS Golden Path
+PackageName: Golden Path Example
+License: MIT
+ShortDescription: Example Winget singleton for child desktop installers
+Installers:
+  - Architecture: x64
+    InstallerType: zip
+    InstallerUrl: https://example.com/releases/0.0.0/goldenpath-win-x64.zip
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+  - Architecture: arm64
+    InstallerType: zip
+    InstallerUrl: https://example.com/releases/0.0.0/goldenpath-win-arm64.zip
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+ManifestType: singleton
+ManifestVersion: 1.6.0

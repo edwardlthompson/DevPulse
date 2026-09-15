@@ -11,10 +11,19 @@ trap 'rm -rf "$WORKDIR"' EXIT
 export PYTHON_BASIC_REPL="${PYTHON_BASIC_REPL:-1}"
 export PYTHONUNBUFFERED="${PYTHONUNBUFFERED:-1}"
 export PYTHONIOENCODING="${PYTHONIOENCODING:-utf-8}"
+# git clone never copies hooks; child --quick still skips the local hook gate.
+export BOOTSTRAP_UPGRADE_SIM=1
 # Child init validates workflow refs; CI must pass github.token as GH_TOKEN.
 if [ -n "${GITHUB_TOKEN:-}" ] && [ -z "${GH_TOKEN:-}" ]; then
   export GH_TOKEN="$GITHUB_TOKEN"
 fi
+
+child_quick() {
+  # Laptop-like --quick: optional linters skip if missing (do not inherit template CI).
+  env -u CI -u GITHUB_ACTIONS -u REQUIRE_ACTION_LINT -u REQUIRE_HADOLINT \
+    -u REQUIRE_SHELLCHECK -u REQUIRE_SEMGREP \
+    bash scripts/validate-bootstrap.sh --quick
+}
 
 echo "==> Simulating template upgrade in $WORKDIR"
 
@@ -41,10 +50,13 @@ for path in "${AREAS[@]}"; do
   fi
 done
 
-bash scripts/validate-bootstrap.sh --quick
+child_quick
 bash scripts/validate-template-index.sh
 
 echo "==> Non-interactive init smoke (web stack, no prune)"
+cp -f AGENT.md.example AGENT.md
+SACRED_AGENT="upgrade-sim-sacred-agent-md"
+printf '\n<!-- %s -->\n' "$SACRED_AGENT" >> AGENT.md
 bash scripts/init-project.sh \
   --non-interactive \
   --stack web \
@@ -89,12 +101,39 @@ if ! grep -q 'Upgrade Sim' AGENTS.md; then
   exit 1
 fi
 
-bash scripts/validate-bootstrap.sh --quick
+SACRED_MARK="upgrade-sim-sacred-agents-md"
+printf '\n<!-- %s -->\n' "$SACRED_MARK" >> AGENTS.md
+for path in "${AREAS[@]}"; do
+  case "$path" in
+    AGENTS.md|AGENT.md|docs/spec.md|docs/plan.md|docs/INITIALIZATION_PROMPT.md)
+      echo "FAIL: Sacred path $path must not be in upgrade AREAS"
+      exit 1
+      ;;
+  esac
+  if [ -f "$ROOT/$path" ]; then
+    mkdir -p "$(dirname "$path")"
+    cp "$ROOT/$path" "$path"
+  fi
+done
+if ! grep -q "$SACRED_MARK" AGENTS.md; then
+  echo "FAIL: Sacred AGENTS.md was overwritten during upgrade cherry-pick"
+  exit 1
+fi
+if ! grep -q "$SACRED_AGENT" AGENT.md; then
+  echo "FAIL: Sacred AGENT.md was overwritten during init or cherry-pick"
+  exit 1
+fi
+if ! grep -q 'Upgrade Sim' AGENTS.md; then
+  echo "FAIL: stamped project name lost from AGENTS.md"
+  exit 1
+fi
+
+child_quick
 
 echo "==> Non-interactive init smoke with --prune --prune-optional"
 git clone --quiet "file://$ROOT" "$WORKDIR/child-prune"
 cd "$WORKDIR/child-prune"
-
+cp -f AGENT.md.example AGENT.md
 bash scripts/init-project.sh \
   --non-interactive \
   --stack web \
@@ -103,7 +142,7 @@ bash scripts/init-project.sh \
   --prune \
   --prune-optional
 
-for path in examples/rust examples/go examples/lightroom modules/rust modules/go modules/lightroom; do
+for path in examples/rust examples/go examples/lightroom examples/blender modules/rust modules/go modules/lightroom modules/blender; do
   if [ -e "$path" ]; then
     echo "FAIL: $path still present after --prune-optional"
     exit 1
@@ -115,8 +154,13 @@ for path in examples/python examples/android examples/node modules/python module
     exit 1
   fi
 done
-bash scripts/validate-bootstrap.sh --quick
+child_quick
 echo "Prune-optional smoke passed"
+
+# After prune-optional, child must still be able to re-validate bootstrap (upgrade path).
+echo "==> Re-run child_quick on pruned optional stacks (upgrade-sim continuity)"
+child_quick
+echo "Pruned optional-stack upgrade continuity passed"
 
 echo "==> Non-interactive init smoke (PowerShell)"
 if ! command -v pwsh >/dev/null 2>&1; then
@@ -124,6 +168,7 @@ if ! command -v pwsh >/dev/null 2>&1; then
 else
   git clone --quiet "file://$ROOT" "$WORKDIR/child-ps"
   cd "$WORKDIR/child-ps"
+  cp -f AGENT.md.example AGENT.md
 
   PYTHON_BASIC_REPL=1 PYTHONUNBUFFERED=1 PYTHONIOENCODING=utf-8 \
     pwsh -NoProfile -File scripts/init-project.ps1 \
@@ -134,8 +179,16 @@ else
     -Prune \
     -PruneOptional
 
-  bash scripts/validate-bootstrap.sh --quick
+  child_quick
   echo "PowerShell init smoke passed"
+fi
+
+echo "==> Assert Espresso pin survives upgrade-sim tree"
+if [ -f examples/android/app/build.gradle.kts ]; then
+  if ! grep -Eq 'espresso-core:3\.(7|[89]|[1-9][0-9])\.' examples/android/app/build.gradle.kts; then
+    echo "FAIL: espresso-core must be >= 3.7.0 after upgrade-sim"
+    exit 1
+  fi
 fi
 
 echo "Upgrade simulation passed"

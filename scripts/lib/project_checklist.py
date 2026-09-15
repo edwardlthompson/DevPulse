@@ -26,6 +26,7 @@ TEMPLATE = """# Project Checklist
 
 ## Agent adapters
 
+- 🔲 `AGENT.md` holds the original brief (never overwritten by init)
 - 🔲 `AGENTS.md` reviewed for this product
 - 🔲 Adapters current (`bash scripts/bootstrap-lifecycle.sh --sync-adapters`)
   - `.cursor/rules/main.mdc`

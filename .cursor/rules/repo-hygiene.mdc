@@ -1,6 +1,5 @@
 ---
 description: Track source only; purge gitignored caches; automated hygiene gates
-globs:
 alwaysApply: true
 ---
 

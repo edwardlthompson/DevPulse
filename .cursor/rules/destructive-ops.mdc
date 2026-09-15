@@ -1,6 +1,5 @@
 ---
 description: Human-in-the-loop gates for destructive agent operations
-globs:
 alwaysApply: true
 ---
 
@@ -29,7 +28,7 @@ Do not claim a hook is a hard deny. Project hooks are **fail-open** (parse error
 | Control | Label | Mechanism |
 |---------|-------|-----------|
 | `git push` | Enforced (best-effort) | `before_shell_guard.py` denylist; `/push` and `/ship` set session `destructive_ops_approved: ["git push"]` |
-| `git push --force` | Instructed + denylist | In `shell-denylist.txt`; `/push` override may also match via the `git push` substring — not a hard deny of `--force` |
+| `git push --force` | Enforced (best-effort) | Denied even when session approved `git push`; no `/push` override |
 | Rewrite published history | Instructed | No dedicated hook beyond force-push substring |
 | `terraform apply` | Enforced (best-effort) | Denylist substring |
 | `DROP TABLE` / `DELETE FROM` | Enforced (best-effort) | Denylist; other irreversible SQL is instructed |

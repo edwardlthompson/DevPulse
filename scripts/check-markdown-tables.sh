@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-TARGETS=(README.md BUILD_PLAN.md)
+TARGETS=(README.md BUILD_PLAN.md BUILD_PLAN_TEMPLATE.md)
 ERRORS=0
 
 for file in "${TARGETS[@]}"; do

@@ -1,0 +1,17 @@
+{
+  "required_status_checks": [
+    "CI",
+    "Security Scan",
+    "CodeQL",
+    "Repo Hygiene",
+    "Feature Gate",
+    "Template Upgrade Simulation (Windows)"
+  ],
+  "informational_status_checks": [
+    "Nix flake",
+    "SBOM Diff (Dependabot)",
+    "OpenSSF Scorecard",
+    "pages build and deployment"
+  ],
+  "map_doc": "docs/CI_REQUIRED_CHECKS.md"
+}

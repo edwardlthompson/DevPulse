@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edwardlthompson.github.io/agent-project-bootstrap/schemas/golden-path/feedback-clipboard.schema.json",
+  "title": "Golden Path Feedback clipboard payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "whatHappened",
+    "fingerprint",
+    "exceptionType",
+    "appVersion",
+    "osFamily",
+    "stack",
+    "markdown"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "kind": { "type": "string", "enum": ["crash", "bug", "feature"] },
+    "whatHappened": { "type": "string" },
+    "fingerprint": { "type": ["string", "null"] },
+    "exceptionType": { "type": ["string", "null"] },
+    "appVersion": { "type": ["string", "null"] },
+    "osFamily": { "type": ["string", "null"] },
+    "stack": { "type": ["string", "null"] },
+    "markdown": { "type": "string", "minLength": 1 }
+  }
+}

@@ -14,6 +14,8 @@ from cursor_feature_radar_io import (
     read_backlog,
     save_registry,
     score_new,
+    write_build_plan_draft,
+    write_suggestions,
 )
 
 
@@ -118,6 +120,8 @@ def run(root: Path) -> int:
     report_lines.append(f"llms_txt_sha256: {digest}")
     (root / "CURSOR_RADAR_REPORT.md").write_text("\n".join(report_lines) + "\n", encoding="utf-8")
     save_registry(root, registry)
+    write_suggestions(root, scored)
+    write_build_plan_draft(root, scored)
 
     top = sorted(scored, key=lambda x: -x[1])[:3]
     if top:

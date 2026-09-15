@@ -11,12 +11,13 @@ globs:
 
 ## Cadence
 
-- Run `python3 scripts/agent-run.py check-security-triage --wait-ci 300` weekly (or `run-maintainer-gates.sh` full cycle)
+- Run `/update-deps` (local) then `python3 scripts/agent-run.py check-security-triage --wait-ci 300` weekly (or `run-maintainer-gates.sh` full cycle)
 - Triage OpenSSF Scorecard SARIF findings into BUILD_PLAN `[AGENT]` rows when not green
 
 ## Gates
 
-- Zero open Critical/High Dependabot alerts before release (`pre-release-gate.sh`)
+- Local HIGH+ from `update-deps --audit` before `/ship` (`pre-release-gate.sh --local`)
+- Zero open Critical/High Dependabot alerts before GitHub release (`pre-release-gate.sh` default / `/regress`)
 - Required workflows green: **CI**, **Security Scan**, **CodeQL**
 - Scorecard workflow latest run should be `success` after `scorecard.yml` fix is on `main`
 

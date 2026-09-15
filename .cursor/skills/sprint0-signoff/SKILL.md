@@ -1,12 +1,12 @@
 ---
 name: sprint0-signoff
-description: Run canonical Sprint 0 sign-off gate chain. Use after init/setup or Child Repo Playbook sign-off.
+description: Run canonical Sprint 0 sign-off gate chain. Use after init/setup or BUILD_PLAN_TEMPLATE Sprint 0.
 disable-model-invocation: false
 ---
 
 # Sprint 0 sign-off
 
-See also: `.cursor/commands/gates.md`, `BUILD_PLAN.md` Child Repo Playbook
+See also: `.cursor/commands/gates.md`, `BUILD_PLAN_TEMPLATE.md` Sprint 0
 
 From repo root, all green on `main` (or active branch before merge):
 

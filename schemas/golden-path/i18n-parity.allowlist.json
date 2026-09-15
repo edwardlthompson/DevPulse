@@ -1,0 +1,24 @@
+{
+  "aliases": {
+    "about.update.install": "about_install",
+    "about.update.later": "about_later",
+    "about.update.message": "about_update_prompt_body"
+  },
+  "web_only": [],
+  "android_only": [
+    "app_name",
+    "about_debug_navigation_mode",
+    "nav_mode_three_button",
+    "nav_mode_two_button",
+    "nav_mode_gesture",
+    "nav_mode_unknown",
+    "about_donations_message",
+    "feedback_copied",
+    "feedback_discard_confirm",
+    "feedback_discard_confirm_no",
+    "feedback_discard_confirm_yes",
+    "home_status_offline_a11y",
+    "home_status_online_a11y",
+    "settings_search_empty_hint"
+  ]
+}

@@ -8,10 +8,10 @@ After `scripts/init-project.sh --distribution-tier foss`:
 
 | Layer | Artifact | Status |
 |-------|----------|--------|
-| Rules | `.cursor/rules/*.mdc` | Shipped (15) |
-| Commands | `.cursor/commands/*.md` | Shipped (27) |
+| Rules | `.cursor/rules/*.mdc` | Shipped (18). `alwaysApply: true` is allowlisted in `scripts/lib/cursor_rule_audit.py`; glob-scoped rules must set `alwaysApply: false`. |
+| Commands | `.cursor/commands/*.md` | Shipped (33) |
 | Hooks | `.cursor/hooks.json` + `.cursor/hooks/` | Shipped |
-| Skills | `.cursor/skills/` (8) | Shipped |
+| Skills | `.cursor/skills/` (15) | Shipped |
 | Subagents | `.cursor/agents/` (3) | Shipped |
 | Modes | `docs/CURSOR_MODES.md` | Shipped |
 | Worktrees | `.cursor/worktrees.json` + OS setup scripts | Shipped |
@@ -22,8 +22,8 @@ After `scripts/init-project.sh --distribution-tier foss`:
 | Agent script runner | `scripts/agent-run.py` | Shipped |
 | Plugin pack | `.cursor-plugin/plugin.json` + `scripts/pack-cursor-plugin.*` | Example |
 | CLI (opt-in) | `.github/workflow-examples/cursor-agent.yml` + `docs/CURSOR_CLI.md` | Example |
-| Codex review (opt-in) | `.github/workflow-examples/codex-review.yml` + `docs/CODEX_REVIEW.md` + `/codex-review` | Example |
-| GitHub MCP (optional) | Copy `.cursor/mcp.foss.example` → `.cursor/mcp.json` | Example |
+| Codex review (advanced/optional, not first-time, not `/ship`) | `.github/workflow-examples/codex-review.yml` + `docs/CODEX_REVIEW.md` + `/codex-review` | Example |
+| GitHub + depsonar MCP (optional) | Copy `.cursor/mcp.foss.example` → `.cursor/mcp.json` | Example |
 Validation: `python3 scripts/agent-run.py check-cursor-integrations -- --tier foss`
 
 ## Commercial quick start
@@ -33,6 +33,7 @@ After `scripts/init-project.sh --distribution-tier commercial`:
 - All FOSS layers above remain enabled
 - `sync-cursor-features.py` activates `commercial-compliance.mdc` instead of `foss-compliance.mdc`
 - Copy commercial examples per [`CURSOR_COMMERCIAL_ACTIVATION.md`](CURSOR_COMMERCIAL_ACTIVATION.md)
+- Optional always-on teammates: [`GROK_BOTS.md`](GROK_BOTS.md) (Android/R8 scouting; no FOSS requirement)
 
 ## Hooks
 
@@ -42,9 +43,9 @@ Enforcement complement to rules (M27 — no `beforeSubmitPrompt`):
 |-------|--------|----------|
 | `sessionStart` | `session_start_context.py` | Stack/tier one-liner |
 | `beforeShellExecution` | `before_shell_guard.py` | Denylist + session `destructive_ops_approved` |
-| `afterFileEdit` | `after_edit_encoding.py` | UTF-8 check, fail-open |
+| `afterFileEdit` | `after_edit_encoding.py` | UTF-8 check, fail-open (opt-in fail-closed: `CURSOR_ENCODING_STRICT=1` or `.cursor/encoding-strict`) |
 | `subagentStart` | `subagent_scope_inject.py` | Parallel lock scope |
-| `beforeMCPExecution` | `mcp_audit.py` | Append audit log only |
+| `beforeMCPExecution` | `mcp_audit.py` | Audit log + FOSS server allowlist (fail-open on parse errors) |
 Hooks are Python modules (not `.sh`) so Cursor Agent shell execution does not open hook scripts in the editor.
 
 **Quiet agent shell:** Agents should invoke gates via `python3 scripts/agent-run.py <name> [args]` instead of `bash scripts/<name>.sh`. Workspace `.vscode/settings.json` disables editor auto-reveal when files open in the background.
@@ -62,10 +63,10 @@ Hooks **fail-open** (KB-012). Label each control so agents do not over-claim enf
 | Control | Label | Notes |
 |---------|-------|-------|
 | `git push` | Enforced (best-effort) | Denylist unless `/push` or `/ship` session override |
-| `git push --force` | Instructed + denylist | Override may match `git push` substring; not a hard deny |
+| `git push --force` | Enforced (best-effort) | `--force`/`-f` denied even when `git push` is session-approved |
 | `terraform apply`, `DROP TABLE`, `DELETE FROM`, `rm -rf /`, `rm -rf ~`, skip-hooks flags | Enforced (best-effort) | `shell-denylist.txt` + `before_shell_guard.py` |
 | Production deploys, disabling CI gates, committing secrets | Instructed | Auto-review steers; Gitleaks is pre-commit when installed |
-| UTF-8 `afterFileEdit` | Instructed + best-effort | Fail-open on parse/tool errors |
+| UTF-8 `afterFileEdit` | Instructed + best-effort | Fail-open on parse/tool errors. Opt-in fail-closed: `CURSOR_ENCODING_STRICT=1` or `.cursor/encoding-strict` |
 | `<!-- cursor-hooks: off -->` | Instructed | Disables shell guards for the session |
 Validate: `python3 scripts/agent-run.py check-cursor-hooks -- --smoke`
 
@@ -75,8 +76,10 @@ On **This Computer**, maximize local parallelism before Cloud:
 
 - Rule: [`.cursor/rules/local-compute.mdc`](../.cursor/rules/local-compute.mdc)
 - Parallel `/scope` Task subagents + worktrees + `/best-of-n`
-- `validate-bootstrap` runs independent checks via `scripts/lib/run_checks_parallel.py` (workers = CPU count, override with `BOOTSTRAP_CHECK_JOBS`)
-- Session start hook reminds agents of `local-first cpus=N`
+- `validate-bootstrap` runs independent checks via `scripts/lib/run_checks_parallel.py` (RAM-capped workers, override with `BOOTSTRAP_CHECK_JOBS`)
+- Multi-stack `feature-gate` runs independent stacks in parallel (`FEATURE_GATE_JOBS`; CI cap 2). `/build` passes `--scope auto` so per-row gates only dirty stacks; `/gates` stays full.
+- `/best-of-n` and `/emulator` are slash commands; Ollama recipe: [`docs/LOCAL_MODELS.md`](LOCAL_MODELS.md); Linux DX: [`docs/LINUX_DEV.md`](LINUX_DEV.md)
+- Session start hook reminds agents of `local-first cpus=N ram= jobs= ollama=`
 
 ## Worktrees
 
@@ -114,9 +117,16 @@ Commands remain canonical UX. Skills wrap high-churn flows:
 | `parallel-scope` | `/scope` |
 | `watch-gates-autofix` | `/fix` |
 | `check-repo-hygiene` | `/gates`, `/audit` |
-| `sprint0-signoff` | Sprint 0 Child Repo Playbook |
+| `sprint0-signoff` | Sprint 0 on `BUILD_PLAN_TEMPLATE.md` |
 | `feature-vertical-slice` | `/feature` |
 | `canvas-bootstrap-status` | `/gates` (Canvas; markdown fallback) |
+| `update-deps` | `/update-deps`, `/ship` |
+| `best-of-n` | `/best-of-n` |
+| `local-models` | `docs/LOCAL_MODELS.md` |
+| `linux-dev` | `docs/LINUX_DEV.md` |
+| `emulator` | `/emulator` |
+| `adr` | `/adr` |
+| `blender-icons` | `/feature` icon-factory / blender stack |
 ## Subagents
 
 | Agent | Role |
@@ -127,7 +137,7 @@ Commands remain canonical UX. Skills wrap high-churn flows:
 ## MCP activation (FOSS)
 
 1. Copy `.cursor/mcp.foss.example` → `.cursor/mcp.json` (gitignored)
-2. Set `GITHUB_TOKEN` in environment
+2. Set `GITHUB_TOKEN` in environment (GitHub MCP only; depsonar does not need it)
 3. Restart Cursor
 4. Never commit tokens or live `mcp.json`
 
@@ -144,6 +154,8 @@ python3 scripts/agent-run.py pack-cursor-plugin
 Then symlink **`dist/cursor-plugin`** → `~/.cursor/plugins/local/agent-project-bootstrap` and Reload Window. Manifest: [`.cursor-plugin/plugin.json`](../.cursor-plugin/plugin.json). No marketplace publish in-template.
 
 ## Optional marketplace (not default)
+
+Runbook: [`CURSOR_MARKETPLACE.md`](CURSOR_MARKETPLACE.md).
 
 Child repos **may** add [wshobson/agents](https://github.com/wshobson/agents) as a Cursor marketplace. Do **not** install it by default — 200+ agents would drown context and fight “one feature per agent” plus local-compute-first.
 
@@ -165,7 +177,7 @@ See [`CURSOR_CLI.md`](CURSOR_CLI.md). Example workflow lives under `.github/work
 - Registry: [`CURSOR_FEATURE_REGISTRY.json`](CURSOR_FEATURE_REGISTRY.json)
 - Rubric: [`CURSOR_FEATURE_RADAR.md`](CURSOR_FEATURE_RADAR.md)
 - Script: `python3 scripts/agent-run.py cursor-feature-radar`
-- Outputs: gitignored `CURSOR_RADAR_REPORT.md`, `CURSOR_RADAR_BACKLOG.md`
+- Outputs: gitignored `CURSOR_RADAR_REPORT.md`, `CURSOR_RADAR_BACKLOG.md`, `CURSOR_RADAR_BUILD_PLAN_DRAFT.md`
 
 ## Switch tier later
 

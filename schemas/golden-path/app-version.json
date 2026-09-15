@@ -1,0 +1,4 @@
+{
+  "version": "0.37.0",
+  "note": "DevPulse APK versionName. Distinct from .template-version (template machinery)."
+}

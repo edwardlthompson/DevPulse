@@ -1,6 +1,6 @@
 # Ideas (any IDE)
 
-Ask your agent for an in-scope backlog. In Cursor you can type `/ideas` instead.
+Ask your agent for an in-scope backlog. In Cursor you can type `/ideas` instead. For a complete dump, use [`ALLIDEAS.md`](ALLIDEAS.md) (`/allideas`).
 
 This is not “what do I do right now” (`/coach` / `docs/BEST_PRACTICES.md`). It is “what could we add next?” Do not implement unless you pick an item.
 
@@ -8,16 +8,18 @@ This is not “what do I do right now” (`/coach` / `docs/BEST_PRACTICES.md`). 
 
 ```
 Read docs/help/IDEAS.md and propose 5–8 in-scope next ideas. Do not implement. Do not edit BUILD_PLAN unless I name a number.
+
 ```
 
 ## Recipe
 
 1. Read `AGENT_MEMORY.md` (Persistent Context + latest retrospective only), `BUILD_PLAN.md` Sequential, `CHANGELOG.md` `[Unreleased]`, latest `DECISION_LOG.md` entries, `docs/FIRST_30_DAYS.md`, and `docs/help/BATCH_COMMANDS.md`.
-2. Run `python3 scripts/agent-run.py project-health` (or `bash scripts/project-health.sh`).
+2. Run `python3 scripts/agent-run.py project-health` (or `bash scripts/project-health.sh`) and `python3 scripts/agent-run.py feedback-inbox`. If the fix inbox is non-empty, say so first and recommend `/audit`. Merge GitHub `enhancement` issues / Ideas discussions into the list (P1 default; skip items already on BUILD_PLAN).
 3. **Template mode** if this repo is still the bootstrap template. **Child mode** otherwise — read `docs/spec.md` and the active Golden Path README.
-4. Print 5–8 ideas not already shipped or already 🔲 on the board. Each: title, Why, Effort (S/M), Priority (P0/P1/P2).
+4. Print 5–8 ideas not already shipped or already 🔲 on the board. Each: title, Why, Effort (S/M), Priority (P0/P1/P2). If the user asked for more than 8 or a complete dump, follow [`ALLIDEAS.md`](ALLIDEAS.md) instead.
 5. Name the single best next idea. Cap at 8.
 6. Offer: “Say the number to add a 🔲 `[AGENT]` row.” Do not write the board until then.
+7. **No silent `do all`.** If they say `do all` / `implement all` / `add all`, do not add rows. Wait for numbered confirmation (or `/allideas` `board` for an uncapped dump).
 
 ## Out of scope
 

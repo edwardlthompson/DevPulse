@@ -1,5 +1,8 @@
 # Pre-release gate (PowerShell wrapper).
-param()
+param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$GateArgs
+)
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -15,5 +18,6 @@ if (-not (Get-Command $Bash -ErrorAction SilentlyContinue)) {
     }
 }
 
-& $Bash scripts/pre-release-gate.sh
+if ($null -eq $GateArgs) { $GateArgs = @() }
+& $Bash scripts/pre-release-gate.sh @GateArgs
 exit $LASTEXITCODE

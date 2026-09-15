@@ -7,6 +7,13 @@ Before clearing chat, write `.cursor-session-state.json` from current context:
 - brief note of in-progress feature path
 - `destructive_ops_approved`: include `["git push"]` when user invoked `/push` or `/ship` (allows Cursor shell hook to permit push)
 
-Use schema in `.cursor-session-state.example.json`. Do not commit this file (gitignored).
+Then merge Unreleased notes and open HUMAN/ADB rows (required):
+
+```bash
+python3 scripts/agent-run.py compact-session-state
+
+```
+
+That writes `unreleased_has_entries`, `unreleased_excerpt`, `open_human_adb_rows`, and `last_ci_conclusion` (one-line CI status from `gh run list` / required checks). Use schema in `.cursor-session-state.example.json`. Do not commit this file (gitignored).
 
 Begin now.

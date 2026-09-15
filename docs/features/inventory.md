@@ -85,3 +85,12 @@ After Sequential API lock: unit tests live under `examples/android/app/src/test/
 - Origin comes from the installer package, then last-release source. targetSdk more than 3 levels behind the device SDK is shown in red.
 - Scan interval: on demand, weekly, or monthly (`ScanSchedule` + WorkManager).
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

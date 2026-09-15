@@ -15,11 +15,18 @@ Execute the BUILD_PLAN **without asking the user questions, presenting options, 
 
 ## Step 0 — Load sprint state
 
+Use `--lane auto` (not `child`): on this template it selects the maintainer board; on child repos it walks `BUILD_PLAN.md` (installed from `BUILD_PLAN_TEMPLATE.md`).
+
 ```bash
-python3 scripts/agent-run.py build-sprint-status --json --lane child
+python3 scripts/agent-run.py build-sprint-status --json --lane auto
+
 ```
 
+`auto` uses the product board on child repos and the Template Maintainer board on this template. Pass `--lane child` to walk `BUILD_PLAN_TEMPLATE.md` on this repo (Sprint 0+).
+
 Write `.cursor-session-state.json` fields: `active_sprint`, `build_plan_lane`, `autonomous_mode: true`.
+
+**Open PRs sync (once):** if `gh` is available, run `python3 scripts/agent-run.py sync-open-prs-build-plan -- --check`. On exit **0**, print one line (`Open PRs sync current`) and **do not** `--apply` — avoids rewriting an already-✅ / empty Open PRs block every loop. Only run `--apply` when `--check` reports stale. Do **not** re-sync on every Step 1a iteration.
 
 If `all_sprints_agent_auto_complete: true` → print summary (include `HUMAN_BACKLOG.md` path if items exist) and exit.
 
@@ -30,7 +37,8 @@ Repeat until `sprint_agent_auto_complete`:
 ### 1a. Read status
 
 ```bash
-python3 scripts/agent-run.py build-sprint-status --json --lane child
+python3 scripts/agent-run.py build-sprint-status --json --lane auto
+
 ```
 
 - If `next_row` is null and `sprint_agent_auto_complete` → go to Step 2 (sprint wrap-up).
@@ -43,12 +51,14 @@ python3 scripts/agent-run.py build-sprint-status --json --lane child
 | `execute` | Implement the task; for post-Parallel step 3 skip if `parallel_steps_completed` includes `tests`; for step 4 skip if includes `view`; gate; mark ✅ |
 | `parallel_dispatch` | Run @.cursor/commands/scope.md fully, then `python3 scripts/agent-run.py agent-progress set-parallel-sprint-done --sprint "<sprint title>"` |
 | AUTO rows | Run listed scripts/commands to completion; mark ✅ on exit 0 |
-
 ### 1c. Gate autofix (every AGENT step)
 
 ```bash
-python3 scripts/agent-run.py watch-agent-gates --once --autofix
+python3 scripts/agent-run.py watch-agent-gates --once --autofix --scope auto
+
 ```
+
+`--scope auto` gates only dirty stacks (git vs `HEAD`: `examples/{stack}/`, or preamble-only for docs/changelog/commands). Shared `scripts/` / `schemas/` / `modules/` still run the full multi-stack gate. Print the `gate scope:` line. Override with `--scope full` or `FEATURE_GATE_SCOPE=full`.
 
 Exit 1 → fix in scope and re-run (3-strike max). Exit 2 after 3 strikes → halt with evidence; do not ask user.
 
@@ -56,19 +66,22 @@ Skip gates for successful `automate_human`/`automate_adb` no-op/informational st
 
 ### 1d. Loop
 
+**Gate lock:** do not execute another `next_row` until step 1c `watch-agent-gates` exited 0. Never skip 1c to chain a second feature.
+
 Re-run `build-sprint-status.sh --json` and continue 1a.
 
 ## Step 2 — Sprint wrap-up
 
 When `sprint_agent_auto_complete` for current sprint:
 
-1. @.cursor/commands/gates.md — full local validation
-2. @.cursor/commands/cleanup.md — archive ✅ rows (including auto-completed HUMAN/ADB); backlog items stay open on board
-3. Print brief summary: sprint name, rows completed, rows automated, rows backlogged (`HUMAN_BACKLOG.md`), and pointer to grouped **Human & device (after automation)** section for manual follow-up
+1. `python3 scripts/agent-run.py smoke-sprint --require --sprint "<sprint title>"` — re-smoke **every** ✅ row (no errors/crashes; startup + load order). Exit ≠ 0 → do **not** mark the sprint done or chain to the next sprint; leave the last row 🔲/❌ and `/fix`.
+2. @.cursor/commands/gates.md — full local validation (includes `smoke-sprint --if-complete`)
+3. @.cursor/commands/cleanup.md — archive ✅ rows (including auto-completed HUMAN/ADB); backlog items stay open on board
+4. Print brief summary: sprint name, rows completed, rows automated, rows backlogged (`HUMAN_BACKLOG.md`), and pointer to grouped **Human & device (after automation)** section for manual follow-up
 
 ## Step 3 — Chain to next sprint
 
-Re-run `python3 scripts/agent-run.py build-sprint-status --json`.
+Re-run `python3 scripts/agent-run.py build-sprint-status --json --lane auto`.
 
 - If `next_row` exists → **go to Step 1** immediately (no user pause).
 - If `all_sprints_agent_auto_complete` → print final summary: all actionable BUILD_PLAN work complete; list `backlogged_human_adb` and `HUMAN_BACKLOG.md` path.

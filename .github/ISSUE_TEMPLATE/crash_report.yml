@@ -1,0 +1,45 @@
+name: Crash Report
+description: The app or a script crashed — sanitized stack only, no email
+title: "[crash]: "
+labels: ["crash", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "A GitHub account is required. Do not include email, tokens, home paths, or screenshots of private data. Security issues belong in SECURITY.md."
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What you expected versus what you saw
+    validations:
+      required: true
+  - type: textarea
+    id: stack
+    attributes:
+      label: Sanitized stack
+      description: Paste the sanitized stack from the in-app preview (or a short snippet). No secrets.
+    validations:
+      required: true
+  - type: input
+    id: fingerprint
+    attributes:
+      label: Crash fingerprint
+      description: 12-hex token from the report title if you have one
+      placeholder: a1b2c3d4e5f6
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      placeholder: "1.0.0"
+  - type: input
+    id: os-family
+    attributes:
+      label: OS family
+      description: Windows, Android 14, linux-x64 — not hostname or serial
+  - type: checkboxes
+    id: reviewed
+    attributes:
+      label: Review
+      options:
+        - label: I reviewed this report and removed personal data
+          required: true

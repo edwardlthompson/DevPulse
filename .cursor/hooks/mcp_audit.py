@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""beforeMCPExecution: audit-only log. Never block. Fail-open."""
+"""beforeMCPExecution: audit log + FOSS server allowlist. Fail-open on parse errors."""
 from __future__ import annotations
 
 import json
@@ -8,6 +8,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+LIB = ROOT / "scripts" / "lib"
+if str(LIB) not in sys.path:
+    sys.path.insert(0, str(LIB))
+
+from mcp_allowlist import decide  # noqa: E402
 
 
 def main() -> None:
@@ -28,7 +33,7 @@ def main() -> None:
             fh.write(line)
     except OSError:
         pass
-    print(json.dumps({"permission": "allow"}))
+    print(json.dumps(decide(data, ROOT)))
 
 
 if __name__ == "__main__":

@@ -23,12 +23,15 @@ bash scripts/build-sprint-status.sh --lane auto || true
 echo ""
 echo "--- CI (best effort) ---"
 if command -v gh >/dev/null 2>&1; then
-  if ! gh run list --limit 1 2>/dev/null; then
-    echo "WARN: gh could not read workflow runs (offline or unauthenticated)."
-  fi
+  python3 "$ROOT/scripts/lib/health_ci.py" || true
 else
-  echo "WARN: gh not installed; skip remote CI. After push: bash scripts/check-github-ci.sh --wait 300"
+  echo "WARN: gh not installed; CI section skipped (fail-soft). Local gates still apply via /gates."
+  echo "After push: bash scripts/check-github-ci.sh --wait 300"
 fi
+
+echo ""
+echo "--- Local compute ---"
+bash scripts/check-local-compute.sh || true
 
 echo ""
 echo "--- Working tree ---"
@@ -48,4 +51,4 @@ PY
 echo ""
 echo "--- Next human action ---"
 echo "If the next row is HUMAN/ADB, do that. Otherwise run /coach or bash scripts/verify.sh."
-echo "Playbook: docs/FIRST_30_DAYS.md   Why: docs/BEST_PRACTICES.md"
+echo "Playbook: docs/first-30-days.json  Markdown: docs/FIRST_30_DAYS.md   Why: docs/BEST_PRACTICES.md"

@@ -1,0 +1,37 @@
+# Baseline allowlist for documented fixture secrets (not live credentials).
+title = "agent-project-bootstrap"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "android-local-properties-sdk-dir"
+description = "Android sdk.dir / local.properties must not land in PRs (machine SDK paths)"
+regex = '''(?i)sdk\.dir\s*='''
+path = '''(?i)(^|/)local\.properties$'''
+
+
+[[rules]]
+id = "adb-vendor-keys"
+description = "Private adbkey files must never be committed"
+regex = '''(?i)BEGIN\s+PRIVATE\s+KEY'''
+path = '''(?i)(^|/)(\.android/)?adbkey$'''
+
+[[rules]]
+id = "adb-vendor-keys-env"
+description = "ADB_VENDOR_KEYS assignments look like leaked device auth material"
+regex = '''(?i)\bADB_VENDOR_KEYS\s*='''
+
+[[rules]]
+id = "android-sdk-home-path"
+description = "Hardcoded ANDROID_HOME / ANDROID_SDK_ROOT assignments look like leaked machine paths"
+regex = '''(?i)\b(ANDROID_HOME|ANDROID_SDK_ROOT)\s*=\s*(?:/Users/|/home/|[A-Za-z]:\\)'''
+
+[allowlist]
+description = "Golden Path sanitizer fixtures used to prove redaction (never user-local tool trees)"
+paths = [
+  '''^schemas/golden-path/sanitize-fixtures\.json$''',
+  '''^examples/web/src/privacy-report/sanitize-fixtures\.json$''',
+  '''^examples/android/app/src/test/resources/sanitize-fixtures\.json$''',
+]
+# Do not add home SDK/JDK/env paths or signing material to paths above.

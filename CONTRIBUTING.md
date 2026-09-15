@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for contributing to **agent-project-bootstrap** — a FOSS project template for coding agents (Cursor, Windsurf, Antigravity, and others).
+Thank you for contributing to **DevPulse** — a local-only Android FOSS app that checks whether installed software still has a heartbeat.
 
 ## Who contributes what
 
@@ -10,6 +10,10 @@ Thank you for contributing to **agent-project-bootstrap** — a FOSS project tem
 | `HUMAN` | Human developer | Approvals, credentials, product decisions |
 | `ADB` | Human (Android) | Device testing, F-Droid submission |
 | `AUTO` | CI/scripts | GitHub Actions, Dependabot, pre-commit |
+## For coding agents
+
+Read [`AGENTS.md`](AGENTS.md) and [`docs/START_HERE.md`](docs/START_HERE.md) before editing. Run `/build` for the next Sequential row, then `python3 scripts/agent-run.py watch-agent-gates --once --autofix`. Do not `git push` unless a human approved it or the user invoked `/push` or `/ship`. Use Conventional Commits. Do not halt on `[HUMAN]` or `[ADB]` labels — automate first, then backlog.
+
 ## First contribution
 
 Thank you for helping. Read [`docs/BEST_PRACTICES.md`](docs/BEST_PRACTICES.md) if you want the industry *why* behind these files. Questions vs bugs vs vulns: [`SUPPORT.md`](SUPPORT.md). Labeled starter tasks: **Good first issue**.

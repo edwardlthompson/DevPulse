@@ -22,6 +22,8 @@ REQUIRED_IGNORES=(
   .env
   __pycache__/
   coverage/
+  .cursor-session-state.json
+  CURSOR_RADAR_SUGGESTIONS.md
 )
 if [ -f .gitignore ]; then
   for entry in "${REQUIRED_IGNORES[@]}"; do

@@ -1,0 +1,13 @@
+version = 1
+
+[[annotations]]
+path = ["**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 agent-project-bootstrap contributors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["templates/licenses/Apache-2.0.txt"]
+precedence = "override"
+SPDX-FileCopyrightText = "Apache Software Foundation and contributors"
+SPDX-License-Identifier = "Apache-2.0"

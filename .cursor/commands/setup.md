@@ -15,4 +15,12 @@ pre-commit run --all-files
 On Windows without `pip` on PATH, use `python -m pip install pre-commit` then the same `pre-commit` commands.
 Re-run until green or checklist complete.
 
+5. Copy the sandbox allowlist if missing:
+
+```bash
+python3 scripts/agent-run.py copy-sandbox-config
+python3 scripts/agent-run.py install-commit-msg-hook
+
+```
+
 Begin now.

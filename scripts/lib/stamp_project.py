@@ -1,6 +1,7 @@
 """Stamp project name/purpose/stack into AGENTS.md (canonical spec)."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 START = "<!-- bootstrap-project-card -->"
@@ -40,3 +41,19 @@ def stamp_first_30_days(root: Path, *, name: str, purpose: str, stack: str) -> P
     return stamp_card_file(
         root / "docs" / "FIRST_30_DAYS.md", name=name, purpose=purpose, stack=stack
     )
+
+
+def stamp_template_index(root: Path, *, name: str, purpose: str, stack: str) -> Path | None:
+    path = root / "TEMPLATE_INDEX.json"
+    if not path.is_file():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    project = data.get("project")
+    if not isinstance(project, dict):
+        project = {}
+        data["project"] = project
+    project["name"] = name
+    project["purpose"] = purpose
+    project["stack"] = stack
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return path

@@ -13,7 +13,8 @@ When the session runs on **This Computer** (local IDE / local CLI), maximize the
 2. **Native worktrees** — `/worktree` for isolated installs/tests; `/best-of-n` to compare models on hard/flaky fixes (each run uses a local worktree)
 3. **Side chats** (`/side`, `/btw`) for parallel research while the main Agent keeps coding
 4. **Local gates** via `python3 scripts/agent-run.py …` (bootstrap checks run with multi-core jobs when supported)
-5. **Local Cursor CLI** for headless loops — see `docs/CURSOR_CLI.md`
+5. **Local dependency updates** — `python3 scripts/agent-run.py update-deps` (dry-run) before `/ship`; do not wait on GitHub Dependabot PRs
+6. **Local Cursor CLI** for headless loops — see `docs/CURSOR_CLI.md`
 
 ## Avoid by default (local sessions)
 
@@ -29,5 +30,20 @@ When the session runs on **This Computer** (local IDE / local CLI), maximize the
 
 ## Env knobs
 
-- `BOOTSTRAP_CHECK_JOBS` — override parallel gate worker count (default: CPU count)
-- Stack tests: prefer tool-native parallelism (`pytest -n auto` when xdist present; Vitest/Gradle defaults)
+- `BOOTSTRAP_CHECK_JOBS` — override parallel bootstrap check workers (default: RAM-capped CPU count)
+- `FEATURE_GATE_JOBS` — override parallel feature-gate stack slots (CI caps at 2; Android weight 2). Use `1` on low-RAM machines
+- `FEATURE_GATE_TIMEOUT` — global seconds cap per feature-gate command; or `FEATURE_GATE_TIMEOUT_{WEB,PYTHON,ANDROID,NODE,RUST,GO,LIGHTROOM,DOCS}`
+- Optional Nix: `nix run .#verify` wraps `scripts/verify.sh` (see `flake.nix`; not a second generator)
+- `FEATURE_GATE_SCOPE=auto|full` — `/build` `/feature` `/fix` pass `--scope auto` (dirty stacks vs `HEAD`). `/gates` and `/prerelease` stay full. Escape hatch: `--scope full`
+- `FEATURE_GATE_ONLY=web,node` — parent multi-stack subset (used by scoped autofix retries)
+- `VITEST_MAX_WORKERS` — escape hatch if Golden Path vitest races (default 50%)
+- `ANDROID_EMULATOR_LOCAL=0` — force-skip `/emulator`
+- Stack tests: pytest-xdist `-n auto`; Vitest `maxWorkers: 50%`; Gradle `--parallel`
+
+## Linux
+
+On Linux hosts, follow [`docs/LINUX_DEV.md`](../../docs/LINUX_DEV.md): local SSD + shared caches, `nice`/`ionice` for long builds, direnv (`.envrc.example`), inotify watch limits, native loops over Docker-in-Docker, and laptop vs CI split. Probe: `python3 scripts/agent-run.py check-local-compute`.
+
+## GPU
+
+Template gates do not use CUDA. Optional: Ollama on 127.0.0.1 (`docs/LOCAL_MODELS.md`) and `/emulator` `-gpu host`. Cursor Agent/Tab may still use cloud models. No keys in git.

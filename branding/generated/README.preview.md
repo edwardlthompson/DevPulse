@@ -9,6 +9,7 @@
 <p align="center"><strong>See which of your apps still have a heartbeat.</strong></p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/template-1.5.0-656d76?style=flat-square" alt="template" />
   <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-2ea043?style=flat-square" alt="GPL-3.0-or-later" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
   <img src="https://img.shields.io/badge/status-active-39FF14?style=flat-square" alt="status" />
@@ -36,6 +37,7 @@ DevPulse is a local-only Android app that checks whether the software you alread
   <img src="../assets/device-inventory.jpg" alt="DevPulse inventory" width="360" />
 </p>
 
+
 ## Features
 
 - Scans Google Play, F-Droid official, F-Droid Archive, IzzyOnDroid, Guardian Project, CalyxOS F-Droid repo, opt-in Aptoide, and GitHub (by app name; listed only if the package appears on that repo's releases)
@@ -57,6 +59,14 @@ Start with this README, then [`CONTRIBUTING.md`](../../CONTRIBUTING.md) and [`do
 ## For agents
 
 Read [`docs/START_HERE.md`](../../docs/START_HERE.md) and [`AGENTS.md`](../../AGENTS.md). In Cursor type `/tour` or `/bootstrap`. Any other IDE: ask the agent to read [`docs/help/TOUR.md`](../../docs/help/TOUR.md). `/coach` is the next recommended action.
+
+```mermaid
+flowchart TD
+  Readme[README] --> Humans[CONTRIBUTING]
+  Readme --> Agents[START_HERE]
+  Agents --> Tour["/tour or TOUR.md"]
+  Tour --> Coach["/coach"]
+```
 
 ## Install
 

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edwardlthompson.github.io/agent-project-bootstrap/schemas/golden-path/icon-manifest.schema.json",
+  "title": "Icon factory manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["jobs"],
+  "properties": {
+    "jobs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/job" }
+    }
+  },
+  "$defs": {
+    "vec3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number" }
+    },
+    "job": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "seed", "camera"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "seed": { "type": "integer", "minimum": 0 },
+        "samples": { "type": "integer", "minimum": 1, "default": 32 },
+        "resolution": { "type": "integer", "minimum": 32, "default": 1024 },
+        "film_transparent": { "type": "boolean", "default": true },
+        "yaw_deg": { "type": "number", "default": 0 },
+        "camera": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["location", "look_at"],
+          "properties": {
+            "location": { "$ref": "#/$defs/vec3" },
+            "look_at": { "$ref": "#/$defs/vec3" },
+            "focal_mm": { "type": "number", "minimum": 1, "default": 50 }
+          }
+        },
+        "lighting": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hdri_rotation": { "type": "number", "default": 0 },
+            "intensity": { "type": "number", "minimum": 0, "default": 1 },
+            "area_lights": {
+              "type": "array",
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["location", "energy"],
+                "properties": {
+                  "location": { "$ref": "#/$defs/vec3" },
+                  "energy": { "type": "number", "minimum": 0 }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import os
 import shutil
-import subprocess
 from pathlib import Path
 
 from human_task_core import (
@@ -70,56 +69,13 @@ def automate_approve_adr(root: Path, cfg: dict, task: str) -> AttemptResult:
 
 
 def automate_product_smoke(root: Path, cfg: dict) -> AttemptResult:
-    runner = root / "scripts/agent-run.py"
-    if not runner.is_file():
-        return AttemptResult(1, "product-smoke", "scripts/agent-run.py missing", True)
-    code, tail = run_cmd(
-        root,
-        ["python3", str(runner), "feature-gate", "--stack", cfg["stack"]],
-    )
+    gate = root / "scripts/feature-gate.sh"
+    if not gate.is_file():
+        return AttemptResult(1, "product-smoke", "feature-gate.sh missing", True)
+    code, tail = run_cmd(root, ["bash", str(gate), "--stack", cfg["stack"]])
     if code == 0:
-        return AttemptResult(0, "feature-gate", "Product smoke via feature-gate", False)
+        return AttemptResult(0, "feature-gate", "Product smoke via feature-gate.sh", False)
     return AttemptResult(1, "feature-gate", tail or f"exit {code}", True)
-
-
-def automate_query_all_packages_rationale(root: Path, _cfg: dict) -> AttemptResult:
-    strings = root / "examples/android/app/src/main/res/values/strings.xml"
-    if not strings.is_file():
-        return AttemptResult(1, "qap-rationale", "strings.xml missing", True)
-    text = strings.read_text(encoding="utf-8")
-    needed = (
-        "inventory_rationale_title",
-        "inventory_rationale_body",
-        "inventory_rationale_ack",
-    )
-    missing = [key for key in needed if key not in text]
-    if missing:
-        return AttemptResult(1, "qap-rationale", f"missing keys {missing}", True)
-    append_decision_log(
-        root,
-        "QUERY_ALL_PACKAGES rationale is in-app; inventory does not scan until acknowledged",
-    )
-    return AttemptResult(0, "qap-rationale", "Rationale strings present", False)
-
-
-def automate_readme_screenshots(root: Path, _cfg: dict) -> AttemptResult:
-    dest = root / "branding/assets/device-inventory.jpg"
-    if dest.is_file() and dest.stat().st_size <= 500_000:
-        return AttemptResult(0, "screenshots", "device screenshot already in branding/assets", False)
-    from device_smoke import capture_jpeg
-    from human_task_android import adb_authorized, resolve_adb
-
-    if not adb_authorized(root):
-        return AttemptResult(1, "screenshots", "no_authorized_device for README screenshot", True)
-    adb = resolve_adb()
-    subprocess.run(
-        [adb, "shell", "am", "start", "-n", "app.devpulse/dev.foss.goldenpath.MainActivity"],
-        capture_output=True,
-        check=False,
-    )
-    if capture_jpeg(adb, dest):
-        return AttemptResult(0, "screenshots", f"wrote {dest.relative_to(root)}", False)
-    return AttemptResult(1, "screenshots", "screencap failed or image too large", True)
 
 
 def automate_release_tag(root: Path, _cfg: dict) -> AttemptResult:

@@ -5,11 +5,23 @@
       "release-type": "simple",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        ".template-version",
-        "TEMPLATE_INDEX.json",
+        {
+          "type": "generic",
+          "path": ".template-version"
+        },
+        {
+          "type": "json",
+          "path": "TEMPLATE_INDEX.json",
+          "jsonpath": "$.template_version"
+        },
         {
           "type": "yaml",
           "path": "CITATION.cff",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": ".cursor-plugin/plugin.json",
           "jsonpath": "$.version"
         }
       ],
@@ -18,11 +30,29 @@
     }
   },
   "changelog-sections": [
-    { "type": "feat", "section": "Added" },
-    { "type": "fix", "section": "Fixed" },
-    { "type": "perf", "section": "Changed" },
-    { "type": "revert", "section": "Changed" },
-    { "type": "docs", "section": "Documentation" },
-    { "type": "chore", "section": "Changed" }
+    {
+      "type": "feat",
+      "section": "Added"
+    },
+    {
+      "type": "fix",
+      "section": "Fixed"
+    },
+    {
+      "type": "perf",
+      "section": "Changed"
+    },
+    {
+      "type": "revert",
+      "section": "Changed"
+    },
+    {
+      "type": "docs",
+      "section": "Documentation"
+    },
+    {
+      "type": "chore",
+      "section": "Changed"
+    }
   ]
 }

@@ -57,7 +57,7 @@ def normalize_markdown(text: str) -> str:
 
 def main() -> int:
     root = Path(__file__).resolve().parent.parent
-    targets = sys.argv[1:] or ["README.md", "BUILD_PLAN.md"]
+    targets = sys.argv[1:] or ["README.md", "BUILD_PLAN.md", "BUILD_PLAN_TEMPLATE.md"]
     for rel in targets:
         path = root / rel
         if not path.is_file():

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-21",
+  "updated_at": "2026-09-10",
   "entries": [
     {
       "id": "rules.mdc",
@@ -108,6 +108,62 @@
       "last_seen": "2026-07-21"
     },
     {
+      "id": "skills.update-deps",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-08-27"
+    },
+    {
+      "id": "skills.best-of-n",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-08-27"
+    },
+    {
+      "id": "skills.local-models",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-08-27"
+    },
+    {
+      "id": "skills.emulator",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-09-10"
+    },
+    {
+      "id": "skills.espresso-android16",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-09-10"
+    },
+    {
+      "id": "skills.adr",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-09-10"
+    },
+    {
+      "id": "skills.blender-icons",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-09-13"
+    },
+    {
       "id": "skills.codex-review",
       "category": "skills",
       "distribution_tier": "both",
@@ -162,6 +218,14 @@
       "doc_url": "https://cursor.com/docs/context/mcp",
       "template_status": "example",
       "last_seen": "2026-07-21"
+    },
+    {
+      "id": "mcp.foss.depsonar",
+      "category": "mcp",
+      "distribution_tier": "foss",
+      "doc_url": "https://cursor.com/docs/context/mcp",
+      "template_status": "example",
+      "last_seen": "2026-08-27"
     },
     {
       "id": "mcp.commercial",
@@ -242,6 +306,14 @@
       "doc_url": "https://cursor.com/docs/cloud-agent/automations",
       "template_status": "example",
       "last_seen": "2026-07-21"
+    },
+    {
+      "id": "grok.bots",
+      "category": "cloud",
+      "distribution_tier": "commercial",
+      "doc_url": "https://docs.x.ai/grok-bot/overview",
+      "template_status": "example",
+      "last_seen": "2026-09-09"
     },
     {
       "id": "approval.agents",

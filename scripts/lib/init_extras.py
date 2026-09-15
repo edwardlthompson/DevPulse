@@ -1,6 +1,7 @@
-"""Optional init writers: FUNDING.yml and GitHub About topics."""
+"""Optional init writers: FUNDING.yml, GitHub About topics, Android SDK local.properties."""
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
@@ -54,3 +55,33 @@ def gh_topics_command(topics: list[str]) -> str:
         return ""
     joined = ",".join(clean)
     return f"gh repo edit --add-topic {joined}"
+
+
+def detect_android_sdk(home: Path | None = None, env: dict[str, str] | None = None) -> Path | None:
+    """Locate an Android SDK on Linux/macOS (ANDROID_HOME or common user paths)."""
+    environ = env if env is not None else os.environ
+    for key in ("ANDROID_HOME", "ANDROID_SDK_ROOT"):
+        raw = (environ.get(key) or "").strip()
+        if raw:
+            path = Path(raw).expanduser()
+            if (path / "platform-tools").is_dir():
+                return path
+    base = home if home is not None else Path.home()
+    for candidate in (base / "Android" / "Sdk", base / ".local" / "android"):
+        if (candidate / "platform-tools").is_dir():
+            return candidate
+    return None
+
+
+def write_android_local_properties(root: Path, sdk: Path | None = None) -> Path | None:
+    """Write gitignored examples/android/local.properties when SDK is detected."""
+    android = root / "examples" / "android"
+    if not android.is_dir():
+        return None
+    resolved = sdk if sdk is not None else detect_android_sdk()
+    if resolved is None:
+        return None
+    dest = android / "local.properties"
+    sdk_dir = str(resolved).replace("\\", "\\\\").replace(":", "\\:")
+    dest.write_text(f"sdk.dir={sdk_dir}\n", encoding="utf-8")
+    return dest

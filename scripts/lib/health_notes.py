@@ -42,5 +42,5 @@ def collect_health_notes(root: Path) -> list[str]:
     if ahead.isdigit() and int(ahead) > 0:
         notes.append(f"HEAD is {ahead} commit(s) ahead of upstream (unpushed).")
     if unreleased_has_entries(root):
-        notes.append("CHANGELOG [Unreleased] has entries — commit/push before /ship.")
+        notes.append("CHANGELOG [Unreleased] has entries (unshipped notes).")
     return notes

@@ -27,7 +27,7 @@ Static PWAs and CLIs may skip HTTP endpoints; document stack-specific checks ins
 4. `[AUTO]` Release assets: SBOMs plus `DevPulse-{version}.apk` when `DEVPULSE_KEYSTORE_BASE64` is set
 5. `[HUMAN]` Verify the APK installs over the previous release (same signing key)
 
-Release signing lives outside git. Local: `%USERPROFILE%\.android\devpulse-release.env`. GitHub: `DEVPULSE_KEYSTORE_BASE64`, `DEVPULSE_STORE_PASSWORD`, `DEVPULSE_KEY_ALIAS`, `DEVPULSE_KEY_PASSWORD`. Do not fall back to the debug keystore for GitHub Release APKs.
+Release signing lives outside git. See [`docs/ANDROID_SIGNING.md`](ANDROID_SIGNING.md). Local: `%USERPROFILE%\.android\devpulse-release.env`. GitHub: `DEVPULSE_KEYSTORE_BASE64`, `DEVPULSE_STORE_PASSWORD`, `DEVPULSE_KEY_ALIAS`, `DEVPULSE_KEY_PASSWORD`. Do not fall back to the debug keystore for GitHub Release APKs.
 
 ## Rollback
 

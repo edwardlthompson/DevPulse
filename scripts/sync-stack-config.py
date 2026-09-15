@@ -33,9 +33,11 @@ def sync_app_update(root: Path, repo: str) -> None:
             "release_repo": repo.strip(),
             "check_interval": "weekly",
             "installed_artifact_format": "pwa",
+            "product_asset_prefix": "Golden-Path",
             "restart_guard_key": "gp-update-restart-pending",
         }
     data["release_repo"] = repo.strip()
+    data.setdefault("product_asset_prefix", "Golden-Path")
 
     web_path = root / WEB_PUBLIC[0]
     if web_path.parent.is_dir():
@@ -47,6 +49,7 @@ def sync_app_update(root: Path, repo: str) -> None:
         android_data = {
             "release_repo": repo.strip(),
             "installed_artifact_format": "apk",
+            "product_asset_prefix": data.get("product_asset_prefix", "Golden-Path"),
         }
         write_json(android_path, android_data)
 
@@ -54,7 +57,8 @@ def sync_app_update(root: Path, repo: str) -> None:
 def sync_donations(root: Path, url: str) -> None:
     if not url.strip():
         return
-    links = [{"label": "Donate", "url": url.strip()}]
+    label = "Donate via Venmo" if "venmo.com" in url.lower() else "Donate"
+    links = [{"label": label, "url": url.strip()}]
     payload = {
         "enabled": True,
         "message": "If this project helps you, consider supporting development.",

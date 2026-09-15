@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "kind": "bug",
+  "whatHappened": "steps to reproduce",
+  "fingerprint": null,
+  "exceptionType": null,
+  "appVersion": "0.1.0",
+  "osFamily": "Android",
+  "stack": null,
+  "markdown": "## What happened\nsteps to reproduce\n\n## Kind\nbug\n\n## App version\n0.1.0\n\n## OS family\nAndroid\n"
+}

@@ -1,5 +1,6 @@
 ---
 description: Design system rules for UI work — tokens, themes, i18n separation
+alwaysApply: false
 globs:
   - examples/web/**
   - examples/android/**
@@ -31,7 +32,7 @@ Before editing UI in `examples/web/` or `examples/android/`:
 - **No raw hex** in UI Kotlin/TS/CSS (except `design-tokens.css`, generated `Color.kt`, and `branding/assets/*.svg`)
 - **No UI string literals** in Compose (`Text("...")`) or web `main.ts` innerHTML — use `stringResource` / `t()`
 - **No copy in CSS** — no `content:` text, no user-facing strings in stylesheets
-- **Theme toggle:** Preserve system / light / dark cycle; default `system`
+- **Theme:** Preserve system / light / dark via the Settings dropdown; default `system`. Never mount a theme control in the header.
 - **Layout:** CSS logical properties (`margin-inline`, `text-align: start`); Compose `Start`/`End` alignment
 - **FOSS Android:** No `com.google.android.gms`, Firebase, or proprietary SDKs
 
@@ -47,7 +48,7 @@ Before editing UI in `examples/web/` or `examples/android/`:
 ### Web
 
 - `var(--gp-*)` from `design-tokens.css`
-- `initTheme()` + `createThemeToggle()` pattern
+- `initTheme()` + Settings `<select data-settings-theme>` (no header `ThemeToggle`)
 - Locales in `src/locales/*.json`
 
 ## Critique before merge
@@ -55,4 +56,4 @@ Before editing UI in `examples/web/` or `examples/android/`:
 - Checklist rows use 🔲 / ✅ / ❌ (see `docs/DESIGN_GUIDE.md` agent checklist)
 - Long translated strings still layout correctly?
 - Dark and light modes both readable (contrast)?
-- Toggle accessible (`contentDescription` / `aria-label` from i18n)?
+- Settings and dropdowns accessible (`contentDescription` / `aria-label` from i18n)?

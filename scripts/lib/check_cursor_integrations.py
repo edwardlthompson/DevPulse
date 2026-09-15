@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from check_cursor_integrations_tier import validate_tier
+from cursor_rule_audit import audit_rules
 
 SKILLS = (
     "validate-bootstrap",
@@ -15,6 +16,12 @@ SKILLS = (
     "sprint0-signoff",
     "feature-vertical-slice",
     "canvas-bootstrap-status",
+    "update-deps",
+    "best-of-n",
+    "local-models",
+    "emulator",
+    "adr",
+    "blender-icons",
 )
 AGENTS = ("verifier", "gate-fixer", "explorer")
 COMMAND_SKILL = {
@@ -23,6 +30,10 @@ COMMAND_SKILL = {
     "fix.md": ("watch-gates-autofix",),
     "audit.md": ("check-repo-hygiene",),
     "feature.md": ("feature-vertical-slice",),
+    "update-deps.md": ("update-deps",),
+    "best-of-n.md": ("best-of-n",),
+    "emulator.md": ("emulator",),
+    "adr.md": ("adr",),
 }
 
 FOSS_EXAMPLES = (
@@ -30,6 +41,7 @@ FOSS_EXAMPLES = (
     ".cursor/hooks.json",
     ".cursor/worktrees.json",
     ".cursor/permissions.json",
+    ".cursor/mcp-allowlist.json",
 )
 
 
@@ -76,9 +88,19 @@ def validate_artifacts(root: Path) -> list[str]:
             entries = data.get("entries") or []
             if not entries:
                 errors.append("registry has no entries")
+            if str(data.get("updated_at") or "") < "2026-09-10":
+                errors.append("registry updated_at is stale")
+            ids = {entry.get("id") for entry in entries}
             for entry in entries:
                 if "distribution_tier" not in entry:
                     errors.append(f"registry entry missing distribution_tier: {entry.get('id')}")
+            skills_dir = root / ".cursor" / "skills"
+            if skills_dir.is_dir():
+                for path in sorted(skills_dir.iterdir()):
+                    if path.is_dir() and (path / "SKILL.md").is_file():
+                        key = f"skills.{path.name}"
+                        if key not in ids:
+                            errors.append(f"registry missing {key}")
         except json.JSONDecodeError as exc:
             errors.append(f"invalid registry JSON: {exc}")
 
@@ -96,6 +118,7 @@ def main() -> int:
 
     errors = validate_artifacts(root)
     errors.extend(validate_tier(root, args.tier))
+    errors.extend(audit_rules(root))
 
     if errors:
         for err in errors:

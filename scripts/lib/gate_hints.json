@@ -36,6 +36,27 @@
         "run npm test in examples/web"
       ]
     },
+    "web-lighthouse-floors": {
+      "means": "Lighthouse performance, accessibility, best-practices, or web-vitals (TBT/LCP) floors dropped.",
+      "run": "bash scripts/check-lighthouse-floors.sh",
+      "why": "CI Lighthouse assertions must stay error floors, not warnings (Settings IA re-baseline + TBT/LCP budgets).",
+      "suggested": [
+        "restore categories:performance minScore 0.9 in examples/web/.lighthouserc.json",
+        "restore categories:accessibility minScore 0.95 in examples/web/.lighthouserc.json",
+        "keep categories:best-practices minScore at least 0.9",
+        "keep largest-contentful-paint maxNumericValue <= 2500",
+        "keep total-blocking-time maxNumericValue <= 300 (lab INP proxy)"
+      ]
+    },
+    "web-sw-cache-budget": {
+      "means": "Service-worker PRECACHE shell exceeds the offline cache budget.",
+      "run": "bash scripts/check-sw-cache-budget.sh",
+      "why": "PWA offline-first shell must stay within the /gates canvas budget.",
+      "suggested": [
+        "trim examples/web/public/sw.js PRECACHE entries",
+        "keep shell assets under SW_CACHE_MAX_BYTES (default 256KiB)"
+      ]
+    },
     "web-build": {
       "means": "The web app did not produce a production build.",
       "run": "npm run build in examples/web",
@@ -110,6 +131,60 @@
         "run ./gradlew test in examples/android"
       ]
     },
+    "android-compile-androidtest": {
+      "means": "Instrumented Android tests failed to compile.",
+      "run": "./gradlew :app:compileDebugAndroidTestKotlin in examples/android",
+      "why": "Compile instrumented tests in feature-gate without an emulator.",
+      "suggested": [
+        "fix androidTest compile errors",
+        "run ./gradlew :app:compileDebugAndroidTestKotlin in examples/android"
+      ]
+    },
+    "android-reproducible-apk": {
+      "means": "SOURCE_DATE_EPOCH release APK wiring is missing from CI or the local verifier.",
+      "run": "bash scripts/check-reproducible-apk.sh",
+      "why": "F-Droid-style builds need a pinned epoch and a two-run hash compare.",
+      "suggested": [
+        "keep SOURCE_DATE_EPOCH=1700000000 on CI android-release",
+        "run bash scripts/check-reproducible-apk.sh"
+      ]
+    },
+    "android-signing-runbook": {
+      "means": "Android signing/rollback runbook or env-only Gradle signing is missing.",
+      "run": "bash scripts/check-android-signing-runbook.sh",
+      "why": "Upload keys stay outside git; rollback needs the same key and mapping.txt.",
+      "suggested": [
+        "keep docs/ANDROID_SIGNING.md env vars and rollback",
+        "run bash scripts/check-android-signing-runbook.sh"
+      ]
+    },
+    "android-r8": {
+      "means": "Release R8 minify flags or keep rules regressed.",
+      "run": "bash scripts/check-android-r8.sh",
+      "why": "Android 17 memory limits need shrinking; broad keep rules idle R8.",
+      "suggested": [
+        "keep isMinifyEnabled = true and proguard-android-optimize.txt",
+        "run bash scripts/check-android-r8.sh"
+      ]
+    },
+    "android-espresso-16": {
+      "means": "Espresso is pinned below 3.7.0 (breaks Compose UI tests on Android 16).",
+      "run": "bash scripts/check-espresso-android16.sh",
+      "why": "API 36 removed InputManager.getInstance; Espresso 3.7 uses getSystemService.",
+      "suggested": [
+        "set androidTestImplementation(\"androidx.test.espresso:espresso-core:3.7.0\")",
+        "run bash scripts/check-espresso-android16.sh"
+      ]
+    },
+    "android-compose-a11y": {
+      "means": "Android accessibility lint IDs are missing from lint.xml or Gradle.",
+      "run": "bash scripts/check-compose-a11y-lint.sh",
+      "why": "TalkBack and keyboard lint must stay errors on the Golden Path app.",
+      "suggested": [
+        "restore examples/android/app/lint.xml a11y issue ids",
+        "keep lint.error ContentDescription in app/build.gradle.kts"
+      ]
+    },
     "design-cohesion": {
       "means": "Design tokens or i18n keys are out of sync.",
       "run": "bash scripts/check-design-cohesion.sh",
@@ -174,6 +249,50 @@
       "why": "Tests are the proof the Golden Path still works after your change.",
       "suggested": [
         "run go test in examples/go"
+      ]
+    },
+    "blender-stub": {
+      "means": "Icon factory stub QA or manifest validation failed.",
+      "run": "python3 examples/blender/cli.py --stub --limit 1",
+      "why": "Machine QA replaces human review of thousands of frames.",
+      "suggested": [
+        "fix examples/blender/fixtures/icon-manifest.sample.json",
+        "run python3 examples/blender/cli.py --stub --limit 1"
+      ]
+    },
+    "blender-qa": {
+      "means": "Icon factory unit tests failed (no Blender required).",
+      "run": "python3 -m unittest tests.test_blender_icon_factory",
+      "why": "Schema, stub PNG, and device env must pass without a GPU.",
+      "suggested": [
+        "run python3 -m unittest tests.test_blender_icon_factory"
+      ]
+    },
+    "blender-cpu": {
+      "means": "Cycles CPU smoke render failed.",
+      "run": "blender --background --python examples/blender/cli.py -- --limit 1",
+      "why": "CI never requires OptiX; CPU proves the bpy path.",
+      "suggested": [
+        "install Blender 4.x on PATH",
+        "run blender-icons --limit 1"
+      ]
+    },
+    "lightroom-sdk-playbook": {
+      "means": "Lightroom SDK playbook is missing or Info.lua versions drifted from the README table.",
+      "run": "bash scripts/check-lightroom-sdk-playbook.sh",
+      "why": "Classic SDK bumps must stay documented and HUMAN-tested.",
+      "suggested": [
+        "keep Info.lua versions matching examples/lightroom/README.md",
+        "run bash scripts/check-lightroom-sdk-playbook.sh"
+      ]
+    },
+    "lightroom-lua-lint": {
+      "means": "Lightroom Lua used generic require() or a non-Lr* import.",
+      "run": "bash scripts/check-lightroom-lua.sh",
+      "why": "Module D allows only Adobe Lr* SDK imports.",
+      "suggested": [
+        "keep Lr* imports only in examples/lightroom",
+        "run bash scripts/check-lightroom-lua.sh"
       ]
     },
     "node-lint": {

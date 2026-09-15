@@ -5,6 +5,7 @@ from build_sprint_model import (
     HUMAN_GROUP_HEADER,
     PARALLEL_HEADER,
     ROW_BULLET,
+    ROW_NUMBERED,
     SEQUENTIAL_HEADER,
     SPRINT_HEADER,
     PlanRow,
@@ -105,3 +106,45 @@ def parse_maintenance_rows(text: str) -> tuple[list[PlanRow], list[PlanRow]]:
         else:
             auto_rows.append(row)
     return auto_rows, human_rows
+
+
+def parse_numbered_board(
+    text: str, *, require_maintainer_header: bool = False
+) -> tuple[list[PlanRow], list[PlanRow]]:
+    aa: list[PlanRow] = []
+    ha: list[PlanRow] = []
+    has_header = any(line.startswith("## Template Maintainer") for line in text.splitlines())
+    if require_maintainer_header and not has_header:
+        return [], []
+    started = not has_header
+    sprint = "Board"
+    for line in text.splitlines():
+        if line.startswith("## Template Maintainer"):
+            started = True
+            continue
+        if not started:
+            continue
+        if line.startswith("## Ongoing Maintenance") or line.startswith("## Archive"):
+            break
+        if line.startswith("### "):
+            sprint = line.strip().lstrip("#").strip()
+            continue
+        match = ROW_NUMBERED.match(line) or ROW_BULLET.match(line)
+        if not match:
+            continue
+        row = PlanRow(
+            owner=match.group("owner"),
+            task=match.group("task").strip(),
+            sprint=sprint,
+            phase="board",
+        )
+        if row.owner in ("HUMAN", "ADB"):
+            ha.append(row)
+        elif row.owner in ("AGENT", "AUTO"):
+            aa.append(row)
+    return aa, ha
+
+def parse_board_queue(text: str, *, maintainer: bool) -> tuple[list[PlanRow], list[PlanRow]]:
+    board_aa, board_ha = parse_numbered_board(text, require_maintainer_header=maintainer)
+    maint_auto, maint_human = parse_maintenance_rows(text)
+    return board_aa + maint_auto, board_ha + maint_human

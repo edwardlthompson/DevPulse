@@ -13,7 +13,7 @@ jobs:
       contents: write
       pull-requests: write
       actions: write
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       - uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         id: metadata
@@ -43,13 +43,14 @@ jobs:
       - name: Skip major without HUMAN label
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
         run: |
-          labels="${{ join(github.event.pull_request.labels.*.name, ',') }}"
+          labels="$PR_LABELS"
           if echo "$labels" | grep -q 'HUMAN'; then
             gh pr merge --auto --squash "$PR_URL"
           else
             echo "Major Dependabot bumps require the HUMAN label; manual merge only"
           fi
         env:
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.AUTOMERGE_TOKEN || secrets.GITHUB_TOKEN }}
 

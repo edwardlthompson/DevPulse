@@ -134,6 +134,11 @@ for out in "${REQUIRED_OUTPUTS[@]}"; do
   fi
 done
 
+# Home chrome is Settings-only; theme is a dropdown, not chips (docs/DESIGN_GUIDE.md)
+if ! python3 scripts/lib/design_chrome_gate.py "$ROOT"; then
+  fail "chrome/chip regression (Settings-only header; no FilterChip theme)"
+fi
+
 if [ "$ERRORS" -gt 0 ]; then
   echo "$ERRORS design cohesion check(s) failed"
   exit 1

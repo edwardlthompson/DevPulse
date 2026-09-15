@@ -77,3 +77,12 @@ Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fal
 - Do not open GitHub name-search for every Play miss (`storeSettled` unchanged). Aliases + paste + stars cover GitHub-only apps. See `DECISION_LOG.md`.
 - Update all stays user-triggered. Root remains opt-in.
 - `[ADB]` smoke: GitHub Obtainium lists on Refresh; FAB paste binds; cert refuse still blocks a mismatched APK.
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

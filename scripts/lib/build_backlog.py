@@ -58,6 +58,26 @@ def list_items(root: Path) -> list[dict]:
     ]
 
 
+def remove_item(root: Path, owner: str, task: str, sprint: str) -> bool:
+    path = backlog_path(root)
+    if not path.exists():
+        return False
+    key = f"{sprint}|{task}"
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    kept: list[str] = []
+    removed = False
+    for line in lines:
+        if line.startswith("|") and "---" not in line and "Deferred" not in line:
+            parts = [p.strip() for p in line.strip().strip("|").split("|")]
+            if len(parts) >= 4 and f"{parts[1]}|{parts[3]}" == key:
+                removed = True
+                continue
+        kept.append(line)
+    if removed:
+        path.write_text("".join(kept), encoding="utf-8")
+    return removed
+
+
 def main() -> int:
     import argparse
 
@@ -71,6 +91,11 @@ def main() -> int:
     add_p.add_argument("--sprint", default="")
     add_p.add_argument("--reason", default="automation failed")
 
+    rem_p = sub.add_parser("remove", help="Remove a backlog row after successful automation")
+    rem_p.add_argument("--owner", required=True)
+    rem_p.add_argument("--task", required=True)
+    rem_p.add_argument("--sprint", default="")
+
     sub.add_parser("list", help="List backlog items")
 
     args = parser.parse_args()
@@ -79,6 +104,10 @@ def main() -> int:
     if args.command == "add":
         added = add_item(root, args.owner, args.task, args.sprint, args.reason)
         print("added" if added else "duplicate")
+        return 0
+    if args.command == "remove":
+        gone = remove_item(root, args.owner, args.task, args.sprint)
+        print("removed" if gone else "missing")
         return 0
     if args.command == "list":
         print(json.dumps(list_items(root), indent=2))

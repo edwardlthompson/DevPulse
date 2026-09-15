@@ -36,3 +36,12 @@
 - About opens on top of Settings; system back closes About first, then Settings, then returns to inventory. Close settings must not finish the activity
 - Reuse `ThemePreferences` patterns from `examples/android/.../ui/theme/` where applicable
 - Gate after each AGENT BUILD_PLAN step: `bash scripts/watch-agent-gates.sh --once --autofix --step <scaffold|tests|wire>`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

@@ -58,3 +58,20 @@ Types in `dev.foss.goldenpath.about`. Prefs stay in `devpulse_updates` SharedPre
 - Venmo URL is public, not a secret: `https://venmo.com/code?user_id=1857304970395648420`
 - Repo: `edwardlthompson/DevPulse`
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Container map
+
+| Layer | Path |
+|-------|------|
+| Logic | `examples/android/app/src/main/java/dev/foss/goldenpath/` |
+| View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
+| Tests | `examples/android/app/src/test/` |
+| Wiring | `GoldenPathApp.kt` ≤10 lines |
+
+## Tests
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

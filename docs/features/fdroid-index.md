@@ -64,3 +64,12 @@ Parse and lookup unit tests against a trimmed fixture. If signature verify is sk
 
 - Same pipeline for extra repos; treat custom URLs as untrusted
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

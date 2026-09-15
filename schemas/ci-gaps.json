@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "issue_label": "ci-gap",
+  "gaps": [
+    {
+      "id": "nix-not-required-by-ci-ok",
+      "status": "accepted",
+      "note": "Optional path-filtered Nix job. ci-ok must not needs nix; skipped jobs are not success."
+    },
+    {
+      "id": "android-emulator-skip-without-sdk",
+      "status": "accepted",
+      "note": "/emulator and instrumented device jobs skip without ANDROID_HOME; compile-time Android tests still run."
+    },
+    {
+      "id": "semgrep-local-skip",
+      "status": "accepted",
+      "note": "check-semgrep.sh SKIPs the scanner when semgrep is not on PATH; FOSS config files stay required."
+    },
+    {
+      "id": "pr-ci-main-only",
+      "status": "accepted",
+      "note": "CI on.pull_request.branches is [main]. Feature-branch PRs use local gates until they target main."
+    }
+  ]
+}

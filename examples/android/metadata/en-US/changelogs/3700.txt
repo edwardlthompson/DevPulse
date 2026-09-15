@@ -1,0 +1,1 @@
+DevPulse 0.37.0 — last GitHub Release before template machinery catch-up to v1.5.0.

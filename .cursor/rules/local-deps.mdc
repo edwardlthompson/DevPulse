@@ -1,0 +1,18 @@
+---
+description: Prefer local depsonar/upd over GitHub Dependabot for dependency work
+alwaysApply: true
+---
+
+# Local-first dependencies
+
+For dependency work, prefer `depsonar_*` MCP tools (`scan`, `check`, `changelog`, `audit`, `live_cve`, then `update` at patch/minor) when those tools are available. If a depsonar tool returns nothing within about 60 seconds, fall back to:
+
+```bash
+python3 scripts/agent-run.py update-deps
+```
+
+Dry-run first. Apply only with `--apply` (patch/minor). Never `git push` from the updater. GitHub Dependabot is weekly backup only.
+
+Gradle/Android: `depsonar_update` on `examples/android` when MCP is on; otherwise Dependabot backup (upd has no Gradle). Kotlin `>=2.3.30` is blocked (CodeQL).
+
+Do not auto-apply inside `verify.sh`. `/ship` runs `/update-deps` then `/prerelease` with `pre-release-gate.sh --local`.

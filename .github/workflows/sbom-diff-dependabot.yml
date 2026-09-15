@@ -1,0 +1,35 @@
+name: SBOM Diff (Dependabot)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sbom-diff:
+    name: SBOM Diff (Dependabot)
+    # Prefer PR author over github.actor (zizmor bot-conditions).
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Informational SBOM note
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## SBOM diff (informational)"
+            echo "Dependabot PR detected. Full CycloneDX assets publish on release tags via \`release.yml\`."
+            echo "This check is **not** merge-blocking (see docs/CI_REQUIRED_CHECKS.md)."
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Soft comment once per PR head (ignore failures)
+          gh pr comment "$PR_NUMBER" --body "SBOM diff: informational only. Release SBOMs attach on tag via release.yml." \
+            || true

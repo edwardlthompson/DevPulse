@@ -95,6 +95,10 @@ if command -v pre-commit >/dev/null 2>&1; then
   fi
 fi
 
+if [ -f scripts/refresh-build-plan-tally.sh ]; then
+  run_fix build-plan-tally bash scripts/refresh-build-plan-tally.sh || true
+fi
+
 if [ -f scripts/normalize-markdown-whitespace.py ]; then
   for f in $(git diff --name-only HEAD 2>/dev/null | grep '\.md$' || true); do
     [ -f "$f" ] && run_fix markdown-ws $PY scripts/normalize-markdown-whitespace.py "$f" || true

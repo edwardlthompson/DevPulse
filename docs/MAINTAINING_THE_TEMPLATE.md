@@ -14,8 +14,8 @@ Playbook for template maintainers optimizing agent-project-bootstrap over time.
 
 1. All CI checks green on main
 2. `bash scripts/check-repo-hygiene.sh` passes
-3. **Dry-run:** **Actions → Release → Run workflow** (`workflow_dispatch`, no tag input) to validate SBOM/provenance **before** merge
-4. Run `scripts/pre-release-gate.sh` (or `.ps1`) — CI poll, Dependabot Critical/High count, version/tag match
+3. **Dry-run:** **Actions → Release → Run workflow** (`workflow_dispatch`, no tag input) to validate SBOM/provenance **before** merge. npm/uv registry attestations: [`PACKAGE_ATTESTATION.md`](PACKAGE_ATTESTATION.md)
+4. Run `scripts/pre-release-gate.sh --local` before push (`/prerelease` / `/ship`); full `pre-release-gate.sh` after push (`/regress`, `release.yml`)
 5. Run `scripts/run-maintainer-gates.sh` for weekly maintainer cycle (readme, fdroid metadata, feature-gate, CI jobs)
 6. Bump `.template-version` (or merge Release Please PR which bumps it)
 7. Update `CHANGELOG.md` (Keep a Changelog; Release Please PR covers this)
@@ -23,10 +23,19 @@ Playbook for template maintainers optimizing agent-project-bootstrap over time.
 9. Run `scripts/validate-template-index.sh`
 10. Merge Release Please PR; **release published** event attaches SBOM assets automatically
 11. Update repo About if description changed
-12. Weekly CVE triage completed within last 7 days (`docs/SECURITY_TRIAGE.md`)
+12. Latest **Weekly Health Check** (Monday cron) is green (`docs/SECURITY_TRIAGE.md`)
 13. Zero open Critical/High Dependabot alerts (or documented exception with linked issue)
 14. `THIRD_PARTY_LICENSES.md` reviewed; SBOM attached to release
 15. Move completed Sprint M* items to `COMPLETED_TASKS.md`
+16. Desktop installer children: follow [`docs/WINGET.md`](WINGET.md) before a `microsoft/winget-pkgs` PR
+
+## Open PRs on the board + Cloud → PC
+
+Dependabot and Release Please PRs sync into the **Open PRs (synced)** block on `BUILD_PLAN.md` via `scripts/sync-open-prs-build-plan.sh` (weekly health + PR lifecycle workflow). Do not hand-edit that block.
+
+Child product repos (not this template) also get a Monday **Template gaps (synced)** block via `scripts/sync-template-gaps-build-plan.sh` — plan-only; Sacred never auto-overwritten. This maintainer repo keeps upgrade-sim on weekly health instead.
+
+After Cloud Agent sessions, maintainers on This Computer should run **`/resume`** so the PC agent fetches, refreshes the sync block, lists leftover `cursor/*` PRs, and names the next `[AGENT]` row. Do not rely on `/compact` session state across machines (gitignored).
 
 ## Safe Edit Zones
 
@@ -43,14 +52,14 @@ Encourage `template_improvement` issues. Triage labels:
 
 - `agent-confusion` — agent could not self-route
 - `token-waste` — unnecessary files read
-- `ci-gap` — missing quality gate
+- `ci-gap` — missing quality gate (living registry: [`docs/CI_GAPS.md`](CI_GAPS.md), [`schemas/ci-gaps.json`](../schemas/ci-gaps.json))
 - `module-request` — new ecosystem module
 
 ## Coach layer
 
 - Why catalog: [`docs/BEST_PRACTICES.md`](BEST_PRACTICES.md). 30-day playbook: [`docs/FIRST_30_DAYS.md`](FIRST_30_DAYS.md). Slash command: `/coach`.
 - Root and Golden Path `justfile`s are optional DX. CI must keep calling `uv` / `npm` / `gradlew` / `scripts/verify.sh` directly.
-- Adding a slash command requires updating `scripts/check-batch-commands.sh` ATOMIC, `validate-bootstrap.sh` BATCH_COMMANDS, `.cursor/rules/batch-commands.mdc`, and both BATCH_COMMANDS docs.
+- Adding a slash command requires updating `scripts/check-batch-commands.sh` ATOMIC, `validate-bootstrap.sh` BATCH_COMMANDS, `.cursor/rules/batch-commands.mdc`, both BATCH_COMMANDS docs, `schemas/batch-commands-print.json` (then `python3 scripts/lib/batch_commands_print.py --write`), and a `docs/help/` twin.
 
 ## Regression
 

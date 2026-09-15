@@ -1,0 +1,184 @@
+{
+  "commands": {
+    "bootstrap": {
+      "kind": "super",
+      "group": "super",
+      "caption": "Set up a brand-new project from scratch, then take the tour."
+    },
+    "verify": {
+      "kind": "super",
+      "group": "super",
+      "caption": "Check your work (docs, local tests, CI) before you open a pull request."
+    },
+    "build": {
+      "kind": "super",
+      "group": "super",
+      "caption": "Work through the task board, one feature at a time."
+    },
+    "ship": {
+      "kind": "super",
+      "group": "super",
+      "caption": "Publish a release to GitHub. This pushes your code."
+    },
+    "maintain": {
+      "kind": "super",
+      "group": "super",
+      "caption": "Weekly health pass: security, dependencies, and a full review."
+    },
+    "tour": {
+      "kind": "step",
+      "group": "start",
+      "caption": "A 10-minute walkthrough. Home chrome is Settings-only."
+    },
+    "init": {
+      "kind": "step",
+      "group": "start",
+      "caption": "First-time setup: name, stack, and project files."
+    },
+    "setup": {
+      "kind": "step",
+      "group": "start",
+      "caption": "Turn on GitHub settings this template expects."
+    },
+    "prune": {
+      "kind": "step",
+      "group": "start",
+      "caption": "Keep only the stack you chose; drop unused examples."
+    },
+    "gates": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Run the local checks that match CI (no GitHub wait)."
+    },
+    "coach": {
+      "kind": "step",
+      "group": "start",
+      "caption": "Ask what to do next. Theme, About, and donate stay in Settings (Settings-only)."
+    },
+    "ideas": {
+      "kind": "step",
+      "group": "start",
+      "caption": "See a short ranked list of possible next features (does not build them)."
+    },
+    "allideas": {
+      "kind": "step",
+      "group": "start",
+      "caption": "Dump every in-scope idea so you can fill the task board."
+    },
+    "plan": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Design one feature or decision before coding."
+    },
+    "adr": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Write the next numbered architecture decision record."
+    },
+    "feature": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Build one feature slice with tests, then run checks."
+    },
+    "fix": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Repair failing checks after a build, in the feature you just touched."
+    },
+    "cleanup": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Archive finished task-board rows so the list stays short."
+    },
+    "scope": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Split work so more than one agent can help without colliding."
+    },
+    "docs": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Check README health, tables, and file encoding."
+    },
+    "ci": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Wait for GitHub Actions after a push (checks only, no new commit)."
+    },
+    "debug": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Investigate a bug with logs and evidence (not a full-repo audit)."
+    },
+    "update-deps": {
+      "kind": "step",
+      "group": "publish",
+      "caption": "Scan and apply safe local dependency bumps."
+    },
+    "prerelease": {
+      "kind": "step",
+      "group": "publish",
+      "caption": "Run pre-release checks without pushing."
+    },
+    "push": {
+      "kind": "step",
+      "group": "publish",
+      "caption": "Commit, push to GitHub, and cut a release. This publishes."
+    },
+    "regress": {
+      "kind": "step",
+      "group": "publish",
+      "caption": "After a release: confirm SBOM, Pages, and the upgrade simulation."
+    },
+    "codex-review": {
+      "kind": "step",
+      "group": "advanced",
+      "caption": "Skip this. First-time path is Cline in Cursor (review every diff)."
+    },
+    "best-of-n": {
+      "kind": "step",
+      "group": "hardware",
+      "caption": "Race a few local copies of a hard fix (never pushes)."
+    },
+    "emulator": {
+      "kind": "step",
+      "group": "hardware",
+      "caption": "Run Android emulator tests if an SDK is installed; skip otherwise."
+    },
+    "triage": {
+      "kind": "step",
+      "group": "maintain",
+      "caption": "Weekly security pass."
+    },
+    "dependabot": {
+      "kind": "step",
+      "group": "maintain",
+      "caption": "Handle leftover GitHub Dependabot alerts after local updates."
+    },
+    "audit": {
+      "kind": "step",
+      "group": "maintain",
+      "caption": "Full-repo review, then update the task board."
+    },
+    "upgrade": {
+      "kind": "step",
+      "group": "maintain",
+      "caption": "Compare this project to the parent template and plan updates. Does not overwrite your app until you pick items."
+    },
+    "compact": {
+      "kind": "step",
+      "group": "session",
+      "caption": "Save a checkpoint before you clear a long chat."
+    },
+    "restore": {
+      "kind": "step",
+      "group": "session",
+      "caption": "Reload the last saved checkpoint after a new chat."
+    },
+    "resume": {
+      "kind": "step",
+      "group": "session",
+      "caption": "After Cloud Agent work: fetch, sync open Dependabot/release PRs into BUILD_PLAN, list cursor/* PRs, name the next AGENT row."
+    }
+  }
+}

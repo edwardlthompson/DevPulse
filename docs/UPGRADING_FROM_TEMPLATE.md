@@ -1,10 +1,12 @@
 # Upgrading From Template
 
-Child repos do not auto-sync with the upstream template. Use this guide when the update checker notifies you of a new release.
+Child repos do not auto-merge file copies from the upstream template. Monday GitHub cron (`weekly-health-check.yml`) **does** refresh a managed **Template gaps (synced)** block on `BUILD_PLAN.md` from `check-template-gaps` (plan-only). Use this guide when that block (or the update checker) shows you are behind.
+
+In Cursor, type `/upgrade`. On a **child** the agent compares this project to the template and writes a plan. It does not apply changes until you name item numbers. Other IDEs: [`docs/help/UPGRADE.md`](help/UPGRADE.md). On **this** template repo, `/upgrade` still runs the upgrade simulation.
 
 ## Step 1: Read the Notification
 
-Run `scripts/check-template-updates.sh` or check the devcontainer postStart output.
+Run `scripts/check-template-updates.sh` or check the devcontainer postStart output. On a child, also open **Template gaps (synced)** on `BUILD_PLAN.md` (Monday cron via `sync-template-gaps-build-plan`). The agent entry is `/upgrade` (also runs `check-template-gaps`).
 
 ## Step 2: Review CHANGELOG
 
@@ -32,10 +34,13 @@ Read the upstream release notes at `github.com/edwardlthompson/agent-project-boo
 | `scripts/check-batch-commands.sh` | Copy with validate-bootstrap | AGENT | Canon |
 | `docs/INITIALIZATION_PROMPT.md` | Manual review; do not blind overwrite | HUMAN | Sacred |
 | Child `AGENTS.md` (after init) | Never blind-overwrite | HUMAN | Sacred |
+| Child `AGENT.md` (original brief) | Never blind-overwrite | HUMAN | Sacred |
 | `docs/spec.md`, `docs/plan.md` | Merge product text; keep section headings | HUMAN | Sacred |
 | `CLAUDE.md`, `GEMINI.md`, `CONVENTIONS.md`, `.clinerules`, `.github/copilot-instructions.md`, `.cursor/rules/main.mdc`, `.windsurf/rules/`, `.continue/rules/` | Re-run `bootstrap-lifecycle.sh --sync-adapters` after AGENTS.md merge | AGENT | Canon |
 | `bootstrap.config.json` | Merge keys; keep child values | AGENT | Mixed |
 | `PROJECT_CHECKLIST.md` | Keep child progress; add new rows from upstream | HUMAN | Mixed |
+| `BUILD_PLAN_TEMPLATE.md` | Copy child board model; do not overwrite live `BUILD_PLAN.md` | AGENT | Canon |
+| `BUILD_PLAN.md` | Keep child rows; refresh legend/tally/smoke from the template file | HUMAN | Mixed |
 | `scripts/` | Copy updated template scripts | AGENT | Canon |
 | `scripts/check-file-encoding.sh` | Copy + add CI/pre-commit gate | AGENT | Canon |
 | `scripts/validate-bootstrap.sh` | Copy expanded validation | AGENT | Canon |

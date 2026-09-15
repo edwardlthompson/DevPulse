@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from adapter_templates import ADAPTERS, GENERATED, POINTER_KEYS, POINTER_MAX_LINES
+from adapter_templates import ADAPTERS, ADAPTER_MAX_BYTES, GENERATED, POINTER_KEYS, POINTER_MAX_LINES
 
 
 def write_adapters(root: Path, enabled: dict[str, bool] | None = None) -> list[Path]:
@@ -53,6 +53,11 @@ def check_adapters(root: Path, enabled: dict[str, bool] | None = None) -> list[s
             errors.append(
                 f"POINTER_TOO_LONG: {rel.as_posix()} "
                 f"({line_count(text)} lines, max {POINTER_MAX_LINES})"
+            )
+        max_b = ADAPTER_MAX_BYTES.get(key)
+        if max_b is not None and len(want.encode("utf-8")) > max_b:
+            errors.append(
+                f"BYTE_BUDGET: {rel.as_posix()} ({len(want.encode('utf-8'))} bytes, max {max_b})"
             )
     return errors
 

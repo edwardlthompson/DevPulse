@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edwardlthompson.github.io/agent-project-bootstrap/schemas/golden-path/donations.schema.json",
+  "title": "Golden Path donations.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["enabled", "message", "links"],
+  "properties": {
+    "enabled": { "type": "boolean" },
+    "message": { "type": "string" },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "url"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "url": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

@@ -42,9 +42,15 @@ Each subsection is **What** (the file), **Why** (industry reason + source), **Ho
 
 ## GitHub Actions, Dependabot, pre-commit
 
-- **What:** CI (`ci.yml`), Security Scan / CodeQL / gitleaks, Dependabot, local hooks.
-- **Why:** Catching lint, tests, and leaked secrets on the laptop is cheaper than on `main`. Dependabot is GitHub’s default CVE channel. See [GitHub Actions](https://docs.github.com/en/actions) and [Dependabot](https://docs.github.com/en/code-security/dependabot).
-- **How:** `bash scripts/verify.sh` before marking a task done. `scripts/setup-github-repo.sh` enables alerts and branch protection.
+- **What:** CI (`ci.yml`), Security Scan / CodeQL / gitleaks, local `/update-deps`, Dependabot as weekly backup, local hooks.
+- **Why:** Catching lint, tests, leaked secrets, and dependency bumps on the laptop is cheaper than waiting on GitHub Dependabot PRs. RAM-capped parallel `feature-gate` stacks and `/best-of-n` use local CPU; optional Ollama stays on 127.0.0.1 (`docs/LOCAL_MODELS.md`) with no cloud keys. See [GitHub Actions](https://docs.github.com/en/actions) and [Dependabot](https://docs.github.com/en/code-security/dependabot).
+- **How:** `bash scripts/verify.sh` before marking a task done. Before a release: `/update-deps` or `just update-deps-dry`. `scripts/setup-github-repo.sh` still enables alerts and branch protection. On Linux, apply [`LINUX_DEV.md`](LINUX_DEV.md) (SSD + caches, direnv, inotify, `nice`/`ionice`, laptop vs CI).
+
+## Linux developer environment
+
+- **What:** [`LINUX_DEV.md`](LINUX_DEV.md) + `.envrc.example` + `just linux-dev` / `check-local-compute`.
+- **Why:** Local SSD layout, shared package caches, watcher limits, and parallel job caps cut cycle time more than Cloud Agents when the machine is free.
+- **How:** Copy `.envrc.example` → `.envrc`, set `BOOTSTRAP_CHECK_JOBS` / `FEATURE_GATE_JOBS`, raise inotify if Vite/IDE drops events, prefer worktrees over Docker-in-Docker for day-to-day tests.
 
 ## BUILD_PLAN labels
 
@@ -98,4 +104,12 @@ flowchart LR
 
 ## First 30 days
 
-Follow [`FIRST_30_DAYS.md`](FIRST_30_DAYS.md). `/coach` will point at the next open row and why it matters. For a ranked list of possible next features, `/ideas` or [`help/IDEAS.md`](help/IDEAS.md).
+Follow [`FIRST_30_DAYS.md`](FIRST_30_DAYS.md). `/coach` will point at the next open row and why it matters. For a ranked list of possible next features, `/ideas` or [`help/IDEAS.md`](help/IDEAS.md). For a complete dump to fill BUILD_PLAN, `/allideas` or [`help/ALLIDEAS.md`](help/ALLIDEAS.md).
+
+## Instrumented ≠ unit tests
+
+| Kind | Runs on | Good for | Not a substitute for |
+|------|---------|----------|----------------------|
+| Unit (`./gradlew test`, Vitest, pytest) | JVM / Node | Pure logic, i18n, allowlists | System Back, insets, TalkBack |
+| Instrumented (`connectedDebugAndroidTest`) | Device / emulator | Nav Back, Compose UI, density | Fast PR feedback when no KVM |
+Espresso 3.7+ is required on API 36+. A green unit suite never proves predictive-back or inset behavior — keep one instrumented smoke per nav milestone.

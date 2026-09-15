@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edwardlthompson.github.io/agent-project-bootstrap/schemas/golden-path/about-payload.schema.json",
+  "title": "Golden Path About JSON payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "donate", "summary", "update"],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "donate": { "type": "string", "minLength": 8 },
+    "summary": { "type": "string", "minLength": 1 },
+    "update": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "version", "url"],
+      "properties": {
+        "status": { "type": "string", "enum": ["current", "available", "unknown"] },
+        "version": { "type": ["string", "null"] },
+        "url": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

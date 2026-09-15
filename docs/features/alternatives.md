@@ -35,3 +35,12 @@ Similarity tests against cached fixtures. Fallback: `bash scripts/feature-gate.s
 
 - Linking to stores and releases is fine; silent install is not
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

@@ -58,6 +58,10 @@ def smoke(root: Path) -> list[str]:
             errors.append(
                 "smoke: git push should be allowed with destructive_ops_approved"
             )
+        if run_guard(root, "git push --force origin main").get("permission") != "deny":
+            errors.append(
+                "smoke: git push --force must stay denied when only git push is approved"
+            )
     finally:
         if backup is None:
             if state.is_file():

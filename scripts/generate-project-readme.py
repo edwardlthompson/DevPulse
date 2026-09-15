@@ -142,8 +142,14 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
     else:
         device_shots = ""
 
+    template_version = "0.0.0"
+    ver_path = root / ".template-version"
+    if ver_path.is_file():
+        template_version = ver_path.read_text(encoding="utf-8").strip() or template_version
+
     replacements = {
         "{{name}}": product["name"],
+        "{{template_version}}": template_version,
         "{{tagline}}": product["tagline"],
         "{{pitch}}": product["pitch"],
         "{{features}}": render_list(product["features"]),

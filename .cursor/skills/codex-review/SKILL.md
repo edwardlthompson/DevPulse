@@ -1,10 +1,12 @@
 ---
 name: codex-review
-description: Run optional Codex CLI review into CODE_REVIEW.md and hand off Critical/High to BUILD_PLAN + /fix. Use when /codex-review or expanded /prerelease.
+description: Advanced optional Codex CLI review into CODE_REVIEW.md. Use only when the human explicitly asks for /codex-review. Not first-time. Not part of /ship or /prerelease. Beginners use Cline.
 disable-model-invocation: false
 ---
 
-# Codex review (read-only)
+# Codex review (read-only, advanced)
+
+Beginners skip this. First-time path is Cline (`docs/help/CLINE.md`).
 
 See also: `.cursor/commands/codex-review.md`, `docs/CODEX_REVIEW.md`
 

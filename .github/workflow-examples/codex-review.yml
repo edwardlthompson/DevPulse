@@ -2,7 +2,7 @@
 # Enable: copy to .github/workflows/codex-review.yml and add repository secret OPENAI_API_KEY.
 # Docs: docs/CODEX_REVIEW.md
 #
-# Codex stays read-only. Repairs happen via /prerelease → /fix (Cursor Agent), not this job.
+# Codex stays read-only. Repairs happen via Cursor `/fix` (or Cline diffs), not this job.
 
 name: Codex review (opt-in example)
 

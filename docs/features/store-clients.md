@@ -41,3 +41,20 @@ Types in `dev.foss.goldenpath.inventory` and `dev.foss.goldenpath.index.apkpure`
 
 - Listed Aptoide/F-Droid/GitHub/Play rows download an APK when the source exposes one. Play listing still opens the installer when the sideload signer differs. APKMirror has no in-app file URL yet.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Container map
+
+| Layer | Path |
+|-------|------|
+| Logic | `examples/android/app/src/main/java/dev/foss/goldenpath/` |
+| View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
+| Tests | `examples/android/app/src/test/` |
+| Wiring | `GoldenPathApp.kt` ≤10 lines |
+
+## Tests
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

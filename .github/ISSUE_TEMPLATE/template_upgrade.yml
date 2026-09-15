@@ -1,0 +1,41 @@
+name: Template Upgrade Classification
+description: Classify a child-repo file as Sacred, Canon, or Mixed during a template upgrade
+title: "[upgrade]: "
+labels: ["template-improvement"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Use this form when `/upgrade` or `docs/UPGRADING_FROM_TEMPLATE.md` needs a
+        Sacred / Canon / Mixed decision. Do not overwrite Sacred files.
+  - type: dropdown
+    id: policy
+    attributes:
+      label: Re-run policy
+      description: Sacred never overwrite; Canon copy upstream; Mixed merge.
+      options:
+        - Sacred
+        - Canon
+        - Mixed
+    validations:
+      required: true
+  - type: input
+    id: path
+    attributes:
+      label: Path or area
+      description: Repo-relative path (for example AGENTS.md or docs/spec.md)
+      placeholder: AGENTS.md
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this policy
+      description: Cite UPGRADING_FROM_TEMPLATE.md or check-template-gaps output
+    validations:
+      required: true
+  - type: input
+    id: template-version
+    attributes:
+      label: Upstream template version
+      placeholder: "0.4.0"

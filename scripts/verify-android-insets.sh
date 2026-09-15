@@ -46,6 +46,9 @@ if [ -z "${JAVA_HOME:-}" ] && [ -x "/c/Program Files/Android/Android Studio/jbr/
   export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
 fi
 
+# Live assets are gitignored; instrumented About/donate UI needs exemplars present.
+bash "$ROOT/scripts/sync-exemplar-config.sh"
+
 run_insets_test() {
   local mode="$1"
   local label="$2"

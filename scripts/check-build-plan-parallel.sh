@@ -27,7 +27,15 @@ while [ $# -gt 0 ]; do
       ;;
   esac
 done
+rc=0
 python3 "$ROOT/scripts/lib/parallel_scope_cli.py" \
   --build-plan "$BUILD_PLAN" \
   check-build-plan \
-  --min-agents "$MIN_AGENTS"
+  --min-agents "$MIN_AGENTS" || rc=$?
+if [ "$BUILD_PLAN" = "$ROOT/BUILD_PLAN.md" ] && [ -f "$ROOT/BUILD_PLAN_TEMPLATE.md" ]; then
+  python3 "$ROOT/scripts/lib/parallel_scope_cli.py" \
+    --build-plan "$ROOT/BUILD_PLAN_TEMPLATE.md" \
+    check-build-plan \
+    --min-agents "$MIN_AGENTS" || rc=$?
+fi
+exit "$rc"

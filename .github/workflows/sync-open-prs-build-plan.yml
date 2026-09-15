@@ -1,0 +1,59 @@
+name: Sync open PRs into BUILD_PLAN
+
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: sync-open-prs-build-plan
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync BUILD_PLAN open PRs
+    runs-on: ubuntu-latest
+    # Prefer PR author over github.actor (zizmor bot-conditions).
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.user.login == 'dependabot[bot]' ||
+      startsWith(github.head_ref || '', 'release-please') ||
+      startsWith(github.event.pull_request.head.ref || '', 'release-please') ||
+      startsWith(github.event.pull_request.title || '', 'chore(main): release') ||
+      startsWith(github.event.pull_request.title || '', 'chore: release')
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync open PRs block
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/sync-open-prs-build-plan.sh --apply
+
+      - name: Commit and push if changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if git diff --quiet -- BUILD_PLAN.md; then
+            echo "No BUILD_PLAN open-prs-sync changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add BUILD_PLAN.md
+          git commit -m "chore(build-plan): sync open Dependabot and release PRs"
+          if git push origin "HEAD:$DEFAULT_BRANCH"; then
+            exit 0
+          fi
+          echo "Push rejected; retry once after pull --rebase"
+          git pull --rebase origin "$DEFAULT_BRANCH"
+          git push origin "HEAD:$DEFAULT_BRANCH"

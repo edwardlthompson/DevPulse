@@ -40,3 +40,12 @@ Refresh totals stay `repos(enabled) + apps × enabled probes` via `RefreshLocati
 
 - Do not scan a hidden store as a fallback because another store hit
 - After each AGENT step: `python scripts/agent-run.py watch-agent-gates --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

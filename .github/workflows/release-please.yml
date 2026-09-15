@@ -15,6 +15,7 @@ jobs:
       contents: write
       pull-requests: write
       actions: write
+      checks: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -28,6 +29,7 @@ jobs:
           manifest-file: .release-please-manifest.json
 
       - name: Sync template version files on release PR
+        id: sync
         if: steps.release.outputs.release_created != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -43,17 +45,54 @@ jobs:
           fi
           if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
             echo "No open Release Please PR; skipping version sync"
+            echo "pr=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          echo "pr=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
           echo "Syncing template version files on PR #${PR_NUMBER}"
           gh pr checkout "$PR_NUMBER"
           bash scripts/sync-template-version.sh
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add .template-version TEMPLATE_INDEX.json README.md AGENT_MEMORY.md
+            git add .template-version TEMPLATE_INDEX.json README.md AGENT_MEMORY.md CHANGELOG.md .cursor-plugin/plugin.json CITATION.cff
             git commit -m "chore: sync template version files for release PR"
             git push origin HEAD
+          fi
+          git fetch origin release-please--branches--main
+
+      - name: Dependency review the release PR
+        id: rp-dep-review
+        if: steps.release.outputs.release_created != 'true' && steps.sync.outputs.pr != ''
+        continue-on-error: true
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+          base-ref: ${{ github.sha }}
+          head-ref: release-please--branches--main
+
+      - name: Publish Dependency Review check on the PR head
+        if: steps.release.outputs.release_created != 'true' && steps.sync.outputs.pr != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.sync.outputs.pr }}
+          DEP_OUTCOME: ${{ steps.rp-dep-review.outcome }}
+        run: |
+          set -euo pipefail
+          SHA="$(gh pr view "$PR_NUMBER" --json headRefOid -q .headRefOid)"
+          CONC="success"
+          if [ "$DEP_OUTCOME" != "success" ]; then
+            CONC="failure"
+          fi
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/check-runs" \
+            -f name='Dependency Review' \
+            -f head_sha="$SHA" \
+            -f status=completed \
+            -f conclusion="$CONC" \
+            -f details_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          if [ "$CONC" != "success" ]; then
+            echo "FAIL: dependency-review on release PR #${PR_NUMBER}"
+            exit 1
           fi
 
       - name: Trigger SBOM asset upload

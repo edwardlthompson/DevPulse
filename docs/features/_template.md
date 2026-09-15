@@ -23,6 +23,17 @@
 | View | `src/components/{Feature}Panel.ts` / `ui/{feature}/` |
 | Tests | co-located unit tests |
 | Wiring | composition root ≤10 lines |
+## Tests
+
+- Automated: yes — `{path to unit/e2e tests}` (set **no** only when automation is not feasible)
+- Coverage: pure logic plus one smoke path
+
+## Fallback validation
+
+Required when Automated is **no**. Still name the smoke command when tests exist.
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack <active>`
 
 ## Definition of Done
 

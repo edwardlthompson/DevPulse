@@ -1,0 +1,109 @@
+{
+  "features": [
+    {
+      "id": "about",
+      "title": "About screen",
+      "spec": "docs/features/donations-updates.md",
+      "stacks": ["web", "android", "python", "node", "go", "rust"],
+      "detect": {
+        "web": ["examples/web/src/about", "src/about"],
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/about"],
+        "python": ["examples/python/src/hello/about.py"],
+        "node": ["examples/node/src/about.ts"],
+        "go": ["examples/go/about.go"],
+        "rust": ["examples/rust/src/about.rs"]
+      }
+    },
+    {
+      "id": "crash-capture",
+      "title": "Crash capture",
+      "spec": "docs/features/crash-capture.md",
+      "stacks": ["web", "android", "python", "node", "go", "rust"],
+      "detect": {
+        "web": ["examples/web/src/crash-capture", "src/crash-capture"],
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/crashcapture"],
+        "python": ["examples/python/src/hello/crash.py"],
+        "node": ["examples/node/src/crash.ts"],
+        "go": ["examples/go/crash.go"],
+        "rust": ["examples/rust/src/crash.rs"]
+      }
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "spec": "docs/features/settings.md",
+      "stacks": ["web", "android"],
+      "detect": {
+        "web": ["examples/web/src/settings", "src/settings"],
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/settings"]
+      }
+    },
+    {
+      "id": "feedback",
+      "title": "Feedback dialogs",
+      "spec": "docs/features/feedback.md",
+      "stacks": ["web", "android"],
+      "detect": {
+        "web": ["examples/web/src/feedback", "src/feedback"],
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/feedback"]
+      }
+    },
+    {
+      "id": "github-feedback",
+      "title": "GitHub issue composer",
+      "spec": "docs/features/github-feedback.md",
+      "stacks": ["web", "android"],
+      "detect": {
+        "web": ["examples/web/src/github-feedback", "src/github-feedback"],
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/githubfeedback"]
+      }
+    },
+    {
+      "id": "privacy-report",
+      "title": "Privacy sanitizer",
+      "spec": "docs/features/privacy-report.md",
+      "stacks": ["web", "android"],
+      "detect": {
+        "web": ["examples/web/src/privacy-report", "src/privacy-report"],
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/privacyreport"]
+      }
+    },
+    {
+      "id": "display-refresh",
+      "title": "Display refresh",
+      "spec": "docs/features/display-refresh.md",
+      "stacks": ["android"],
+      "detect": {
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/display"]
+      }
+    },
+    {
+      "id": "navigation",
+      "title": "Navigation stack",
+      "spec": "docs/features/navigation.md",
+      "stacks": ["web", "android"],
+      "detect": {
+        "web": ["examples/web/src/nav", "src/nav"],
+        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/ui/nav"]
+      }
+    },
+    {
+      "id": "lightroom-plugin",
+      "title": "Lightroom Classic plugin",
+      "spec": "docs/features/lightroom-lua-lint.md",
+      "stacks": ["lightroom"],
+      "detect": {
+        "lightroom": ["examples/lightroom/Info.lua", "examples/lightroom"]
+      }
+    },
+    {
+      "id": "icon-factory",
+      "title": "Photoreal icon factory",
+      "spec": "docs/features/icon-factory.md",
+      "stacks": ["blender"],
+      "detect": {
+        "blender": ["examples/blender/blender.toml", "examples/blender"]
+      }
+    }
+  ]
+}

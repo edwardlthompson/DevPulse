@@ -65,3 +65,12 @@ Unit tests for resolver, sort, pulse, filters. Fallback: `bash scripts/feature-g
 - Filters include Older than 180 days, Has update, and **On {source}** chips for Play, F-Droid, Archive, IzzyOnDroid, Guardian, Calyx, Aptoide, and GitHub (`listed && known`). Multiple source chips are OR. The main list does not add GitHub marks. Share exports the current visible list as HTML, CSV, or XML — see `docs/features/inventory-export.md`.
 - Release dates, highest version, and every live listing persist in `remote_releases.json`. Last-release date and highest version can come from different sources. Play is linked only after the store page is present.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Tests
+
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

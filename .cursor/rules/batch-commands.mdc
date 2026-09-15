@@ -11,7 +11,7 @@ Prefer slash commands (`/audit`) when bare words fail — they load the same fil
 
 Full registry: `docs/BATCH_COMMANDS.md` · Human cheat sheet: `docs/help/BATCH_COMMANDS.md`
 
-## Atomic commands (25)
+## Atomic commands (31)
 
 | Word | File |
 |------|------|
@@ -35,11 +35,17 @@ Full registry: `docs/BATCH_COMMANDS.md` · Human cheat sheet: `docs/help/BATCH_C
 | plan | `.cursor/commands/plan.md` |
 | restore | `.cursor/commands/restore.md` |
 | compact | `.cursor/commands/compact.md` |
+| resume | `.cursor/commands/resume.md` |
 | scope | `.cursor/commands/scope.md` |
 | codex-review | `.cursor/commands/codex-review.md` |
 | coach | `.cursor/commands/coach.md` |
 | tour | `.cursor/commands/tour.md` |
 | ideas | `.cursor/commands/ideas.md` |
+| allideas | `.cursor/commands/allideas.md` |
+| update-deps | `.cursor/commands/update-deps.md` |
+| best-of-n | `.cursor/commands/best-of-n.md` |
+| emulator | `.cursor/commands/emulator.md` |
+| adr | `.cursor/commands/adr.md` |
 
 ## Super commands (5)
 
@@ -50,12 +56,13 @@ Run child atomics **in order**; summarize pass/fail after each step.
 | bootstrap | init → prune → setup → gates |
 | verify | docs → gates → ci |
 | build | plan → *(approval pause)* → feature → gates → cleanup |
-| ship | prerelease → push → regress |
-| maintain | triage → dependabot → audit |
+| ship | update-deps → prerelease → push → regress |
+| maintain | triage → update-deps → dependabot → audit |
 
 ## Rules
 
 - **`debug` ≠ `audit`** — debug is defect investigation; audit is full repo review + BUILD_PLAN sprint.
+- **`upgrade`** — on this template: upgrade simulation. On a child: gap plan only (never overwrite Sacred files until the human names numbers).
 - **`push` and `ship` grant explicit `git push` approval** per destructive-ops (user invoked the command).
 - **`plan` ≠ Plan Mode toggle** — user still picks Cursor Plan Mode in the UI.
 - Supers are thin orchestrators; all logic lives in atomic command files.

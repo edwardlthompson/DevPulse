@@ -26,7 +26,7 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 - ✅ Settings opt-in, default off; Refresh batches enabled dump sites
 - ✅ Offline/error: inventory stays local; unknown not red
 - ✅ i18n: `dump_store_*`, `apkmirror_enable`, `apkpure_enable`, `inventory_source_apkmirror`, `inventory_source_apkpure`
-- ✅ Listing taps download APKPure `asset.url` (including `download.cdnpure.com`) and APKMirror `download.php` when the listing page exposes it. Missing file is a failed download.
+- ✅ Listing taps download APKPure `asset.url` (including `download.cdnpure.com`) and APKMirror `download.php` when the listing page exposes it. Missing file is a failed download. An XAPK/ZIP whose archive identity is empty is unpacked into matching APKs plus splits.
 - ✅ Dump 429/403 honor Retry-After before the next Refresh chunk
 
 ## Smoke scenario
@@ -40,3 +40,20 @@ Types in `dev.foss.goldenpath.index.apkmirror` and `dev.foss.goldenpath.index.ap
 
 - Dates are last-seen-on-that-site. APKPure has no date field in its update JSON. APKMirror chunks overlap (4-wide). Mirror and Pure dump threads overlap. An Aurora/Play miss still goes through both dump stores.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Container map
+
+| Layer | Path |
+|-------|------|
+| Logic | `examples/android/app/src/main/java/dev/foss/goldenpath/` |
+| View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
+| Tests | `examples/android/app/src/test/` |
+| Wiring | `GoldenPathApp.kt` ≤10 lines |
+
+## Tests
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

@@ -1,0 +1,10 @@
+{
+  "servers": [
+    "github",
+    "depsonar",
+    "cursor",
+    "cursor-cloud",
+    "cursor-subscriptions",
+    "Cursor Slack Tools"
+  ]
+}

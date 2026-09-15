@@ -31,8 +31,8 @@ Usage: scripts/init-project.sh [options]
   --prune                Prune unused examples/modules without prompting
   --no-prune             Never prune (overrides --prune)
   --non-interactive      Skip prompts (requires --stack, --project-name, --purpose)
-  --keep-optional        When pruning, keep rust/go/lightroom examples and modules (default)
-  --prune-optional       When pruning, also remove optional stacks (rust/go/lightroom)
+  --keep-optional        When pruning, keep rust/go/lightroom/blender examples and modules (default)
+  --prune-optional       When pruning, also remove optional stacks (rust/go/lightroom/blender)
   --distribution-tier T  foss|commercial (default foss)
   --license SPDX         MIT|Apache-2.0 (default MIT)
   --skip-preflight       Skip git/Python/tool checks
@@ -101,7 +101,7 @@ prune_optional_stacks() {
   if [ "$KEEP_OPTIONAL" = true ]; then
     return 0
   fi
-  rm -rf examples/rust examples/go examples/lightroom modules/rust modules/go modules/lightroom 2>/dev/null || true
+  rm -rf examples/rust examples/go examples/lightroom examples/blender modules/rust modules/go modules/lightroom modules/blender 2>/dev/null || true
 }
 
 prune_primary_stack() {
@@ -343,6 +343,23 @@ else
 fi
 
 python3 scripts/init-stack-sync.py "$STACK" "$ROOT" "$PRUNED"
+
+# Linux/macOS: write gitignored local.properties when Android SDK is present.
+if [ -d "$ROOT/examples/android" ]; then
+  python3 - "$ROOT" << 'PY'
+import sys
+from pathlib import Path
+from init_extras import detect_android_sdk, write_android_local_properties
+root = Path(sys.argv[1])
+sdk = detect_android_sdk()
+path = write_android_local_properties(root, sdk)
+if path:
+    print(f"Detected Android SDK at {sdk}; wrote {path.relative_to(root)} (gitignored)")
+elif sdk is None:
+    print("NOTE: no Android SDK detected (set ANDROID_HOME or install under ~/Android/Sdk); see docs/LINUX_DEV.md")
+PY
+fi
+
 COPY_COMM=""
 if [ "$DISTRIBUTION_TIER" = "commercial" ]; then
   COPY_COMM="--copy-commercial"
@@ -357,6 +374,9 @@ bash scripts/bootstrap-lifecycle.sh --post \
   --license "$LICENSE" \
   --distribution-tier "$DISTRIBUTION_TIER"
 echo "Wrote .cursor/stack-selection.json (tier=$DISTRIBUTION_TIER) and synced AGENT_MEMORY active modules."
+
+bash scripts/install-commit-msg-hook.sh || true
+bash scripts/copy-sandbox-config.sh || true
 
 echo ""
 echo "=== Workflow validation ==="
@@ -383,13 +403,13 @@ echo "  3. Open Cursor and paste:"
 echo ""
 echo "  Read @docs/START_HERE.md, @docs/CURSOR_MODES.md, and @docs/INITIALIZATION_PROMPT.md."
 echo "  Pick Cursor mode per CURSOR_MODES.md. Follow Section 8 Startup Sequence."
-echo "  Use BUILD_PLAN.md Sequential lane first; respect AGENT/HUMAN/ADB/AUTO labels."
+echo "  Use BUILD_PLAN.md first (installed from BUILD_PLAN_TEMPLATE.md); respect AGENT/HUMAN/ADB/AUTO labels."
 echo ""
 echo "  4. After first push to main, poll required workflows:"
 echo "     bash scripts/check-github-ci.sh --wait 300"
 echo ""
-echo "  5. Install pre-commit hooks and preview ephemeral purge:"
-echo "     pip install pre-commit && pre-commit install"
+echo "  5. Install pre-commit hooks (also attempted above) and preview ephemeral purge:"
+echo "     pip install pre-commit && pre-commit install --hook-type commit-msg"
 echo "     bash scripts/purge-ephemeral.sh"
 echo ""
 echo "What was set up and why:"

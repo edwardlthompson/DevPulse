@@ -9,6 +9,7 @@
 <p align="center"><strong>{{tagline}}</strong></p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/template-{{template_version}}-656d76?style=flat-square" alt="template" />
   <img src="https://img.shields.io/badge/license-{{license_badge}}-{{badge_license}}?style=flat-square" alt="{{license_name}}" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-{{badge_foss}}?style=flat-square" alt="FOSS" />
   <img src="https://img.shields.io/badge/status-active-{{badge_primary}}?style=flat-square" alt="status" />
@@ -48,6 +49,14 @@ Start with this README, then [`CONTRIBUTING.md`]({{url_contributing}}) and [`doc
 ## For agents
 
 Read [`docs/START_HERE.md`]({{url_start_here}}) and [`AGENTS.md`]({{url_agents}}). In Cursor type `/tour` or `/bootstrap`. Any other IDE: ask the agent to read [`docs/help/TOUR.md`]({{url_tour}}). `/coach` is the next recommended action.
+
+```mermaid
+flowchart TD
+  Readme[README] --> Humans[CONTRIBUTING]
+  Readme --> Agents[START_HERE]
+  Agents --> Tour["/tour or TOUR.md"]
+  Tour --> Coach["/coach"]
+```
 
 ## Install
 

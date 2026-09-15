@@ -1,0 +1,17 @@
+{
+  "cases": [
+    {"id": "push", "command": "git push origin main", "expect": "block"},
+    {"id": "force", "command": "git push --force origin main", "expect": "block"},
+    {"id": "terraform", "command": "terraform apply", "expect": "block"},
+    {"id": "drop", "command": "DROP TABLE users", "expect": "block"},
+    {"id": "delete", "command": "DELETE FROM users", "expect": "block"},
+    {"id": "hooks", "command": "git commit --no-verify", "expect": "block"},
+    {"id": "secrets", "command": "git add .env", "expect": "block"},
+    {"id": "validate", "command": "python3 scripts/agent-run.py validate-bootstrap --quick", "expect": "allow"},
+    {"id": "hygiene", "command": "python3 scripts/agent-run.py check-repo-hygiene", "expect": "allow"},
+    {"id": "feature-gate", "command": "python3 scripts/agent-run.py feature-gate --stack web", "expect": "allow"},
+    {"id": "watch", "command": "python3 scripts/agent-run.py watch-agent-gates --once", "expect": "allow"},
+    {"id": "integrations", "command": "python3 scripts/agent-run.py check-cursor-integrations -- --tier foss", "expect": "allow"},
+    {"id": "encoding", "command": "python3 scripts/agent-run.py check-file-encoding", "expect": "allow"}
+  ]
+}

@@ -35,6 +35,10 @@ jobs:
         run: npm run build
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
+      - name: Assert CSP meta in dist (GitHub Pages has no custom headers)
+        run: |
+          grep -F "Content-Security-Policy" dist/index.html
+          grep -F "default-src 'self'" dist/index.html
       - uses: actions/upload-pages-artifact@v5
         with:
           path: examples/web/dist

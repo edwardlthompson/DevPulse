@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions
+    url: https://github.com/edwardlthompson/DevPulse/discussions
+    about: How-to questions belong in Discussions (no secrets).
+  - name: Product ideas (Discussions)
+    url: https://github.com/edwardlthompson/DevPulse/discussions
+    about: Optional Ideas category for voting. Issue forms still work.
+  - name: Security advisory
+    url: https://github.com/edwardlthompson/DevPulse/security/advisories/new
+    about: Private vulnerability reporting — do not file a public issue.

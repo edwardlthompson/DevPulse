@@ -41,3 +41,13 @@ if [ "$s" != "0" ]; then
 fi
 
 echo "verify-agent-strikes passed"
+
+# Explicit reset API (after env fix / 3-strike halt recovery)
+bash scripts/agent-progress.sh record --gate feature-gate --exit 1 >/dev/null
+bash scripts/agent-progress.sh reset-strikes >/dev/null
+s="$(strikes)"
+if [ "$s" != "0" ]; then
+  echo "FAIL: reset-strikes API should clear strikes (got $s)"
+  exit 1
+fi
+echo "OK: agent-progress reset-strikes API"

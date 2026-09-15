@@ -9,8 +9,8 @@ ERRORS=0
 
 ATOMIC=(
   audit cleanup debug gates triage dependabot push prerelease regress
-  feature fix init prune ci docs upgrade setup plan restore compact scope
-  codex-review coach tour ideas
+  feature fix init prune ci docs upgrade setup plan restore compact resume scope
+  codex-review coach tour ideas allideas update-deps best-of-n emulator adr
 )
 
 SUPER=(
@@ -21,8 +21,8 @@ declare -A SUPER_CHAINS
 SUPER_CHAINS[bootstrap]="init prune setup gates"
 SUPER_CHAINS[verify]="docs gates ci"
 SUPER_CHAINS[build]="plan feature gates cleanup"
-SUPER_CHAINS[ship]="prerelease push regress"
-SUPER_CHAINS[maintain]="triage dependabot audit"
+SUPER_CHAINS[ship]="update-deps prerelease push regress"
+SUPER_CHAINS[maintain]="triage update-deps dependabot audit"
 
 check_file() {
   local name="$1"
@@ -73,6 +73,8 @@ for required in \
   .cursor/rules/batch-commands.mdc \
   docs/BATCH_COMMANDS.md \
   docs/help/BATCH_COMMANDS.md \
+  docs/help/batch-commands-print.html \
+  schemas/batch-commands-print.json \
   CODE_REVIEW.md.example \
   RELEASE_NOTES.md.example \
   scratchpad.md.example \
@@ -84,10 +86,31 @@ do
   fi
 done
 
+# Portable recipes (Cursor slash command ↔ docs/help twin for other IDEs)
+PORTABLE=(tour coach ideas allideas debug upgrade adr)
+for name in "${PORTABLE[@]}"; do
+  cmd=".cursor/commands/${name}.md"
+  twin="docs/help/$(echo "$name" | tr '[:lower:]' '[:upper:]').md"
+  if [ ! -f "$cmd" ]; then
+    echo "MISSING: $cmd (portable twin $twin)"
+    ERRORS=$((ERRORS + 1))
+  fi
+  if [ ! -f "$twin" ]; then
+    echo "MISSING: $twin (portable twin of $cmd)"
+    ERRORS=$((ERRORS + 1))
+  fi
+done
+
 EXPECTED=$(( ${#ATOMIC[@]} + ${#SUPER[@]} ))
 ACTUAL=$(find .cursor/commands -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')
 if [ "$ACTUAL" -ne "$EXPECTED" ]; then
   echo "COUNT: expected $EXPECTED command files, found $ACTUAL"
+  ERRORS=$((ERRORS + 1))
+fi
+
+# shellcheck source=lib/resolve-python.sh
+. "$(cd "$(dirname "$0")" && pwd)/lib/resolve-python.sh"
+if ! "$PY" "$ROOT/scripts/lib/batch_commands_print.py" --check "${ATOMIC[@]}" "${SUPER[@]}"; then
   ERRORS=$((ERRORS + 1))
 fi
 

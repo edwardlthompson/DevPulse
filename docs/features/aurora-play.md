@@ -17,6 +17,8 @@ Types in `dev.foss.goldenpath.index.aurora`. No live Play or auroraoss.com in un
 | `AuroraPlayScan` | object | Maps Aurora listed/missing onto `RemoteReleasedSource.Play` |
 | `AuroraAuth` | object | Parses anonymous AuthData JSON; empty email → no session |
 | `EncryptedAuroraAuthStore` | class | EncryptedSharedPreferences; token never logged |
+Live purchase logs package, version, and file count only — never Play CDN URLs or tokens.
+
 ### Functions
 
 | Name | Contract |
@@ -29,6 +31,7 @@ Types in `dev.foss.goldenpath.index.aurora`. No live Play or auroraoss.com in un
 - ✅ User-visible: Play Refresh uses Aurora bulk details as the Play catalog. Settings → Scan sources still shows Aurora download next to Google Play (off by default). Play-listed apps can Update via Aurora or open the Play Store.
 - ✅ Aurora Store app is not required; Play Store page is the only fallback
 - ✅ Update tries Aurora download, then opens Play Store
+- ✅ Aurora files older than the installed `versionCode` are not downloaded (`InstallWhy.Older`); Play Store is not opened for that miss
 - ✅ Offline/error: auth or purchase fail → Play Store; no invented URL
 - ✅ Accessibility: Aurora toggle and Update label have content descriptions
 - ✅ i18n: `aurora_play_*`, `update_one_click_aurora`, `store_client_aurora`
@@ -52,3 +55,20 @@ Types in `dev.foss.goldenpath.index.aurora`. No live Play or auroraoss.com in un
 - Uses FOSS `com.auroraoss:gplayapi` (GPL-3), same anonymous `https://auroraoss.com/api/auth` path APKUpdater uses. Google can break this. Play listing via Aurora is on whenever Play lookup is on; APK download stays opt-in. Relative `updatedOn` strings are not turned into dates. A first-walk miss is retried once (`aurora second-pass`); F-Droid, Aptoide, APKMirror, and APKPure still probe every app. A known Play miss only skips GitHub name-search.
 - Identity checks (package + cert + sha256) still apply. Android still confirms install unless Root silent is chosen.
 - After each AGENT step: `bash scripts/watch-agent-gates.sh --once --autofix`
+
+## Container map
+
+| Layer | Path |
+|-------|------|
+| Logic | `examples/android/app/src/main/java/dev/foss/goldenpath/` |
+| View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
+| Tests | `examples/android/app/src/test/` |
+| Wiring | `GoldenPathApp.kt` ≤10 lines |
+
+## Tests
+- Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
+
+## Fallback validation
+
+- Why tests are not feasible: N/A (automated tests exist)
+- Command: `python3 scripts/agent-run.py feature-gate --stack android`

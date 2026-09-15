@@ -24,7 +24,11 @@ ShortDescription: Replace with your application summary
 Installers:
   - Architecture: x64
     InstallerType: exe
-    InstallerUrl: https://example.com/releases/$VERSION/setup.exe
+    InstallerUrl: https://example.com/releases/$VERSION/setup-x64.exe
+    InstallerSha256: REPLACE_WITH_SHA256
+  - Architecture: arm64
+    InstallerType: exe
+    InstallerUrl: https://example.com/releases/$VERSION/setup-arm64.exe
     InstallerSha256: REPLACE_WITH_SHA256
 ManifestType: singleton
 ManifestVersion: 1.6.0

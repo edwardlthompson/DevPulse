@@ -1,0 +1,20 @@
+# FOSS-only Semgrep. Do not set SEMGREP_APP_TOKEN. Do not upload findings.
+rules:
+  - id: foss.no-eval
+    languages: [python]
+    message: Do not use eval()
+    severity: ERROR
+    pattern: eval(...)
+    paths:
+      include:
+        - scripts/lib
+        - examples/python
+  - id: foss.no-exec
+    languages: [python]
+    message: Do not use exec()
+    severity: ERROR
+    pattern: exec(...)
+    paths:
+      include:
+        - scripts/lib
+        - examples/python

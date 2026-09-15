@@ -1,0 +1,24 @@
+{
+  "weeks": [
+    {
+      "id": "week-1",
+      "title": "Week 1 — Make it yours",
+      "needles": ["init-project", "START_HERE", ".env.example", "pre-commit", "verify.sh", "branding/product.json"]
+    },
+    {
+      "id": "week-2",
+      "title": "Week 2 — Security and GitHub",
+      "needles": ["setup-github-repo.sh", "check-github-ci.sh", "GITHUB_ABOUT.md", "FUNDING.yml", "DONATIONS.md", "SECURITY.md"]
+    },
+    {
+      "id": "week-3",
+      "title": "Week 3 — Golden Path and first feature",
+      "needles": ["examples/", "docs/features/_template.md", "/build"]
+    },
+    {
+      "id": "week-4",
+      "title": "Week 4 — Operate like a maintained project",
+      "needles": ["AGENT_MEMORY.md", "DECISION_LOG.md", "/maintain", "BATCH_COMMANDS.md"]
+    }
+  ]
+}

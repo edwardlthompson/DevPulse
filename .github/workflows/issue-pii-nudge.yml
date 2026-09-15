@@ -1,0 +1,35 @@
+name: Issue PII nudge
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  nudge:
+    name: Warn if issue looks like it has secrets or email
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment without echoing matches
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const body = context.payload.issue.body || "";
+            const title = context.payload.issue.title || "";
+            const text = `${title}\n${body}`;
+            const hit =
+              /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(text) ||
+              /\b(?:ghp|gho|github_pat)_[A-Za-z0-9_]+/.test(text) ||
+              /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/.test(text) ||
+              /-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(text) ||
+              /\bAKIA[0-9A-Z]{16}\b/.test(text);
+            if (!hit) return;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: "This issue may contain a secret or contact info. Please edit the issue and remove personal data. Do not paste the match here.",
+            });
