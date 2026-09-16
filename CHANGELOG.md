@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.1](https://github.com/edwardlthompson/DevPulse/compare/v0.38.0...v0.38.1) (2026-09-16)
+
+
+### Fixed
+
+* **android:** schedule scan intervals without auto-start ([5c93faa](https://github.com/edwardlthompson/DevPulse/commit/5c93faa7ccfb9e20656ab13b465e2eae8a6f2b31))
+
+
+### Documentation
+
+* record v0.38.0 ship notes and sync README template badge ([39dcb57](https://github.com/edwardlthompson/DevPulse/commit/39dcb57347505484774760781712312643d58a94))
+
 ## [Unreleased]
 
 ## [0.38.0](https://github.com/edwardlthompson/DevPulse/compare/v0.37.2...v0.38.0) (2026-09-15)
