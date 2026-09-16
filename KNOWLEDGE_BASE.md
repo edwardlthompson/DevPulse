@@ -11,6 +11,15 @@
 
 ## Entries
 
+### KB-035 — `/regress` SBOM gate wants OpenVEX the Release job does not upload
+
+| Field | Detail |
+|-------|--------|
+| **Symptom** | `wait-release-sbom --require` times out on `v0.38.x` even though `sbom.cyclonedx.json` and the signed APK are on the GitHub Release |
+| **Cause** | The wait script requires both `sbom.cyclonedx.json` and `openvex.json`. Release uploads CycloneDX (+ android slice) but not OpenVEX |
+| **Fix** | Treat missing OpenVEX as known for this child until Release grows an OpenVEX step; confirm APK + `sbom.cyclonedx.json` via `gh release view` |
+| **Prevention** | Do not block `/ship` on OpenVEX alone while the workflow does not emit it. Prefer fixing `release.yml` over relaxing the wait script blindly |
+
 ### KB-034 — setup-android@v4 default `tools` package is gone
 
 | Field | Detail |
