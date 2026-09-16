@@ -13,11 +13,12 @@ class UpdateAllFollowTest {
     }
 
     @Test
-    fun scanUpdateAutoStartsWhenCompleteWithWork() {
-        assertFalse(ScanUpdateCta.autoStart(complete = false, count = 3))
-        assertFalse(ScanUpdateCta.autoStart(complete = true, count = 0))
-        assertTrue(ScanUpdateCta.autoStart(complete = true, count = 3))
+    fun scanUpdateCtaVisibleWhenCompleteWithWork() {
+        assertFalse(ScanUpdateCta.visible(complete = false, count = 3))
+        assertFalse(ScanUpdateCta.visible(complete = true, count = 0))
         assertTrue(ScanUpdateCta.visible(complete = true, count = 3))
+        // Predicate only — PulseRunHost no longer auto-kicks Update All.
+        assertTrue(ScanUpdateCta.autoStart(complete = true, count = 3))
     }
 
     @Test

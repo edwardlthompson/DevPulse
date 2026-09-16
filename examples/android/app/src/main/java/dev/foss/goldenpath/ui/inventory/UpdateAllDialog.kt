@@ -67,6 +67,8 @@ fun UpdateAllDialog(
     complete: Boolean,
     rootInstall: Boolean = false,
     scan: PulseScanHeader? = null,
+    updateCount: Int = 0,
+    onUpdate: (() -> Unit)? = null,
     onStopOutlet: (String) -> Unit = {},
     onHide: () -> Unit,
     onStop: () -> Unit,
@@ -173,6 +175,11 @@ fun UpdateAllDialog(
                                 },
                             ) {
                                 Text(text = stringResource(if (paused) R.string.scan_resume else R.string.scan_pause))
+                            }
+                        }
+                        if (complete && updateCount > 0 && onUpdate != null) {
+                            TextButton(onClick = onUpdate) {
+                                Text(text = stringResource(R.string.update_all, updateCount))
                             }
                         }
                         TextButton(onClick = onHide) {

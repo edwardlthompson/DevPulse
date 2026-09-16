@@ -1,0 +1,1 @@
+DevPulse 0.38.1 — Refresh scans on demand; Update N is explicit; daily/weekly/monthly only schedule background work; shade notifies when updates are ready.

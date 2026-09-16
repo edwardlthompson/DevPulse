@@ -31,6 +31,7 @@ fun ScanIntervalSettings(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val wifiPrefs = remember { RefreshWifiPrefs(context) }
     val interval by prefs.scanInterval.collectAsStateWithLifecycle(ScanInterval.OnDemand)
+    val lastScanAt by prefs.lastScanAtMs.collectAsStateWithLifecycle(null)
     val wifiOnly by wifiPrefs.enabled.collectAsStateWithLifecycle(false)
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
         Text(text = stringResource(R.string.scan_interval_title), style = MaterialTheme.typography.titleMedium)
@@ -42,7 +43,12 @@ fun ScanIntervalSettings(modifier: Modifier = Modifier) {
                     onClick = {
                         scope.launch {
                             prefs.setScanInterval(mode)
-                            ScanSchedule.apply(context, mode)
+                            ScanSchedule.apply(
+                                context,
+                                mode,
+                                lastScanAtMs = lastScanAt,
+                                replace = true,
+                            )
                         }
                     },
                     label = {

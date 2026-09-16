@@ -39,6 +39,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 ## Session Retrospectives
 
+| 2026-09-16 | v0.38.1 /ship | Explicit Update N after scan; scan-interval chips schedule only (KEEP/REPLACE + nextDelayMs); UpdatesNotify after Service scan; Fastlane 3801; OP12 verified no auto-scan on Daily | upd apply tried bogus CodeQL `vcodeql-bundle-v2` remaps — reverted; Kotlin 2.3.21 pin blocked |
 | 2026-09-15 | v0.38.0 /ship | Feat + setup-android `platform-tools` + Fastlane 3702/3800; admin-merge RP #30; `workflow_dispatch` Release uploaded `DevPulse-0.38.0.apk`; sideloaded GitHub APK on Sony XQ-BE62 and CPH2583 after debug-signer backup | CPH2655 was unplugged; required `CI` still red (upgrade-sim MIT/web + bootstrap linters); no `openvex.json` on the tag |
 | 2026-09-15 | Merge #29 / v0.37.2 | Admin-merged Release Please 0.37.2 (deps); dispatched CI/Security/CodeQL/RP on main; Unreleased product notes kept local | Signed APK job failed again; product UX still uncommitted |
 | 2026-09-15 | Sprint 36 GitHub repo map | Shipped F-Droid harvest TSV + daily pull; leftover Search after Update All; 30-day skip | Sideload with `adb install -r` only |

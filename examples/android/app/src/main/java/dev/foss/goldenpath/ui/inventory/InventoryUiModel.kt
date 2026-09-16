@@ -150,14 +150,8 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     }
     val canScan = QueryAllPackagesGate.canScan(acknowledged, Build.VERSION.SDK_INT)
     val welcomeHome = WelcomeNeeds.home(welcomeSeen, canScan)
-    LaunchedEffect(scanInterval, lastScanAt, canScan) {
-        ScanSchedule.apply(context, scanInterval)
-        if (canScan && lastScanAt != null && !refreshing &&
-            ScanSchedule.due(scanInterval, lastScanAt, System.currentTimeMillis())
-        ) {
-            requestRefreshNotifications(context)
-            ReleaseRefreshService.start(context)
-        }
+    LaunchedEffect(scanInterval, canScan) {
+        if (canScan) ScanSchedule.apply(context, scanInterval)
     }
     val nowMs = System.currentTimeMillis()
     val usage = remember(grantedNow, revision) {

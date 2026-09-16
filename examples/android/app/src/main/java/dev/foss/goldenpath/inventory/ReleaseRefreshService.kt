@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import dev.foss.goldenpath.network.NetworkUnmetered
 import dev.foss.goldenpath.notify.RefreshNotifier
 import dev.foss.goldenpath.notify.RefreshNotifyCopy
+import dev.foss.goldenpath.notify.UpdatesNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -67,6 +68,10 @@ class ReleaseRefreshService : Service() {
         } finally {
             runCatching {
                 notifier.postDone(lookedUp)
+                val apps = PackageManagerPackageCatalog(packageManager)
+                    .listInstalled()
+                    .map(RemoteReleaseMemory::merge)
+                UpdatesNotify.post(applicationContext, apps)
                 ReleaseRefreshRuntime.finish()
                 ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
                 stopSelf()

@@ -3,9 +3,6 @@ package dev.foss.goldenpath.ui.inventory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.inventory.InstallAwait
 import dev.foss.goldenpath.inventory.ScanUpdateCta
@@ -23,24 +20,9 @@ fun PulseRunHost(
     val snaps by UpdateAllSession.snaps.collectAsStateWithLifecycle()
     val busy by UpdateAllSession.busy.collectAsStateWithLifecycle()
     val rootInstall by UpdateAllSession.rootInstall.collectAsStateWithLifecycle()
-    var autoKick by remember { mutableStateOf(false) }
-    LaunchedEffect(inventory.refreshing) {
-        if (inventory.refreshing) autoKick = false
-    }
     LaunchedEffect(inventory.refreshing, inventory.updateAllCount) {
         if (inventory.refreshing) {
             UpdateAllSession.seedWait(UpdateAll.jobs(inventory.apps))
-        }
-    }
-    LaunchedEffect(lookupDone, inventory.refreshing, inventory.updateAllCount) {
-        if (
-            !autoKick &&
-            inventory.showRefreshDialog &&
-            !inventory.refreshing &&
-            ScanUpdateCta.autoStart(lookupDone, inventory.updateAllCount)
-        ) {
-            autoKick = true
-            onKickUpdate()
         }
     }
     LaunchedEffect(lookupDone, inventory.refreshing, busy, snaps) {
@@ -58,9 +40,11 @@ fun PulseRunHost(
     }
     if (!inventory.canScan) return
     if (!inventory.showRefreshDialog && !visible) return
+    val complete = !busy && (!inventory.refreshing || lookupDone)
+    val updateCount = inventory.updateAllCount
     UpdateAllDialog(
         snaps = snaps,
-        complete = !busy && (!inventory.refreshing || lookupDone),
+        complete = complete,
         rootInstall = rootInstall,
         scan = if (inventory.showRefreshDialog) {
             PulseScanHeader(
@@ -71,6 +55,12 @@ fun PulseRunHost(
                 outlets = inventory.refreshOutlets,
                 scanning = inventory.refreshing && !lookupDone,
             )
+        } else {
+            null
+        },
+        updateCount = updateCount,
+        onUpdate = if (complete && ScanUpdateCta.visible(lookupDone, updateCount) && !busy) {
+            onKickUpdate
         } else {
             null
         },

@@ -26,4 +26,13 @@ class SessionThenSystemTest {
         assertTrue(SessionThenSystem.timedOut(elapsedMs = InstallAwait.TIMEOUT_MS))
         assertFalse(SessionThenSystem.timedOut(elapsedMs = 1_000L))
     }
+
+    @Test
+    fun userAbortRequestsCancelAndReturnsFalse() {
+        UpdateAllCancel.arm()
+        assertFalse(UpdateAllCancel.requested())
+        assertFalse(SessionThenSystem.noteUserAbort())
+        assertTrue(UpdateAllCancel.requested())
+        UpdateAllCancel.arm()
+    }
 }

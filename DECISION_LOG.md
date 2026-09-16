@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-09-16 — Scan interval select-only + Update N
+- **Status:** Accepted
+- **Context:** Choosing Once a day started a foreground scan via `LaunchedEffect(scanInterval, lastScanAt)` + `due()` + `UPDATE`. Users wanted selection only; scheduled WorkManager rarely fired because every scan reset the timer; shade never showed update-ready after manual Refresh.
+- **Decision:** Inventory KEEP-only `ScanSchedule.apply`; chip REPLACE with `nextDelayMs` (full period if never scanned). Refresh still starts `ReleaseRefreshService`. Post `UpdatesNotify` from the Service after scan. Explicit **Update N** CTA; Cancel aborts Session and skips System when a confirm is pending.
+- **Alternatives considered:** Keep due()-driven auto scan on compose (rejected). Exact alarms for daily (out of scope). Default-on stale notify toggle (out of scope).
+- **Consequences:** Daily/weekly/monthly wait for the schedule or Refresh. OP12 confirmed chip select does not open Scan. Ships in v0.38.1.
+
 ### 2026-09-15 — Ship v0.38.0 signed GitHub APK
 - **Status:** Accepted
 - **Context:** `/ship` after Sprints 33–36. `android-actions/setup-android@v4` default `tools` package is gone on cmdline-tools 20.0, which broke CodeQL and the Signed APK job. Devices still ran a debug-signed 0.37.0, so `adb install -r` of the GitHub APK was signer-incompatible.

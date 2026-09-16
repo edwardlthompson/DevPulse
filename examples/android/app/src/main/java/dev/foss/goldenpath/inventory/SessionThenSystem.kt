@@ -14,6 +14,9 @@ object SessionThenSystem {
         val sessionOk = ListingInstallLive.install(context, files, InstallMethod.Session) ==
             OneClickResult.Installed
         if (sessionOk && waitSilent()) return true
+        if (UpdateAllCancel.requested()) return false
+        // Session already showed a confirm UI — do not open a second System installer.
+        if (InstallAwait.pending) return noteUserAbort()
         RefreshTrace.line("update all session fallback")
         abandonOwnSessions(context)
         if (RootPmInstall.available() && RootSessionInstall.run(files)) {
@@ -29,11 +32,17 @@ object SessionThenSystem {
     internal fun timedOut(elapsedMs: Long, timeoutMs: Long = InstallAwait.TIMEOUT_MS): Boolean =
         elapsedMs >= timeoutMs
 
+    /** User Cancel / Session failure stops the whole Update All queue. */
+    internal fun noteUserAbort(): Boolean {
+        UpdateAllCancel.request()
+        return false
+    }
+
     private fun waitSilent(): Boolean {
         val start = System.currentTimeMillis()
         while (true) {
             if (InstallAwait.await(POLL_MS)) return true
-            if (InstallAwait.settled()) return false
+            if (InstallAwait.settled()) return noteUserAbort()
             if (UpdateAllCancel.requested()) return false
             if (timedOut(System.currentTimeMillis() - start)) return false
         }

@@ -75,6 +75,8 @@ class InstallStatusReceiver : BroadcastReceiver() {
         if (status != PackageInstaller.STATUS_PENDING_USER_ACTION) {
             android.util.Log.i("DevPulse", "signer replace install status $status")
             InstallAwait.signal(false)
+            // User Cancel / Session failure stops Update All — do not open the next prompt.
+            UpdateAllCancel.request()
             return
         }
         InstallAwait.markPending()
@@ -82,10 +84,16 @@ class InstallStatusReceiver : BroadcastReceiver() {
         val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)
         if (confirm == null) {
             android.util.Log.i("DevPulse", "signer replace install ui missing")
+            InstallAwait.signal(false)
+            UpdateAllCancel.request()
             return
         }
         confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         runCatching { context.startActivity(confirm) }
-            .onFailure { android.util.Log.i("DevPulse", "signer replace install ui ${it.message}") }
+            .onFailure {
+                android.util.Log.i("DevPulse", "signer replace install ui ${it.message}")
+                InstallAwait.signal(false)
+                UpdateAllCancel.request()
+            }
     }
 }
