@@ -296,3 +296,9 @@
 | **Cause** | Node 25+ enables a global Web Storage stub without `--localstorage-file`; jsdom skips installing real Storage and the stub shadows it |
 | **Fix** | Vitest `setupFiles: ["src/test/setup-localStorage.ts"]` installs in-memory Storage when `getItem` is missing |
 | **Prevention** | Keep the setup file; do not rely on Node’s experimental `localStorage` in browser-unit tests |
+
+### KB-036 — NavBarInsetUiTest must target About Close after hub Venmo removal
+- **Symptom:** connectedDebugAndroidTest fails looking for Settings hub Donate via Venmo.
+- **Cause:** Venmo was removed from SettingsHub; About still has Donate plus inset-padded Close.
+- **Fix:** Open Settings then About then assert Close clears the nav bar (NavBarInsetUiTest).
+- **Prevention:** Retarget inset tests in the same change when removing a hub control.
