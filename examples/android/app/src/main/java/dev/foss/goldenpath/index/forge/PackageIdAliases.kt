@@ -23,6 +23,9 @@ object PackageIdAliases {
         "dev.foss.obdforge" to "edwardlthompson/OBDForge",
         "dev.imranr.obtainium" to "ImranR98/Obtainium",
         "dev.imranr.obtainium.fdroid" to "ImranR98/Obtainium",
+        "org.aetherfeed.app" to "edwardlthompson/aetherfeed",
+        "dev.pointandshoot" to "edwardlthompson/point-and-shoot",
+        "app.selfchronicle.vault" to "edwardlthompson/selfchronicle",
     )
 
     fun hint(packageName: String, library: Map<String, GithubHint>): GithubHint? {

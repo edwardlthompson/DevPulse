@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -83,6 +84,7 @@ fun GoldenPathScreen(
     var scanUpdateKick by remember { mutableIntStateOf(0) }
     val longPressHint = stringResource(R.string.inventory_longpress_hint)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val lookupDone = inventory.refreshTotal > 0 && inventory.refreshDone >= inventory.refreshTotal
     val refreshDismissible = inventory.showRefreshDialog
     val overlayOpen = showSettings || showAbout || inventory.selectedApp != null
@@ -92,6 +94,11 @@ fun GoldenPathScreen(
             focusManager.clearFocus()
             keyboard?.hide()
         }
+    }
+    LaunchedEffect(inventory.refreshSnackRes) {
+        val res = inventory.refreshSnackRes ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(context.getString(res))
+        inventory.onRefreshSnackShown()
     }
     BackHandler(enabled = imeVisible || overlayOpen || refreshDismissible || showAddRepo) {
         if (imeVisible) {

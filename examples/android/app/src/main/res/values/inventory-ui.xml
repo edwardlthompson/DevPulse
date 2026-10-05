@@ -11,4 +11,7 @@
     <string name="listing_abi_mismatch">This listing’s native libraries do not match this device.</string>
     <string name="inventory_longpress_hint">Long-press an update to include only that app in Update all.</string>
     <string name="inventory_advanced">Advanced</string>
+    <string name="inventory_scan_cta">Scan for release updates</string>
+    <string name="refresh_wifi_only">Refresh needs Wi-Fi while Wi-Fi only is on.</string>
+    <string name="refresh_already_running">A refresh is already running.</string>
 </resources>

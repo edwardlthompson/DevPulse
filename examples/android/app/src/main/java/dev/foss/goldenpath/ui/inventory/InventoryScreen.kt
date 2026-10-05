@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -19,9 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.inventory.InventoryEmpty
+import dev.foss.goldenpath.inventory.InventoryEmptyKind
 import dev.foss.goldenpath.inventory.WelcomeHome
 import dev.foss.goldenpath.ui.theme.SpacingMd
 
@@ -94,19 +98,27 @@ fun InventoryScreen(
         InstallPermissionBanner()
         SignerReplaceInbox()
         UpdateAllButton(apps = model.apps, selected = selected.value, startKick = scanUpdateKick)
-        if (model.apps.isEmpty()) {
-            Text(
-                text = stringResource(
-                    InventoryEmpty.res(
-                        InventoryEmpty.kind(
-                            canScan = model.canScan,
-                            query = model.query,
-                            filtersOn = model.staleOnly || model.updatesOnly || model.sourceFilters.isNotEmpty(),
-                            visibleCount = 0,
-                        ),
-                    ),
-                ),
+        val emptyKind = InventoryEmpty.kind(
+            canScan = model.canScan,
+            query = model.query,
+            filtersOn = model.staleOnly || model.updatesOnly || model.sourceFilters.isNotEmpty(),
+            visibleCount = model.apps.size,
+        )
+        val showScanCta = model.canScan && (
+            model.firstRefresh || emptyKind == InventoryEmptyKind.NoApps
             )
+        if (showScanCta) {
+            val scanCta = stringResource(R.string.inventory_scan_cta)
+            Button(
+                onClick = model.onRefresh,
+                enabled = !model.refreshing,
+                modifier = Modifier.semantics { contentDescription = scanCta },
+            ) {
+                Text(scanCta)
+            }
+        }
+        if (model.apps.isEmpty()) {
+            Text(text = stringResource(InventoryEmpty.res(emptyKind)))
         } else {
             AppListScroller(
                 apps = model.apps,

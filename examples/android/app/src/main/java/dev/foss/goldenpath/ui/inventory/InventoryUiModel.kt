@@ -41,6 +41,7 @@ import dev.foss.goldenpath.inventory.RefreshOutletSnap
 import dev.foss.goldenpath.inventory.RefreshProgress
 import dev.foss.goldenpath.inventory.ReleaseRefreshRuntime
 import dev.foss.goldenpath.inventory.ReleaseRefreshService
+import dev.foss.goldenpath.inventory.RefreshStartCopy
 import dev.foss.goldenpath.inventory.RemoteReleaseMemory
 import java.io.File
 import dev.foss.goldenpath.inventory.ScanInterval
@@ -77,6 +78,7 @@ class InventoryUiModel(
     val refreshOutlets: List<RefreshOutletSnap>,
     val firstRefresh: Boolean,
     val updateAllCount: Int,
+    val refreshSnackRes: Int?,
     val onAcknowledge: () -> Unit,
     val onSkip: () -> Unit,
     val onDismissUsage: () -> Unit,
@@ -92,6 +94,7 @@ class InventoryUiModel(
     val onToggleSearch: () -> Unit,
     val onToggleFilters: () -> Unit,
     val onRefresh: () -> Unit,
+    val onRefreshSnackShown: () -> Unit,
     val onStopOutlet: (String) -> Unit,
     val onDismissRefresh: () -> Unit,
 )
@@ -130,6 +133,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
     val lastScanAt by prefs.lastScanAtMs.collectAsStateWithLifecycle(null)
     var skipped by remember { mutableStateOf(false) }
     var keepRefreshDialog by remember { mutableStateOf(false) }
+    var refreshSnackRes by remember { mutableStateOf<Int?>(null) }
     LaunchedEffect(refreshing) {
         if (refreshing) keepRefreshDialog = true
     }
@@ -217,6 +221,7 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         refreshOutlets = refreshProgress.outlets,
         firstRefresh = lastScanAt == null,
         updateAllCount = updateAllCount,
+        refreshSnackRes = refreshSnackRes,
         onAcknowledge = {
             scope.launch {
                 welcomePrefs.markSeen()
@@ -246,11 +251,13 @@ fun rememberInventoryUiModel(context: Context, scope: CoroutineScope): Inventory
         },
         onToggleFilters = { showFilters = !showFilters },
         onRefresh = {
-            if (!refreshing && canScan) {
+            if (canScan) {
                 requestRefreshNotifications(context)
-                ReleaseRefreshService.start(context, visible.map { it.packageName })
+                val result = ReleaseRefreshService.start(context, visible.map { it.packageName })
+                refreshSnackRes = RefreshStartCopy.snackRes(result)
             }
         },
+        onRefreshSnackShown = { refreshSnackRes = null },
         onStopOutlet = { id -> ReleaseRefreshRuntime.stopOutlet(id) },
         onDismissRefresh = { keepRefreshDialog = false },
     )

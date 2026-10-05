@@ -68,10 +68,12 @@ class ReleaseRefreshService : Service() {
         } finally {
             runCatching {
                 notifier.postDone(lookedUp)
-                val apps = PackageManagerPackageCatalog(packageManager)
-                    .listInstalled()
-                    .map(RemoteReleaseMemory::merge)
-                UpdatesNotify.post(applicationContext, apps)
+                runCatching {
+                    val apps = PackageManagerPackageCatalog(packageManager)
+                        .listInstalled()
+                        .map(RemoteReleaseMemory::merge)
+                    UpdatesNotify.post(applicationContext, apps)
+                }
                 ReleaseRefreshRuntime.finish()
                 ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
                 stopSelf()
@@ -80,17 +82,24 @@ class ReleaseRefreshService : Service() {
     }
 
     companion object {
-        fun start(context: Context, packages: Collection<String> = emptySet()) {
-            if (ReleaseRefreshRuntime.running.value) return
+        fun start(context: Context, packages: Collection<String> = emptySet()): RefreshStartResult {
             val wifiOnly = RefreshWifiPrefs(context).blockingEnabled()
-            if (!RefreshWifiOnly.allow(wifiOnly, NetworkUnmetered.isUnmetered(context))) {
-                Log.i("DevPulse", "refresh skipped: wifi only")
-                return
+            val result = RefreshStartGate.decide(
+                running = ReleaseRefreshRuntime.running.value,
+                wifiOnly = wifiOnly,
+                unmetered = NetworkUnmetered.isUnmetered(context),
+            )
+            if (result != RefreshStartResult.Started) {
+                if (result == RefreshStartResult.WifiBlocked) {
+                    Log.i("DevPulse", "refresh skipped: wifi only")
+                }
+                return result
             }
             val intent = Intent(context.applicationContext, ReleaseRefreshService::class.java)
             val names = RefreshScope.names(packages)
             if (names.isNotEmpty()) intent.putStringArrayListExtra(RefreshScope.EXTRA_PACKAGES, names)
             ContextCompat.startForegroundService(context.applicationContext, intent)
+            return RefreshStartResult.Started
         }
     }
 }

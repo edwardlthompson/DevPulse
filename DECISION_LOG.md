@@ -17,6 +17,14 @@
 
 ## Entries
 
+### 2026-10-05 — Refresh honesty + curated sideload hints (no Play-miss search)
+- **Status:** Accepted
+- **Context:** Refresh icon felt dead (Wi-Fi-only silent skip); Point & Shoot / AetherFeed / SelfChronicle showed no usable APK; Venmo duplicated on Settings hub; daily update shade missing when users expect Daily scan reminders.
+- **Decision:** Return RefreshStartResult from ReleaseRefreshService.start with snackbars; empty/first-scan CTA; extend PackageIdAliases.curatedHints for the three packages; remove Settings-hub Venmo (About only); keep Daily as opt-in scan interval that posts UpdatesNotify (Service + Worker). Do not reopen storeSettled Play-miss name-search.
+- **Alternatives considered:** Default-on Daily notify (rejected: PRIVACY/FR-33). Name-search every Play miss (rejected: DECISION_LOG forge contract). Leave hub Venmo (rejected: FR-24 About-only).
+- **Consequences:** Point & Shoot installable after Refresh when GitHub APK exists. AetherFeed/SelfChronicle still need release APK assets. Ships toward v0.38.2 via Release Please after push.
+
+
 ### 2026-09-16 — Scan interval select-only + Update N
 - **Status:** Accepted
 - **Context:** Choosing Once a day started a foreground scan via `LaunchedEffect(scanInterval, lastScanAt)` + `due()` + `UPDATE`. Users wanted selection only; scheduled WorkManager rarely fired because every scan reset the timer; shade never showed update-ready after manual Refresh.

@@ -14,7 +14,6 @@ Types in `dev.foss.goldenpath.about`. Prefs stay in `devpulse_updates` SharedPre
 | `ProductUpdate.ProductAsset` | data class | Installer `version` from the filename + `url` |
 | `ProductUpdatePrefs` | class | `last_check_at`, `last_seen_version`, `dismissed_version` |
 | `ProductReleaseFetcher.Parsed` | data class | `htmlUrl` + named assets |
-
 ### Functions
 
 | Name | Contract |
@@ -25,10 +24,9 @@ Types in `dev.foss.goldenpath.about`. Prefs stay in `devpulse_updates` SharedPre
 | `shouldPromptUpdate` | Newer filename version and not dismissed |
 | `shouldNudgeDonate` | False on first run (null last seen); true only after a version change |
 | `ProductReleaseFetcher.fetchLatest` | GitHub latest; User-Agent; 10s timeout; fail → null |
-
 ## Acceptance criteria
 
-- ✅ User-visible: **Donate via Venmo** in About and Settings. Never on the update dialog
+- ✅ User-visible: **Donate via Venmo** in About only (Settings → App info). Never on the Settings hub or update dialog
 - ✅ First run records the installed version. No donate popup
 - ✅ After a version change, one optional note: Development is still going. Either button records seen
 - ✅ Daily GitHub check compares installer filenames, not git/template tags
@@ -52,7 +50,6 @@ Types in `dev.foss.goldenpath.about`. Prefs stay in `devpulse_updates` SharedPre
 | Network timeout | 10s connect/read; catch → null; app continues |
 | Race conditions | Donate returns before the daily fetch; dialogs are exclusive |
 | Unhandled exceptions | Fetch and URI opens wrapped; invalid JSON → null |
-
 ## Notes
 
 - Venmo URL is public, not a secret: `https://venmo.com/code?user_id=1857304970395648420`
@@ -67,7 +64,6 @@ Types in `dev.foss.goldenpath.about`. Prefs stay in `devpulse_updates` SharedPre
 | View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
 | Tests | `examples/android/app/src/test/` |
 | Wiring | `GoldenPathApp.kt` ≤10 lines |
-
 ## Tests
 - Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
 

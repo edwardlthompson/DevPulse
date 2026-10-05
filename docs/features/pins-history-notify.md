@@ -17,6 +17,7 @@
 - ✅ Scan history shows how many went quiet since last scan
 - ✅ Opt-in notifications for 6-month and 1-year crossings
 - ✅ The same opt-in posts a local notice when fetchable updates exist
+- ✅ Daily/weekly/monthly release-date scan posts the same update notice after background or foreground refresh
 - ✅ Offline: all local; worker no-ops without inventory permission
 
 ## Smoke scenario
@@ -33,7 +34,6 @@
 | View | `examples/android/app/src/main/java/dev/foss/goldenpath/ui/` |
 | Tests | `examples/android/app/src/test/` |
 | Wiring | `GoldenPathApp.kt` ≤10 lines |
-
 ## Tests
 - Automated: yes — see Container map Tests row and `examples/android/app/src/test/`
 

@@ -154,7 +154,7 @@
     <string name="inventory_origin_sideload">Sideloaded</string>
     <string name="inventory_origin_preinstalled">Preinstalled</string>
     <string name="scan_interval_title">Release-date scan</string>
-    <string name="scan_interval_body">On demand uses only the refresh button. Daily, weekly, and monthly also run in the background when the network is up. The first scan takes longer; later scans reuse recent listings and finish faster.</string>
+    <string name="scan_interval_body">On demand uses only the refresh button. Daily, weekly, and monthly also run in the background when the network is up and post a notification when apps have updates. The first scan takes longer; later scans reuse recent listings and finish faster.</string>
     <string name="scan_interval_on_demand">On demand</string>
     <string name="scan_interval_daily">Once a day</string>
     <string name="scan_interval_weekly">Once a week</string>

@@ -32,6 +32,22 @@ class PackageIdAliasesTest {
     }
 
     @Test
+    fun curatedHintsResolveSideloadApps() {
+        assertEquals(
+            "edwardlthompson/aetherfeed",
+            PackageIdAliases.hint("org.aetherfeed.app", emptyMap())?.ownerRepo,
+        )
+        assertEquals(
+            "edwardlthompson/point-and-shoot",
+            PackageIdAliases.hint("dev.pointandshoot", emptyMap())?.ownerRepo,
+        )
+        assertEquals(
+            "edwardlthompson/selfchronicle",
+            PackageIdAliases.hint("app.selfchronicle.vault", emptyMap())?.ownerRepo,
+        )
+    }
+
+    @Test
     fun conflictingSuffixReposDoNotAutoBind() {
         val library = mapOf(
             "org.app.fdroid" to GithubHint("one/repo"),
