@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.4](https://github.com/edwardlthompson/DevPulse/compare/v0.38.3...v0.38.4) (2026-10-21)
+
+
+### Fixed
+
+* **android:** add F-Droid changelog for 0.38.3 (versionCode 3803) ([52b0af2](https://github.com/edwardlthompson/DevPulse/commit/52b0af29ee700073ed3dee506009dc2ccdbaf8a1))
+
+
+### Changed
+
+* archive Sprint 37 after v0.38.3 ship ([c570cf1](https://github.com/edwardlthompson/DevPulse/commit/c570cf158aa01b698e9358863b396c106c80a8c6))
+
 ## [Unreleased]
 
 ## [0.38.3](https://github.com/edwardlthompson/DevPulse/compare/v0.38.2...v0.38.3) (2026-10-21)
