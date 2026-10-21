@@ -6,6 +6,7 @@
 
 | Sprint | Complete | SHA |
 |--------|----------|-----|
+| 37 — Daily scan reliability + updater UX | 2026-10-21 | `6538f32` |
 | 36 — GitHub repo map | 2026-09-15 | `d3684b5` |
 | 35 — Leftover GitHub search | 2026-09-15 | `d3684b5` |
 | 34 — One-tap scan and update | 2026-09-15 | `d3684b5` |
@@ -15,6 +16,16 @@
 | 30 — Detail Advanced | 2026-09-15 | `d3684b5` |
 | 29 — UX pulse rows | 2026-09-15 | `d3684b5` |
 | 28 — UX honesty | 2026-09-15 | `d3684b5` |
+
+## Sprint 37 — Daily scan reliability + updater UX (2026-10-21)
+
+- ✅ [AGENT] Fix ScanSchedule nextDelayMs when due/null; reschedule after successful scan; update ScanScheduleTest
+- ✅ [AGENT] ReleaseRefreshWorker: retry on Wi-Fi skip and busy; extract pure allow/retry helper + unit tests
+- ✅ [AGENT] Daily/Weekly settings: next-scan copy, POST_NOTIFICATIONS on enable, clarify scan_interval_body
+- ✅ [AGENT] PulseRunHost auto-kick Update All after scan; DECISION_LOG + pulse-run.md align
+- ✅ [AGENT] Visible Skip rows + OneClickUpdateIcon fail snackbar + sticky reopen bar while busy
+- ✅ [ADB] OP12: enable Daily, confirm WM delay, wait/force Worker, UpdatesNotify when updates exist; Refresh auto-kick smoke
+
 ## Sprint 36 — GitHub repo map (2026-09-15)
 
 - ✅ [AGENT] Ship `examples/android/app/src/main/assets/github-repos/verified.tsv` from F-Droid harvest; load as hints; daily pull from DevPulse raw TSV

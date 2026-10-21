@@ -39,6 +39,7 @@ DevPulse: local-only Android pulse-check for installed apps across Play, F-Droid
 
 ## Session Retrospectives
 
+| 2026-10-21 | v0.38.3 /ship | Daily due delay 0 + Worker retry + Scan auto-kick; admin-merge RP #37; Release APK sideloaded -r on CPH2583 + CPH2655 (3803) | CI Template Upgrade Simulation still red (MIT/web child); no openvex.json on tag |
 | 2026-10-21 | Sprint 37 Daily+UX | `nextDelayMs` 0 when due; Worker retries Wi-Fi skip; reschedule after scan; Settings next-scan + POST_NOTIFICATIONS; PulseRunHost auto-kick; Older/Sdk Fail rows; list fail snackbar; sticky reopen; OP12 WM work enqueued; gates OK; release APK restored from `.cursor/adb-backup` | next_soon copy not always visible in UI dump; Refresh auto-kick needs QUERY_ALL granted for full dialog smoke; Unreleased still on 0.38.2 versionCode until RP bump |
 | 2026-10-05 | v0.38.2 /ship | Refresh honesty (start result + snackbars + scan CTA); curated GitHub hints for AetherFeed/Point&Shoot/SelfChronicle; About-only Venmo; UpdatesNotify on Service; signed adb install -r smoke PASS | AetherFeed/SelfChronicle still need release APK assets; upd tried bogus CodeQL `vcodeql-bundle-*` tags again — reverted |
 | 2026-09-16 | v0.38.1 /ship | Explicit Update N after scan; scan-interval chips schedule only (KEEP/REPLACE + nextDelayMs); UpdatesNotify after Service scan; Fastlane 3801; OP12 verified no auto-scan on Daily | upd apply tried bogus CodeQL `vcodeql-bundle-v2` remaps — reverted; Kotlin 2.3.21 pin blocked |
