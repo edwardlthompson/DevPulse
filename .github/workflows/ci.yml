@@ -624,7 +624,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: Structure gate (no Nix required)
         run: bash scripts/check-nix-flake.sh
-      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31.11.2
       - name: Evaluate flake apps
         run: |
           nix --extra-experimental-features "nix-command flakes" flake show
@@ -710,4 +710,3 @@ jobs:
             go=${{ needs.go.result }}
             sanitize-fixtures=${{ needs.sanitize-fixtures.result }}
         run: bash scripts/conclude-required-check.sh
-
