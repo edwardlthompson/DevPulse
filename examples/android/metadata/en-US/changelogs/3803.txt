@@ -1,0 +1,1 @@
+DevPulse 0.38.3 — Daily scans run when due (no full-day wait); Wi-Fi skip retries instead of silent success; Scan and update auto-starts Update All; clearer Older/Sdk Fail honesty.
