@@ -11,7 +11,6 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests.
 | `UpdateAllSkip` | object | After Play `Older`, drop APKPure/APKMirror fallbacks. If Play is listed and already current, do not queue unofficial APKPure/APKMirror builds. After a signing hold, clear remaining sources. `dlLine` is `skip Older`/`skip Sdk` instead of `fail` |
 | `UpdateAllRowFill` | object | Per-app download and install bar fill from `UpdateAllSnap` |
 | `ScanUpdateCta` | object | `autoStart(complete, count)` is true when scan finished with work |
-
 ## Acceptance criteria
 
 - ✅ Play Older does not fetch APKPure or APKMirror for that package in the same batch; a genuinely newer F-Droid/GitHub fallback still runs
@@ -37,8 +36,7 @@ Types in `dev.foss.goldenpath.inventory`. No live network in unit tests.
 | Logic | `UpdateAllSkip.kt`, `UpdateAllRowFill.kt`, `UpdateAllQueue.kt`, `UpdateAllTally.kt` |
 | View | `UpdateAllDialog.kt`, `UpdateAllRow.kt`, `GoldenPathScreen.kt` |
 | Tests | `UpdateAllSkipTest.kt`, `UpdateAllRowFillTest.kt`, `UpdateAllOlderTest.kt`, `UpdateAllStayTest.kt`, `UpdateAllTallyTest.kt`, `UpdateAllFollowTest.kt` |
-| Wiring | `GoldenPathScreen` auto-kick; `UpdateAllSession` for the shared dialog |
-
+| Wiring | `PulseRunHost` auto-kick via `ScanUpdateCta.autoStart`; `UpdateAllSession` for the shared dialog |
 ## Tests
 
 - Automated: yes — see Container map

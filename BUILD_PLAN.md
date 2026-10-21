@@ -50,6 +50,19 @@ _No template gaps; .template-version matches upstream (or template maintainer N/
 
 ---
 
+### Sprint 37 — Daily scan reliability + updater UX
+
+<!-- parallel_exception: sequential-only schedule + pulse-run UX; no Parallel lane -->
+
+Sequential:
+
+1. ✅ [AGENT] Fix ScanSchedule nextDelayMs when due/null; reschedule after successful scan; update ScanScheduleTest
+2. ✅ [AGENT] ReleaseRefreshWorker: retry on Wi-Fi skip and busy; extract pure allow/retry helper + unit tests
+3. ✅ [AGENT] Daily/Weekly settings: next-scan copy, POST_NOTIFICATIONS on enable, clarify scan_interval_body
+4. ✅ [AGENT] PulseRunHost auto-kick Update All after scan; DECISION_LOG + pulse-run.md align
+5. ✅ [AGENT] Visible Skip rows + OneClickUpdateIcon fail snackbar + sticky reopen bar while busy
+6. ✅ [ADB] OP12: enable Daily, confirm WM delay, wait/force Worker, UpdatesNotify when updates exist; Refresh auto-kick smoke
+
 ## Ongoing Maintenance
 
 Monday cron runs health, gaps, radar, and dep dry-run. `/ship` owns the release tag. Red cron: `weekly-maintain`, then [`docs/GROK_BOTS.md`](docs/GROK_BOTS.md).

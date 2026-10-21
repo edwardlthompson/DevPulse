@@ -55,6 +55,7 @@ fun AppListScroller(
     selected: Set<String>,
     onToggleSelect: (String) -> Unit,
     onOpen: (InstalledApp) -> Unit,
+    onOneClickFail: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -128,6 +129,7 @@ fun AppListScroller(
                     selected = app.packageName in selected,
                     onToggleSelect = { onToggleSelect(app.packageName) },
                     onOpen = { onOpen(app) },
+                    onOneClickFail = onOneClickFail,
                 )
             }
         }

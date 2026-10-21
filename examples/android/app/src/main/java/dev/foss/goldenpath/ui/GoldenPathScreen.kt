@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -38,6 +40,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.R
 import dev.foss.goldenpath.about.DonationsConfig
 import dev.foss.goldenpath.inventory.UpdateAllSession
@@ -89,6 +92,10 @@ fun GoldenPathScreen(
     val refreshDismissible = inventory.showRefreshDialog
     val overlayOpen = showSettings || showAbout || inventory.selectedApp != null
     val onInventory = !showAbout && !showSettings && inventory.selectedApp == null
+    val updateBusy by UpdateAllSession.busy.collectAsStateWithLifecycle()
+    val updateVisible by UpdateAllSession.visible.collectAsStateWithLifecycle()
+    val showBatchBar = (inventory.refreshing && !inventory.showRefreshDialog) ||
+        (updateBusy && !updateVisible)
     LaunchedEffect(inventory.selectedApp?.packageName) {
         if (inventory.selectedApp != null) {
             focusManager.clearFocus()
@@ -184,15 +191,28 @@ fun GoldenPathScreen(
                                     }
                                 },
                                 scanUpdateKick = scanUpdateKick,
+                                onOneClickFail = { msg ->
+                                    scope.launch { snackbarHostState.showSnackbar(msg) }
+                                },
                                 modifier = Modifier.fillMaxSize(),
                             )
-                            if (inventory.refreshing && !inventory.showRefreshDialog) {
-                                LinearProgressIndicator(
+                            if (showBatchBar) {
+                                Column(
                                     modifier = Modifier
                                         .align(Alignment.TopCenter)
-                                        .fillMaxWidth()
-                                        .height(2.dp),
-                                )
+                                        .fillMaxWidth(),
+                                ) {
+                                    LinearProgressIndicator(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(2.dp),
+                                    )
+                                    if (updateBusy && !updateVisible) {
+                                        TextButton(onClick = { UpdateAllSession.show() }) {
+                                            Text(stringResource(R.string.update_all_reopen))
+                                        }
+                                    }
+                                }
                             }
                         }
                     },

@@ -23,15 +23,8 @@ internal object UpdateAllQueue {
                 if (item.why == InstallWhy.Older || item.why == InstallWhy.Sdk) {
                     IgnoredUpdates.add(job.packageName, job.source, job.versionName, filesDir)
                     if (!hasFallback) {
-                        onSnap(
-                            UpdateAllSnap(
-                                job.packageName,
-                                job.label,
-                                job.source,
-                                UpdateAllPhase.Wait,
-                                stay = false,
-                            ),
-                        )
+                        // Fail row (not silent Wait) so Scan and update shows why it skipped.
+                        fail(job, filesDir, onSnap, more = false, download = true, why = item.why)
                     }
                     return@forEach
                 }

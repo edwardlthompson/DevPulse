@@ -23,12 +23,14 @@ import dev.foss.goldenpath.inventory.ApkInstall
 import dev.foss.goldenpath.inventory.InstallMethod
 import dev.foss.goldenpath.inventory.InstalledIdentity
 import dev.foss.goldenpath.inventory.InstalledApp
+import dev.foss.goldenpath.inventory.InventoryCopy
 import dev.foss.goldenpath.inventory.InventoryPreferences
 import dev.foss.goldenpath.index.apkpure.ApkPureDirect
 import dev.foss.goldenpath.index.apkpure.ApkPureHttpFetcher
 import dev.foss.goldenpath.index.aurora.AuroraPlayDirect
 import dev.foss.goldenpath.index.aurora.AuroraPlayLive
 import dev.foss.goldenpath.inventory.OneClickKind
+import dev.foss.goldenpath.inventory.OneClickResult
 import dev.foss.goldenpath.inventory.OneClickUpdate
 import dev.foss.goldenpath.inventory.PlayStoreIntent
 import dev.foss.goldenpath.inventory.UpdateArtifactMemory
@@ -39,7 +41,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun OneClickUpdateIcon(app: InstalledApp, modifier: Modifier = Modifier) {
+fun OneClickUpdateIcon(
+    app: InstalledApp,
+    modifier: Modifier = Modifier,
+    onFailMessage: (String) -> Unit = {},
+) {
     val revision by UpdateArtifactMemory.revision.collectAsStateWithLifecycle()
     val kind = remember(app.packageName, app.latestListings, revision) {
         OneClickUpdate.kind(app.packageName, app.latestListings)
@@ -66,7 +72,7 @@ fun OneClickUpdateIcon(app: InstalledApp, modifier: Modifier = Modifier) {
             if (method != InstallMethod.Session && !WelcomeNeeds.ensureInstall(context)) return@clickable
             busy = true
             scope.launch {
-                withContext(Dispatchers.IO) {
+                val result = withContext(Dispatchers.IO) {
                     OneClickUpdate.apply(
                         kind = kind,
                         cacheDir = File(context.cacheDir, "updates"),
@@ -78,12 +84,15 @@ fun OneClickUpdateIcon(app: InstalledApp, modifier: Modifier = Modifier) {
                             if (aurora) AuroraPlayDirect.resolve(pkg, AuroraPlayLive.files(context)) else null
                         },
                         inspect = { file -> ApkArchiveIdentity.inspect(context.packageManager, file) },
-                            installed = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
-                                ?: InstalledIdentity(app.packageName, emptySet()),
-                            filesDir = context.filesDir,
+                        installed = ApkArchiveIdentity.installed(context.packageManager, app.packageName)
+                            ?: InstalledIdentity(app.packageName, emptySet()),
+                        filesDir = context.filesDir,
                     )
                 }
                 busy = false
+                if (result is OneClickResult.Failed) {
+                    onFailMessage(context.getString(InventoryCopy.failRes(result.why)))
+                }
             }
         },
     )

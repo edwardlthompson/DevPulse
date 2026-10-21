@@ -29,12 +29,14 @@ class ReleaseRefreshWorker(
             prefs.queryAllPackagesAcknowledged.first(),
             Build.VERSION.SDK_INT,
         )
-        if (!canScan) return Result.success()
         val wifiOnly = RefreshWifiPrefs(applicationContext).enabled.first()
-        if (!RefreshWifiOnly.allow(wifiOnly, NetworkUnmetered.isUnmetered(applicationContext))) {
-            return Result.success()
+        val unmetered = NetworkUnmetered.isUnmetered(applicationContext)
+        when (ReleaseRefreshWorkerGate.decide(canScan, wifiOnly, unmetered)) {
+            ReleaseRefreshWorkerOutcome.SkipSuccess -> return Result.success()
+            ReleaseRefreshWorkerOutcome.RetryLater -> return Result.retry()
+            ReleaseRefreshWorkerOutcome.Ready -> Unit
         }
-        if (!ReleaseRefreshRuntime.tryBegin()) return Result.success()
+        if (!ReleaseRefreshRuntime.tryBegin()) return Result.retry()
         notifier.ensureChannel()
         setForeground(getForegroundInfo())
         var lookedUp = 0

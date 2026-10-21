@@ -74,6 +74,24 @@ class UpdateAllTallyTest {
     }
 
     @Test
+    fun rankedShowsOlderSkipFailRows() {
+        val snaps = listOf(
+            UpdateAllSnap(
+                "old",
+                "O",
+                RemoteReleasedSource.Play,
+                UpdateAllPhase.Fail,
+                failDownload = true,
+                failWhy = InstallWhy.Older,
+                stay = false,
+            ),
+            snap("fetch", UpdateAllPhase.Fetch),
+        )
+        assertEquals(listOf("fetch", "old"), UpdateAllTally.ranked(snaps).map { it.packageName })
+        assertEquals(2, UpdateAllTally.of(snaps).total)
+    }
+
+    @Test
     fun rankedPutsBusyRowsAboveFinished() {
         val snaps = listOf(
             snap("ok", UpdateAllPhase.Ok),

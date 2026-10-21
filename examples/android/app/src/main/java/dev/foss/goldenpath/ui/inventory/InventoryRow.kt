@@ -38,6 +38,7 @@ fun InventoryRow(
     onOpen: () -> Unit,
     selected: Boolean = false,
     onToggleSelect: (() -> Unit)? = null,
+    onOneClickFail: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val dateText = listReleaseDate(app)
@@ -93,7 +94,7 @@ fun InventoryRow(
             )
         }
         if (hasUpdate) {
-            OneClickUpdateIcon(app)
+            OneClickUpdateIcon(app, onFailMessage = onOneClickFail)
         }
     }
 }

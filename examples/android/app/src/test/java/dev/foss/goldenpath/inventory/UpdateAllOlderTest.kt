@@ -16,7 +16,7 @@ class UpdateAllOlderTest {
     }
 
     @Test
-    fun olderListingIsIgnoredSilentlyAndLeavesUpdates() {
+    fun olderListingShowsSkipFailAndLeavesUpdates() {
         val dir = File.createTempFile("uaolder", "dir").apply { delete(); mkdirs() }
         val snaps = mutableListOf<UpdateAllSnap>()
         val result = UpdateAll.run(
@@ -28,7 +28,7 @@ class UpdateAllOlderTest {
         )
         assertTrue(IgnoredUpdates.has("app.g", RemoteReleasedSource.Play, "20.0"))
         assertEquals(0, result.failedDownload)
-        assertTrue(snaps.none { it.phase == UpdateAllPhase.Fail })
+        assertTrue(snaps.any { it.phase == UpdateAllPhase.Fail && it.failWhy == InstallWhy.Older })
         val app = sampleApp(
             "app.g",
             "G",

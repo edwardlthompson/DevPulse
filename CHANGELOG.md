@@ -10,11 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.38.2](https://github.com/edwardlthompson/DevPulse/compare/v0.38.1...v0.38.2) (2026-10-05)
 
-
 ### Fixed
 
 * **android:** refresh honesty, curated GitHub hints, About-only Venmo ([5d0d3c6](https://github.com/edwardlthompson/DevPulse/commit/5d0d3c6f0f7f61f497c927b1e22c7373abe1b3d4))
-
 
 ### Documentation
 
@@ -22,11 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.38.1](https://github.com/edwardlthompson/DevPulse/compare/v0.38.0...v0.38.1) (2026-09-16)
 
-
 ### Fixed
 
 * **android:** schedule scan intervals without auto-start ([5c93faa](https://github.com/edwardlthompson/DevPulse/commit/5c93faa7ccfb9e20656ab13b465e2eae8a6f2b31))
-
 
 ### Documentation
 
@@ -34,24 +30,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.38.0](https://github.com/edwardlthompson/DevPulse/compare/v0.37.2...v0.38.0) (2026-09-15)
 
-
 ### Added
 
 * ship one-tap scan and update with leftover GitHub discovery ([ad6a690](https://github.com/edwardlthompson/DevPulse/commit/ad6a6908266a611c833188b430b3835468cbdb93))
-
 
 ### Fixed
 
 * **android:** add Fastlane changelogs for 0.37.2 and 0.38.0 ([29e9d6a](https://github.com/edwardlthompson/DevPulse/commit/29e9d6a46672b5fe62cb69ca9c665f763a941b6d))
 * **ci:** skip obsolete Android SDK tools package on setup-android ([0713455](https://github.com/edwardlthompson/DevPulse/commit/07134556f146e5cf7a67ede416833ed82366bb5f))
 
-
 ### Changed
 
 * merge main before 0.38.0 ship ([b3cf81c](https://github.com/edwardlthompson/DevPulse/commit/b3cf81cf0a6419a0adb28f1f9924caed8bd67fcb))
 
 ## [0.37.2](https://github.com/edwardlthompson/DevPulse/compare/v0.37.1...v0.37.2) (2026-09-15)
-
 
 ### Changed
 
@@ -60,16 +52,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.37.1](https://github.com/edwardlthompson/DevPulse/compare/v0.37.0...v0.37.1) (2026-08-31)
 
-
 ### Fixed
 
 * **scripts:** reconfigure UTF-8 encoding on stdout/stderr in changelog_unreleased ([882c997](https://github.com/edwardlthompson/DevPulse/commit/882c99727936b5a674db4f3fe30155c3c59efb22))
 
-
 ### Changed
 
 * normalize CHANGELOG unreleased heading after v0.37.0 release ([5136d4a](https://github.com/edwardlthompson/DevPulse/commit/5136d4a379e40b2290fde17c146fa00a0141a8b8))
-
 
 ### Documentation
 

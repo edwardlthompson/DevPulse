@@ -95,13 +95,15 @@ object ReleaseRefreshRunner {
         RefreshPaceFile.save(successFile, RefreshSuccessBook.snapshot())
         RefreshPaceFile.save(failFile, RefreshFailBook.snapshot())
         if (snaps.isNotEmpty() && snaps.all { it.finishedAtMs != null }) RefreshResume.clear()
-        prefs.setLastScanAtMs(System.currentTimeMillis())
+        val scannedAt = System.currentTimeMillis()
+        prefs.setLastScanAtMs(scannedAt)
+        ScanSchedule.rescheduleAfterScan(context, scannedAt)
         val progress = ReleaseRefreshRuntime.progress.value
         val outlets = progress.outlets.joinToString(";") { "${it.id}=${it.elapsedMs}" }
         PulseHistory.note(
             context.filesDir,
             "refresh",
-            System.currentTimeMillis() - startedAt,
+            scannedAt - startedAt,
             result.size,
             "locations=${progress.total};$outlets",
         )

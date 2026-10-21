@@ -3,6 +3,9 @@ package dev.foss.goldenpath.ui.inventory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.foss.goldenpath.inventory.InstallAwait
 import dev.foss.goldenpath.inventory.ScanUpdateCta
@@ -20,9 +23,24 @@ fun PulseRunHost(
     val snaps by UpdateAllSession.snaps.collectAsStateWithLifecycle()
     val busy by UpdateAllSession.busy.collectAsStateWithLifecycle()
     val rootInstall by UpdateAllSession.rootInstall.collectAsStateWithLifecycle()
+    var kickedForScan by remember { mutableStateOf(false) }
+    LaunchedEffect(inventory.refreshing) {
+        if (inventory.refreshing) kickedForScan = false
+    }
     LaunchedEffect(inventory.refreshing, inventory.updateAllCount) {
         if (inventory.refreshing) {
             UpdateAllSession.seedWait(UpdateAll.jobs(inventory.apps))
+        }
+    }
+    LaunchedEffect(lookupDone, inventory.refreshing, busy, inventory.updateAllCount) {
+        if (
+            !kickedForScan &&
+            !busy &&
+            !inventory.refreshing &&
+            ScanUpdateCta.autoStart(lookupDone, inventory.updateAllCount)
+        ) {
+            kickedForScan = true
+            onKickUpdate()
         }
     }
     LaunchedEffect(lookupDone, inventory.refreshing, busy, snaps) {

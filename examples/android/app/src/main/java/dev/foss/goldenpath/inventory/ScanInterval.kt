@@ -8,6 +8,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import dev.foss.goldenpath.about.CheckSchedule
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.first
 
 enum class ScanInterval {
     OnDemand,
@@ -40,8 +41,18 @@ object ScanSchedule {
     fun nextDelayMs(interval: ScanInterval, lastScanAtMs: Long?, nowMs: Long): Long {
         val period = periodMs(interval)
         if (period <= 0L) return 0L
-        if (lastScanAtMs == null) return period
-        return (period - (nowMs - lastScanAtMs)).coerceAtLeast(0L)
+        // Due now (never scanned or period elapsed): run on next WorkManager window.
+        if (due(interval, lastScanAtMs, nowMs)) return 0L
+        val last = lastScanAtMs ?: return 0L
+        return (period - (nowMs - last)).coerceAtLeast(0L)
+    }
+
+    /** Re-enqueue periodic work from the scan that just finished. */
+    suspend fun rescheduleAfterScan(context: Context, nowMs: Long = System.currentTimeMillis()) {
+        val prefs = InventoryPreferences(context)
+        val interval = prefs.scanInterval.first()
+        if (interval == ScanInterval.OnDemand) return
+        apply(context, interval, lastScanAtMs = nowMs, nowMs = nowMs, replace = true)
     }
 
     fun apply(

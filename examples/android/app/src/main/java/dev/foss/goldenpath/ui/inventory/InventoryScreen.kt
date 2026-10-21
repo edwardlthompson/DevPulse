@@ -35,6 +35,7 @@ fun InventoryScreen(
     model: InventoryUiModel,
     onUpdateSelectHint: () -> Unit = {},
     scanUpdateKick: Int = 0,
+    onOneClickFail: (String) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -137,6 +138,7 @@ fun InventoryScreen(
                     keyboard?.hide()
                     model.onSelect(app.packageName)
                 },
+                onOneClickFail = onOneClickFail,
                 modifier = Modifier.weight(1f),
             )
         }

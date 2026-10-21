@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-10-21 — Daily schedule reliability + Scan-and-update auto-kick
+- **Status:** Accepted
+- **Context:** Once a day felt broken: `nextDelayMs(null)` waited a full day, Wi‑Fi Worker skips returned success with no retry, and Scan and update still required tapping Update N after Refresh (clunky vs F-Droid/APKUpdater). Chip select must not open Scan.
+- **Decision:** `nextDelayMs` is 0 when due/never scanned; reschedule with REPLACE after each successful scan; Worker retries on Wi‑Fi skip / busy; Settings shows next-scan copy and requests POST_NOTIFICATIONS on periodic enable; `PulseRunHost` auto-kicks Update All once per completed scan when `ScanUpdateCta.autoStart`. Supersedes the “explicit Update N only” in-dialog part of 2026-09-16; select-only chip behavior stays.
+- **Alternatives considered:** Re-open Scan on Daily chip (rejected: 2026-09-16). Exact alarms (out of scope). Full Settings redesign (out of scope).
+- **Consequences:** Background Daily runs soon when due; update shade still only when updates exist; Refresh → download starts without an extra tap.
+
 ### 2026-10-05 — Refresh honesty + curated sideload hints (no Play-miss search)
 - **Status:** Accepted
 - **Context:** Refresh icon felt dead (Wi-Fi-only silent skip); Point & Shoot / AetherFeed / SelfChronicle showed no usable APK; Venmo duplicated on Settings hub; daily update shade missing when users expect Daily scan reminders.
@@ -24,9 +31,8 @@
 - **Alternatives considered:** Default-on Daily notify (rejected: PRIVACY/FR-33). Name-search every Play miss (rejected: DECISION_LOG forge contract). Leave hub Venmo (rejected: FR-24 About-only).
 - **Consequences:** Point & Shoot installable after Refresh when GitHub APK exists. AetherFeed/SelfChronicle still need release APK assets. Ships toward v0.38.2 via Release Please after push.
 
-
 ### 2026-09-16 — Scan interval select-only + Update N
-- **Status:** Accepted
+- **Status:** Superseded (in-dialog Update N → 2026-10-21 auto-kick; chip select-only kept)
 - **Context:** Choosing Once a day started a foreground scan via `LaunchedEffect(scanInterval, lastScanAt)` + `due()` + `UPDATE`. Users wanted selection only; scheduled WorkManager rarely fired because every scan reset the timer; shade never showed update-ready after manual Refresh.
 - **Decision:** Inventory KEEP-only `ScanSchedule.apply`; chip REPLACE with `nextDelayMs` (full period if never scanned). Refresh still starts `ReleaseRefreshService`. Post `UpdatesNotify` from the Service after scan. Explicit **Update N** CTA; Cancel aborts Session and skips System when a confirm is pending.
 - **Alternatives considered:** Keep due()-driven auto scan on compose (rejected). Exact alarms for daily (out of scope). Default-on stale notify toggle (out of scope).

@@ -1,0 +1,1 @@
+DevPulse 0.38.2 — Refresh honesty and curated GitHub sideload hints; update-available notifications after refresh; clearer Daily scan scheduling copy.

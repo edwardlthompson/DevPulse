@@ -27,14 +27,16 @@ class ScanScheduleTest {
     }
 
     @Test
-    fun nextDelayWaitsFullPeriodUntilDue() {
+    fun nextDelayIsZeroWhenDueOrNeverScanned() {
         val now = 1_700_000_000_000L
         val day = 86_400_000L
         assertEquals(0L, ScanSchedule.nextDelayMs(ScanInterval.OnDemand, null, now))
-        assertEquals(day, ScanSchedule.nextDelayMs(ScanInterval.Daily, null, now))
+        assertEquals(0L, ScanSchedule.nextDelayMs(ScanInterval.Daily, null, now))
         assertEquals(day / 2, ScanSchedule.nextDelayMs(ScanInterval.Daily, now - day / 2, now))
         assertEquals(0L, ScanSchedule.nextDelayMs(ScanInterval.Daily, now - 2 * day, now))
-        assertEquals(7 * day, ScanSchedule.nextDelayMs(ScanInterval.Weekly, null, now))
-        assertEquals(30 * day, ScanSchedule.nextDelayMs(ScanInterval.Monthly, null, now))
+        assertEquals(0L, ScanSchedule.nextDelayMs(ScanInterval.Weekly, null, now))
+        assertEquals(0L, ScanSchedule.nextDelayMs(ScanInterval.Monthly, null, now))
+        assertEquals(7 * day - day, ScanSchedule.nextDelayMs(ScanInterval.Weekly, now - day, now))
+        assertEquals(20 * day, ScanSchedule.nextDelayMs(ScanInterval.Monthly, now - 10 * day, now))
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="scan_interval_title">Release-date scan</string>
+    <string name="scan_interval_body">On demand uses only the refresh button. Daily, weekly, and monthly also run in the background when due (soon if never scanned or overdue). Wi-Fi only can delay a run on mobile data. A shade notification posts only when apps have updates. The first scan takes longer; later scans reuse recent listings and finish faster.</string>
+    <string name="scan_interval_on_demand">On demand</string>
+    <string name="scan_interval_daily">Once a day</string>
+    <string name="scan_interval_weekly">Once a week</string>
+    <string name="scan_interval_monthly">Once a month</string>
+    <string name="scan_interval_next_soon">Next background scan: soon when the network is up</string>
+    <string name="scan_interval_next_hours">Next background scan in about %1$d hours</string>
+    <string name="scan_interval_next_days">Next background scan in about %1$d days</string>
+    <string name="update_all_reopen">Show update progress</string>
+</resources>
