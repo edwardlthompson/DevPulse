@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.38.3](https://github.com/edwardlthompson/DevPulse/compare/v0.38.2...v0.38.3) (2026-10-21)
+
+
+### Fixed
+
+* **android:** run Daily scans when due and unclunk Scan and update ([6538f32](https://github.com/edwardlthompson/DevPulse/commit/6538f328bb1db65f1084a15eeaefbeec3e0d9d3f))
+
+
+### Changed
+
+* **deps:** bump nix-action, scorecard-action, and ruff-pre-commit ([d13da16](https://github.com/edwardlthompson/DevPulse/commit/d13da16365eec68b8ae3ac023be24a9817a0b21a))
+
+
+### Documentation
+
+* sync README template badge to 0.38.2 and record KB-036 ([a168a4d](https://github.com/edwardlthompson/DevPulse/commit/a168a4db8c4ab02e83aacc48bbe107cc8a2ca2f2))
+
 ## [0.38.2](https://github.com/edwardlthompson/DevPulse/compare/v0.38.1...v0.38.2) (2026-10-05)
 
 ### Fixed
