@@ -70,7 +70,7 @@ for path in \
   PROJECT_CHECKLIST.md \
   CLAUDE.md \
   GEMINI.md \
-  CONVENTIONS.md \
+  .agent/CONVENTIONS.md \
   .clinerules \
   .github/copilot-instructions.md \
   .cursor/rules/main.mdc \

@@ -514,7 +514,7 @@
 
 - ✅ [AGENT] Fix F-005 — prefer Git Bash over WSL `bash.exe` in `scripts/agent-run.py` (Windows)
 - ✅ [AGENT] Fix F-001/F-004 — add `workflow_dispatch` to CodeQL + Security Scan; `check-github-ci.sh --dispatch-if-missing`; weekly health uses it; Dependabot automerge prefers `AUTOMERGE_TOKEN`
-- ✅ [AGENT] Fix F-006 — sync `AGENT_MEMORY.md` + BUILD_PLAN banner to released **v0.14.0**
+- ✅ [AGENT] Fix F-006 — sync `.agent/AGENT_MEMORY.md` + BUILD_PLAN banner to released **v0.14.0**
 - ✅ [AUTO] After push: `check-github-ci.sh HEAD --wait 300` green on `main` @ `e532c20`
 - ✅ [HUMAN] F-002 — Enable required status checks on `main` — via `setup-github-repo.sh` / HUMAN automation
 - ✅ [HUMAN] F-003 — Review/merge Dependabot PRs #33/#34 (TypeScript 7) — merged via HUMAN automation
@@ -561,7 +561,7 @@
 
 - ✅ [HUMAN] `gh auth refresh -s security_events` (Dependabot API verified)
 - ✅ [HUMAN] Merge Release Please PR #13 — [v0.10.0](https://github.com/edwardlthompson/agent-project-bootstrap/releases/tag/v0.10.0) published
-- ✅ [AGENT] Sync `.template-version`, `TEMPLATE_INDEX.json`, README badge, `AGENT_MEMORY.md` to 0.10.0 (`36a02e4`)
+- ✅ [AGENT] Sync `.template-version`, `TEMPLATE_INDEX.json`, README badge, `.agent/AGENT_MEMORY.md` to 0.10.0 (`36a02e4`)
 - ✅ [AGENT] Fix `release.yml` SBOM backfill — checkout `main` when `tag` input set
 - ✅ [AGENT] Add `sync-template-version.sh` + `check-template-version-sync.sh` gate
 - ✅ [AGENT] `verify-fdroid-metadata.sh` green; no anti-features in template metadata
@@ -591,7 +591,7 @@
 ## Template Maintainer — v0.2.1 Full Bootstrap Hardening (2026-06-13)
 
 - ✅ [AGENT] Normalize `.gitignore` UTF-16 to UTF-8; extend encoding scan and pre-commit hook
-- ✅ [AGENT] Sync `PROMPT_LIBRARY.md` entries 4, 6, 8, 9; populate `KNOWLEDGE_BASE.md` (6 entries)
+- ✅ [AGENT] Sync `.agent/PROMPT_LIBRARY.md` entries 4, 6, 8, 9; populate `.agent/KNOWLEDGE_BASE.md` (6 entries)
 - ✅ [AGENT] Document Lighthouse 3-run median in `modules/web/MODULE.md`
 - ✅ [AGENT] SHA-pin `release.yml` actions; add pin policy to `docs/SECURITY_TRIAGE.md`
 - ✅ [AGENT] Add `check-workflow-action-ref-format.sh` pre-commit hook
@@ -635,13 +635,13 @@
 - ✅ [AGENT] Add `scripts/pre-release-gate.sh` and `scripts/pre-release-gate.ps1` — CI poll, Dependabot Critical/High count, template version/tag match, release dry-run reminder
 - ✅ [AGENT] Add KNOWLEDGE_BASE KB-007 (npm/pip overrides policy for transitive CVEs); document `@lhci/cli` override in DECISION_LOG
 - ✅ [AGENT] Add `npm audit` step to `examples/web` and `uv pip audit` (or equivalent) to weekly `.github/workflows/health-check.yml`
-- ✅ [AGENT] Sync `AGENT_MEMORY.md` seed template version with `.template-version`; fix stale `0.1.0` reference
+- ✅ [AGENT] Sync `.agent/AGENT_MEMORY.md` seed template version with `.template-version`; fix stale `0.1.0` reference
 - ✅ [AGENT] Bump `.template-version` to `0.2.2`; update CHANGELOG, TEMPLATE_INDEX, README
 
 ## Sprint M1 — Template Hardening v0.3.0
 
 - ✅ [AGENT] Extend `init-project.sh` / `.ps1` with interactive stack picker (web / python / android / multi / none) — prune unused `examples/` and `modules/`, never delete LICENSE/CI/scripts
-- ✅ [AGENT] On init: sync `AGENT_MEMORY.md` active modules; emit minimal BUILD_PLAN Parallel section for chosen stack
+- ✅ [AGENT] On init: sync `.agent/AGENT_MEMORY.md` active modules; emit minimal BUILD_PLAN Parallel section for chosen stack
 - ✅ [AGENT] Add `.cursor-session-state.example.json` schema; document restore flow in `docs/FOR_AGENTS.md`
 - ✅ [AGENT] Expand `docs/FOR_AGENTS.md` failure playbook (CI poll, GH_TOKEN, Dependabot conflicts, 3-strike escalation, parallel scope collision grep)
 - ✅ [AGENT] Add `android-release` CI job — `SOURCE_DATE_EPOCH=1700000000 ./gradlew assembleRelease`, FOSS grep, optional two-run APK hash compare with flake tolerance
@@ -666,8 +666,8 @@
 - ✅ [AGENT] `scripts/generate-winget-manifest.sh` stub generator (`packaging/winget/**`, `scripts/`)
 - ✅ [AGENT] F-Droid `metadata/` template in `examples/android/` (`examples/android/metadata/**`)
 - ✅ [AGENT] Per-stack SBOM slices on GitHub Release (`examples/web`, `examples/python`) (`.github/workflows/release.yml`)
-- ✅ [AGENT] PROMPT_LIBRARY Entry 15 — Post-release regression (`PROMPT_LIBRARY.md`)
-- ✅ [AGENT] PROMPT_LIBRARY Entry 16 — Template upgrade simulation (`PROMPT_LIBRARY.md`)
+- ✅ [AGENT] PROMPT_LIBRARY Entry 15 — Post-release regression (`.agent/PROMPT_LIBRARY.md`)
+- ✅ [AGENT] PROMPT_LIBRARY Entry 16 — Template upgrade simulation (`.agent/PROMPT_LIBRARY.md`)
 - ✅ [AGENT] Issue template: auto-suggest `.template-version` in placeholder text (`.github/ISSUE_TEMPLATE/*.yml`)
 
 ## Sprint M3 — Ecosystem Expansion v0.5.0+
@@ -713,7 +713,7 @@
 
 - ✅ [AGENT] Create `SECURITY.md`, `CODE_OF_CONDUCT.md`, `docs/THREAT_MODEL.md`, `docs/PRIVACY.md`, `docs/RUNBOOK.md`
 - ✅ [AGENT] Add `.github/CODEOWNERS` and `THIRD_PARTY_LICENSES.md`
-- ✅ [AGENT] Initialize workspace memory files from template seeds (`AGENT_MEMORY.md`, etc.)
+- ✅ [AGENT] Initialize workspace memory files from template seeds (`.agent/AGENT_MEMORY.md`, etc.)
 - ✅ [AGENT] Wire update checker config into devcontainer and README
 - ✅ [HUMAN] Set GitHub repo About description from `docs/GITHUB_ABOUT.md` (via `gh repo edit`)
 - ✅ [AGENT] Commit lockfiles (`package-lock.json`, `uv.lock`) and `.env.example`
@@ -774,7 +774,7 @@
 
 ### Sprint M3 Parallel
 
-- ✅ [HUMAN] Decide which optional modules to ship — all three (Lightroom, Rust, Go); see `DECISION_LOG.md`
+- ✅ [HUMAN] Decide which optional modules to ship — all three (Lightroom, Rust, Go); see `.agent/DECISION_LOG.md`
 - ✅ [AGENT] Lightroom lint/checklist in CI (Lua SDK namespace grep)
 - ✅ [AGENT] Rust CI job (`cargo fmt`, `clippy`, `test`)
 - ✅ [AGENT] Go CI job (`go vet`, `gofmt`, `test`)
@@ -923,7 +923,7 @@
 
 ## Sprint M14 — Post-M13 review remediation (AGENT, 2026-06-15)
 
-- ✅ [AGENT] P0 version coherence: `.template-version`, `TEMPLATE_INDEX.json`, `AGENT_MEMORY.md` → 0.8.0; manifest assert in `pre-release-gate.sh`
+- ✅ [AGENT] P0 version coherence: `.template-version`, `TEMPLATE_INDEX.json`, `.agent/AGENT_MEMORY.md` → 0.8.0; manifest assert in `pre-release-gate.sh`
 - ✅ [AGENT] P0 `init-project.ps1` `2>$null` fix; `-NonInteractive` + Python placeholder replacement in both init scripts
 - ✅ [AGENT] P1 `run-maintainer-gates.sh`: `verify-reproducible-apk.sh` wiring, `--skip-apk`, unknown-flag fail, `--quick` docs
 - ✅ [AGENT] P1 `verify-branch-protection.sh`: `strict` + `allow_force_pushes` asserts; rulesets note in `SECURITY_TRIAGE.md`
@@ -1124,7 +1124,7 @@ Post-M20 review: init scripts, startup sequence, contributor docs, session-state
 Post-M19 review: close prompt/read-order gaps and enforce CURSOR_MODES in bootstrap gate.
 
 - ✅ [AGENT] Sync `START_HERE.md` agent prompts + Reference read order with `docs/CURSOR_MODES.md`
-- ✅ [AGENT] Sync `PROMPT_LIBRARY.md` Entry 1/2 and `README.md` Quick Start bootstrap prompt
+- ✅ [AGENT] Sync `.agent/PROMPT_LIBRARY.md` Entry 1/2 and `README.md` Quick Start bootstrap prompt
 - ✅ [AGENT] Dedupe `INITIALIZATION_PROMPT.md` §6 Plan First → pointer to `docs/CURSOR_MODES.md`
 - ✅ [AGENT] Update `AGENTS.md` Session Protocol; add `docs/CURSOR_MODES.md` to `validate-bootstrap.sh` REQUIRED
 - ✅ [AGENT] Add `docs/CURSOR_MODES.md` to README What's Included; fix KB range in START_HERE
@@ -1140,7 +1140,7 @@ Post-M19 review: close prompt/read-order gaps and enforce CURSOR_MODES in bootst
 - ✅ [AGENT] Create `.cursor/rules/cursor-modes.mdc` (`alwaysApply: true`; ≤30 lines; pointer to CURSOR_MODES)
 - ✅ [AGENT] Wire entry points: `START_HERE.md`, `AGENTS.md`, `FOR_AGENTS.md`, `core-directives.mdc`, `TEMPLATE_INDEX.json`
 - ✅ [AGENT] Split `INITIALIZATION_PROMPT.md` §7a (pre-release audit, Agent) vs §7b (defect investigation, Debug)
-- ✅ [AGENT] Update `PROMPT_LIBRARY.md`: retitle Entry 3; add Entries 18–21 (Ask/Plan/Debug/Agent)
+- ✅ [AGENT] Update `.agent/PROMPT_LIBRARY.md`: retitle Entry 3; add Entries 18–21 (Ask/Plan/Debug/Agent)
 - ✅ [AUTO] Validate: `check-file-encoding.py`, `validate-template-index.sh`, `validate-bootstrap.sh --quick`
 
 ## BUILD_PLAN cleanup (2026-06-17, M19 complete)

@@ -20,7 +20,7 @@ Do not debug in Plan Mode. Do not edit in Ask Mode.
 ## Token Economy
 
 1. Never read all of `examples/` - active stack only
-2. Never fill KNOWLEDGE_BASE.md with generic framework docs
+2. Never fill .agent/KNOWLEDGE_BASE.md with generic framework docs
 3. Update memory files only at session start, milestone end, or architectural pivot
 4. Read-before-write: @filename before edits
 5. Sequential before Parallel in BUILD_PLAN
@@ -80,7 +80,7 @@ Place `[HUMAN]`/`[ADB]` rows only under `#### Human & device (after automation)`
 
 Config env vars (optional): `BUILD_STACK`, `BUILD_PROJECT_NAME`, `BUILD_PURPOSE`, `GITHUB_REPO`, `BUILD_DONATION_URL`. Fallback: `.cursor/stack-selection.json`, `gh repo view`, folder name.
 
-Status: `bash scripts/build-sprint-status.sh --json --lane auto` → `next_row.action` is `automate_human`, `automate_adb`, `execute`, or `parallel_dispatch`. On this template, auto prefers Template Maintainer 🔲 AGENT rows; on child repos it uses the playbook. Pass `--lane child` to force the playbook. Rows already in `HUMAN_BACKLOG.md` are skipped until a human clears them.
+Status: `bash scripts/build-sprint-status.sh --json --lane auto` → `next_row.action` is `automate_human`, `automate_adb`, `execute`, or `parallel_dispatch`. On this template, auto prefers Template Maintainer 🔲 AGENT rows; on child repos it uses the playbook. Pass `--lane child` to force the playbook. Rows already in `.agent/HUMAN_BACKLOG.md` are skipped until a human clears them.
 
 Disable autonomous ADR approval in child repos: add `<!-- no-auto-approve -->` to BUILD_PLAN.
 

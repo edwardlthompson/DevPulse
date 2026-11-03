@@ -9,7 +9,7 @@ Live board. Done work: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md).
 **Who:** `AGENT` code · `HUMAN` person · `ADB` device · `AUTO` CI
 **State:** 🔲 open · ✅ done · ❌ blocked — reason
 
-Format: `🔲 [AGENT] Short task`. Sequential `[AGENT]` first. Parallel: [`docs/PARALLEL_AGENT_SCOPES.md`](docs/PARALLEL_AGENT_SCOPES.md). `/build` tries HUMAN/ADB after automation; failures → `HUMAN_BACKLOG.md`.
+Format: `🔲 [AGENT] Short task`. Sequential `[AGENT]` first. Parallel: [`docs/PARALLEL_AGENT_SCOPES.md`](docs/PARALLEL_AGENT_SCOPES.md). `/build` tries HUMAN/ADB after automation; failures → `.agent/HUMAN_BACKLOG.md`.
 
 After each `[AGENT]` row: `python3 scripts/agent-run.py watch-agent-gates --once --autofix --scope auto`. After the last `[AGENT]`/`[AUTO]` row in a sprint: `python3 scripts/agent-run.py smoke-sprint --require`.
 

@@ -9,4 +9,3 @@ Edit `AGENTS.md` only; then `bash scripts/bootstrap-lifecycle.sh --sync-adapters
 Do not put project rules in this file.
 
 Never add real project rules here — Antigravity treats GEMINI.md as higher priority than AGENTS.md.
-

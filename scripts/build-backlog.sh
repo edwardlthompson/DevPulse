@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Append failed HUMAN/ADB automation attempts to HUMAN_BACKLOG.md.
+# Append failed HUMAN/ADB automation attempts to .agent/HUMAN_BACKLOG.md.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CMD="${1:-}"

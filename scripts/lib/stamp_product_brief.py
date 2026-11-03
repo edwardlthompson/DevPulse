@@ -9,7 +9,7 @@ from build_sprint_model import is_template_repo
 TARGETS = (
     "BUILD_PLAN.md",
     "docs/spec.md",
-    "AGENT_MEMORY.md",
+    ".agent/AGENT_MEMORY.md",
 )
 
 

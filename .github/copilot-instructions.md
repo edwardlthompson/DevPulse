@@ -9,4 +9,3 @@ Canonical spec: `AGENTS.md`. Router: `docs/START_HERE.md`. Modes: `docs/CURSOR_M
 - Conventional Commits; no secrets in the tree
 - Prefer vertical slices under `examples/{stack}/` plus `docs/features/{name}.md`
 - Use 🔲 / ✅ / ❌ (not GitHub `- [ ]` checkboxes) on repo checklists
-

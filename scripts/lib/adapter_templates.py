@@ -133,6 +133,6 @@ ADAPTERS: tuple[tuple[str, Path, str], ...] = (
     ("gemini", Path("GEMINI.md"), GEMINI),
     ("windsurf", Path(".windsurf/rules/agents-pointer.md"), WINDSURF),
     ("cline", Path(".clinerules"), CLINE),
-    ("aider", Path("CONVENTIONS.md"), AIDER),
+    ("aider", Path(".agent/CONVENTIONS.md"), AIDER),
     ("continue", Path(".continue/rules/agents.md"), CONTINUE),
 )

@@ -32,4 +32,4 @@ this file or a generated `NOTICE` file in the distribution artifact.
 ## Incompatible Licenses
 
 `[HUMAN]` must approve any dependency with copyleft licenses (GPL, AGPL) that
-may affect distribution. Document exceptions in `DECISION_LOG.md`.
+may affect distribution. Document exceptions in `.agent/DECISION_LOG.md`.

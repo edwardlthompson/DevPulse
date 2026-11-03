@@ -36,7 +36,7 @@ Read the upstream release notes at `github.com/edwardlthompson/agent-project-boo
 | Child `AGENTS.md` (after init) | Never blind-overwrite | HUMAN | Sacred |
 | Child `AGENT.md` (original brief) | Never blind-overwrite | HUMAN | Sacred |
 | `docs/spec.md`, `docs/plan.md` | Merge product text; keep section headings | HUMAN | Sacred |
-| `CLAUDE.md`, `GEMINI.md`, `CONVENTIONS.md`, `.clinerules`, `.github/copilot-instructions.md`, `.cursor/rules/main.mdc`, `.windsurf/rules/`, `.continue/rules/` | Re-run `bootstrap-lifecycle.sh --sync-adapters` after AGENTS.md merge | AGENT | Canon |
+| `CLAUDE.md`, `GEMINI.md`, `.agent/CONVENTIONS.md`, `.clinerules`, `.github/copilot-instructions.md`, `.cursor/rules/main.mdc`, `.windsurf/rules/`, `.continue/rules/` | Re-run `bootstrap-lifecycle.sh --sync-adapters` after AGENTS.md merge | AGENT | Canon |
 | `bootstrap.config.json` | Merge keys; keep child values | AGENT | Mixed |
 | `PROJECT_CHECKLIST.md` | Keep child progress; add new rows from upstream | HUMAN | Mixed |
 | `BUILD_PLAN_TEMPLATE.md` | Copy child board model; do not overwrite live `BUILD_PLAN.md` | AGENT | Canon |

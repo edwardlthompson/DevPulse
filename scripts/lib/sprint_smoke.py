@@ -95,7 +95,7 @@ def run(root: Path, args: argparse.Namespace) -> int:
         return 1
     print(f"PASS: {sprint.title} smoked ({len(item_rows)} items)")
     print(
-        "REMINDER: Update AGENT_MEMORY.md at this milestone boundary "
+        "REMINDER: Update .agent/AGENT_MEMORY.md at this milestone boundary "
         "(Persistent Context + retrospective only; see AGENTS.md Session Protocol)."
     )
     return 0

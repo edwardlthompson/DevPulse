@@ -52,7 +52,7 @@ def active_modules(stack: str, root: Path) -> list[str]:
 
 
 def sync_agent_memory(root: Path, stack: str) -> None:
-    path = root / "AGENT_MEMORY.md"
+    path = root / ".agent/AGENT_MEMORY.md"
     text = path.read_text(encoding="utf-8")
     active = set(active_modules(stack, root))
     for key, label in MODULE_LINES.items():

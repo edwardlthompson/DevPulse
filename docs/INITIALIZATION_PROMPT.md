@@ -80,10 +80,10 @@ Initialize the repository with a professional, hermetic layout. Early in the lif
 To maintain deep context across long-running sessions, create and maintain a unified workspace state. To prevent token waste and "documentation tax," modify these files only at session startups, milestone boundaries, or during major architectural pivots:
 
 - **`AGENTS.md` / `.cursor/rules/`:** Living rules for architecture constraints, coding style, naming conventions, text-based UI layout standards, type-safety guarantees, and ecosystem-specific constraints.
-- **`AGENT_MEMORY.md`:** Centralized index of the tech stack, threat models, persistent context, and retrospectives.
-- **`docs/adr/` / `DECISION_LOG.md`:** Chronological register tracking major technical trade-offs, accepted architectures, and rejected alternatives. Treat past entries as immutable history; append only.
-- **`KNOWLEDGE_BASE.md`:** Repository of stack-specific edge cases, resolved complex bugs, anti-patterns, and reusable project solutions. Do not populate with generic framework definitions.
-- **`PROMPT_LIBRARY.md`:** Living catalog of highly effective prompt strategies, specialized instructions, and context patterns that yield clean code execution for this specific repository.
+- **`.agent/AGENT_MEMORY.md`:** Centralized index of the tech stack, threat models, persistent context, and retrospectives.
+- **`docs/adr/` / `.agent/DECISION_LOG.md`:** Chronological register tracking major technical trade-offs, accepted architectures, and rejected alternatives. Treat past entries as immutable history; append only.
+- **`.agent/KNOWLEDGE_BASE.md`:** Repository of stack-specific edge cases, resolved complex bugs, anti-patterns, and reusable project solutions. Do not populate with generic framework definitions.
+- **`.agent/PROMPT_LIBRARY.md`:** Living catalog of highly effective prompt strategies, specialized instructions, and context patterns that yield clean code execution for this specific repository.
 - **`BUILD_PLAN.md`:** Prioritized task list breaking the project down into Milestones, Sprints, and Gates. Track progress by moving items to `COMPLETED_TASKS.md`.
 - **`docs/THREAT_MODEL.md`:** Structured threat model (STRIDE; OWASP ASVS for web, MASVS for mobile). Identify trust boundaries and top abuse cases before Golden Path ships. Link mitigations to BUILD_PLAN security tasks.
 
@@ -175,7 +175,7 @@ To maximize reasoning accuracy, eliminate architectural drift, and maintain cris
   - Upon restarting in a clean chat, read `.cursor-session-state` via @ indexing to instantly restore perfect situational memory, then delete the temporary file.
 - **The 3-Strike Rule & Escalation Policy:** Do not loop stubbornly on compilation errors, broken dependencies, or environment blocks. If a build error or test failure persists across 3 consecutive code modifications, immediately halt execution. Output a concise summary of the core engineering conflict, list what approaches failed, and prompt the user for human direction.
 - **Human-in-the-Loop for Destructive Operations:** Never run `git push`, production deploy, `terraform apply`, irreversible schema drops, or `rm -rf` outside task scope without explicit `[HUMAN]` approval. See `.cursor/rules/destructive-ops.mdc`.
-- **Agent Action Audit Trail:** At milestone boundaries, log significant agent actions in `DECISION_LOG.md` — what changed, why, and what tests validated it.
+- **Agent Action Audit Trail:** At milestone boundaries, log significant agent actions in `.agent/DECISION_LOG.md` — what changed, why, and what tests validated it.
 
 ## 6. Universal Operational Directives
 
@@ -197,7 +197,7 @@ To maximize reasoning accuracy, eliminate architectural drift, and maintain cris
   - **Seamless apply + single restart:** download matched asset (verify `sha256` when published) → stack-native apply → set `pending_restart` / `restart_guard_key` → restart **once** → clear guard on cold start.
   - **Donations:** optional; `[HUMAN]` fills `donations.json` links during init (Liberapay, Ko-fi, GitHub Sponsors, Open Collective, PayPal, etc.); external browser only; no donation tracking.
   - **Privacy:** document release-check calls in `docs/PRIVACY.md` (`last_checked`, `installed_artifact_format` only; no PII).
-- **Weekly Security Triage:** `[HUMAN]` runs a weekly CVE triage pass (recommended: Monday, aligned with Trivy scheduled scan). Follow `docs/SECURITY_TRIAGE.md`: review GitHub → Security → Dependabot alerts (Critical/High first), triage open Dependabot PRs, fix/defer/dismiss each alert, confirm **Security Scan** (Trivy), **CodeQL**, and **CI** workflows green on `main`. Log deferred Critical/High items in `DECISION_LOG.md` or `BUILD_PLAN.md` Ongoing Maintenance section.
+- **Weekly Security Triage:** `[HUMAN]` runs a weekly CVE triage pass (recommended: Monday, aligned with Trivy scheduled scan). Follow `docs/SECURITY_TRIAGE.md`: review GitHub → Security → Dependabot alerts (Critical/High first), triage open Dependabot PRs, fix/defer/dismiss each alert, confirm **Security Scan** (Trivy), **CodeQL**, and **CI** workflows green on `main`. Log deferred Critical/High items in `.agent/DECISION_LOG.md` or `BUILD_PLAN.md` Ongoing Maintenance section.
 - **Repo hygiene:** Track source and lockfiles only — never commit `node_modules/`, `dist/`, caches, or `.env`. `[AGENT]` runs `bash scripts/check-repo-hygiene.sh` before push; `[AUTO]` CI **Repo Hygiene** job enforces the same gate. Reclaim disk with `bash scripts/purge-ephemeral.sh` (dry-run); `--apply` uses `git clean -fdX` (ignored untracked only). No Git LFS or submodules without `[HUMAN]` approval. See `docs/REPO_HYGIENE.md`.
 - **Incremental features (Sprint 2+):** One vertical-slice feature per BUILD_PLAN row. See `docs/FEATURE_MODULES.md`. After every `[AGENT]` step run `bash scripts/watch-agent-gates.sh --once --autofix`; agent may auto-fix lint/tests in feature scope until pass or 3-strike. `git push` still requires `[HUMAN]` approval.
 
@@ -264,7 +264,7 @@ Only when all quality checks return clean may you update the `CHANGELOG.md` (Kee
 When a build, test, or CI job fails and root cause is unclear:
 
 - Switch to Debug Mode; collect runtime evidence first (command output, CI log URL, repro steps)
-- Check `KNOWLEDGE_BASE.md` (KB-001–KB-008) and `docs/FOR_AGENTS.md` Failure Playbook
+- Check `.agent/KNOWLEDGE_BASE.md` (KB-001–KB-008) and `docs/FOR_AGENTS.md` Failure Playbook
 - Confirm repro locally before editing production code
 - After root cause identified, switch to Agent Mode to apply the fix
 - 3-strike: escalate to human with evidence summary (not hypotheses)
@@ -293,7 +293,7 @@ PowerShell: `pwsh scripts/init-project.ps1 -NonInteractive -Stack web -ProjectNa
 2. Initialize core repository architecture, root documentation (`README.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`), and the Workspace Memory files. Fill [`branding/product.json`](../branding/product.json) (name, tagline, pitch, features); set `"mode": "product"`; run `python3 scripts/sync-design-tokens.py` and `python3 scripts/generate-project-readme.py` so root `README.md` is the pitch README (hero, badges, features, quick start, install, usage, contributing, security, license). Keep BUILD_PLAN label + status-marker legend (🔲/✅/❌), template update checker pointer, in-app About + donation note, Dependabot / `docs/SECURITY_TRIAGE.md`, and links to `docs/START_HERE.md`, `docs/CURSOR_MODES.md`, `CONTRIBUTING.md`, `branding/BRANDING.md`, and the active module guide. See [`branding/BRANDING.md`](../branding/BRANDING.md).
 3. Configure a local development sandbox (e.g., Devcontainer configuration), scaffolding scripts for components/features, and local git hooks (Gitleaks/TruffleHog + Linter/Formatter pre-commit hooks). Add `.env.example` for documented environment variables.
 4. Establish a single, end-to-end "Golden Path" reference feature—including pure business logic, runtime type validation, a mocked data source, a layout matching text-based UI specs, and 100% unit/integration/visual test coverage—to serve as the structural template for all future development.
-5. Propose the complete initial directory structure, the first formal ADR (`docs/adr/0001-core-architecture.md` or `DECISION_LOG.md`) establishing state/persistence baselines, and the step-by-step `BUILD_PLAN.md` for approval. `BUILD_PLAN.md` must use status markers (🔲 open · ✅ done · ❌ blocked), owner labels, Sequential and Parallel lanes per sprint (≥ 2 AGENT Parallel rows per sprint unless `parallel_exception`), `agent_count_target` comments, `### Parallelization` in the planning proposal, and an Ongoing Maintenance section with weekly security triage. Run `bash scripts/check-build-plan-parallel.sh` before asking for approval.
+5. Propose the complete initial directory structure, the first formal ADR (`docs/adr/0001-core-architecture.md` or `.agent/DECISION_LOG.md`) establishing state/persistence baselines, and the step-by-step `BUILD_PLAN.md` for approval. `BUILD_PLAN.md` must use status markers (🔲 open · ✅ done · ❌ blocked), owner labels, Sequential and Parallel lanes per sprint (≥ 2 AGENT Parallel rows per sprint unless `parallel_exception`), `agent_count_target` comments, `### Parallelization` in the planning proposal, and an Ongoing Maintenance section with weekly security triage. Run `bash scripts/check-build-plan-parallel.sh` before asking for approval.
 6. `[AGENT]` Draft `docs/THREAT_MODEL.md` (STRIDE, trust boundaries, top 5 abuse cases) and `docs/PRIVACY.md` stub.
 7. `[AGENT]` Draft `docs/RUNBOOK.md` (deploy, rollback, health checks, structured logging).
 8. `[AGENT]` Create `SECURITY.md` (supported versions, reporting channel, disclosure timeline) and `CODE_OF_CONDUCT.md` (Contributor Covenant).
@@ -308,7 +308,7 @@ PowerShell: `pwsh scripts/init-project.ps1 -NonInteractive -Stack web -ProjectNa
 15. `[AUTO]` Run `scripts/validate-bootstrap.sh` to confirm Sprint 0 artifacts exist.
 15a. `[AGENT]` Run `pip install pre-commit && pre-commit install`; after stack prune run `bash scripts/purge-ephemeral.sh` (dry-run).
 16. `[AGENT]` Run full **Build Verification Gate** (Section 7a checklist) including `validate-workflow-actions.sh` and stack-specific commands; fix all failures. Re-run encoding check after fixes on Windows.
-17. `[AGENT]` Cross-link all playbooks in `README.md`; sync `UPGRADING_FROM_TEMPLATE.md`, `PROMPT_LIBRARY.md`, and `docs/CURSOR_MODES.md`.
+17. `[AGENT]` Cross-link all playbooks in `README.md`; sync `UPGRADING_FROM_TEMPLATE.md`, `.agent/PROMPT_LIBRARY.md`, and `docs/CURSOR_MODES.md`.
 18. `[HUMAN]` Approve Sprint 0 only after `[AUTO]` **CI**, **Security Scan**, and **CodeQL** green on `main` (verify via `check-github-ci.sh`) and Build Verification Gate passes.
 
 **Begin now.**

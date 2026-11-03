@@ -78,7 +78,7 @@ Rationale: reproducibility is a **gate**, not a binary warehouse. Ship binaries 
 2. Re-publish that APK/AAB (do not rebuild if the key or epoch changed).
 3. If users already installed a bad build, ship a **higher** `versionCode` that reverts the code, signed with the **same** upload key.
 4. Retrace crashes with that version's `mapping.txt` (`app/build/outputs/mapping/release/mapping.txt`).
-5. Log user-impacting incidents in `DECISION_LOG.md`.
+5. Log user-impacting incidents in `.agent/DECISION_LOG.md`.
 
 Losing the upload key **cannot** be fixed by generating a new one for the same Play listing. Rotate only via `docs/RUNBOOK.md` Secret Rotation after a leak; then enroll a new upload key in Play Console.
 
