@@ -2,10 +2,10 @@
 
 ## Draft Description (edit to <=350 chars)
 
-See which of your Android apps still have a heartbeat. Local-only scan of Play, F-Droid plus extra repos, and public forges to find stale software, replacements, and what to build next.
+See which Android apps were last updated and which look abandoned. Local-only Play, F-Droid, and forge scan.
 
 ## Topics
 
-android, foss, fdroid, privacy, kotlin
+android, fdroid, kotlin, privacy, sideloading
 
 Suggested for GitHub discoverability (Settings → About).

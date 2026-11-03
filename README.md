@@ -6,7 +6,7 @@
 
 <h1 align="center">DevPulse</h1>
 
-<p align="center"><strong>See which of your apps still have a heartbeat.</strong></p>
+<p align="center"><strong>See which of your apps were last updated — and which look abandoned.</strong></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/template-0.38.3-656d76?style=flat-square" alt="template" />
@@ -22,7 +22,7 @@
 
 ## Pitch
 
-DevPulse is a local-only Android app that checks whether the software you already installed still has a heartbeat. It scans Google Play, F-Droid official, F-Droid Archive, IzzyOnDroid, Guardian Project, CalyxOS F-Droid repo, opt-in Aptoide, and GitHub (discover by app name; listed only if the package appears on that repo's releases), then surfaces apps that look stale so you can find a living replacement, another sideload source, or a repo worth forking.
+DevPulse is a local-only Android app that checks when installed software was last updated and which look abandoned. It scans Google Play, F-Droid official, F-Droid Archive, IzzyOnDroid, Guardian Project, CalyxOS F-Droid repo, opt-in Aptoide, and GitHub (discover by app name; listed only if the package appears on that repo's releases), then surfaces stale apps so you can find a living replacement, another sideload source, or a repo worth forking.
 
 ## Demo
 
@@ -74,7 +74,11 @@ Sideload the latest APK from GitHub Releases: https://github.com/edwardlthompson
 
 ## Usage
 
-Open DevPulse, scan installed apps, then sort or filter the list (including On GitHub). Export the current list as HTML, CSV, or XML when you want a snapshot. Staleness marks are not a security audit. Maintainers: edit colors in design-tokens/design-tokens.json and logos in branding/assets/, then run python3 scripts/sync-design-tokens.py.
+Open DevPulse, scan installed apps, then sort or filter the list (including On GitHub). Export the current list as HTML, CSV, or XML when you want a snapshot. Maintainers: edit colors in design-tokens/design-tokens.json and logos in branding/assets/, then run python3 scripts/sync-design-tokens.py.
+
+## What this is not
+
+DevPulse is not a security audit and not a malware scanner. Staleness and unknown marks only reflect public listing dates — they do not prove an app is safe, unsafe, compromised, or clean.
 
 ## Configuration
 
