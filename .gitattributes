@@ -26,3 +26,11 @@ package-lock.json linguist-generated=true
 uv.lock linguist-generated=true
 examples/web/src/design-tokens.css linguist-generated=true
 examples/android/app/src/main/res/values/design_tokens.xml linguist-generated=true
+
+# --- linguist ---
+# Child-repo Language attribution (GitHub Linguist)
+scripts/** linguist-vendored
+modules/** linguist-documentation
+docs/** linguist-documentation
+examples/*/build/** linguist-vendored
+.github/** linguist-vendored
