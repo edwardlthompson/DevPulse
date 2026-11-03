@@ -1,0 +1,1 @@
+1.0.0 — portfolio pass: foreground scan cancel, privacy first-run, performance notes.
