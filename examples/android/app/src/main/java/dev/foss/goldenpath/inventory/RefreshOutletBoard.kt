@@ -1,5 +1,8 @@
 package dev.foss.goldenpath.inventory
 
+import dev.foss.goldenpath.index.forge.GitHubSearchPace
+import java.util.concurrent.ConcurrentHashMap
+
 data class RefreshOutletSnap(
     val id: String,
     val title: String,

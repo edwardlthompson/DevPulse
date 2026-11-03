@@ -44,7 +44,10 @@ object InventoryCopy {
         return if (listed == true) ListingMark.Listed else ListingMark.Missing
     }
 
-    fun listingMarkPrefix(mark: ListingMark): String = ""
+    fun listingMarkPrefix(mark: ListingMark): String = when (mark) {
+        ListingMark.Unknown -> "❓ "
+        else -> ""
+    }
 
     fun failRes(why: InstallWhy, source: RemoteReleasedSource = RemoteReleasedSource.None): Int {
         if (why == InstallWhy.Signing && source == RemoteReleasedSource.Aptoide) {

@@ -17,4 +17,5 @@
     <string name="refresh_notify_cancel">Cancel</string>
     <string name="inventory_last_scanned">Last scanned: %1$s</string>
     <string name="inventory_last_scanned_never">Last scanned: never</string>
+    <string name="inventory_unknown_mark_explain">❓ means unknown: DevPulse could not read a date or listing from that source.</string>
 </resources>

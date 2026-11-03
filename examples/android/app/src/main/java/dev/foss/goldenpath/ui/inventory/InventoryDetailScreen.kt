@@ -99,6 +99,10 @@ fun InventoryDetailScreen(
         InventoryDetailCallout(stringResource(R.string.inventory_callout_package), app.packageName)
         InventoryDetailCallout(stringResource(R.string.inventory_callout_last_release), inventoryLastReleaseText(app))
         Text(text = stringResource(R.string.inventory_listings_title), style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = stringResource(R.string.inventory_unknown_mark_explain),
+            style = MaterialTheme.typography.bodySmall,
+        )
         ReprobeButton(app)
         if (listings.isEmpty()) {
             Text(text = stringResource(R.string.inventory_no_listings))
