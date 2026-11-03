@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.4](https://github.com/edwardlthompson/DevPulse/compare/v0.38.3...v0.38.4) (2026-11-03)
+
+
+### Fixed
+
+* **android:** add F-Droid changelog for 0.38.3 (versionCode 3803) ([52b0af2](https://github.com/edwardlthompson/DevPulse/commit/52b0af29ee700073ed3dee506009dc2ccdbaf8a1))
+
+
+### Changed
+
+* archive Sprint 37 after v0.38.3 ship ([c570cf1](https://github.com/edwardlthompson/DevPulse/commit/c570cf158aa01b698e9358863b396c106c80a8c6))
+* **deps:** bump the android-dependencies group across 1 directory with 8 updates ([#42](https://github.com/edwardlthompson/DevPulse/issues/42)) ([1234212](https://github.com/edwardlthompson/DevPulse/commit/123421278f37f086623ec627461384291a0c0319))
+* **deps:** bump the github-actions group across 1 directory with 4 updates ([#43](https://github.com/edwardlthompson/DevPulse/issues/43)) ([b6ba666](https://github.com/edwardlthompson/DevPulse/commit/b6ba666e776fef0343446ca7218486dd28962d59))
+* portfolio pass for DevPulse 1.0.0 ([#44](https://github.com/edwardlthompson/DevPulse/issues/44)) ([1a34f37](https://github.com/edwardlthompson/DevPulse/commit/1a34f37cd86d0a9c11b5a57270dc1ef78d8e9c65))
+
 ## [Unreleased]
 
 ## [1.0.0](https://github.com/edwardlthompson/DevPulse/compare/v0.38.3...v1.0.0) (2026-11-02)
