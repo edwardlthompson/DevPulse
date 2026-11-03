@@ -9,7 +9,7 @@ Live board for a product repo. Finished work: [`COMPLETED_TASKS.md`](COMPLETED_T
 **Who:** `AGENT` code · `HUMAN` person · `ADB` device · `AUTO` CI/scripts
 **State:** 🔲 open · ✅ done · ❌ blocked — reason
 
-Format: `🔲 [AGENT] Short task`. Sequential `[AGENT]` first. Parallel scopes: [`docs/PARALLEL_AGENT_SCOPES.md`](docs/PARALLEL_AGENT_SCOPES.md). `/build` tries HUMAN/ADB after automation; failures go to `HUMAN_BACKLOG.md`.
+Format: `🔲 [AGENT] Short task`. Sequential `[AGENT]` first. Parallel scopes: [`docs/PARALLEL_AGENT_SCOPES.md`](docs/PARALLEL_AGENT_SCOPES.md). `/build` tries HUMAN/ADB after automation; failures go to `.agent/HUMAN_BACKLOG.md`.
 
 This file is the **child model**. After `init-project`, it becomes your `BUILD_PLAN.md`. On the bootstrap template, the live maintainer board is [`BUILD_PLAN.md`](BUILD_PLAN.md).
 

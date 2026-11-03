@@ -66,7 +66,7 @@ flowchart TD
 
 ```
 
-## AGENT_MEMORY.md
+## .agent/AGENT_MEMORY.md
 
 - **What:** Long-term stack, threats, and retrospectives.
 - **Why:** Chat context is expensive and evaporates. A small memory file survives session resets without dumping the whole repo into the prompt.

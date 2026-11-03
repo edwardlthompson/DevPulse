@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import dev.foss.goldenpath.MainActivity
 import dev.foss.goldenpath.R
+import dev.foss.goldenpath.inventory.RefreshCancelReceiver
 
 class RefreshNotifier(private val context: Context) {
     private val manager = context.getSystemService(NotificationManager::class.java)
@@ -34,12 +35,17 @@ class RefreshNotifier(private val context: Context) {
         return base(context.getString(R.string.refresh_notify_title), text, ongoing = true)
             .setOnlyAlertOnce(true)
             .setProgress(total.coerceAtLeast(1), done.coerceAtLeast(0), indeterminate)
+            .addAction(0, context.getString(R.string.refresh_notify_cancel), cancelPending())
             .build()
     }
 
     fun postProgress(done: Int, total: Int, location: String = "") {
         if (!RefreshNotifyCopy.allowProgress(System.currentTimeMillis())) return
         manager.notify(RefreshNotifyCopy.PROGRESS_ID, progress(done, total, location))
+    }
+
+    fun cancelProgress() {
+        manager.cancel(RefreshNotifyCopy.PROGRESS_ID)
     }
 
     fun postDone(lookedUp: Int) {
@@ -50,6 +56,17 @@ class RefreshNotifier(private val context: Context) {
             ongoing = false,
         ).setAutoCancel(true).build()
         manager.notify(RefreshNotifyCopy.DONE_ID, notification)
+    }
+
+    private fun cancelPending(): PendingIntent {
+        val cancel = Intent(context, RefreshCancelReceiver::class.java)
+            .setAction(RefreshCancelReceiver.ACTION_CANCEL)
+        return PendingIntent.getBroadcast(
+            context,
+            1,
+            cancel,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
     }
 
     private fun base(title: String, text: String, ongoing: Boolean): NotificationCompat.Builder {

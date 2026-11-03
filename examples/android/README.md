@@ -63,4 +63,4 @@ Before running instrumented tests or manual QA:
 
 ## F-Droid notes
 
-Document dependency hashes and reproducible build verification steps in your project's `AGENT_MEMORY.md` when activating module A.
+Document dependency hashes and reproducible build verification steps in your project's `.agent/AGENT_MEMORY.md` when activating module A.

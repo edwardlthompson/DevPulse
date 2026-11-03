@@ -25,12 +25,6 @@ object RefreshOutletIds {
 
     fun fdroid(repoId: String): String = "fdroid:$repoId"
 }
-object RefreshSkip {
-    private val ids = ConcurrentHashMap.newKeySet<String>()
-    fun reset() { ids.clear() }
-    fun stop(id: String) { ids.add(id) }
-    fun stopped(id: String): Boolean = id in ids
-}
 
 object RefreshOutletBoard {
     private val lock = Any()

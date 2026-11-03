@@ -66,6 +66,10 @@ flowchart TD
 
 {{usage}}
 
+## What this is not
+
+{{what_this_is_not}}
+
 ## Configuration
 
 Copy [`.env.example`]({{url_env_example}}) to `.env` for local secrets (never commit `.env`). Stack-specific config lives in the active `examples/` or app root after prune.

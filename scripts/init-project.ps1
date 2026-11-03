@@ -119,7 +119,7 @@ replacements = [
     ("[INSERT PLATFORM / TECH STACK HERE]", stack),
     ("[INSERT DETAILED APP DESCRIPTION AND GOALS HERE]", purpose),
 ]
-for rel in ("docs/INITIALIZATION_PROMPT.md", "AGENT_MEMORY.md"):
+for rel in ("docs/INITIALIZATION_PROMPT.md", ".agent/AGENT_MEMORY.md"):
     path = root / rel
     if not path.is_file():
         continue

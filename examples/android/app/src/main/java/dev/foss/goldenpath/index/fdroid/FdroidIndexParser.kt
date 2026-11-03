@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.fdroid
 
+import dev.foss.goldenpath.index.SourceFetchPolicy
+
 object FdroidIndexParser {
     private val lastUpdated = Regex(""""lastUpdated"\s*:\s*(\d+)""")
     private val sourceCode = Regex(""""sourceCode"\s*:\s*"([^"]+)"""")
@@ -74,7 +76,8 @@ object FdroidLookupEngine {
 }
 
 object FdroidCachePolicy {
-    const val TTL_MS = 3 * 24 * 60 * 60 * 1000L
+    /** Twelve-hour cached F-Droid index before a network refresh. */
+    const val TTL_MS = SourceFetchPolicy.INDEX_CACHE_TTL_MS
 
     fun isFresh(fetchedAtMs: Long, nowMs: Long): Boolean =
         nowMs - fetchedAtMs in 0 until TTL_MS

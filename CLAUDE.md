@@ -20,4 +20,3 @@ Do not complete a feature task without corresponding tests, or an explicit justi
 - Commit secrets, `.env`, or skip hooks
 - Push or deploy without human approval
 - Blind-overwrite child `AGENTS.md` on template upgrade
-

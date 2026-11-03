@@ -1,0 +1,8 @@
+# Child-repo Language attribution (GitHub Linguist)
+# Copied onto .gitattributes by init-project (append under # --- linguist --- when one exists).
+# Python stack: init comments out scripts/** so product scripts still count as code.
+scripts/** linguist-vendored
+modules/** linguist-documentation
+docs/** linguist-documentation
+examples/*/build/** linguist-vendored
+.github/** linguist-vendored

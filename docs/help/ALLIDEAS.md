@@ -13,7 +13,7 @@ Read docs/help/ALLIDEAS.md and dump every in-scope next idea, grouped by theme. 
 
 ## Recipe
 
-1. Read `AGENT_MEMORY.md` (Persistent Context + latest retrospective only), `BUILD_PLAN.md` Sequential, `CHANGELOG.md` `[Unreleased]`, latest `DECISION_LOG.md` entries, `docs/FIRST_30_DAYS.md`, and `docs/help/BATCH_COMMANDS.md`.
+1. Read `.agent/AGENT_MEMORY.md` (Persistent Context + latest retrospective only), `BUILD_PLAN.md` Sequential, `CHANGELOG.md` `[Unreleased]`, latest `.agent/DECISION_LOG.md` entries, `docs/FIRST_30_DAYS.md`, and `docs/help/BATCH_COMMANDS.md`.
 2. Run `python3 scripts/agent-run.py project-health` (or `bash scripts/project-health.sh`) and `python3 scripts/agent-run.py feedback-inbox`. If the fix inbox is non-empty, say so first and recommend `/audit`. Merge GitHub `enhancement` issues / Ideas discussions into the dump (P1 default; skip items already on BUILD_PLAN).
 3. **Template mode** if this repo is still the bootstrap template. **Child mode** otherwise — read `docs/spec.md` and the active Golden Path README.
 4. Print every idea not already shipped or already 🔲/`✅` on the board. Group by theme. Each: title, Why, Effort (S/M), Priority (P0/P1/P2). No cap; if more than ~80, pause and offer `continue`.

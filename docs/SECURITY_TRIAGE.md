@@ -50,7 +50,7 @@ Recommended cadence: **Monday** (aligned with scheduled security scans and `heal
 - Workflow: `.github/workflows/scorecard.yml` (`name: OpenSSF Scorecard`)
 - Weekly triage: `check-security-triage.sh` reports latest Scorecard run conclusion
 - Pre-release: `pre-release-gate.sh` invokes `check-security-triage.sh --strict` (fails on missing/failed Scorecard)
-- SARIF: Scorecard uploads findings to **Security → Code scanning**; triage open items into BUILD_PLAN `[AGENT]` rows or dismiss with rationale in DECISION_LOG.md
+- SARIF: Scorecard uploads findings to **Security → Code scanning**; triage open items into BUILD_PLAN `[AGENT]` rows or dismiss with rationale in .agent/DECISION_LOG.md
 
 ### SARIF triage (M35 / 2026-08-15)
 
@@ -66,7 +66,7 @@ Recommended cadence: **Monday** (aligned with scheduled security scans and `heal
 | Decision | When | Action |
 |----------|------|--------|
 | **Fix** | Patch available, low risk | Merge Dependabot PR or [AGENT] applies bump |
-| **Defer** | No fix yet, acceptable risk window | Open issue with expiry date; log in DECISION_LOG.md |
+| **Defer** | No fix yet, acceptable risk window | Open issue with expiry date; log in .agent/DECISION_LOG.md |
 | **Dismiss** | False positive or not applicable | Document rationale in issue or ADR |
 After triage, confirm Trivy and CodeQL workflows are green on `main`.
 
@@ -89,7 +89,7 @@ Before any version bump or GitHub Release:
 
 - 🔲 Weekly triage completed within last **7 days**
 - 🔲 Zero open **Critical/High** Dependabot alerts (or documented exception with [HUMAN] approval + linked issue/ADR)
-- 🔲 Deferred vulnerabilities have a linked issue and [HUMAN] sign-off in release notes or DECISION_LOG.md
+- 🔲 Deferred vulnerabilities have a linked issue and [HUMAN] sign-off in release notes or .agent/DECISION_LOG.md
 - 🔲 All [AUTO] security scans green on main (Trivy, CodeQL)
 
 **Release workflow gates (`.github/workflows/release.yml`):**
@@ -105,7 +105,7 @@ Release Please publishes the GitHub Release; the `release` published event attac
 If a Critical/High alert has no upstream fix, release may proceed only when:
 
 1. A linked issue documents the advisory, impact, and mitigation
-2. [HUMAN] explicitly approves in the release notes or DECISION_LOG.md
+2. [HUMAN] explicitly approves in the release notes or .agent/DECISION_LOG.md
 
 ## OWASP LLM walk (agents / tools / MCP)
 

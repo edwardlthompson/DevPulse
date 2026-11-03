@@ -6,8 +6,8 @@
 4. **Bootstrap mode:** `docs/INITIALIZATION_PROMPT.md`
 5. **Reference mode:** `docs/FOR_AGENTS.md` + `TEMPLATE_INDEX.json`
 6. **Task board:** `BUILD_PLAN.md` (Sequential before Parallel) — status: 🔲 open · ✅ done · ❌ blocked
-7. **Parallel dispatch:** parallel-first BUILD_PLAN; `/build` automates HUMAN/ADB first, backlogs failures to `HUMAN_BACKLOG.md`, never halts on human labels — `scripts/build-sprint-status.sh --lane child`
-8. **Living memory:** update `AGENT_MEMORY.md` only at milestone boundaries
+7. **Parallel dispatch:** parallel-first BUILD_PLAN; `/build` automates HUMAN/ADB first, backlogs failures to `.agent/HUMAN_BACKLOG.md`, never halts on human labels — `scripts/build-sprint-status.sh --lane child`
+8. **Living memory:** update `.agent/AGENT_MEMORY.md` only at milestone boundaries
 
 > Legacy `.cursorrules` is deprecated. Use `.cursor/rules/*.mdc` and this file instead.
 
@@ -95,12 +95,12 @@ Do not mark a BUILD_PLAN feature row ✅ without tests or that justification. Co
 - On session start: read `START_HERE.md`, pick mode via `docs/CURSOR_MODES.md` (roles if your IDE uses other names), then `BUILD_PLAN.md` Sequential lane
 - If your tool has no slash commands, use `docs/help/*.md` (start with `docs/help/TOUR.md`)
 - When creating or significantly changing a file, state one sentence of why (see `docs/BEST_PRACTICES.md` and `/coach`)
-- On milestone end: update `AGENT_MEMORY.md`, append to `DECISION_LOG.md` or `docs/adr/`
+- On milestone end: update `.agent/AGENT_MEMORY.md`, append to `.agent/DECISION_LOG.md` or `docs/adr/`
 - On 3-strike failure: halt and escalate to human
 - On context bloat: write `.cursor-session-state`, ask human to clear chat
 - Sprint 2+ features: after each AGENT step run `scripts/watch-agent-gates.sh --once --autofix` (see `docs/FEATURE_MODULES.md`)
 - Repo hygiene: track source only; run `scripts/check-repo-hygiene.sh` before push (see `docs/REPO_HYGIENE.md`)
-- Log significant agent actions in `DECISION_LOG.md` at milestone boundaries
+- Log significant agent actions in `.agent/DECISION_LOG.md` at milestone boundaries
 
 ## Multi-Agent Adapters
 
@@ -119,7 +119,7 @@ bash scripts/bootstrap-lifecycle.sh --sync-adapters
 | Gemini / Antigravity | `GEMINI.md` (pointer only — never real rules) |
 | Windsurf | `.windsurf/rules/agents-pointer.md` |
 | Cline / Roo | `.clinerules` |
-| Aider | `CONVENTIONS.md` |
+| Aider | `.agent/CONVENTIONS.md` |
 | Continue | `.continue/rules/agents.md` |
 Do not hand-edit generated adapters. See `docs/AGENT_PORTABILITY.md`.
 

@@ -37,8 +37,8 @@
 ## Week 4 — Operate like a maintained project
 
 - 🔲 **Green CI before `/allideas`** — required checks on `main` must be green (`project-health` / `check-github-ci`) before dumping backlog ideas onto BUILD_PLAN
-- 🔲 Update `AGENT_MEMORY.md` at this milestone only
-- 🔲 Append one `DECISION_LOG.md` entry for the first architecture choice
+- 🔲 Update `.agent/AGENT_MEMORY.md` at this milestone only
+- 🔲 Append one `.agent/DECISION_LOG.md` entry for the first architecture choice
 - 🔲 `/maintain` or `/triage` + `/update-deps` once (local bumps; GitHub Dependabot leftover + Scorecard awareness)
 - 🔲 Optional: `just local-compute` / `just linux-dev`; follow `docs/LINUX_DEV.md` on Linux (direnv, caches, inotify)
 - 🔲 Optional Android on Linux: one-pager [`LINUX_DEV.md` — Apt-locked hosts + Android on Linux](LINUX_DEV.md#apt-locked-hosts-user-local-jdk--android-sdk) (SDK under `~/Android/Sdk`, udev/RSA once, then `/emulator`)

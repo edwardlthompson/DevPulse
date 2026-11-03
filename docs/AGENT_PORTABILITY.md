@@ -11,7 +11,7 @@ One project law: **[`AGENTS.md`](../AGENTS.md)**. Every supported tool either re
 | Antigravity / Gemini CLI | `AGENTS.md` + pointer-only `GEMINI.md` | Same `docs/help/TOUR.md` prompt |
 | Claude Code | `AGENTS.md` + `CLAUDE.md` | Same, or Claude’s `/` menu if you add a skill |
 | GitHub Copilot | `AGENTS.md` + `.github/copilot-instructions.md` | Same tour prompt in Copilot Chat |
-| Aider | `AGENTS.md` + `CONVENTIONS.md` | `/read docs/help/TOUR.md` then ask for the walk |
+| Aider | `AGENTS.md` + `.agent/CONVENTIONS.md` | `/read docs/help/TOUR.md` then ask for the walk |
 | Cline / Roo | `AGENTS.md` + `.clinerules` | First-time: GitHub sign-in + FREE model + tour prompt. See [`docs/help/CLINE.md`](help/CLINE.md). |
 | Continue | `AGENTS.md` + `.continue/rules/agents.md` | Same tour prompt |
 | Codex | `AGENTS.md` | Advanced/optional, not first-time. |

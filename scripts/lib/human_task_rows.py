@@ -62,10 +62,10 @@ def automate_approve_adr(root: Path, cfg: dict, task: str) -> AttemptResult:
     if "<!-- no-auto-approve -->" in (root / "BUILD_PLAN.md").read_text(encoding="utf-8"):
         return AttemptResult(1, "approve-adr", "BUILD_PLAN disables auto-approve", True)
     adr_glob = list((root / "docs/adr").glob("0001*.md")) if (root / "docs/adr").is_dir() else []
-    if not (adr_glob or (root / "DECISION_LOG.md").is_file()):
+    if not (adr_glob or (root / ".agent/DECISION_LOG.md").is_file()):
         return AttemptResult(1, "approve-adr", "No ADR-0001 or DECISION_LOG found", True)
     append_decision_log(root, f"Autonomous approval for BUILD_PLAN row: {task[:120]}")
-    return AttemptResult(0, "approve-adr", "Logged autonomous approval in DECISION_LOG.md", False)
+    return AttemptResult(0, "approve-adr", "Logged autonomous approval in .agent/DECISION_LOG.md", False)
 
 
 def automate_product_smoke(root: Path, cfg: dict) -> AttemptResult:

@@ -19,16 +19,16 @@ WIDE_PREFIX = (
     ".cursor-plugin/", ".cursor/plugin",
 )
 WIDE_NAMES = frozenset(
-    "AGENTS.md CLAUDE.md GEMINI.md CONVENTIONS.md .clinerules "
+    "AGENTS.md CLAUDE.md GEMINI.md .agent/CONVENTIONS.md .clinerules "
     "bootstrap.config.json bootstrap.config.json.example TEMPLATE_INDEX.json "
     ".gitignore .cursor/stack-selection.json .cursor/hooks.json "
     ".cursor/permissions.json .cursor/worktrees.json".split()
 )
 DOCS_PREFIX = ("docs/", ".cursor/commands/", ".cursor/skills/")
 DOCS_NAMES = frozenset(
-    "BUILD_PLAN.md CHANGELOG.md AGENT_MEMORY.md DECISION_LOG.md "
-    "COMPLETED_TASKS.md HUMAN_BACKLOG.md README.md SUPPORT.md CITATION.cff "
-    "PROMPT_LIBRARY.md KNOWLEDGE_BASE.md LICENSE CODE_OF_CONDUCT.md "
+    "BUILD_PLAN.md CHANGELOG.md .agent/AGENT_MEMORY.md .agent/DECISION_LOG.md "
+    "COMPLETED_TASKS.md .agent/HUMAN_BACKLOG.md README.md SUPPORT.md CITATION.cff "
+    ".agent/PROMPT_LIBRARY.md .agent/KNOWLEDGE_BASE.md LICENSE CODE_OF_CONDUCT.md "
     "SECURITY.md CODEOWNERS AGENT.md AGENT.md.example".split()
 )
 EPHEMERAL = (

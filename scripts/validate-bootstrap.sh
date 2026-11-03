@@ -22,7 +22,7 @@ REQUIRED=(
   BUILD_PLAN_TEMPLATE.md
   AGENTS.md
   AGENT.md.example
-  AGENT_MEMORY.md
+  .agent/AGENT_MEMORY.md
   docs/START_HERE.md
   docs/CURSOR_MODES.md
   docs/INITIALIZATION_PROMPT.md
@@ -77,7 +77,7 @@ REQUIRED=(
   PROJECT_CHECKLIST.md
   CLAUDE.md
   GEMINI.md
-  CONVENTIONS.md
+  .agent/CONVENTIONS.md
   .clinerules
   .github/copilot-instructions.md
   .cursor/rules/main.mdc

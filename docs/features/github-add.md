@@ -74,7 +74,7 @@ Alias, re-probe, starred, import, regex, and direct-APK unit tests above, or fal
 ## Notes
 
 - Do not browse F-Droid/Droidify catalogs or import rumboalla’s GitHub map.
-- Play-listed apps still skip GitHub name-search. Store-less leftovers search in the background after scan+update (`docs/features/github-discover.md`). Aliases + paste + stars still cover GitHub-only apps that search cannot rank. See `DECISION_LOG.md`.
+- Play-listed apps still skip GitHub name-search. Store-less leftovers search in the background after scan+update (`docs/features/github-discover.md`). Aliases + paste + stars still cover GitHub-only apps that search cannot rank. See `.agent/DECISION_LOG.md`.
 - Update all stays user-triggered. Root remains opt-in.
 - `[ADB]` smoke: GitHub Obtainium lists on Refresh; FAB paste binds; cert refuse still blocks a mismatched APK.
 

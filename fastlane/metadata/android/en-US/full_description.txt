@@ -1,0 +1,1 @@
+DevPulse scans installed Android apps across Google Play, F-Droid plus extra repos, and public forges to surface stale or abandoned software. Local-only: nothing leaves the device. Not a security audit or malware scanner.

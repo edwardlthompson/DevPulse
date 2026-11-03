@@ -18,7 +18,7 @@
     {
       "id": "week-4",
       "title": "Week 4 — Operate like a maintained project",
-      "needles": ["AGENT_MEMORY.md", "DECISION_LOG.md", "/maintain", "BATCH_COMMANDS.md"]
+      "needles": [".agent/AGENT_MEMORY.md", ".agent/DECISION_LOG.md", "/maintain", "BATCH_COMMANDS.md"]
     }
   ]
 }

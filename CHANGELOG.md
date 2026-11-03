@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0](https://github.com/edwardlthompson/DevPulse/compare/v0.38.3...v1.0.0) (2026-11-02)
+
+### Added
+
+* **android:** ScanPerf instrumentation and `docs/PERF.md` for 200-app cold start, duration, and peak heap
+* **android:** Foreground refresh cancel action, 20s per-source timeout, 12-hour index cache, last-scanned timestamp, resume-after-kill
+* **android:** First-run sheet clarifying installed-apps permission and on-device-only scans
+* **docs:** README “What this is not” (not a security audit / malware scanner)
+* **chore:** Linguist attribution block and Fastlane en-US metadata with `NonFreeNet` plus screenshot placeholders
+
+### Fixed
+
+* **android:** Restore ❓ unknown mark with inline explanation; replace heartbeat-style copy with last updated / looks abandoned
+
+### Changed
+
+* **chore:** Move living agent docs into `.agent/`; GitHub About description/topics refresh for GPL FOSS discovery
+* **android:** Bump app `versionName` to 1.0.0 (versionCode 10000)
+
 ## [0.38.3](https://github.com/edwardlthompson/DevPulse/compare/v0.38.2...v0.38.3) (2026-10-21)
 
 

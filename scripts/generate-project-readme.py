@@ -35,6 +35,7 @@ def validate_product(product: dict, *, product_mode: bool) -> list[str]:
         "quick_start",
         "install",
         "usage",
+        "what_this_is_not",
         "urls",
         "badge",
     ]
@@ -156,6 +157,7 @@ def render_readme(root: Path, product: dict, *, for_preview: bool = False) -> st
         "{{quick_start}}": render_list(product["quick_start"], ordered=True),
         "{{install}}": product["install"],
         "{{usage}}": product["usage"],
+        "{{what_this_is_not}}": product.get("what_this_is_not") or "",
         "{{hero_path}}": hero_path,
         "{{lockup_path}}": lockup_path,
         "{{splash_path}}": splash_path,

@@ -55,7 +55,7 @@ jobs:
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add .template-version TEMPLATE_INDEX.json README.md AGENT_MEMORY.md CHANGELOG.md .cursor-plugin/plugin.json CITATION.cff
+            git add .template-version TEMPLATE_INDEX.json README.md .agent/AGENT_MEMORY.md CHANGELOG.md .cursor-plugin/plugin.json CITATION.cff
             git commit -m "chore: sync template version files for release PR"
             git push origin HEAD
           fi

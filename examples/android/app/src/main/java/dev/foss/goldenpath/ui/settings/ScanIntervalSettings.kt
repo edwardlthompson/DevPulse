@@ -28,6 +28,8 @@ import dev.foss.goldenpath.inventory.ScanInterval
 import dev.foss.goldenpath.inventory.ScanNextCopy
 import dev.foss.goldenpath.inventory.ScanSchedule
 import dev.foss.goldenpath.ui.theme.SpacingMd
+import java.text.DateFormat
+import java.util.Date
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -47,6 +49,18 @@ fun ScanIntervalSettings(modifier: Modifier = Modifier) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SpacingMd)) {
         Text(text = stringResource(R.string.scan_interval_title), style = MaterialTheme.typography.titleMedium)
         Text(text = stringResource(R.string.scan_interval_body), style = MaterialTheme.typography.bodySmall)
+        Text(
+            text = if (lastScanAt == null) {
+                stringResource(R.string.inventory_last_scanned_never)
+            } else {
+                stringResource(
+                    R.string.inventory_last_scanned,
+                    DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                        .format(Date(lastScanAt!!)),
+                )
+            },
+            style = MaterialTheme.typography.bodySmall,
+        )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(SpacingMd)) {
             ScanInterval.entries.forEach { mode ->
                 FilterChip(

@@ -93,7 +93,7 @@ Validation: `bash scripts/check-batch-commands.sh` (also via `validate-bootstrap
 
 1. `/allideas` (or `docs/help/ALLIDEAS.md`) — dump in-scope ideas; do not implement yet.
 2. Say `board` / `add all` / name numbers — agent adds 🔲 `[AGENT]` rows to `BUILD_PLAN.md` (cap per sprint; archive prior milestone first).
-3. `/build` — autonomous execution with `--scope auto` gates; HUMAN/ADB attempted after AGENT/AUTO, failures → `HUMAN_BACKLOG.md`.
+3. `/build` — autonomous execution with `--scope auto` gates; HUMAN/ADB attempted after AGENT/AUTO, failures → `.agent/HUMAN_BACKLOG.md`.
 4. Sprint wrap: `smoke-sprint --require` → `/gates` → `/cleanup` archive.
 
 Human cheat sheet: [`docs/help/BATCH_COMMANDS.md`](help/BATCH_COMMANDS.md).

@@ -55,7 +55,7 @@ Override gate worker count with `BOOTSTRAP_CHECK_JOBS` (see `scripts/lib/run_che
 | android | `examples/android/**` |
 | node | `examples/node/**` |
 | multi | One scope per stack row; no overlap |
-| none | Match `AGENT_MEMORY.md` checked modules |
+| none | Match `.agent/AGENT_MEMORY.md` checked modules |
 ## Sprint M13 (template maintainer) — archived
 
 > Completed 2026-06-15. Branch protection verify, init `--stack`, local APK hash wrapper.

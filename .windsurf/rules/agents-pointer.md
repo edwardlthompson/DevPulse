@@ -11,4 +11,3 @@ Tour (any IDE): ask your agent to read `docs/help/TOUR.md`.
 Commands: `docs/help/BATCH_COMMANDS.md` (Cursor: type `/tour` or `/bootstrap`).
 Edit `AGENTS.md` only; then `bash scripts/bootstrap-lifecycle.sh --sync-adapters`.
 Do not put project rules in this file.
-

@@ -15,6 +15,7 @@ class AdapterWriteTests(unittest.TestCase):
             root = Path(tmp)
             written = write_adapters(root)
             names = {p.name for p in written}
+            rels = {p.relative_to(root).as_posix() for p in written}
             self.assertIn("main.mdc", names)
             self.assertIn("CLAUDE.md", names)
             self.assertIn("copilot-instructions.md", names)
@@ -22,6 +23,7 @@ class AdapterWriteTests(unittest.TestCase):
             self.assertIn("agents-pointer.md", names)
             self.assertIn(".clinerules", names)
             self.assertIn("CONVENTIONS.md", names)
+            self.assertIn(".agent/CONVENTIONS.md", rels)
             self.assertIn("agents.md", names)
             self.assertEqual(len(written), len(ADAPTERS))
 

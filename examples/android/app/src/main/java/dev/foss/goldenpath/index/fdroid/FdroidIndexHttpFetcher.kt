@@ -1,5 +1,6 @@
 package dev.foss.goldenpath.index.fdroid
 
+import dev.foss.goldenpath.index.SourceFetchPolicy
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -12,8 +13,8 @@ object FdroidIndexHttpFetcher : FdroidIndexFetcher {
             conn.requestMethod = "GET"
             conn.setRequestProperty("User-Agent", USER_AGENT)
             conn.instanceFollowRedirects = true
-            conn.connectTimeout = 20_000
-            conn.readTimeout = 180_000
+            conn.connectTimeout = SourceFetchPolicy.CONNECT_TIMEOUT_MS
+            conn.readTimeout = SourceFetchPolicy.READ_TIMEOUT_MS
             if (conn.responseCode != HttpURLConnection.HTTP_OK) {
                 error("fdroid ${conn.responseCode}")
             }

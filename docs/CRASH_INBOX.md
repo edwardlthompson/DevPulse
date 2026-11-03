@@ -21,7 +21,7 @@ Golden Path crash filing stays on GitHub Issues ([PRIVACY.md](PRIVACY.md), [ADR-
 ## [HUMAN] before enable
 
 1. Complete the DPIA checklist in [PRIVACY.md](PRIVACY.md).
-2. Record lawful basis, retention, and abuse controls in `DECISION_LOG.md`.
+2. Record lawful basis, retention, and abuse controls in `.agent/DECISION_LOG.md`.
 3. Host GlitchTip or Bugsink on infrastructure you control; rate-limit.
 4. Set `crash_inbox.enabled` in `bootstrap.config.json` only after those steps.
 5. Keep capture opt-in and sanitized ([crash-capture](features/crash-capture.md)).

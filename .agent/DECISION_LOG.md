@@ -120,7 +120,7 @@
 - **Context:** `/ship` after PR #19 CI green. `pre-release-gate` passed Feature Gate, license, and HEAD CI/Security/CodeQL/Scorecard. Dependabot alerts and `verify-branch-protection` 403 on the cloud `ghs_` token (`security_events` / admin). `git push origin main` and `gh pr merge --admin` both failed: `2 of 6 required status checks are expected`.
 - **Decision:** Leave PR #19 ready. Do not invent a tag. Human admin-merges #19 (same as RP #17 / v0.34.1), then re-runs `/ship` for Release Please `v0.34.2`.
 - **Alternatives considered:** Force-push `main` (rejected: destructive-ops). Disable required checks (rejected: instructed-only, needs admin).
-- **Consequences:** No `v0.34.2` tag this session. `HUMAN_BACKLOG.md` records the merge.
+- **Consequences:** No `v0.34.2` tag this session. `.agent/HUMAN_BACKLOG.md` records the merge.
 
 ### 2026-08-28 — GitHub hint Refresh reads releases
 - **Status:** Accepted
@@ -419,7 +419,7 @@
 ### 2026-08-16 — M37 gap close (verify, env, hooks)
 - **Status:** Accepted
 - **Context:** Checklist audit found core governance/CI present; remaining gaps were docker preflight, unimplemented post-hook flags, no root verify command, no env schema, no commit-msg enforcement, no Dockerfile, and no `.agent/memory` indexes.
-- **Decision:** Extend the existing engine. `scripts/verify.sh` is the harness. Env validation is stack-agnostic JSON schema. Skills/memory under `.agent/` are indexes to `.cursor/skills/` and `DECISION_LOG.md` / `KNOWLEDGE_BASE.md`. Post install/test/git-init stay opt-in. Conventional Commits via pre-commit `commit-msg`, not Node-only commitlint.
+- **Decision:** Extend the existing engine. `scripts/verify.sh` is the harness. Env validation is stack-agnostic JSON schema. Skills/memory under `.agent/` are indexes to `.cursor/skills/` and `.agent/DECISION_LOG.md` / `.agent/KNOWLEDGE_BASE.md`. Post install/test/git-init stay opt-in. Conventional Commits via pre-commit `commit-msg`, not Node-only commitlint.
 - **Alternatives considered:** Duplicate skills into `.github/skills/` (rejected); husky + lint-staged (rejected: pre-commit already covers all stacks); auto-commit after init (rejected: destructive-ops).
 - **Consequences:** `validate-bootstrap` requires env schema, Dockerfile, `.agent/` indexes, and `verify.sh`. Feature-gate fails if `.env.example` drifts from `env.schema.json`.
 
@@ -582,7 +582,7 @@ _Seed template ADR: `docs/adr/0000-template-baseline.md`. Child repos use `docs/
 ### 2026-06-30 — Autonomous /build with grouped human section
 - **Status:** Accepted
 - **Context:** `/build` halted on HUMAN/ADB rows; humans needed a single review block after automation; child repos need scripted attempts before manual follow-up
-- **Decision:** Add `build-sprint-status.sh`, `attempt-build-plan-row.sh`, and `HUMAN_BACKLOG.md` (failure-only); restructure BUILD_PLAN with `#### Human & device (after automation)`; AGENT/AUTO runs first, then automation attempts on grouped human rows
+- **Decision:** Add `build-sprint-status.sh`, `attempt-build-plan-row.sh`, and `.agent/HUMAN_BACKLOG.md` (failure-only); restructure BUILD_PLAN with `#### Human & device (after automation)`; AGENT/AUTO runs first, then automation attempts on grouped human rows
 - **Alternatives considered:** Skip human rows entirely during /build (rejected: loses automation catalog value); keep human rows interleaved in Sequential (rejected: hard to review after automation)
 - **Consequences:** Child repos must place HUMAN/ADB rows in the grouped section; `<!-- no-auto-approve -->` disables autonomous ADR ack
 

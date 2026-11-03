@@ -23,7 +23,7 @@ class InventoryCopyTest {
         assertEquals(ListingMark.Unknown, InventoryCopy.listingMark(listed = null, known = null))
         assertEquals("", InventoryCopy.listingMarkPrefix(ListingMark.Listed))
         assertEquals("", InventoryCopy.listingMarkPrefix(ListingMark.Missing))
-        assertEquals("", InventoryCopy.listingMarkPrefix(ListingMark.Unknown))
+        assertEquals("❓ ", InventoryCopy.listingMarkPrefix(ListingMark.Unknown))
         assertEquals(ListingMark.Ignored, InventoryCopy.listingMark(listed = true, known = true, ignored = true))
         assertEquals("", InventoryCopy.listingMarkPrefix(ListingMark.Ignored))
         assertEquals(R.string.inventory_listing_status_listed, InventoryCopy.listingMarkStatusRes(ListingMark.Listed))
