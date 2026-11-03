@@ -2,6 +2,7 @@ package dev.foss.goldenpath
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,7 @@ import dev.foss.goldenpath.crashcapture.CrashCapture
 import dev.foss.goldenpath.feedback.FeedbackDeepLink
 import dev.foss.goldenpath.inventory.ObtainiumImportLaunch
 import dev.foss.goldenpath.inventory.RefreshLaunch
+import dev.foss.goldenpath.inventory.ScanPerf
 import dev.foss.goldenpath.inventory.SettingsPersistence
 import dev.foss.goldenpath.inventory.SignerReplaceLaunch
 import dev.foss.goldenpath.network.NetworkStatusMonitor
@@ -24,6 +26,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) {
+            ScanPerf.markColdStart(SystemClock.elapsedRealtime())
+        }
         enableEdgeToEdge()
         CrashCapture.install(this)
         DisplayRefresh.apply(this)

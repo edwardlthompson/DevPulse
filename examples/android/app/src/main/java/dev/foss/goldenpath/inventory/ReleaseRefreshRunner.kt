@@ -51,6 +51,7 @@ object ReleaseRefreshRunner {
         DumpChunkBook.hydrate(context.filesDir)
         UpdateArtifactStore.hydrate(context.filesDir)
         val startedAt = System.currentTimeMillis()
+        ScanPerf.beginScan()
         val verifiedStore = FileGithubVerifiedStore(File(context.filesDir, "github_verified.tsv"))
         val shipped = GithubCatalogLive.loadShipped(context)
         GithubCatalogLive.pullIfDue(context, verifiedStore)
@@ -98,6 +99,12 @@ object ReleaseRefreshRunner {
         val scannedAt = System.currentTimeMillis()
         prefs.setLastScanAtMs(scannedAt)
         ScanSchedule.rescheduleAfterScan(context, scannedAt)
+        val perf = ScanPerf.finishScan(result.size)
+        Log.i(
+            "DevPulse",
+            "scan_perf apps=${perf.appCount} cold_ms=${perf.coldStartMs} " +
+                "duration_ms=${perf.durationMs} peak_mem=${perf.peakMemoryBytes}",
+        )
         val progress = ReleaseRefreshRuntime.progress.value
         val outlets = progress.outlets.joinToString(";") { "${it.id}=${it.elapsedMs}" }
         PulseHistory.note(
