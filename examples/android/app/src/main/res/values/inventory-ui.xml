@@ -14,4 +14,7 @@
     <string name="inventory_scan_cta">Scan for release updates</string>
     <string name="refresh_wifi_only">Refresh needs Wi-Fi while Wi-Fi only is on.</string>
     <string name="refresh_already_running">A refresh is already running.</string>
+    <string name="refresh_notify_cancel">Cancel</string>
+    <string name="inventory_last_scanned">Last scanned: %1$s</string>
+    <string name="inventory_last_scanned_never">Last scanned: never</string>
 </resources>

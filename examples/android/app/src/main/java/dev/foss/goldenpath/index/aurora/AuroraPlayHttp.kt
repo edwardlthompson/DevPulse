@@ -2,6 +2,7 @@ package dev.foss.goldenpath.index.aurora
 
 import com.aurora.gplayapi.data.models.PlayResponse
 import com.aurora.gplayapi.network.IHttpClient
+import dev.foss.goldenpath.index.SourceFetchPolicy
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
@@ -52,8 +53,8 @@ object AuroraPlayHttp : IHttpClient {
             conn.instanceFollowRedirects = true
             conn.useCaches = false
             conn.requestMethod = method
-            conn.connectTimeout = 25_000
-            conn.readTimeout = 25_000
+            conn.connectTimeout = SourceFetchPolicy.CONNECT_TIMEOUT_MS
+            conn.readTimeout = SourceFetchPolicy.READ_TIMEOUT_MS
             headers.forEach { (key, value) -> conn.setRequestProperty(key, value) }
             if (body != null) {
                 conn.doOutput = true

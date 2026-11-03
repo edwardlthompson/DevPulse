@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.play
 
+import dev.foss.goldenpath.index.SourceFetchPolicy
+
 enum class PlayLookupStatus {
     Ok,
     UnknownCheckManually,
@@ -22,8 +24,8 @@ object PlayCachePolicy {
 
 object PlayFetchPolicy {
     const val MIN_INTERVAL_MS = 1_500L
-    const val CONNECT_TIMEOUT_MS = 8_000
-    const val READ_TIMEOUT_MS = 12_000
+    const val CONNECT_TIMEOUT_MS = SourceFetchPolicy.CONNECT_TIMEOUT_MS
+    const val READ_TIMEOUT_MS = SourceFetchPolicy.READ_TIMEOUT_MS
     const val MAX_BODY_BYTES = 1_250_000
     const val USER_AGENT =
         "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.186 Mobile Safari/537.36"

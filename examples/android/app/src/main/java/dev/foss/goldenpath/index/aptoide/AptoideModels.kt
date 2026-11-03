@@ -1,5 +1,7 @@
 package dev.foss.goldenpath.index.aptoide
 
+import dev.foss.goldenpath.index.SourceFetchPolicy
+
 enum class AptoideLookupStatus {
     Ok,
     UnknownCheckManually,
@@ -25,8 +27,8 @@ object AptoideCachePolicy {
 
 object AptoideFetchPolicy {
     const val MIN_INTERVAL_MS = 1_500L
-    const val CONNECT_TIMEOUT_MS = 10_000
-    const val READ_TIMEOUT_MS = 10_000
+    const val CONNECT_TIMEOUT_MS = SourceFetchPolicy.CONNECT_TIMEOUT_MS
+    const val READ_TIMEOUT_MS = SourceFetchPolicy.READ_TIMEOUT_MS
     const val USER_AGENT = "DevPulse/0.1 (https://github.com/edwardlthompson/DevPulse)"
     const val META_URL = "https://ws2.aptoide.com/api/7/app/getMeta"
     const val UPDATES_URL = "https://ws75.aptoide.com/api/7/listAppsUpdates"

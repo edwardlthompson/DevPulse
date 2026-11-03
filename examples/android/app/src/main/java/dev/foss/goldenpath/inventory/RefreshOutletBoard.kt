@@ -1,8 +1,5 @@
 package dev.foss.goldenpath.inventory
 
-import dev.foss.goldenpath.index.forge.GitHubSearchPace
-import java.util.concurrent.ConcurrentHashMap
-
 data class RefreshOutletSnap(
     val id: String,
     val title: String,
@@ -24,12 +21,6 @@ object RefreshOutletIds {
     const val LEFTOVER = "leftover"
 
     fun fdroid(repoId: String): String = "fdroid:$repoId"
-}
-object RefreshSkip {
-    private val ids = ConcurrentHashMap.newKeySet<String>()
-    fun reset() { ids.clear() }
-    fun stop(id: String) { ids.add(id) }
-    fun stopped(id: String): Boolean = id in ids
 }
 
 object RefreshOutletBoard {

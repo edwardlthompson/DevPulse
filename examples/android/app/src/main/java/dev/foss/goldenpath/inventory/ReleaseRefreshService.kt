@@ -16,6 +16,7 @@ import dev.foss.goldenpath.notify.UpdatesNotify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 
 class ReleaseRefreshService : Service() {
@@ -32,23 +33,40 @@ class ReleaseRefreshService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == RefreshCancelReceiver.ACTION_CANCEL) {
+            cancelRefresh()
+            return START_NOT_STICKY
+        }
         ServiceCompat.startForeground(
             this,
             RefreshNotifyCopy.PROGRESS_ID,
             notifier.progress(0, 0),
             if (Build.VERSION.SDK_INT >= 29) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0,
         )
-        if (!ReleaseRefreshRuntime.tryBegin()) return START_NOT_STICKY
+        if (!ReleaseRefreshRuntime.tryBegin()) return START_REDELIVER_INTENT
         val wanted = intent?.getStringArrayListExtra(RefreshScope.EXTRA_PACKAGES).orEmpty()
             .ifEmpty { intent?.getStringArrayExtra(RefreshScope.EXTRA_PACKAGES)?.toList().orEmpty() }
+        // Resume-after-kill: hydrate prior outlet progress before continuing.
+        RefreshResume.persistDir = applicationContext.filesDir
+        RefreshResume.hydrate(RefreshResume.load(applicationContext.filesDir))
         scope.launch { runRefresh(wanted) }
-        return START_NOT_STICKY
+        return START_REDELIVER_INTENT
     }
 
     override fun onDestroy() {
         job.cancel()
         ReleaseRefreshRuntime.finish()
         super.onDestroy()
+    }
+
+    private fun cancelRefresh() {
+        RefreshSkip.stopAll()
+        ReleaseRefreshRuntime.pause()
+        job.cancelChildren()
+        ReleaseRefreshRuntime.finish()
+        notifier.cancelProgress()
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        stopSelf()
     }
 
     private suspend fun runRefresh(wanted: Collection<String>) {

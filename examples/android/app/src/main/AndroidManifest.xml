@@ -59,6 +59,13 @@
             android:foregroundServiceType="dataSync"
             tools:node="merge" />
         <receiver
+            android:name=".inventory.RefreshCancelReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="dev.foss.goldenpath.REFRESH_CANCEL" />
+            </intent-filter>
+        </receiver>
+        <receiver
             android:name=".inventory.InstallStatusReceiver"
             android:exported="false">
             <intent-filter>
