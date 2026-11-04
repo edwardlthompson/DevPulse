@@ -30,7 +30,7 @@ def format_row(pr: dict[str, Any], kind: str) -> str:
     link = f"[#{number}]({url})" if url else f"#{number}"
     if kind == "dependabot":
         return f"- 🔲 [AUTO] Merge Dependabot {link} ({title})"
-    return f"- 🔲 [AGENT] Merge release {link} ({title})"
+    return f"- 🔲 [AGENT][LOCAL] Merge release {link} ({title}) — scope: ."
 
 
 def render_inner(prs: list[dict[str, Any]]) -> str:

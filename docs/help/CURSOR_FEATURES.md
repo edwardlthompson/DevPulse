@@ -7,9 +7,9 @@
 | Feature | Path | Tier |
 |---------|------|------|
 | Rules (`.mdc`) | `.cursor/rules/` | both |
-| Slash commands (36) | `.cursor/commands/` | both |
+| Slash commands (52) | `.cursor/commands/` | both |
 | Hooks | `.cursor/hooks.json` | both |
-| Skills (15) | `.cursor/skills/` | both |
+| Skills (18) | `.cursor/skills/` | both |
 | Subagents (3) | `.cursor/agents/` | both |
 | Worktrees | `.cursor/worktrees.json` | both |
 | Auto-review permissions | `.cursor/permissions.json` | both |

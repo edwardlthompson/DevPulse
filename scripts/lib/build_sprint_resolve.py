@@ -97,5 +97,6 @@ def _row_dict(row: PlanRow, title: str, action: str) -> dict:
         "task": row.task,
         "sprint": title,
         "phase": row.phase,
+        "venue": row.venue,
         "action": action,
     }

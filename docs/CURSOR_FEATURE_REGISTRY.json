@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-09-10",
+  "updated_at": "2026-11-02",
   "entries": [
     {
       "id": "rules.mdc",
@@ -92,6 +92,14 @@
       "last_seen": "2026-07-21"
     },
     {
+      "id": "skills.upgrade",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-11-02"
+    },
+    {
       "id": "skills.parallel-scope",
       "category": "skills",
       "distribution_tier": "both",
@@ -154,6 +162,22 @@
       "doc_url": "https://cursor.com/docs/context/skills",
       "template_status": "shipped",
       "last_seen": "2026-09-10"
+    },
+    {
+      "id": "skills.ux-review",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-09-15"
+    },
+    {
+      "id": "skills.shape-idea",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/context/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-10-16"
     },
     {
       "id": "skills.blender-icons",
@@ -498,6 +522,70 @@
       "doc_url": "https://cursor.com/docs/plugins",
       "template_status": "example",
       "last_seen": "2026-07-21"
+    },
+    {
+      "id": "skills.custom-modes",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-10-16"
+    },
+    {
+      "id": "skills.split-to-prs",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/skills",
+      "template_status": "shipped",
+      "last_seen": "2026-10-16"
+    },
+    {
+      "id": "skills.migrate-to-skills",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/skills",
+      "template_status": "example",
+      "last_seen": "2026-10-16"
+    },
+    {
+      "id": "skills.loop-goal",
+      "category": "skills",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/docs/skills",
+      "template_status": "watch",
+      "last_seen": "2026-10-16"
+    },
+    {
+      "id": "agents.remote-control-ios",
+      "category": "agents",
+      "distribution_tier": "both",
+      "doc_url": "https://cursor.com/changelog",
+      "template_status": "watch",
+      "last_seen": "2026-10-16"
+    },
+    {
+      "id": "origin.app-marketplace",
+      "category": "marketplace",
+      "distribution_tier": "commercial",
+      "doc_url": "https://cursor.com/changelog",
+      "template_status": "watch",
+      "last_seen": "2026-10-16"
+    },
+    {
+      "id": "bots.security-review",
+      "category": "bots",
+      "distribution_tier": "commercial",
+      "doc_url": "https://cursor.com/changelog",
+      "template_status": "example",
+      "last_seen": "2026-10-16"
+    },
+    {
+      "id": "bots.rollouts",
+      "category": "bots",
+      "distribution_tier": "commercial",
+      "doc_url": "https://cursor.com/changelog",
+      "template_status": "example",
+      "last_seen": "2026-10-16"
     }
   ]
 }

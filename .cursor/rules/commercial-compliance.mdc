@@ -10,13 +10,15 @@ Active when `distribution_tier: commercial` in `.cursor/stack-selection.json` (v
 ## License & SDKs
 
 - Proprietary SDKs allowed when documented in ADR and `THIRD_PARTY_LICENSES.md`
-- Play Services, Firebase, and SaaS MCP servers permitted in production path
-- Still: no secrets in git; opt-in telemetry only
+- Play Services, Firebase, monetization (IAP/ads/Stripe), and SaaS MCP servers permitted in production path
+- Trackers/analytics allowed **only** with privacy policy + consent UX (never silent)
+- Still: no secrets in git
 
 ## Distribution
 
 - App Store, Play Store (non-FOSS track), SaaS, or enterprise channels allowed
 - Document store policies and privacy disclosures
+- Follow [`docs/COMMERCIAL_GOLDEN_PATH.md`](../../docs/COMMERCIAL_GOLDEN_PATH.md)
 
 ## Security
 

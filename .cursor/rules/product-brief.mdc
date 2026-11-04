@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Product brief (do not drift)
 
-If `AGENT.md` exists, read it **before** any sprint row and before Golden Path About, donate, Settings, or template purpose work. Do not substitute this template’s About/donate examples for the product in `AGENT.md`.
+If `AGENT.md` exists, read it **before** any sprint row and before Golden Path About, donate, Settings, purpose, or UI copy work. Do not substitute this template’s About/donate examples for the product in `AGENT.md`. User-facing About/purpose strings must echo the brief keywords (`check-agent-brief`).
 
 Bootstrap stamps `AGENTS.md` only. Never overwrite, delete, or “refresh” `AGENT.md` from `AGENTS.md`.
 

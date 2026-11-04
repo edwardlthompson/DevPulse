@@ -6,14 +6,17 @@ disable-model-invocation: false
 
 # Validate bootstrap (local gates)
 
-See also: `.cursor/commands/gates.md`
-
-Run from repo root:
+See also: `.cursor/commands/gates.md` · ADR-0009
 
 ```bash
+# Pre-commit / mid-slice (core checks)
+python3 scripts/agent-run.py validate-bootstrap --agent
+
+# Maintainer local (~70 checks; skips GitHub API action resolve)
 python3 scripts/agent-run.py validate-bootstrap --quick
+
 python3 scripts/agent-run.py check-repo-hygiene
-python3 scripts/agent-run.py feature-gate --stack "$(python3 -c "import json;print(json.load(open('.cursor/stack-selection.json')).get('stack','multi'))" 2>/dev/null || echo multi)"
+
 ```
 
-On failure: fix in scope, re-run. Do not mark BUILD_PLAN rows complete while gates are red.
+`/gates` defaults to `--agent` + dirty stacks; `/gates --full` uses `--quick` + multi. Do not re-run full validate mid-slice if `watch-agent-gates` already passed.

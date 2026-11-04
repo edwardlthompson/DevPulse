@@ -9,6 +9,7 @@ Guide through `BUILD_PLAN.md` Sprint 0 (from `BUILD_PLAN_TEMPLATE.md` after init
 5. Run `python3 scripts/agent-run.py validate-bootstrap --quick` and `python3 scripts/agent-run.py feature-gate --stack <active>`.
 6. Install local hooks: `pip install pre-commit && pre-commit install && pre-commit run --all-files` (or `python -m pip …` on Windows).
 7. Pick Cursor mode per @docs/CURSOR_MODES.md; follow Section 8 Startup Sequence.
-8. When Sprint 0 Sequential rows are all ✅ and gates pass, read @.cursor/commands/cleanup.md — execute fully.
+8. Optional: review [`docs/DIRECTORY_RULES.md`](../../docs/DIRECTORY_RULES.md) for the active stack (human confirm before writing `.mdc` files).
+9. When Sprint 0 Sequential rows are all ✅ and gates pass, read @.cursor/commands/cleanup.md — execute fully.
 
 Begin now.

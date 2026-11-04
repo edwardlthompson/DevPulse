@@ -1,6 +1,11 @@
 ---
-description: Windows UTF-8 write rule for agents and editors
-alwaysApply: true
+description: Windows UTF-8 write rule — never save repo text as UTF-16 LE
+alwaysApply: false
+globs:
+  - "**/*.ps1"
+  - "**/*.bat"
+  - "**/*.cmd"
+  - scripts/**/*.py
 ---
 
 # Windows Encoding

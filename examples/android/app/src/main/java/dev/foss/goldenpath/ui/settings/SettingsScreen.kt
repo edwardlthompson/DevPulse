@@ -2,11 +2,16 @@ package dev.foss.goldenpath.ui.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -118,26 +123,45 @@ fun SettingsScreen(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppearanceSettings(themeMode: ThemeMode, onThemeModeSelect: (ThemeMode) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val label = when (themeMode) {
+        ThemeMode.System -> stringResource(R.string.settings_theme_mode_system)
+        ThemeMode.Light -> stringResource(R.string.settings_theme_mode_light)
+        ThemeMode.Dark -> stringResource(R.string.settings_theme_mode_dark)
+    }
     SettingsGroup {
         Text(text = stringResource(R.string.settings_theme_label))
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(SpacingMd)) {
-            ThemeMode.entries.forEach { mode ->
-                FilterChip(
-                    selected = themeMode == mode,
-                    onClick = { onThemeModeSelect(mode) },
-                    label = {
-                        Text(
-                            when (mode) {
-                                ThemeMode.System -> stringResource(R.string.settings_theme_mode_system)
-                                ThemeMode.Light -> stringResource(R.string.settings_theme_mode_light)
-                                ThemeMode.Dark -> stringResource(R.string.settings_theme_mode_dark)
-                            },
-                        )
-                    },
-                )
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+            OutlinedTextField(
+                value = label,
+                onValueChange = {},
+                readOnly = true,
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth(),
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            )
+            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                ThemeMode.entries.forEach { mode ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                when (mode) {
+                                    ThemeMode.System -> stringResource(R.string.settings_theme_mode_system)
+                                    ThemeMode.Light -> stringResource(R.string.settings_theme_mode_light)
+                                    ThemeMode.Dark -> stringResource(R.string.settings_theme_mode_dark)
+                                },
+                            )
+                        },
+                        onClick = {
+                            onThemeModeSelect(mode)
+                            expanded = false
+                        },
+                    )
+                }
             }
         }
     }

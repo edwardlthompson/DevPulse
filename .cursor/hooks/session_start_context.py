@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""sessionStart: one-line stack / distribution context. Fail-open."""
+"""sessionStart: one-line stack / next-agent context. Fail-open."""
 from __future__ import annotations
 
 import json
 import os
-import subprocess
 import sys
 from pathlib import Path
 
@@ -17,6 +16,9 @@ def _next_agent_snip() -> str:
         return ""
     try:
         in_sync = False
+        local_hit = ""
+        any_agent = ""
+        cloud_open = False
         for line in path.read_text(encoding="utf-8").splitlines():
             if "<!-- open-prs-sync:begin -->" in line:
                 in_sync = True
@@ -29,38 +31,23 @@ def _next_agent_snip() -> str:
             stripped = line.strip()
             if not (stripped[:1].isdigit() or stripped.startswith("-")):
                 continue
-            if "🔲" in line and "[AGENT]" in line:
-                return stripped[:80]
+            if "🔲" not in line or "[AGENT]" not in line:
+                continue
+            if "[AGENT][CLOUD]" in line:
+                cloud_open = True
+                continue
+            if "[AGENT][LOCAL]" in line and not local_hit:
+                local_hit = stripped[:80]
+            elif not any_agent:
+                any_agent = stripped[:80]
+        if local_hit:
+            return local_hit + (" (cloud_rows_open)" if cloud_open else "")
+        if cloud_open and not any_agent:
+            return "cloud_rows_open type /resume"
+        return any_agent
     except OSError:
         return ""
     return ""
-
-
-def _open_pr_count() -> str | None:
-    """Best-effort open PR count; never block session start long."""
-    try:
-        sys.path.insert(0, str(ROOT / "scripts" / "lib"))
-        from sync_open_prs_build_plan import resolve_gh
-
-        gh = resolve_gh()
-        if not gh:
-            return None
-        proc = subprocess.run(
-            [gh, "pr", "list", "--state", "open", "--json", "number", "--limit", "50"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            timeout=2.0,
-            check=False,
-        )
-        if proc.returncode != 0:
-            return None
-        data = json.loads(proc.stdout or "[]")
-        if isinstance(data, list):
-            return str(len(data))
-    except Exception:
-        return None
-    return None
 
 
 def main() -> None:
@@ -88,20 +75,11 @@ def main() -> None:
         ollama = "up" if ollama_up() else "down"
     except Exception:
         pass
-    parts.append(
-        f"local-first cpus={cpus} ram={ram} jobs={jobs} ollama={ollama}: "
-        f"prefer This Computer + parallel Task/worktrees/"
-        f"/best-of-n over Cloud; BOOTSTRAP_CHECK_JOBS overrides gate parallelism"
-    )
-    n_prs = _open_pr_count()
+    parts.append(f"local-first cpus={cpus} ram={ram} jobs={jobs} ollama={ollama}")
     next_agent = _next_agent_snip()
-    handoff_bits: list[str] = []
-    if n_prs is not None:
-        handoff_bits.append(f"open_prs={n_prs}")
-    if next_agent:
-        handoff_bits.append(f"next_agent={next_agent}")
-    handoff_bits.append("type /resume after Cloud")
-    parts.append(" ".join(handoff_bits))
+    bits = [f"next_agent={next_agent}"] if next_agent else []
+    bits.append("type /resume after Cloud")
+    parts.append(" ".join(bits))
     if parts:
         print(json.dumps({"user_message": "Session context: " + ", ".join(parts)}))
 

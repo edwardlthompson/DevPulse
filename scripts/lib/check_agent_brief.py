@@ -1,6 +1,7 @@
 """CI anti-amnesia: AGENT.md brief must stay on the BUILD_PLAN Product block."""
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -8,6 +9,36 @@ from agent_brief import EMPTY_NOTE, extract_inner, parse_brief
 from build_sprint_model import is_template_repo
 
 EXAMPLE = "AGENT.md.example"
+
+# User-facing About/purpose surfaces (checked when present + AGENT.md exists).
+ABOUT_GLOBS = (
+    "examples/web/src/locales/en.json",
+    "examples/android/app/src/main/res/values/strings.xml",
+    "examples/node/src/locales/en.json",
+    "examples/python/src/hello/about.py",
+    "branding/product.json",
+)
+
+
+def _about_haystack(root: Path) -> str:
+    chunks: list[str] = []
+    for rel in ABOUT_GLOBS:
+        path = root / rel
+        if path.is_file():
+            chunks.append(path.read_text(encoding="utf-8"))
+    return "\n".join(chunks).lower()
+
+
+def _product_mode_active(root: Path) -> bool:
+    """About keyword echo applies after branding leaves template Golden Path stubs."""
+    path = root / "branding" / "product.json"
+    if not path.is_file():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return str(data.get("mode") or "").strip().lower() == "product"
 
 
 def check(root: Path) -> list[str]:
@@ -44,6 +75,16 @@ def check(root: Path) -> list[str]:
             errors.append(f"BUILD_PLAN Product block missing keyword {key!r}")
     if inner.strip() == EMPTY_NOTE and keys:
         errors.append("BUILD_PLAN Product block is empty while AGENT.md has a brief")
+    # Child in product mode: About/purpose must echo keywords when those files exist.
+    if not template and keys and _product_mode_active(root):
+        about = _about_haystack(root)
+        if about.strip():
+            for key in keys:
+                if key.lower() not in about:
+                    errors.append(
+                        f"About/purpose surfaces missing AGENT.md keyword {key!r} "
+                        "(re-read AGENT.md before Golden Path copy)"
+                    )
     return errors
 
 

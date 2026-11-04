@@ -11,7 +11,6 @@ from build_sprint_model import (
     PlanRow,
 )
 
-
 def split_sprint_phases(
     lines: list[str],
 ) -> tuple[list[str], list[str], list[str], list[str]]:
@@ -42,7 +41,6 @@ def split_sprint_phases(
         else:
             human.append(line)
     return pre, parallel, post, human
-
 
 def parse_sprint_blocks(text: str) -> list[tuple[str, list[str]]]:
     blocks: list[tuple[str, list[str]]] = []
@@ -75,7 +73,6 @@ def parse_sprint_blocks(text: str) -> list[tuple[str, list[str]]]:
         i += 1
     return blocks
 
-
 def parse_maintenance_rows(text: str) -> tuple[list[PlanRow], list[PlanRow]]:
     auto_rows: list[PlanRow] = []
     human_rows: list[PlanRow] = []
@@ -100,13 +97,13 @@ def parse_maintenance_rows(text: str) -> tuple[list[PlanRow], list[PlanRow]]:
             task=match.group("task").strip(),
             sprint="Ongoing Maintenance",
             phase="human_group" if in_human else "maintenance",
+            venue=match.group("venue"),
         )
         if in_human:
             human_rows.append(row)
         else:
             auto_rows.append(row)
     return auto_rows, human_rows
-
 
 def parse_numbered_board(
     text: str, *, require_maintainer_header: bool = False
@@ -137,13 +134,13 @@ def parse_numbered_board(
             task=match.group("task").strip(),
             sprint=sprint,
             phase="board",
+            venue=match.group("venue"),
         )
         if row.owner in ("HUMAN", "ADB"):
             ha.append(row)
         elif row.owner in ("AGENT", "AUTO"):
             aa.append(row)
     return aa, ha
-
 def parse_board_queue(text: str, *, maintainer: bool) -> tuple[list[PlanRow], list[PlanRow]]:
     board_aa, board_ha = parse_numbered_board(text, require_maintainer_header=maintainer)
     maint_auto, maint_human = parse_maintenance_rows(text)

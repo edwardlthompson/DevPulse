@@ -21,6 +21,7 @@ SKILLS = (
     "local-models",
     "emulator",
     "adr",
+    "ux-review",
     "blender-icons",
 )
 AGENTS = ("verifier", "gate-fixer", "explorer")
@@ -34,6 +35,8 @@ COMMAND_SKILL = {
     "best-of-n.md": ("best-of-n",),
     "emulator.md": ("emulator",),
     "adr.md": ("adr",),
+    "ux-review.md": ("ux-review",),
+    "ux-apply.md": ("ux-review",),
 }
 
 FOSS_EXAMPLES = (

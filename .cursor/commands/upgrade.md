@@ -26,5 +26,18 @@ Do **not** edit the child. Produce a numbered gap list and a short plan with `##
 3. Write a Plan with mandatory `### Critique` (Issue→Resolution) for how to close the **named** gaps.
 4. Offer: “Say the number(s) to apply.” Canon → `[AGENT]` copy; Mixed → `[AGENT]` merge + `[HUMAN]` review; Sacred → `[HUMAN]` only; Golden Path → one `[AGENT]` `/feature` row each.
 5. **No silent `do all`.** If the user says `do all`, `implement all`, `add all`, or `yes to everything`, do not add rows and do not copy files. Restate the numbered list and wait until they name specific numbers.
+6. **Linguist attribution:** If `.gitattributes` lacks the five child patterns from `templates/linguist/child.gitattributes`, treat append (under `# --- linguist ---`) as a Canon gap. For `python` stacks, comment out `scripts/** linguist-vendored`. Validate with `bash scripts/check-linguist-attribution.sh`. Skill companion: `.cursor/skills/upgrade/SKILL.md`.
+
+## Child `--deep` (analyze + reformat beyond file gaps)
+
+When the user asks for `/upgrade --deep` (or “deep upgrade”):
+
+1. Still run update/gap checks (Canon / Mixed / Sacred / Golden Path) as above.
+2. **Analyze** the child against current Canon: file-size limits, UTF-8, product-brief keywords, batch-commands presence, UX guidelines pointers, coverage budgets, foss vs commercial compliance, new workflows (`/shape`, push cadence, coverage docs).
+3. Emit extra buckets:
+   - **Reformat** — mechanical conformance (limits, encoding, i18n, About keywords)
+   - **Adopt** — new template workflows/docs/commands the child lacks (copy Canon help; do not overwrite Sacred)
+4. Plan with `### Critique`. Apply **only named numbers**. Never overwrite Sacred; never replace the app with `examples/` stubs.
+5. After each applied batch: gates + nudge commit + `/push`.
 
 Begin now.

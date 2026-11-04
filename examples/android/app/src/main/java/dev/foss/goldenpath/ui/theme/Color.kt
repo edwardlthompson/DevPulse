@@ -1,5 +1,5 @@
 // GENERATED — do not edit; run scripts/sync-design-tokens.py
-// source-hash: 88adaa7f4916
+// source-hash: aa6c38d61879
 package dev.foss.goldenpath.ui.theme
 
 import androidx.compose.material3.darkColorScheme
@@ -8,9 +8,9 @@ import androidx.compose.ui.graphics.Color
 
 // Raw palette
 private val GpLightPrimary = Color(0xFFB3263E)
-private val GpDarkPrimary = Color(0xFFE94560)
+private val GpDarkPrimary = Color(0xFFFF8A9A)
 private val GpLightOnPrimary = Color(0xFFFFFFFF)
-private val GpDarkOnPrimary = Color(0xFFFFFFFF)
+private val GpDarkOnPrimary = Color(0xFF1A1A2E)
 private val GpLightPrimaryContainer = Color(0xFFFFDAD6)
 private val GpDarkPrimaryContainer = Color(0xFF8B1A35)
 private val GpLightOnPrimaryContainer = Color(0xFF410009)

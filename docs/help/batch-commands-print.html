@@ -46,16 +46,21 @@ footer { font-size: 0.9rem; margin-top: 1.5rem; }
 <tr><td><code>/coach</code></td><td>Ask what to do next. Theme, About, and donate stay in Settings (Settings-only).</td></tr>
 <tr><td><code>/ideas</code></td><td>See a short ranked list of possible next features (does not build them).</td></tr>
 <tr><td><code>/allideas</code></td><td>Dump every in-scope idea so you can fill the task board.</td></tr>
+<tr><td><code>/brand</code></td><td>Replace Golden Path placeholder logos and pitch with your product brand.</td></tr>
 </table>
 <h2>Building</h2>
 <table>
 <tr><th scope="col">Type this</th><th scope="col">When to use it</th></tr>
 <tr><td><code>/plan</code></td><td>Design one feature or decision before coding.</td></tr>
+<tr><td><code>/shape</code></td><td>Turn a rough idea into a short buildable spec (no app code).</td></tr>
 <tr><td><code>/adr</code></td><td>Write the next numbered architecture decision record.</td></tr>
 <tr><td><code>/feature</code></td><td>Build one feature slice with tests, then run checks.</td></tr>
 <tr><td><code>/fix</code></td><td>Repair failing checks after a build, in the feature you just touched.</td></tr>
 <tr><td><code>/cleanup</code></td><td>Archive finished task-board rows so the list stays short.</td></tr>
 <tr><td><code>/scope</code></td><td>Split work so more than one agent can help without colliding.</td></tr>
+<tr><td><code>/ux-apply</code></td><td>Implement one UX inventory item, then re-check that screen.</td></tr>
+<tr><td><code>/redesign</code></td><td>Review one flow against the construction guidelines; apply only the ids you name.</td></tr>
+<tr><td><code>/update-guidelines</code></td><td>Patch the UX/UI construction guidelines (how we build screens), not a review-only file.</td></tr>
 </table>
 <h2>Docs and checks</h2>
 <table>
@@ -64,6 +69,12 @@ footer { font-size: 0.9rem; margin-top: 1.5rem; }
 <tr><td><code>/docs</code></td><td>Check README health, tables, and file encoding.</td></tr>
 <tr><td><code>/ci</code></td><td>Wait for GitHub Actions after a push (checks only, no new commit).</td></tr>
 <tr><td><code>/debug</code></td><td>Investigate a bug with logs and evidence (not a full-repo audit).</td></tr>
+<tr><td><code>/ux-review</code></td><td>Score real screens against the construction guidelines and write every change to the task-board UX inventory.</td></tr>
+<tr><td><code>/ui-review</code></td><td>Same as /ux-review.</td></tr>
+<tr><td><code>/ux-audit</code></td><td>Same as /ux-review (not a full-repo audit).</td></tr>
+<tr><td><code>/ui-audit</code></td><td>Same as /ux-review (not a full-repo audit).</td></tr>
+<tr><td><code>/a11y-check</code></td><td>Accessibility-first /ux-review. Writes every WCAG gap to the UX inventory.</td></tr>
+<tr><td><code>/compare-ui</code></td><td>Compare this app to a few named products, then write every change to the UX inventory.</td></tr>
 </table>
 <h2>Publishing</h2>
 <table>
@@ -93,6 +104,11 @@ footer { font-size: 0.9rem; margin-top: 1.5rem; }
 <tr><td><code>/compact</code></td><td>Save a checkpoint before you clear a long chat.</td></tr>
 <tr><td><code>/restore</code></td><td>Reload the last saved checkpoint after a new chat.</td></tr>
 <tr><td><code>/resume</code></td><td>After Cloud Agent work: fetch, sync open Dependabot/release PRs into BUILD_PLAN, list cursor/* PRs, name the next AGENT row.</td></tr>
+<tr><td><code>/lean</code></td><td>Extreme Agent Mode: block Cloud/Grok and convert open CLOUD rows to LOCAL.</td></tr>
+<tr><td><code>/balanced</code></td><td>Default Agent Mode: LOCAL preferred, Cloud allowed when tagged.</td></tr>
+<tr><td><code>/speed</code></td><td>Speed Agent Mode: Cloud allowed for fast scoped parallel work.</td></tr>
+<tr><td><code>/mode</code></td><td>Print the current Agent Mode and one-sentence policy.</td></tr>
+<tr><td><code>/status</code></td><td>Full repo settings + golden-path status report (read-only).</td></tr>
 </table>
 <h2>Advanced (optional)</h2>
 <table>

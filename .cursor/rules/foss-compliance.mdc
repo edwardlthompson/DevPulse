@@ -1,6 +1,6 @@
 ---
 description: FOSS compliance, privacy, and telemetry constraints
-alwaysApply: true
+alwaysApply: false
 ---
 
 # FOSS & Privacy Compliance

@@ -7,7 +7,7 @@
 #   --release-repo OWNER/REPO  --donation-url URL  --codeowner USER
 #   --prune  --no-prune  --non-interactive  --keep-optional  --prune-optional
 #   --license MIT|Apache-2.0  --skip-preflight  --strict-preflight
-#   --topics a,b,c
+#   --topics a,b,c  --no-linguist  --dry-run  --profile core|full
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -38,6 +38,9 @@ Usage: scripts/init-project.sh [options]
   --skip-preflight       Skip git/Python/tool checks
   --strict-preflight     Fail if stack tools (node, uv, java) are missing
   --topics LIST          Comma-separated GitHub topics (3-5 recommended)
+  --no-linguist          Skip copying templates/linguist/child.gitattributes
+  --dry-run              Print linguist/profile actions without writing
+  --profile core|full    core=slim surface (default); full=keep template tree
   -h, --help
 EOF
 }
@@ -57,6 +60,9 @@ LICENSE="MIT"
 SKIP_PREFLIGHT=false
 STRICT_PREFLIGHT=false
 TOPICS=""
+NO_LINGUIST=false
+DRY_RUN=false
+PROFILE="core"
 while [ $# -gt 0 ]; do
   case "$1" in
     --stack) STACK="${2:-}"; shift 2 ;;
@@ -76,10 +82,20 @@ while [ $# -gt 0 ]; do
     --non-interactive) NONINTERACTIVE=true; shift ;;
     --keep-optional) KEEP_OPTIONAL=true; shift ;;
     --prune-optional) KEEP_OPTIONAL=false; shift ;;
+    --no-linguist) NO_LINGUIST=true; shift ;;
+    --dry-run) DRY_RUN=true; shift ;;
+    --profile) PROFILE="${2:-core}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage >&2; exit 1 ;;
   esac
 done
+case "$PROFILE" in
+  core|full) ;;
+  *)
+    echo "Invalid profile '$PROFILE'; defaulting to core."
+    PROFILE="core"
+    ;;
+esac
 
 case "$DISTRIBUTION_TIER" in
   foss|commercial) ;;
@@ -197,7 +213,7 @@ replacements = [
     ("[INSERT PLATFORM / TECH STACK HERE]", stack),
     ("[INSERT DETAILED APP DESCRIPTION AND GOALS HERE]", purpose),
 ]
-for rel in ("docs/INITIALIZATION_PROMPT.md", ".agent/AGENT_MEMORY.md"):
+for rel in ("docs/INITIALIZATION_PROMPT.md", ".agent/AGENT_MEMORY.md", "AGENT_MEMORY.md"):
     path = root / rel
     if not path.is_file():
         continue
@@ -344,6 +360,33 @@ fi
 
 python3 scripts/init-stack-sync.py "$STACK" "$ROOT" "$PRUNED"
 
+# Default Agent Mode for children (ADR-0010) — balanced
+export PYTHONPATH="$ROOT/scripts/lib${PYTHONPATH:+:$PYTHONPATH}"
+if [ "$DRY_RUN" = true ]; then
+  echo "dry-run agent-mode: write .cursor/agent-mode.json mode=balanced"
+else
+  python3 - "$ROOT" <<'PY'
+import sys
+from pathlib import Path
+from agent_mode import write_mode
+write_mode(Path(sys.argv[1]), "balanced", updated_by="init")
+print("agent-mode: balanced (.cursor/agent-mode.json)")
+PY
+fi
+
+# Linguist attribution for child language stats (after prune)
+python3 - "$ROOT" "$STACK" "$NO_LINGUIST" "$DRY_RUN" <<'PY'
+import sys
+from pathlib import Path
+from linguist_attrs import apply_linguist_attrs
+
+root = Path(sys.argv[1])
+stack = sys.argv[2]
+skip = sys.argv[3].lower() == "true"
+dry = sys.argv[4].lower() == "true"
+print(apply_linguist_attrs(root, stack=stack, dry_run=dry, skip=skip))
+PY
+
 # Linux/macOS: write gitignored local.properties when Android SDK is present.
 if [ -d "$ROOT/examples/android" ]; then
   python3 - "$ROOT" << 'PY'
@@ -391,6 +434,28 @@ else
   echo "  bash scripts/validate-workflow-actions.sh"
   echo "See README.md and docs/SECURITY_TRIAGE.md for setup."
 fi
+
+# Profile: stamp + optional core slim (after post hooks so full tooling can run first)
+export PYTHONPATH="$ROOT/scripts/lib${PYTHONPATH:+:$PYTHONPATH}"
+python3 - "$ROOT" "$PROFILE" "$DRY_RUN" <<'PY'
+import sys
+from pathlib import Path
+from init_profile import apply_core_profile, normalize_profile, stamp_profile
+
+root = Path(sys.argv[1])
+profile = normalize_profile(sys.argv[2])
+dry = sys.argv[3].lower() == "true"
+if not dry:
+    stamp_profile(root, profile)
+print(f"profile: {profile}")
+if profile == "full":
+    from init_profile import relocate_memory_logs
+    for line in relocate_memory_logs(root):
+        print(line)
+elif profile == "core":
+    for line in apply_core_profile(root, dry_run=dry):
+        print(line)
+PY
 
 echo ""
 echo "=== Done ==="

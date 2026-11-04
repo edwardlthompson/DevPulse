@@ -26,18 +26,7 @@ ANDROID_BAR_ACTION_BAD = re.compile(
 
 def check_root(root: Path) -> list[str]:
     errors: list[str] = []
-    product_mode = False
-    product_path = root / "branding" / "product.json"
-    if product_path.is_file():
-        try:
-            import json
-
-            product_mode = json.loads(product_path.read_text(encoding="utf-8")).get("mode") == "product"
-        except (OSError, json.JSONDecodeError, TypeError):
-            product_mode = False
     for rel in BANNED_FILES:
-        if product_mode:
-            continue
         if (root / rel).is_file():
             errors.append(f"banned chrome file {rel}")
     web_shell = root / "examples/web/src/AppShell.ts"
@@ -67,7 +56,7 @@ def check_root(root: Path) -> list[str]:
     settings_kt = (
         root / "examples/android/app/src/main/java/dev/foss/goldenpath/ui/settings/SettingsScreen.kt"
     )
-    if settings_kt.is_file() and not product_mode:
+    if settings_kt.is_file():
         text = settings_kt.read_text(encoding="utf-8")
         if CHIP_THEME.search(text):
             errors.append("Android Settings must not use FilterChip/ThemeToggle")

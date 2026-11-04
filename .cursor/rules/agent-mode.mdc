@@ -1,0 +1,10 @@
+---
+description: Thin Agent Mode injection (speed/balanced/lean) — ADR-0010
+alwaysApply: true
+---
+
+# Agent Mode
+
+Read `.cursor/agent-mode.json` (missing ⇒ `balanced`). Inject **one** line from `scripts/lib/agent_mode.py` `INJECTION` for the current mode.
+
+While `lean`: refuse Cloud Agents and Grok Bots; say `REFUSED` and point to `/speed` or `/balanced`. Prefer LOCAL sequential and brief replies.

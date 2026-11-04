@@ -15,7 +15,7 @@ globs:
 Before editing UI in `examples/web/` or `examples/android/`:
 
 1. Read @docs/WEB_PROJECT_LAYOUT.md before moving site files or choosing publish paths (web stack)
-2. Read @docs/DESIGN_GUIDE.md and @branding/BRANDING.md
+2. Read @docs/DESIGN_GUIDE.md, @docs/ux-ui-guidelines.md, and @branding/BRANDING.md
 3. Read generated tokens in `design-tokens/design-tokens.json` (source) — not hand-edit outputs
 4. Logos and pitch copy live under `branding/` — run sync + `generate-project-readme.py` after edits
 

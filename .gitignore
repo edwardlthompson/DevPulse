@@ -29,6 +29,7 @@ Thumbs.db
 *.swp
 .cursor-session-state
 .cursor-session-state.json
+.agent/session-state.md
 .cursor/agent-progress.json
 .cursor/last-feature-gate.json
 .cursor/sprint-smoke.json
@@ -110,3 +111,6 @@ CODE_REVIEW.md
 RELEASE_NOTES.md
 scratchpad.md
 .cursor/handoff-*.md
+
+# --- child extras ---
+.cursor/upgrade-scratch/

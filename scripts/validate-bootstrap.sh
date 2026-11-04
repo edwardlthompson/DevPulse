@@ -6,9 +6,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 QUICK=false
+AGENT=false
 for arg in "$@"; do
   case "$arg" in
     --quick) QUICK=true ;;
+    --agent) AGENT=true; QUICK=true ;;
   esac
 done
 
@@ -77,7 +79,7 @@ REQUIRED=(
   PROJECT_CHECKLIST.md
   CLAUDE.md
   GEMINI.md
-  .agent/CONVENTIONS.md
+  CONVENTIONS.md
   .clinerules
   .github/copilot-instructions.md
   .cursor/rules/main.mdc
@@ -103,6 +105,8 @@ BATCH_COMMANDS=(
   feature fix init prune ci docs upgrade setup plan restore compact scope
   bootstrap verify build ship maintain coach tour ideas allideas
   codex-review update-deps best-of-n emulator
+  ux-review ux-apply ui-review ux-audit ui-audit a11y-check redesign compare-ui
+  update-guidelines brand
 )
 
 for cmd in "${BATCH_COMMANDS[@]}"; do
@@ -154,17 +158,40 @@ fi
 # Writes first (must stay sequential)
 run_check bash scripts/sync-exemplar-config.sh
 
-# Independent read-only checks — use local CPU (BOOTSTRAP_CHECK_JOBS overrides)
-if ! python3 scripts/lib/run_checks_parallel.py \
+if [ "$AGENT" = true ]; then
+  # Pre-commit / mid-slice: encoding, hygiene, venue, inventory, adapters — not full catalog.
+  if ! python3 scripts/lib/run_checks_parallel.py \
+    check-file-encoding.sh \
+    check-repo-hygiene.sh \
+    check-profile.sh \
+    check-linguist-attribution.sh \
+    check-batch-commands.sh \
+    check-cursor-hooks.sh \
+    check-build-plan-tally.sh \
+    check-ux-inventory.sh \
+    check-agent-venue.sh \
+    check-agent-adapters.sh \
+    check-pre-commit-hooks.sh \
+    check-changelog-unreleased.sh \
+    check-file-limits.sh \
+    check-markdown-tables.sh
+  then
+    ERRORS=$((ERRORS + 1))
+  fi
+elif ! python3 scripts/lib/run_checks_parallel.py \
   check-file-encoding.sh \
   check-design-cohesion.sh \
   check-markdown-tables.sh \
   check-changelog-unreleased.sh \
   check-repo-hygiene.sh \
+  check-profile.sh \
+  check-linguist-attribution.sh \
   check-batch-commands.sh \
   check-cursor-hooks.sh \
   check-build-plan-parallel.sh \
   check-build-plan-tally.sh \
+  check-ux-inventory.sh \
+  check-agent-venue.sh \
   check-template-version-sync.sh \
   validate-template-index.sh \
   check-project-card-index.sh \
@@ -233,8 +260,10 @@ if [ -f .cursor/stack-selection.json ]; then
   TIER="$(python3 -c "import json;print(json.load(open('.cursor/stack-selection.json')).get('distribution_tier','foss'))" 2>/dev/null || echo foss)"
 fi
 # Writes manifest — before integrations check
-python3 scripts/sync-cursor-features.py --root "$ROOT" --tier "$TIER"
-run_check bash scripts/check-cursor-integrations.sh --tier "$TIER"
+if [ "$AGENT" = false ]; then
+  python3 scripts/sync-cursor-features.py --root "$ROOT" --tier "$TIER"
+  run_check bash scripts/check-cursor-integrations.sh --tier "$TIER"
+fi
 
 if [ "$QUICK" = false ]; then
   run_check bash scripts/validate-workflow-actions.sh
@@ -245,7 +274,9 @@ if [ "$ERRORS" -gt 0 ]; then
   exit 1
 fi
 
-if [ "$QUICK" = true ]; then
+if [ "$AGENT" = true ]; then
+  echo "Bootstrap validation passed (--agent: core checks only; use --quick or omit for full)"
+elif [ "$QUICK" = true ]; then
   echo "Bootstrap validation passed (--quick: skipped GitHub API action resolve; format check ran)"
 else
   echo "Bootstrap validation passed"

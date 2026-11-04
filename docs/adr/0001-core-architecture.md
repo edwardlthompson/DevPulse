@@ -12,7 +12,7 @@ DevPulse is a local-only Android scanner. Init left MIT and a Golden Path stub. 
 
 ## Decision
 
-**Selected pattern:** Clean / MVVM. Domain logic (especially staleness) is pure and unit-tested. Compose is a view adapter. Composition root (`GoldenPathApp.kt` or successor) stays tiny.
+Architecture options considered (all three left open at template baseline): Clean Architecture, Hexagonal, and MVVM. **Selected pattern for DevPulse:** Clean / MVVM. Domain logic (especially staleness) is pure and unit-tested. Compose is a view adapter. Composition root (`GoldenPathApp.kt` or successor) stays tiny.
 
 ### Stack
 

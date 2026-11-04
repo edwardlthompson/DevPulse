@@ -55,7 +55,10 @@
       "stacks": ["web", "android"],
       "detect": {
         "web": ["examples/web/src/github-feedback", "src/github-feedback"],
-        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/githubfeedback"]
+        "android": [
+          "examples/android/app/src/main/java/dev/foss/goldenpath/feedback/FeedbackGithub.kt",
+          "examples/android/app/src/main/java/dev/foss/goldenpath/githubfeedback"
+        ]
       }
     },
     {
@@ -65,7 +68,10 @@
       "stacks": ["web", "android"],
       "detect": {
         "web": ["examples/web/src/privacy-report", "src/privacy-report"],
-        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/privacyreport"]
+        "android": [
+          "examples/android/app/src/main/java/dev/foss/goldenpath/privacy/PrivacyReport.kt",
+          "examples/android/app/src/main/java/dev/foss/goldenpath/privacyreport"
+        ]
       }
     },
     {
@@ -74,7 +80,10 @@
       "spec": "docs/features/display-refresh.md",
       "stacks": ["android"],
       "detect": {
-        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/display"]
+        "android": [
+          "examples/android/app/src/main/java/dev/foss/goldenpath/ui/refresh/DisplayRefresh.kt",
+          "examples/android/app/src/main/java/dev/foss/goldenpath/display"
+        ]
       }
     },
     {
@@ -84,7 +93,10 @@
       "stacks": ["web", "android"],
       "detect": {
         "web": ["examples/web/src/nav", "src/nav"],
-        "android": ["examples/android/app/src/main/java/dev/foss/goldenpath/ui/nav"]
+        "android": [
+          "examples/android/app/src/main/java/dev/foss/goldenpath/ui/NavigationChrome.kt",
+          "examples/android/app/src/main/java/dev/foss/goldenpath/ui/nav"
+        ]
       }
     },
     {

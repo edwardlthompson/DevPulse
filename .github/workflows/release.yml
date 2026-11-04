@@ -210,10 +210,7 @@ jobs:
         if: steps.sign.outputs.present == 'true'
         with:
           packages: platform-tools
-
-      - name: Accept Android SDK licenses
-        if: steps.sign.outputs.present == 'true'
-        run: yes | sdkmanager --licenses
+          acceptLicense: true
 
       - name: Assemble and upload signed APK
         if: steps.sign.outputs.present == 'true'

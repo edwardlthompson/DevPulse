@@ -1,6 +1,6 @@
 # BUILD_PLAN archive cleanup
 
-Run after BUILD_PLAN execution when local gates pass. Moves finished work off the active board into @COMPLETED_TASKS.md.
+Always invoked at end of `/build` when the sprint/feature block is complete (mandatory wrap-up); may still be run alone. Moves finished work off the active board into @COMPLETED_TASKS.md when local gates pass.
 
 **Do not archive** while any `[AGENT]` or `[AUTO]` row in the active sprint/feature block is still 🔲 or ❌. Rows auto-completed by `/build` automation (✅ HUMAN/ADB) may be archived with AGENT/AUTO work. Items in `HUMAN_BACKLOG.md` stay 🔲 on the board until a human clears them.
 
@@ -13,7 +13,7 @@ Run after BUILD_PLAN execution when local gates pass. Moves finished work off th
 
 ## Step 2 — Archive to COMPLETED_TASKS.md
 
-Keep the **Archived sprints** index at the top of @COMPLETED_TASKS.md. Prepend the new dated section immediately after that table (or after the file header if the table is missing):
+Prepend a new dated section at the top of @COMPLETED_TASKS.md (immediately after the file header):
 
 ```markdown
 ## {Sprint or feature name} ({YYYY-MM-DD})
@@ -22,7 +22,7 @@ Keep the **Archived sprints** index at the top of @COMPLETED_TASKS.md. Prepend t
 
 ```
 
-Copy every ✅ row from the finished block verbatim (keep owner labels and descriptions). Add the sprint to the index table (Sprint, Complete, SHA).
+Copy every ✅ row from the finished block verbatim (keep owner labels and descriptions).
 
 ## Step 3 — Slim BUILD_PLAN.md
 
@@ -30,9 +30,9 @@ Remove the archived ✅ rows from the active board.
 
 **Finished sprint (audit, maintainer, release):**
 
-- Delete the finished sprint section from `BUILD_PLAN.md` entirely (no leftover stub, no archive table on the live board)
-- Prepend the ✅ rows (and a skipped-sprint note if needed) to `COMPLETED_TASKS.md`
-- Add or update the **Archived sprints** index table in `COMPLETED_TASKS.md` (Sprint, Complete, SHA)
+- Delete or collapse the sprint section on the active board
+- Add a summary line: `> **{Sprint ID}** archived in COMPLETED_TASKS.md @ \`{short-sha}\`.`
+- Append a row to the **Archived Sprints** table (Sprint, Complete, `COMPLETED_TASKS.md`)
 
 **Finished feature (Sprint 2+ per-feature block):**
 

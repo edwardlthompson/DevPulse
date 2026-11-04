@@ -20,6 +20,34 @@ def _run(root: Path, argv: list[str], *, timeout: float = 10.0) -> subprocess.Co
     )
 
 
+def cloud_pr_changed_files(root: Path, prs: list[dict[str, Any]]) -> list[str]:
+    """Best-effort list of paths changed on open cursor/* PRs."""
+    files: list[str] = []
+    for pr in prs:
+        number = pr.get("number")
+        if number is None:
+            continue
+        try:
+            proc = _run(
+                root,
+                ["gh", "pr", "view", str(number), "--json", "files"],
+                timeout=20.0,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        if proc.returncode != 0:
+            continue
+        try:
+            data = json.loads(proc.stdout or "{}")
+        except json.JSONDecodeError:
+            continue
+        for item in data.get("files") or []:
+            path = str((item or {}).get("path") or "").strip()
+            if path:
+                files.append(path)
+    return files
+
+
 def git_fetch(root: Path) -> str:
     try:
         proc = _run(root, ["git", "fetch", "origin"], timeout=15.0)
@@ -73,14 +101,26 @@ def resume(root: Path, *, apply_sync: bool = True) -> tuple[int, str]:
             sync_file(plan, prs, apply=True, check=False, root=root)
         sync_inner = extract_inner(plan.read_text(encoding="utf-8"))
 
+    cloud = cursor_prs(prs) if not gh_error else []
+    hits: list[str] = []
+    if plan.is_file() and cloud and not gh_error:
+        try:
+            from agent_venue import local_scopes_hit_by_files
+
+            changed = cloud_pr_changed_files(root, cloud)
+            hits = local_scopes_hit_by_files(plan.read_text(encoding="utf-8"), changed)
+        except Exception:
+            hits = []
+
     digest = format_digest(
         root,
         sync_inner=sync_inner,
         synced_prs=relevant_prs(prs) if not gh_error else [],
-        cloud_prs=cursor_prs(prs) if not gh_error else [],
+        cloud_prs=cloud,
         gh_error=gh_error,
         fetch_note=fetch_note,
         branch_notes=branch_notes,
+        local_scope_hits=hits,
     )
     return 0, digest
 

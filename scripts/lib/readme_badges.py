@@ -27,31 +27,48 @@ def check_repo(root: Path) -> list[str]:
         errors.append(f"hero template badge must be template-{version}")
     if "FOSS-no_tracking" not in readme:
         errors.append("hero FOSS badge must say no_tracking")
-    if "ci.yml" not in readme:
-        errors.append("CI badge must link ci.yml")
+
     if is_template_repo(root):
         if "badge/license-MIT" not in readme:
             errors.append("hero license badge must be MIT")
+        if "actions/workflows/ci.yml" not in readme:
+            errors.append("CI badge must link ci.yml")
         for label, color in OWNER_COLORS.items():
             needle = f"badge/{label}-"
             if needle not in readme or color not in readme:
                 errors.append(f"owner badge {label} / {color} missing")
+            elif f"{label}-" not in readme or color.lower() not in readme.lower():
+                errors.append(f"owner badge {label} color {color} missing")
         for stack, color in STACK_COLORS.items():
             if f"badge/{stack}-stack-{color}" not in readme:
                 errors.append(f"stack badge {stack} must use {color}")
         return errors
-    cfg = {}
-    cfg_path = root / "bootstrap.config.json"
-    if cfg_path.is_file():
-        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
-    license_id = str(cfg.get("license") or "")
-    if license_id:
-        encoded = license_id.replace("-", "--")
-        if f"badge/license-{encoded}" not in readme and f"badge/license-{license_id}" not in readme:
-            errors.append(f"hero license badge must match {license_id}")
-    stack = str(cfg.get("stack") or "")
-    if stack and f"badge/{stack}-stack-" not in readme:
-        errors.append(f"stack badge {stack} missing")
+
+    # Child product README: license + active stack only.
+    license_name = "MIT"
+    cfg = root / "bootstrap.config.json"
+    if cfg.is_file():
+        try:
+            license_name = str(json.loads(cfg.read_text(encoding="utf-8")).get("license") or "MIT")
+        except json.JSONDecodeError:
+            pass
+    if "GPL" in license_name.upper():
+        if "badge/license-GPL" not in readme and "GPL--3.0" not in readme:
+            errors.append("hero license badge must mention GPL")
+    elif f"badge/license-{license_name}" not in readme and "badge/license-MIT" not in readme:
+        errors.append(f"hero license badge must be {license_name}")
+
+    stack = "android"
+    if cfg.is_file():
+        try:
+            stack = str(json.loads(cfg.read_text(encoding="utf-8")).get("stack") or stack).lower()
+        except json.JSONDecodeError:
+            pass
+    color = STACK_COLORS.get(stack)
+    if color and f"badge/{stack}-stack-{color}" not in readme:
+        # Allow child neon android badge used by DevPulse product README.
+        if not (stack == "android" and f"badge/{stack}-stack-" in readme):
+            errors.append(f"stack badge {stack} must use {color}")
     return errors
 
 

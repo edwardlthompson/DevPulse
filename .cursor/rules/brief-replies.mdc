@@ -1,0 +1,11 @@
+---
+description: ADHD-friendly short replies — default 1–3 sentences
+alwaysApply: true
+---
+
+# Brief replies
+
+- Default: **1–3 short sentences**, or ≤5 bullets. No task echo. No “next steps” essays unless asked.
+- Gates/commands: one line — `OK gates` or `FAIL <name> — fix <one action>`.
+- Expand only when the user asks why/how/details, or Plan Mode needs `### Critique`.
+- Debug Mode may use longer evidence dumps while investigating.

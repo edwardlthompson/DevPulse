@@ -70,14 +70,6 @@ def check_tokens(data: dict) -> list[str]:
 
 def check_repo(root: Path | None = None) -> list[str]:
     base = root or ROOT
-    product = base / "branding" / "product.json"
-    if product.is_file():
-        try:
-            data = json.loads(product.read_text(encoding="utf-8"))
-            if data.get("mode") == "product":
-                return []
-        except (OSError, json.JSONDecodeError, TypeError):
-            pass
     path = base / "design-tokens" / "design-tokens.json"
     data = json.loads(path.read_text(encoding="utf-8"))
     return check_tokens(data)

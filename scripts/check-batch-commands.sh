@@ -11,6 +11,8 @@ ATOMIC=(
   audit cleanup debug gates triage dependabot push prerelease regress
   feature fix init prune ci docs upgrade setup plan restore compact resume scope
   codex-review coach tour ideas allideas update-deps best-of-n emulator adr
+  ux-review ux-apply ui-review ux-audit ui-audit a11y-check redesign compare-ui
+  update-guidelines brand shape lean balanced speed mode status
 )
 
 SUPER=(
@@ -87,7 +89,7 @@ do
 done
 
 # Portable recipes (Cursor slash command ↔ docs/help twin for other IDEs)
-PORTABLE=(tour coach ideas allideas debug upgrade adr)
+PORTABLE=(tour coach ideas allideas debug upgrade adr ux-review ux-apply brand shape)
 for name in "${PORTABLE[@]}"; do
   cmd=".cursor/commands/${name}.md"
   twin="docs/help/$(echo "$name" | tr '[:lower:]' '[:upper:]').md"

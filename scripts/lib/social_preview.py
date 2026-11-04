@@ -37,6 +37,7 @@ def check_repo(root: Path) -> list[str]:
     for hex_color in _hexes(tokens):
         if hex_color.lower() not in text.lower():
             errors.append(f"{ASSET.as_posix()} missing token color {hex_color}")
+    # Android/python/etc children prune examples/web — only enforce web wiring when present.
     if not (root / "examples" / "web").is_dir():
         return errors
     if not public.is_file():

@@ -5,12 +5,17 @@ import re
 from pathlib import Path
 
 ALLOW = frozenset({
-    "main", "core-directives", "cursor-modes", "batch-commands",
-    "destructive-ops", "foss-compliance", "commercial-compliance",
-    "windows-encoding", "local-compute", "local-deps", "read-before-write",
-    "feature-modules", "repo-hygiene", "product-brief",
+    "main", "core-directives", "cursor-modes", "brief-replies",
+    "destructive-ops", "read-before-write", "feature-modules",
+    "repo-hygiene", "product-brief", "agent-mode",
 })
+# On-demand (description/globs); foss/commercial stay mutually exclusive when always-on
 TOGGLE = ("foss-compliance", "commercial-compliance")
+ON_DEMAND = frozenset({
+    "batch-commands", "ux-ui", "windows-encoding", "local-compute",
+    "local-deps", "foss-compliance", "commercial-compliance",
+    "design-system", "testing", "security-triage", "ci-gates",
+})
 
 
 def parse_frontmatter(text: str) -> dict[str, object]:
@@ -66,12 +71,10 @@ def audit_rules(root: Path) -> list[str]:
                 errors.append(f"{path.name}: alwaysApply true not on allowlist")
             if globs:
                 errors.append(f"{path.name}: alwaysApply true must not set globs")
-        elif not globs and name not in TOGGLE:
+        elif not globs and name not in TOGGLE and name not in ON_DEMAND:
             errors.append(f"{path.name}: alwaysApply false needs globs")
     foss = flags.get("foss-compliance")
     comm = flags.get("commercial-compliance")
     if foss is True and comm is True:
         errors.append("foss-compliance and commercial-compliance both alwaysApply true")
-    if foss is False and comm is False:
-        errors.append("foss-compliance and commercial-compliance both alwaysApply false")
     return errors

@@ -100,8 +100,12 @@ def run_cmd(root: Path, cmd: list[str], *, cwd: Path | None = None) -> tuple[int
 
 
 def append_decision_log(root: Path, note: str) -> None:
-    path = root / ".agent/DECISION_LOG.md"
+    path = root / ".agent" / "DECISION_LOG.md"
     if not path.exists():
+        legacy = root / "DECISION_LOG.md"
+        path = legacy if legacy.exists() else path
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("# Decision Log\n\n", encoding="utf-8")
     ts = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     text = path.read_text(encoding="utf-8")

@@ -8,7 +8,6 @@ _PARTS = (("yes | ", "sdkmanager --licenses"), ("yes|", "sdkmanager --licenses")
 ALLOW = {
     ".github/workflows/ci.yml",
     ".github/workflows/codeql.yml",
-    ".github/workflows/release.yml",
 }
 SCAN_GLOBS = (
     "scripts/**/*.sh",

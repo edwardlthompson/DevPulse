@@ -8,15 +8,6 @@ TEMPLATE = Path("branding") / "templates" / "README.product.md"
 
 
 def check_repo(root: Path) -> list[str]:
-    product = root / "branding" / "product.json"
-    if product.is_file():
-        try:
-            import json
-
-            if json.loads(product.read_text(encoding="utf-8")).get("mode") == "product":
-                return []
-        except (OSError, json.JSONDecodeError, TypeError):
-            pass
     errors: list[str] = []
     for rel in (TEMPLATE, PREVIEW):
         path = root / rel

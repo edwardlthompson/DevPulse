@@ -1,5 +1,5 @@
 // GENERATED — do not edit; run scripts/sync-design-tokens.py
-// source-hash: 88adaa7f4916
+// source-hash: aa6c38d61879
 package dev.foss.goldenpath.ui.theme
 
 import androidx.compose.ui.unit.dp

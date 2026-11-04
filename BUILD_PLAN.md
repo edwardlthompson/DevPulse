@@ -1,7 +1,7 @@
 # Build Plan
 
 <!-- remaining-tally -->
-**Remaining:** AGENT 0 · AUTO 0 · HUMAN 0 · ADB 0 · **0 open**
+**Remaining:** AGENT 0 · LOCAL 0 · CLOUD 0 · AUTO 0 · HUMAN 0 · ADB 0 · **0 open**
 <!-- /remaining-tally -->
 
 Live board. Done work: [`COMPLETED_TASKS.md`](COMPLETED_TASKS.md).
@@ -47,6 +47,25 @@ _No open Dependabot or Release Please PRs._
 <!-- template-gaps-sync:begin -->
 _No template gaps; .template-version matches upstream (or template maintainer N/A)._
 <!-- template-gaps-sync:end -->
+
+### Local agent lane
+
+<!-- local-agent-lane:begin -->
+_No local agent items._
+<!-- local-agent-lane:end -->
+
+
+### UX inventory (synced)
+
+<!-- ux-inventory:begin -->
+_No UX inventory items._
+<!-- ux-inventory:end -->
+
+### Cloud agent lane
+
+<!-- cloud-agent-lane:begin -->
+_No cloud agent items._
+<!-- cloud-agent-lane:end -->
 
 ---
 

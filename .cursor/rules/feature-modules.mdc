@@ -1,42 +1,26 @@
 ---
-description: Vertical-slice feature containers; one feature per task; autonomous gates
+description: Vertical-slice features; one row; scoped gates after AGENT steps
 alwaysApply: true
 ---
 
-# Feature Modules (Lego Assembly)
+# Feature Modules
 
-## Rules
+- One BUILD_PLAN feature row per task; vertical slice (logic/view/tests/i18n)
+- Thin wiring ≤10 lines in composition roots
+- Sequential before Parallel; venue `[LOCAL]`/`[CLOUD]` + `— scope:`
 
-- **One feature per agent task** — no batching multiple BUILD_PLAN feature rows
-- **Vertical slice** — logic, view, tests, i18n in one container folder
-- **Thin wiring** — composition root (`appBootstrap.ts` / `main.ts`, `GoldenPathApp.kt` / `MainActivity`) ≤10 lines per feature
-- **Sequential before Parallel** — after scaffold step 2, parallel agents may run on **non-overlapping** scopes; orchestrator owns BUILD_PLAN + merge
-
-## After every AGENT step
+After every AGENT step:
 
 ```bash
 python3 scripts/agent-run.py watch-agent-gates --once --autofix --scope auto
 ```
 
-On exit `1`: read gate JSON + `.cursor/agent-progress.json`; **auto-fix** lint/tests in feature scope; re-run until pass or 3-strike.
+Do not re-run full `validate-bootstrap` mid-slice if watch-agent-gates already passed. Exit 1 → autofix in scope (3-strike). Exit 2 → halt.
 
-After the last `[AGENT]`/`[AUTO]` row in the sprint is ✅, do not start the next sprint until:
+After last `[AGENT]`/`[AUTO]` in the sprint is ✅:
 
 ```bash
 python3 scripts/agent-run.py smoke-sprint --require
 ```
 
-That re-smokes every ✅ row (no errors/crashes; startup time and load order). See `docs/SPRINT_SMOKE.md`.
-
-On exit `2`: halt and escalate to human; switch to **Debug Mode** per `docs/CURSOR_MODES.md` when root cause is unclear.
-
-## Auto-fix allowed (no human approval)
-
-- Lint, format, type, and test fixes within active feature container + wiring + tests
-- `scripts/feature-autofix.sh` mechanical fixers
-
-## Still requires human
-
-- `git push`, releases, disabling gates (`destructive-ops.mdc`)
-
-See `docs/FEATURE_MODULES.md`.
+See `docs/FEATURE_MODULES.md` · `docs/SPRINT_SMOKE.md`.

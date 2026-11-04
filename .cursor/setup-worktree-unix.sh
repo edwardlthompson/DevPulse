@@ -8,6 +8,14 @@ ROOT_SRC="${ROOT_WORKTREE_PATH:-}"
 WT="$(pwd)"
 echo "worktree setup: cwd=$WT root=${ROOT_SRC:-unset}"
 
+RESOLVE=""
+for d in "$WT" "$ROOT_SRC"; do
+  if [ -n "$d" ] && [ -f "$d/scripts/lib/resolve-python.sh" ]; then
+    RESOLVE="$d/scripts/lib/resolve-python.sh"
+    break
+  fi
+done
+
 copy_env_examples() {
   local src="$1"
   local dest="$2"
@@ -35,6 +43,35 @@ else
   echo "SKIP env examples (ROOT_WORKTREE_PATH unset or missing)"
 fi
 
+RESOLVE=""
+for d in "$WT" "$ROOT_SRC"; do
+  if [ -n "$d" ] && [ -f "$d/scripts/lib/resolve-python.sh" ]; then
+    RESOLVE="$d/scripts/lib/resolve-python.sh"
+    break
+  fi
+done
+if [ -n "$RESOLVE" ]; then
+  # shellcheck source=/dev/null
+  . "$RESOLVE"
+else
+  PY="${PY:-python3}"
+fi
+
+export ROOT_WORKTREE_PATH="${ROOT_SRC}"
+if ! "$PY" -c "
+from pathlib import Path
+import os, sys
+root = os.environ.get('ROOT_WORKTREE_PATH') or ''
+try:
+    ok = bool(root) and Path(root).is_dir() and Path(root).resolve() != Path('.').resolve()
+except OSError:
+    ok = False
+raise SystemExit(0 if ok else 1)
+"; then
+  echo "SKIP stack install (not a Cursor worktree; set ROOT_WORKTREE_PATH to the primary repo)"
+  exit 0
+fi
+
 STACK_FILE="$WT/.cursor/stack-selection.json"
 if [ ! -f "$STACK_FILE" ] && [ -n "$ROOT_SRC" ] && [ -f "$ROOT_SRC/.cursor/stack-selection.json" ]; then
   STACK_FILE="$ROOT_SRC/.cursor/stack-selection.json"
@@ -46,7 +83,7 @@ if [ ! -f "$STACK_FILE" ]; then
 fi
 
 STACK_ERR="$(mktemp)"
-STACK="$(python3 -c "
+STACK="$( "$PY" -c "
 import json, sys
 from pathlib import Path
 p = Path(sys.argv[1])
@@ -74,6 +111,36 @@ echo "stack=$STACK"
 
 has() { command -v "$1" >/dev/null 2>&1; }
 
+link_platform_tools() {
+  local sdk=""
+  local dest="$WT/.cursor/platform-tools"
+  for key in ANDROID_HOME ANDROID_SDK_ROOT; do
+    eval "val=\${$key:-}"
+    if [ -n "$val" ] && [ -d "$val/platform-tools" ]; then
+      sdk="$val/platform-tools"
+      break
+    fi
+  done
+  if [ -z "$sdk" ]; then
+    for candidate in "$HOME/Android/Sdk/platform-tools" "$HOME/.local/android/platform-tools"; do
+      if [ -d "$candidate" ]; then
+        sdk="$candidate"
+        break
+      fi
+    done
+  fi
+  if [ -z "$sdk" ]; then
+    echo "SKIP platform-tools symlink (SDK not found)"
+    return 0
+  fi
+  mkdir -p "$WT/.cursor"
+  if [ -L "$dest" ] || [ -d "$dest" ]; then
+    echo "OK platform-tools already present at $dest"
+    return 0
+  fi
+  ln -s "$sdk" "$dest" && echo "OK linked platform-tools -> $sdk" || echo "SKIP platform-tools symlink (non-fatal)"
+}
+
 install_npm_dir() {
   local dir="$1"
   if [ ! -f "$dir/package.json" ]; then
@@ -84,7 +151,10 @@ install_npm_dir() {
     echo "SKIP npm ci in $dir (npm not on PATH)"
     return 0
   fi
-  (cd "$dir" && npm ci) && echo "OK npm ci in $dir" || echo "SKIP npm ci failed in $dir (non-fatal)"
+  (cd "$dir" && npm ci --prefer-offline --no-audit --no-fund) && echo "OK npm ci in $dir" || {
+    echo "WARN npm ci --prefer-offline failed in $dir; retry without offline"
+    (cd "$dir" && npm ci --no-audit --no-fund) && echo "OK npm ci in $dir" || echo "SKIP npm ci failed in $dir (non-fatal)"
+  }
 }
 
 install_uv_dir() {
@@ -100,14 +170,44 @@ install_uv_dir() {
   (cd "$dir" && uv sync) && echo "OK uv sync in $dir" || echo "SKIP uv sync failed in $dir (non-fatal)"
 }
 
+gradle_offline_py() {
+  for d in "$WT" "$ROOT_SRC"; do
+    if [ -n "$d" ] && [ -f "$d/scripts/lib/gradle_offline.py" ]; then
+      echo "$d/scripts/lib/gradle_offline.py"
+      return 0
+    fi
+  done
+  return 1
+}
+
 install_gradle_dir() {
   local dir="$1"
+  local helper extra
   if [ ! -f "$dir/gradlew" ]; then
     echo "SKIP gradle in $dir (no gradlew)"
     return 0
   fi
   chmod +x "$dir/gradlew" 2>/dev/null || true
-  (cd "$dir" && ./gradlew --version) && echo "OK gradle wrapper in $dir" || echo "SKIP gradle failed in $dir (non-fatal)"
+  helper="$(gradle_offline_py || true)"
+  extra=""
+  if [ -n "$helper" ] && [ -n "$ROOT_SRC" ]; then
+    extra="$("$PY" "$helper" --args --root "$ROOT_SRC" 2>/dev/null || true)"
+  fi
+  if [ -n "$extra" ]; then
+    if (cd "$dir" && ./gradlew --offline --version); then
+      echo "OK gradle wrapper in $dir (offline)"
+      return 0
+    fi
+    echo "WARN gradle --offline failed in $dir; retry online"
+  fi
+  if (cd "$dir" && ./gradlew --version); then
+    if [ -n "$helper" ] && [ -n "$ROOT_SRC" ]; then
+      "$PY" "$helper" --mark --root "$ROOT_SRC" 2>/dev/null || true
+    fi
+    echo "OK gradle wrapper in $dir"
+  else
+    echo "SKIP gradle failed in $dir (non-fatal)"
+  fi
 }
 
 case "$STACK" in
@@ -121,12 +221,14 @@ case "$STACK" in
     install_uv_dir "$WT/examples/python"
     ;;
   android)
+    link_platform_tools
     install_gradle_dir "$WT/examples/android"
     ;;
   multi|*)
     install_npm_dir "$WT/examples/web"
     install_npm_dir "$WT/examples/node"
     install_uv_dir "$WT/examples/python"
+    link_platform_tools
     install_gradle_dir "$WT/examples/android"
     ;;
 esac

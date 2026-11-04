@@ -15,7 +15,7 @@ def check_repo(root: Path) -> list[str]:
         return []
     path = root / META
     if not path.is_file():
-        return []
+        return [f"MISSING: {META.as_posix()}"]
     errors: list[str] = []
     text = path.read_text(encoding="utf-8")
     for key in NEEDLES:

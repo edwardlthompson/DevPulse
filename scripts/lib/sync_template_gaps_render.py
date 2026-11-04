@@ -38,11 +38,11 @@ def _file_rows(files: list[dict[str, Any]], *, cap: int) -> tuple[list[str], int
         path = str(item.get("path") or "").strip()
         policy = str(item.get("policy") or "mixed").lower()
         if policy == "canon":
-            rows.append(f"- 🔲 [AGENT] Canon: {path}")
+            rows.append(f"- 🔲 [AGENT][LOCAL] Canon: {path} — scope: {path}")
         elif policy == "sacred":
             rows.append(f"- 🔲 [HUMAN] Sacred: {path} (never blind-overwrite)")
         else:
-            rows.append(f"- 🔲 [AGENT] Mixed: {path}")
+            rows.append(f"- 🔲 [AGENT][LOCAL] Mixed: {path} — scope: {path}")
     return rows, max(0, len(with_path) - len(rows))
 
 
@@ -53,10 +53,15 @@ def _feature_rows(features: list[dict[str, Any]]) -> list[str]:
         title = str(feat.get("title") or "").strip() or fid
         spec = str(feat.get("spec") or "").strip()
         label = f"{fid} — {title}"
+        scope = spec if spec else "docs/features/"
         if spec:
-            rows.append(f"- 🔲 [AGENT] Feature gap: [{label}]({spec})")
+            rows.append(
+                f"- 🔲 [AGENT][LOCAL] Feature gap: [{label}]({spec}) — scope: {scope}"
+            )
         else:
-            rows.append(f"- 🔲 [AGENT] Feature gap: {label}")
+            rows.append(
+                f"- 🔲 [AGENT][LOCAL] Feature gap: {label} — scope: {scope}"
+            )
     return rows
 
 

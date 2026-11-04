@@ -36,5 +36,6 @@
   "crash_inbox": {
     "enabled": false,
     "provider": "none"
-  }
+  },
+  "profile": "full"
 }

@@ -33,13 +33,6 @@ def check_repo(root: Path) -> list[str]:
         parts = rel.parts
         if len(parts) >= 2 and parts[0] == "examples" and not (root / parts[0] / parts[1]).is_dir():
             continue
-        prod = None
-        if "crashcapture" in rel.as_posix():
-            prod = root / "examples/android/app/src/main/java/dev/foss/goldenpath/crashcapture"
-        elif "crash-capture" in rel.as_posix():
-            prod = root / "examples/web/src/crash-capture"
-        if prod is not None and not prod.exists():
-            continue
         path = root / rel
         if not path.is_file():
             errors.append(f"MISSING: {rel.as_posix()}")

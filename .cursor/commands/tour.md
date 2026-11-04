@@ -5,7 +5,7 @@ Walk a first-time human (or any coding agent) through the repo. Do not dump whol
 1. Read @docs/START_HERE.md — name the repo mode (Bootstrap vs Reference) and point at `docs/AGENT_PORTABILITY.md` (one sentence: edit `AGENTS.md`, then re-sync adapters). Point at @docs/help/GLOSSARY.md for [**Sacred**](../../docs/help/GLOSSARY.md) / [**Canon**](../../docs/help/GLOSSARY.md) / [**AGENT**](../../docs/help/GLOSSARY.md) / [**HUMAN**](../../docs/help/GLOSSARY.md) / [**ADB**](../../docs/help/GLOSSARY.md) / [**AUTO**](../../docs/help/GLOSSARY.md) labels / 🔲 status.
 2. Read @docs/BEST_PRACTICES.md — cover only LICENSE, SECURITY.md, and BUILD_PLAN labels (What / Why / How). Skip the rest unless asked.
 3. Open the active Golden Path README: read `.cursor/stack-selection.json` `stack` and use `examples/{stack}/README.md`. If the stack is `multi`, `none`, or the file is missing, use `examples/web/README.md`.
-4. Read @docs/FIRST_30_DAYS.md **Week 1 only**. Offer `/coach` (or “read `docs/help/TOUR.md`”) for later sessions.
+4. Read @docs/FIRST_30_DAYS.md **Week 1 only**. Offer `/coach` (or “read `docs/help/TOUR.md`”) for later sessions. Mention `/shape` once for turning a rough idea into `docs/specs/` before coding.
 5. Run the local harness and interpret the first failure (do not dump the whole log):
 
 ```bash

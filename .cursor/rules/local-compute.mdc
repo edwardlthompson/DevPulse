@@ -1,6 +1,6 @@
 ---
-description: Prefer local PC parallelism over Cloud when working on This Computer
-alwaysApply: true
+description: Prefer local PC parallelism over Cloud when on This Computer
+alwaysApply: false
 ---
 
 # Local Compute First
@@ -21,12 +21,20 @@ When the session runs on **This Computer** (local IDE / local CLI), maximize the
 - Handing work to **Cloud Agents** when the laptop/desktop can run Agent + terminals + worktrees
 - Serializing independent Parallel BUILD_PLAN rows on one agent
 - Waiting on commercial Automations/Bugbot Autofix for tasks `/fix` + local CI can finish
+- Claiming a `[CLOUD]` BUILD_PLAN row from This Computer (or a `[LOCAL]` row from Cloud)
 
 ## When Cloud is appropriate
 
 - Machine unavailable / Remote Control away from desk
 - Commercial Autofix / Automations explicitly enabled
 - Multi-repo Cloud environment required (see commercial activation)
+- Open `[AGENT][CLOUD]` rows with a clear `scope:` that does not overlap open LOCAL scopes (see `docs/adr/0008-agent-venue.md`)
+
+## BUILD_PLAN venues
+
+- This Computer: only `🔲 [AGENT][LOCAL] … — scope: …` (and HUMAN/ADB/AUTO as usual)
+- Cloud: only `🔲 [AGENT][CLOUD] … — scope: …` on `cursor/*` branches
+- After Cloud: `/resume` before the next LOCAL row if Cloud PRs touch overlapping paths
 
 ## Env knobs
 

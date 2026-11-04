@@ -7,7 +7,8 @@ from dataclasses import dataclass, field
 HEADER = re.compile(r"^###\s+(?P<title>(?:M\d+|Sprint\s+).+)$")
 ROW = re.compile(
     r"^(?P<num>\d+[a-z]?)\.\s+(?P<status>🔲|✅|❌)\s+"
-    r"\[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]\s+(?P<task>.+)$"
+    r"\[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]"
+    r"(?:\[(?:LOCAL|CLOUD)\])?\s+(?P<task>.+)$"
 )
 BOARD_STOP = ("## Ongoing Maintenance", "## Archive")
 

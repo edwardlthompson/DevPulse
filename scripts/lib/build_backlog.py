@@ -1,4 +1,4 @@
-"""Manage .agent/HUMAN_BACKLOG.md for failed /build automation attempts."""
+"""Manage HUMAN_BACKLOG.md for failed /build automation attempts."""
 from __future__ import annotations
 
 import json
@@ -17,7 +17,7 @@ HEADER = """# Human Backlog
 
 
 def backlog_path(root: Path) -> Path:
-    return root / ".agent/HUMAN_BACKLOG.md"
+    return root / "HUMAN_BACKLOG.md"
 
 
 def read_rows(text: str) -> list[tuple[str, str, str, str, str]]:

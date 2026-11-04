@@ -30,6 +30,7 @@ def format_digest(
     fetch_note: str,
     branch_notes: list[str],
     ci_line: str | None = None,
+    local_scope_hits: list[str] | None = None,
 ) -> str:
     dirty_unreleased = unreleased_has_entries(root)
     lines = [
@@ -51,6 +52,12 @@ def format_digest(
             "- Handoff: dirty Unreleased and/or CI red — fix or /ship before filling ideas."
         )
     lines.append(f"- Next BUILD_PLAN row: {next_open_row(root)}")
+    if local_scope_hits:
+        lines.append(
+            "- BLOCKED: open Cloud PR files overlap LOCAL scopes "
+            f"{', '.join(sorted(set(local_scope_hits)))} — merge or close those PRs "
+            "before claiming a conflicting LOCAL row."
+        )
     lines.append("")
     lines.append("## Open Dependabot / Release Please")
     if gh_error:
@@ -77,13 +84,13 @@ def format_digest(
             )
         lines.append("")
         lines.append(
-            "Merge or close Cloud PRs before starting a new AGENT feature row when they conflict."
+            "Merge or close Cloud PRs before starting a LOCAL AGENT row when scopes overlap."
         )
     lines.extend(
         [
             "",
             "## Next",
-            "Continue from the next open [AGENT] row above, or merge listed open PRs first.",
+            "Continue from the next open [AGENT][LOCAL] row above (never claim [CLOUD] on This Computer).",
             "Do not rely on /compact session state across Cloud <-> PC (it is gitignored).",
             "",
         ]

@@ -22,6 +22,7 @@ from local_resources import (  # noqa: E402
     recommended_check_jobs,
     recommended_stack_slots,
 )
+from recommend_local_model import recommend  # noqa: E402
 
 
 def _adb() -> str | None:
@@ -129,6 +130,14 @@ def main() -> int:
     if ram is not None and ram < 16 and ollama == "up":
         print("WARN: RAM < 16G with Ollama up; skip /emulator or FEATURE_GATE_JOBS=1", file=sys.stderr)
     print("GPU: no CUDA in template; Ollama/emulator use host GPU when present")
+    try:
+        rec = recommend()
+        print(
+            f"recommend: tier={rec.tier} primary={rec.primary} "
+            f"custom={rec.custom_name} ctx={rec.num_ctx}"
+        )
+    except (OSError, ValueError, UnicodeError) as exc:
+        print(f"recommend: unavailable ({exc})")
     return 0
 
 

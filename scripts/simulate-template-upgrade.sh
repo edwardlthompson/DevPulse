@@ -63,6 +63,7 @@ bash scripts/init-project.sh \
   --project-name "Upgrade Sim" \
   --purpose "Cherry-pick validation" \
   --no-prune \
+  --profile full \
   --license MIT
 
 for path in \
@@ -70,7 +71,7 @@ for path in \
   PROJECT_CHECKLIST.md \
   CLAUDE.md \
   GEMINI.md \
-  .agent/CONVENTIONS.md \
+  CONVENTIONS.md \
   .clinerules \
   .github/copilot-instructions.md \
   .cursor/rules/main.mdc \
@@ -140,7 +141,8 @@ bash scripts/init-project.sh \
   --project-name "Upgrade Sim Prune" \
   --purpose "Prune optional validation" \
   --prune \
-  --prune-optional
+  --prune-optional \
+  --profile full
 
 for path in examples/rust examples/go examples/lightroom examples/blender modules/rust modules/go modules/lightroom modules/blender; do
   if [ -e "$path" ]; then
@@ -177,7 +179,8 @@ else
     -ProjectName "Upgrade Sim PS" \
     -ProjectPurpose "PS init smoke" \
     -Prune \
-    -PruneOptional
+    -PruneOptional \
+    -Profile full
 
   child_quick
   echo "PowerShell init smoke passed"

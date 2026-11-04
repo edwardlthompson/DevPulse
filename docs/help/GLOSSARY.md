@@ -12,6 +12,8 @@ Short definitions for first-timers. Why the files exist: [`BEST_PRACTICES.md`](.
 | **Bootstrap vs Reference** | New child repo vs using this template as rules-only. See [`START_HERE.md`](../START_HERE.md). |
 | **Golden Path** | The runnable `examples/{stack}/` slice you copy for the next feature. |
 | **`/ideas` vs `/allideas`** | Ranked 5–8 next features vs a complete in-scope dump to fill BUILD_PLAN. Neither implements until you name numbers or say `board`. |
+| **`/ideas` · `/shape` · `/coach` · `/plan`** | What to build · one idea → short spec · what next now · how to implement (Critique). |
+| **`/ux-review`** | Score real UI against [`ux-ui-guidelines.md`](../ux-ui-guidelines.md) (construction law, not a second checklist). Every change goes to the BUILD_PLAN UX inventory. |
 | **`/upgrade` (child)** | Compare this app to the parent template and **plan** updates. Does not overwrite your work until you name item numbers. On the template repo it runs a simulation instead. |
 | **Adapters** | Generated files (`CLAUDE.md`, `.cursor/rules/main.mdc`, and others) that point at `AGENTS.md`. |
 ## BUILD_PLAN labels

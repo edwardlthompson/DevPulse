@@ -105,6 +105,9 @@ def backtick_paths(task: str) -> list[str]:
         token = text.split()[0] if text else ""
         if _is_slash_command(token):
             continue
+        # HTML comments/tags in task text are not repo paths (`<!-- ux-inventory -->`).
+        if token.startswith("<"):
+            continue
         # Host paths are not repo docs probes (e.g. `~/.local/bin`, absolute SDK trees).
         if token.startswith("~") or token.startswith("/") or re.match(r"^[A-Za-z]:[\\/]", token):
             continue

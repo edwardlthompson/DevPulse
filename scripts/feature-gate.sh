@@ -136,6 +136,7 @@ fail_gate() {
     file-limits) SUGGESTED=("split oversized static-data/logic files per AGENTS.md limits") ;;
     android-test) SUGGESTED=("fix JUnit failures" "run ./gradlew test in examples/android") ;;
     design-cohesion) SUGGESTED=("run scripts/check-design-cohesion.sh" "use design tokens and i18n keys") ;;
+    linguist-attribution) SUGGESTED=("append templates/linguist/child.gitattributes under # --- linguist ---" "or re-run init without --no-linguist" "run bash scripts/check-linguist-attribution.sh") ;;
     about-feature-gate) SUGGESTED=("run scripts/verify-about-feature-gate.sh" "fix About slice regressions") ;;
     rust-fmt) SUGGESTED=("run cargo fmt in examples/rust") ;;
     rust-clippy) SUGGESTED=("fix clippy warnings in examples/rust") ;;
@@ -266,6 +267,20 @@ if [ "$SKIP_PREAMBLE" = false ]; then
     fail_gate "hygiene" "$(bash scripts/check-repo-hygiene.sh 2>&1 | tail -n 20)"
   fi
   GATES_PASSED+=("hygiene")
+
+  if [ -f scripts/check-linguist-attribution.sh ]; then
+    if ! bash scripts/check-linguist-attribution.sh >/dev/null 2>&1; then
+      fail_gate "linguist-attribution" "$(bash scripts/check-linguist-attribution.sh 2>&1 | tail -n 20)"
+    fi
+    GATES_PASSED+=("linguist-attribution")
+  fi
+
+  if [ -f scripts/check-profile.sh ]; then
+    if ! bash scripts/check-profile.sh >/dev/null 2>&1; then
+      fail_gate "profile" "$(bash scripts/check-profile.sh 2>&1 | tail -n 20)"
+    fi
+    GATES_PASSED+=("profile")
+  fi
 
   bash scripts/sync-exemplar-config.sh >/dev/null 2>&1 || true
 
@@ -465,11 +480,7 @@ fi
 
 if [ "$STRICT" = true ] && [ "$STACK" = "multi" ]; then
   run_cmd design-cohesion bash scripts/check-design-cohesion.sh
-  if [ -f examples/web/package.json ]; then
-    run_cmd about-feature-gate bash scripts/verify-about-feature-gate.sh
-  else
-    skip_or_block "Skipping about-feature-gate (examples/web pruned)"
-  fi
+  run_cmd about-feature-gate bash scripts/verify-about-feature-gate.sh
 fi
 
 log "Feature gate passed (${#GATES_PASSED[@]} stages)."

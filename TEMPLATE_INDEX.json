@@ -1,5 +1,5 @@
 {
-  "template_version": "0.38.3",
+  "template_version": "1.12.0",
   "project": {
     "name": "DevPulse",
     "purpose": "Scan installed Android apps across Google Play, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.",
@@ -2875,6 +2875,54 @@
       "read_when": "session_start",
       "update_when": "milestone_boundary",
       "owner": "maintainer"
+    },
+    {
+      "path": "scripts/check-agent-venue.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/check-profile.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/check-ux-inventory.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/compress-memory.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/recommend-model.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/repo-status.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/set-agent-mode.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/setup-local.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/summarize-coverage.sh",
+      "role": "script"
+    },
+    {
+      "path": "scripts/lib/adr_architecture.py",
+      "role": "script"
+    },
+    {
+      "path": "scripts/lib/social_preview.py",
+      "role": "script"
+    },
+    {
+      "path": "scripts/lib/readme_badges.py",
+      "role": "script"
     }
   ],
   "modules": {

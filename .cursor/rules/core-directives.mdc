@@ -1,44 +1,28 @@
 ---
-description: Core agent directives — plan-first, read-before-write, 3-strike rule
+description: Core agent directives — plan-first, 3-strike, token limits
 alwaysApply: true
 ---
 
 # Core Directives
 
-On session start, read docs/START_HERE.md, pick Cursor mode via docs/CURSOR_MODES.md, name dirty `[Unreleased]` and the next 🔲 `[AGENT]` row, then edit. If `AGENT.md` exists, read it before any sprint row (do not substitute template About/donate).
+Session start: hook context + `BUILD_PLAN` next 🔲 `[AGENT][LOCAL]` + mode (Ask/Plan/Agent/Debug). Do not re-read full START_HERE / AGENTS / CURSOR_MODES every turn. Unreleased: first ~20 lines of CHANGELOG only. UI edits: read `docs/ux-ui-guidelines.md`. If `AGENT.md` exists, read it before sprint rows. FOSS: MIT, no proprietary SDKs on the production path (`foss-compliance.mdc` on demand).
 
 ## Plan First, Code Second
 
-- Cursor mode routing: see cursor-modes.mdc and docs/CURSOR_MODES.md
-- Plan Mode for non-trivial tasks; Ask for read-only exploration
-- Include mandatory `### Critique` in every plan as an **Issue → Resolution** table
-- Every critique must have a concrete resolution (file, test, gate, BUILD_PLAN step, or `[HUMAN]` destructive-ops item) baked into the plan body — not open risks or “ask later”
-- Pick a single best approach; do not dump unresolved alternatives on the human
-- Bare “defer” / “monitor” / “optional later” is forbidden unless the resolution names a tracked follow-up and why shipping without it is safe now
-- Ask the human only for `[HUMAN]` destructive-ops or facts undiscoverable from the codebase
+- Plan Mode for non-trivial work; Ask for read-only
+- Every plan needs resolved `### Critique` (Issue→Resolution); no open risks
+- Ask the human only for `[HUMAN]` destructive-ops or undiscoverable facts
 
-## Read-Before-Write
+## BUILD_PLAN
 
-- Inspect types/interfaces via @filename before altering code
+- Sequential before Parallel; respect AGENT / HUMAN / ADB / AUTO
+- Status: 🔲 · ✅ · ❌ (see `BUILD_PLAN.md` legend)
+- Venue: `[LOCAL]` or `[CLOUD]` + `— scope:` on AGENT rows
 
-## BUILD_PLAN Protocol
+## 3-Strike
 
-- Sequential lane before Parallel lane
-- Respect AGENT, HUMAN, ADB, AUTO labels
-- Status markers: 🔲 open · ✅ done · ❌ blocked (emoji, not `- [ ]` checkboxes — repo-wide; see `BUILD_PLAN.md` legend)
+Halt after 3 consecutive failed fixes; escalate.
 
-## 3-Strike Rule
+## Memory / tokens
 
-Halt after 3 consecutive failed fix attempts; escalate to human.
-
-## Memory Files
-
-Update only at session start, milestone boundary, or architectural pivot.
-
-## Token Economy
-
-Max 300 lines static data (UI + i18n), 150 lines pure logic. Read active module/example only.
-
-## Local Compute
-
-On This Computer, prefer parallel Task/worktrees/`/best-of-n` and multi-core local gates over Cloud Agents — see `local-compute.mdc`.
+Update `.agent/AGENT_MEMORY.md` only at milestones. Max 300 lines UI+i18n, 150 lines pure logic. Prefer local parallel Task/worktrees over Cloud (`local-compute.mdc` on demand).

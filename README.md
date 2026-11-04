@@ -6,10 +6,10 @@
 
 <h1 align="center">DevPulse</h1>
 
-<p align="center"><strong>See which of your apps were last updated — and which look abandoned.</strong></p>
+<p align="center"><strong>See which of your apps still have a heartbeat — and which look abandoned.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/template-0.38.3-656d76?style=flat-square" alt="template" />
+  <img src="https://img.shields.io/badge/template-1.12.0-656d76?style=flat-square" alt="template" />
   <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-2ea043?style=flat-square" alt="GPL-3.0-or-later" />
   <img src="https://img.shields.io/badge/FOSS-no_tracking-656d76?style=flat-square" alt="FOSS" />
   <img src="https://img.shields.io/badge/status-active-39FF14?style=flat-square" alt="status" />
@@ -22,9 +22,11 @@
 
 ## Pitch
 
-DevPulse is a local-only Android app that checks when installed software was last updated and which look abandoned. It scans Google Play, F-Droid official, F-Droid Archive, IzzyOnDroid, Guardian Project, CalyxOS F-Droid repo, opt-in Aptoide, and GitHub (discover by app name; listed only if the package appears on that repo's releases), then surfaces stale apps so you can find a living replacement, another sideload source, or a repo worth forking.
+DevPulse is a local-only Android app that checks when installed software still has a heartbeat and which look abandoned. It scans Google Play, F-Droid official, F-Droid Archive, IzzyOnDroid, Guardian Project, CalyxOS F-Droid repo, opt-in Aptoide, and GitHub (discover by app name; listed only if the package appears on that repo's releases), then surfaces stale apps so you can find a living replacement, another sideload source, or a repo worth forking.
 
 ## Demo
+
+[GitHub Pages demo](https://edwardlthompson.github.io/DevPulse/) (project site).
 
 <p align="center">
   <img src="branding/assets/logo-lockup.svg" alt="DevPulse lockup" width="320" />

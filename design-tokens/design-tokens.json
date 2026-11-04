@@ -5,8 +5,8 @@
     "themeColorDark": "#1a1a2e"
   },
   "color": {
-    "primary": { "light": "#B3263E", "dark": "#e94560" },
-    "onPrimary": { "light": "#FFFFFF", "dark": "#FFFFFF" },
+    "primary": { "light": "#B3263E", "dark": "#FF8A9A" },
+    "onPrimary": { "light": "#FFFFFF", "dark": "#1a1a2e" },
     "primaryContainer": { "light": "#FFDAD6", "dark": "#8B1A35" },
     "onPrimaryContainer": { "light": "#410009", "dark": "#FFDAD6" },
     "secondary": { "light": "#4A5F82", "dark": "#9BB8E8" },

@@ -7,10 +7,12 @@ import sys
 from pathlib import Path
 
 OWNERS = ("AGENT", "AUTO", "HUMAN", "ADB")
+VENUES = ("LOCAL", "CLOUD")
 OPEN = {"🔲", "❌"}
 ROW = re.compile(
     r"^(?:(?:\d+[a-z]?)\.|-)\s+(?P<status>🔲|✅|❌|⬜)\s+"
     r"\[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]"
+    r"(?:\[(?P<venue>LOCAL|CLOUD)\])?"
 )
 BLOCK = re.compile(
     r"<!-- remaining-tally -->\n.*?\n<!-- /remaining-tally -->",
@@ -26,24 +28,34 @@ CHORE_HINT = re.compile(
 
 
 def count_remaining(text: str) -> dict[str, int]:
-    counts = {name: 0 for name in OWNERS}
+    counts = {name: 0 for name in (*OWNERS, *VENUES)}
     extra = 0
     for line in text.splitlines():
         match = ROW.match(line)
         if not match or match.group("status") not in OPEN:
             continue
         owner = match.group("owner")
-        if owner in counts:
+        venue = match.group("venue")
+        if owner in OWNERS:
             counts[owner] += 1
         else:
             extra += 1
+        if owner == "AGENT" and venue in VENUES:
+            counts[venue] += 1
     if extra:
         counts["OTHER"] = extra
     return counts
 
 
 def format_tally(counts: dict[str, int]) -> str:
-    parts = [f"{name} {counts.get(name, 0)}" for name in OWNERS]
+    parts = [
+        f"AGENT {counts.get('AGENT', 0)}",
+        f"LOCAL {counts.get('LOCAL', 0)}",
+        f"CLOUD {counts.get('CLOUD', 0)}",
+        f"AUTO {counts.get('AUTO', 0)}",
+        f"HUMAN {counts.get('HUMAN', 0)}",
+        f"ADB {counts.get('ADB', 0)}",
+    ]
     if counts.get("OTHER"):
         parts.append(f"OTHER {counts['OTHER']}")
     total = sum(counts.get(name, 0) for name in (*OWNERS, "OTHER"))

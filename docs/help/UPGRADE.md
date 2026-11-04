@@ -20,6 +20,10 @@ Read docs/help/UPGRADE.md and report template gaps for this repo. Do not edit fi
 5. Offer: “Say the number(s) to add 🔲 BUILD_PLAN rows.” Do not write the board until then (the synced block is cron-managed; named numbers still gate `/upgrade` apply).
 6. **No silent `do all`.** If they say `do all` / `implement all` / `add all`, do not add rows. Wait for numbered confirmation.
 
+## Deep upgrade (`/upgrade --deep`)
+
+Beyond gap file copy: **analyze** the child against new Canon and propose **Reformat** + **Adopt** items (file-size, encoding, brief keywords, new commands like `/shape`, coverage docs). Still Plan + Critique; named numbers only; never overwrite Sacred; never replace the app with `examples/` stubs.
+
 ## Sacred (never blind-overwrite)
 
 `AGENTS.md`, `AGENT.md`, `docs/spec.md`, `docs/plan.md`, `docs/INITIALIZATION_PROMPT.md`, live `.env`, live `scratchpad.md`, `LICENSE`, product `examples/`.

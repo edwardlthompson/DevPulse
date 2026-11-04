@@ -6,11 +6,12 @@ disable-model-invocation: false
 
 # Feature vertical slice
 
-See also: `.cursor/commands/feature.md`, `docs/FEATURE_MODULES.md`
+See also: `.cursor/commands/feature.md`, `docs/FEATURE_MODULES.md`, `docs/ux-ui-guidelines.md`
 
 1. Execute **one** open BUILD_PLAN feature row only (logic, view, tests, i18n in one container).
 2. Thin wiring in composition root (≤10 lines).
-3. After each AGENT step:
+3. Views follow `docs/ux-ui-guidelines.md` (construction law) and `docs/DESIGN_GUIDE.md` (tokens/chrome). Empty, error, and loading in the same slice. One primary CTA. Gaps you cannot fix: append `UX-NNN` to the BUILD_PLAN UX inventory immediately.
+4. After each AGENT step:
 
 ```bash
 python3 scripts/agent-run.py watch-agent-gates --once --autofix --scope auto

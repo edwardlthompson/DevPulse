@@ -1,6 +1,16 @@
 ---
 description: Prefer local depsonar/upd over GitHub Dependabot for dependency work
-alwaysApply: true
+alwaysApply: false
+globs:
+  - "**/package.json"
+  - "**/package-lock.json"
+  - "**/pyproject.toml"
+  - "**/uv.lock"
+  - "**/Cargo.toml"
+  - "**/go.mod"
+  - "**/build.gradle*"
+  - .github/dependabot.yml
+  - scripts/**/update*deps*
 ---
 
 # Local-first dependencies

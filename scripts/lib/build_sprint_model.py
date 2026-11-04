@@ -8,10 +8,12 @@ from pathlib import Path
 
 OPEN = r"(?:🔲|⬜|\[ \])"
 ROW_NUMBERED = re.compile(
-    rf"^(?P<num>\d+[a-z]?)\.\s+{OPEN}\s+\[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]\s+(?P<task>.+)$"
+    rf"^(?P<num>\d+[a-z]?)\.\s+{OPEN}\s+\[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]"
+    rf"(?:\[(?P<venue>LOCAL|CLOUD)\])?\s+(?P<task>.+)$"
 )
 ROW_BULLET = re.compile(
-    rf"^- {OPEN} \[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]\s+(?P<task>.+)$"
+    rf"^- {OPEN} \[(?P<owner>AGENT|AUTO|HUMAN|ADB)\]"
+    rf"(?:\[(?P<venue>LOCAL|CLOUD)\])?\s+(?P<task>.+)$"
 )
 SPRINT_HEADER = re.compile(r"^###\s+Sprint\s+", re.I)
 PARALLEL_HEADER = re.compile(r"^#{3,4}\s+.*Parallel", re.I)
@@ -27,6 +29,7 @@ class PlanRow:
     task: str
     sprint: str
     phase: str
+    venue: str | None = None
 
 
 TEMPLATE_NAMES = frozenset({"agent-project-bootstrap"})
@@ -63,7 +66,7 @@ def load_progress(root: Path) -> dict:
 
 
 def load_backlog_keys(root: Path) -> set[str]:
-    path = root / ".agent/HUMAN_BACKLOG.md"
+    path = root / "HUMAN_BACKLOG.md"
     if not path.exists():
         return set()
     keys: set[str] = set()
@@ -84,10 +87,24 @@ def row_action(owner: str) -> str:
     return "execute"
 
 
-def next_actionable_row(rows: list[PlanRow], backlog_keys: set[str]) -> PlanRow | None:
+def next_actionable_row(
+    rows: list[PlanRow],
+    backlog_keys: set[str],
+    *,
+    prefer_venue: str | None = "LOCAL",
+) -> PlanRow | None:
+    """Prefer LOCAL AGENT rows on This Computer; never auto-pick CLOUD locally."""
+    filtered: list[PlanRow] = []
     for row in rows:
         if row.owner in ("HUMAN", "ADB") and f"{row.sprint}|{row.task}" in backlog_keys:
             continue
+        if prefer_venue == "LOCAL" and row.owner == "AGENT" and row.venue == "CLOUD":
+            continue
+        filtered.append(row)
+    for row in filtered:
+        if prefer_venue and row.owner == "AGENT" and row.venue == prefer_venue:
+            return row
+    for row in filtered:
         return row
     return None
 
@@ -103,6 +120,7 @@ def parse_open_numbered(lines: list[str], sprint: str, phase: str) -> list[PlanR
                     task=match.group("task").strip(),
                     sprint=sprint,
                     phase=phase,
+                    venue=match.group("venue"),
                 )
             )
     return rows
@@ -122,7 +140,8 @@ def count_parallel_agents(lines: list[str]) -> int:
         match = TABLE_ROW.match(line)
         if not match or match.group(1).strip().lower() in ("task", "---"):
             continue
-        if match.group(2).strip().upper() == "AGENT":
+        owner = match.group(2).strip().upper().replace(" ", "")
+        if owner.startswith("AGENT"):
             scope = match.group(3).strip()
             if scope and "—" not in scope and "none" not in scope.lower():
                 count += 1

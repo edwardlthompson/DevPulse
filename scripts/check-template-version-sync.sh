@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Fail when .template-version drifts from .release-please-manifest.json
+# Fail when .template-version drifts from TEMPLATE_INDEX (and, on the template repo,
+# from release-please / CITATION / plugin).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -10,23 +11,34 @@ if [ ! -f .release-please-manifest.json ] || [ ! -f .template-version ]; then
   exit 1
 fi
 
-MANIFEST="$(python3 -c "import json; print(json.load(open('.release-please-manifest.json'))['.'].strip())")"
+# shellcheck source=lib/resolve-python.sh
+. "$(cd "$(dirname "$0")" && pwd)/lib/resolve-python.sh"
+
 VERSION="$(tr -d '[:space:]' < .template-version)"
+IS_TEMPLATE="$("$PY" -c "from pathlib import Path; from scripts.lib.build_sprint_model import is_template_repo; print('1' if is_template_repo(Path('.')) else '0')")"
 
-if [ "$MANIFEST" != "$VERSION" ]; then
-  echo "FAIL: .template-version ($VERSION) != manifest ($MANIFEST)"
-  echo "Fix: bash scripts/sync-template-version.sh"
-  exit 1
-fi
-
-IDX="$(python3 -c "import json; print(json.load(open('TEMPLATE_INDEX.json'))['template_version'])")"
+IDX="$("$PY" -c "import json; print(json.load(open('TEMPLATE_INDEX.json'))['template_version'])")"
 if [ "$IDX" != "$VERSION" ]; then
   echo "FAIL: TEMPLATE_INDEX template_version ($IDX) != .template-version ($VERSION)"
   echo "Fix: bash scripts/sync-template-version.sh"
   exit 1
 fi
 
-CFF="$(python3 -c "
+if [ "$IS_TEMPLATE" != "1" ]; then
+  # Child: .template-version tracks upstream template; app version stays in release-please.
+  MANIFEST="$("$PY" -c "import json; print(json.load(open('.release-please-manifest.json'))['.'].strip())")"
+  echo "Template version sync OK (child template=$VERSION app=$MANIFEST)"
+  exit 0
+fi
+
+MANIFEST="$("$PY" -c "import json; print(json.load(open('.release-please-manifest.json'))['.'].strip())")"
+if [ "$MANIFEST" != "$VERSION" ]; then
+  echo "FAIL: .template-version ($VERSION) != manifest ($MANIFEST)"
+  echo "Fix: bash scripts/sync-template-version.sh"
+  exit 1
+fi
+
+CFF="$("$PY" -c "
 import re
 from pathlib import Path
 text = Path('CITATION.cff').read_text(encoding='utf-8')
@@ -39,7 +51,7 @@ if [ -z "$CFF" ] || [ "$CFF" != "$VERSION" ]; then
   exit 1
 fi
 
-CFF_DATE="$(python3 -c "
+CFF_DATE="$("$PY" -c "
 import re
 from pathlib import Path
 text = Path('CITATION.cff').read_text(encoding='utf-8')
@@ -52,14 +64,14 @@ if [ -z "$CFF_DATE" ]; then
   exit 1
 fi
 
-PLUGIN="$(python3 -c "import json; print(json.load(open('.cursor-plugin/plugin.json', encoding='utf-8')).get('version',''))")"
+PLUGIN="$("$PY" -c "import json; print(json.load(open('.cursor-plugin/plugin.json', encoding='utf-8')).get('version',''))")"
 if [ "$PLUGIN" != "$VERSION" ]; then
   echo "FAIL: .cursor-plugin/plugin.json version ($PLUGIN) != .template-version ($VERSION)"
   echo "Fix: bash scripts/sync-template-version.sh"
   exit 1
 fi
 
-RP_PLUGIN="$(python3 -c "
+RP_PLUGIN="$("$PY" -c "
 import json
 cfg = json.load(open('release-please-config.json', encoding='utf-8'))
 ok = False

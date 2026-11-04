@@ -11,12 +11,24 @@ ERRORS=0
 MAX_REPORT=20
 reported=0
 
-while IFS= read -r file; do
-  [ -z "$file" ] && continue
-  size=$(git cat-file -s "HEAD:$file" 2>/dev/null || echo 0)
+# Single ls-tree; parse size without per-file git/awk (Windows Git Bash).
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+git ls-tree -r -l HEAD >"$tmp"
+
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  # Format: <mode> <type> <object> <size>\t<path>
+  meta="${line%%$'\t'*}"
+  path="${line#*$'\t'}"
+  [ "$meta" = "$line" ] && continue
+  size="${meta##* }"
+  case "$size" in
+    ''|*[!0-9]*) continue ;;
+  esac
   if [ "$size" -gt "$MAX_BYTES" ]; then
     kb=$((size / 1024))
-    echo "LARGE TRACKED FILE: $file (${kb} KB > ${MAX_KB} KB)"
+    echo "LARGE TRACKED FILE: $path (${kb} KB > ${MAX_KB} KB)"
     ERRORS=$((ERRORS + 1))
     reported=$((reported + 1))
     if [ "$reported" -ge "$MAX_REPORT" ]; then
@@ -24,7 +36,7 @@ while IFS= read -r file; do
       break
     fi
   fi
-done < <(git ls-files)
+done <"$tmp"
 
 if [ "$ERRORS" -gt 0 ]; then
   echo "$ERRORS tracked file(s) exceed ${MAX_KB} KB"

@@ -44,7 +44,7 @@ Do not claim a hook is a hard deny. Project hooks are **fail-open** (parse error
 
 ## Audit Trail
 
-At milestone boundaries, log significant agent actions in `DECISION_LOG.md`:
+At milestone boundaries, log significant agent actions in `.agent/DECISION_LOG.md`:
 
 - What changed and why
 - Tests or CI that validated the change

@@ -36,15 +36,20 @@ def next_open_row(root: Path) -> str:
     if not path.is_file():
         return "(no BUILD_PLAN.md)"
     lines = path.read_text(encoding="utf-8").splitlines()
-    for prefer_agent in (True, False):
+    # Prefer LOCAL AGENT, then any AGENT (skip CLOUD on This Computer), then other.
+    for prefer in ("LOCAL", "AGENT", "ANY"):
         for line in lines:
             stripped = line.strip()
             if not (stripped[:1].isdigit() or stripped.startswith("-")):
                 continue
             if "🔲" not in line:
                 continue
-            if prefer_agent and "[AGENT]" not in line:
-                continue
+            if prefer == "LOCAL":
+                if "[AGENT][LOCAL]" not in line:
+                    continue
+            elif prefer == "AGENT":
+                if "[AGENT]" not in line or "[AGENT][CLOUD]" in line:
+                    continue
             return stripped[:120]
     return "(no open rows)"
 

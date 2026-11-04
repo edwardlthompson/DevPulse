@@ -76,6 +76,7 @@ def build_status(root: Path, *, lane: str = "auto") -> dict:
             "task": maint_next.task,
             "sprint": maint_next.sprint,
             "phase": maint_next.phase,
+            "venue": maint_next.venue,
             "action": act,
         },
         "action": act,

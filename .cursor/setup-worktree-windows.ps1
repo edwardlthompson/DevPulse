@@ -46,6 +46,39 @@ if ($RootSrc -and (Test-Path -LiteralPath $RootSrc -PathType Container)) {
   Write-Host 'SKIP env examples (ROOT_WORKTREE_PATH unset or missing)'
 }
 
+$env:ROOT_WORKTREE_PATH = $RootSrc
+function Resolve-PythonExe {
+  $pyLauncher = Get-Command py -ErrorAction SilentlyContinue
+  if ($pyLauncher) {
+    try {
+      $exe = & py -3 -c "import sys; print(sys.executable)" 2>$null
+      if ($exe -and ($exe -notmatch 'WindowsApps')) { return $exe }
+    } catch {}
+  }
+  foreach ($name in @('python3', 'python')) {
+    $cmd = Get-Command $name -ErrorAction SilentlyContinue
+    if ($cmd -and $cmd.Source -and ($cmd.Source -notmatch 'WindowsApps')) {
+      return $cmd.Source
+    }
+  }
+  return 'python3'
+}
+$Python = Resolve-PythonExe
+& $Python -c @"
+from pathlib import Path
+import os, sys
+root = os.environ.get('ROOT_WORKTREE_PATH') or ''
+try:
+    ok = bool(root) and Path(root).is_dir() and Path(root).resolve() != Path('.').resolve()
+except OSError:
+    ok = False
+raise SystemExit(0 if ok else 1)
+"@
+if ($LASTEXITCODE -ne 0) {
+  Write-Host 'SKIP stack install (not a Cursor worktree; set ROOT_WORKTREE_PATH to the primary repo)'
+  exit 0
+}
+
 $StackFile = Join-Path $Wt '.cursor\stack-selection.json'
 if (-not (Test-Path -LiteralPath $StackFile) -and $RootSrc) {
   $alt = Join-Path $RootSrc '.cursor\stack-selection.json'
@@ -82,8 +115,14 @@ function Install-NpmDir([string]$Dir) {
   }
   Push-Location $Dir
   try {
-    npm ci
-    if ($LASTEXITCODE -eq 0) { Write-Host "OK npm ci in $Dir" } else { Write-Host "SKIP npm ci failed in $Dir (non-fatal)" }
+    npm ci --prefer-offline --no-audit --no-fund
+    if ($LASTEXITCODE -eq 0) {
+      Write-Host "OK npm ci in $Dir"
+    } else {
+      Write-Host "WARN npm ci --prefer-offline failed in $Dir; retry without offline"
+      npm ci --no-audit --no-fund
+      if ($LASTEXITCODE -eq 0) { Write-Host "OK npm ci in $Dir" } else { Write-Host "SKIP npm ci failed in $Dir (non-fatal)" }
+    }
   } catch {
     Write-Host "SKIP npm ci failed in $Dir (non-fatal)"
   } finally {
@@ -111,16 +150,46 @@ function Install-UvDir([string]$Dir) {
   }
 }
 
+function Resolve-GradleOfflinePy {
+  foreach ($base in @($Wt, $RootSrc)) {
+    if (-not $base) { continue }
+    $candidate = Join-Path $base 'scripts\lib\gradle_offline.py'
+    if (Test-Path -LiteralPath $candidate) { return $candidate }
+  }
+  return $null
+}
+
 function Install-GradleDir([string]$Dir) {
   $gw = Join-Path $Dir 'gradlew.bat'
   if (-not (Test-Path -LiteralPath $gw)) {
     Write-Host "SKIP gradle in $Dir (no gradlew.bat)"
     return
   }
+  $helper = Resolve-GradleOfflinePy
+  $offline = $false
+  if ($helper -and $RootSrc) {
+    $extra = & $Python $helper --args --root $RootSrc 2>$null
+    if ($extra -match '--offline') { $offline = $true }
+  }
   Push-Location $Dir
   try {
+    if ($offline) {
+      & .\gradlew.bat --offline --version
+      if ($LASTEXITCODE -eq 0) {
+        Write-Host "OK gradle wrapper in $Dir (offline)"
+        return
+      }
+      Write-Host "WARN gradle --offline failed in $Dir; retry online"
+    }
     & .\gradlew.bat --version
-    if ($LASTEXITCODE -eq 0) { Write-Host "OK gradle wrapper in $Dir" } else { Write-Host "SKIP gradle failed in $Dir (non-fatal)" }
+    if ($LASTEXITCODE -eq 0) {
+      if ($helper -and $RootSrc) {
+        & $Python $helper --mark --root $RootSrc 2>$null
+      }
+      Write-Host "OK gradle wrapper in $Dir"
+    } else {
+      Write-Host "SKIP gradle failed in $Dir (non-fatal)"
+    }
   } catch {
     Write-Host "SKIP gradle failed in $Dir (non-fatal)"
   } finally {
@@ -128,15 +197,58 @@ function Install-GradleDir([string]$Dir) {
   }
 }
 
+function Link-PlatformTools {
+  $dest = Join-Path $Wt '.cursor\platform-tools'
+  $sdk = $null
+  foreach ($key in @('ANDROID_HOME', 'ANDROID_SDK_ROOT')) {
+    $val = [Environment]::GetEnvironmentVariable($key)
+    if ($val -and (Test-Path -LiteralPath (Join-Path $val 'platform-tools') -PathType Container)) {
+      $sdk = Join-Path $val 'platform-tools'
+      break
+    }
+  }
+  if (-not $sdk) {
+    $local = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools'
+    if (Test-Path -LiteralPath $local -PathType Container) { $sdk = $local }
+  }
+  if (-not $sdk) {
+    Write-Host 'SKIP platform-tools symlink (SDK not found)'
+    return
+  }
+  $cursorDir = Join-Path $Wt '.cursor'
+  if (-not (Test-Path -LiteralPath $cursorDir)) {
+    New-Item -ItemType Directory -Path $cursorDir -Force | Out-Null
+  }
+  if (Test-Path -LiteralPath $dest) {
+    Write-Host "OK platform-tools already present at $dest"
+    return
+  }
+  try {
+    New-Item -ItemType SymbolicLink -Path $dest -Target $sdk -ErrorAction Stop | Out-Null
+    Write-Host "OK linked platform-tools -> $sdk"
+  } catch {
+    try {
+      cmd /c mklink /J "`"$dest`"" "`"$sdk`"" | Out-Null
+      Write-Host "OK junction platform-tools -> $sdk"
+    } catch {
+      Write-Host 'SKIP platform-tools symlink (non-fatal)'
+    }
+  }
+}
+
 switch ($Stack) {
   'web' { Install-NpmDir (Join-Path $Wt 'examples\web') }
   'node' { Install-NpmDir (Join-Path $Wt 'examples\node') }
   'python' { Install-UvDir (Join-Path $Wt 'examples\python') }
-  'android' { Install-GradleDir (Join-Path $Wt 'examples\android') }
+  'android' {
+    Link-PlatformTools
+    Install-GradleDir (Join-Path $Wt 'examples\android')
+  }
   Default {
     Install-NpmDir (Join-Path $Wt 'examples\web')
     Install-NpmDir (Join-Path $Wt 'examples\node')
     Install-UvDir (Join-Path $Wt 'examples\python')
+    Link-PlatformTools
     Install-GradleDir (Join-Path $Wt 'examples\android')
   }
 }

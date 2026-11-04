@@ -70,6 +70,11 @@
       "group": "build",
       "caption": "Design one feature or decision before coding."
     },
+    "shape": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Turn a rough idea into a short buildable spec (no app code)."
+    },
     "adr": {
       "kind": "step",
       "group": "build",
@@ -179,6 +184,81 @@
       "kind": "step",
       "group": "session",
       "caption": "After Cloud Agent work: fetch, sync open Dependabot/release PRs into BUILD_PLAN, list cursor/* PRs, name the next AGENT row."
+    },
+    "ux-review": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Score real screens against the construction guidelines and write every change to the task-board UX inventory."
+    },
+    "ux-apply": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Implement one UX inventory item, then re-check that screen."
+    },
+    "ui-review": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Same as /ux-review."
+    },
+    "ux-audit": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Same as /ux-review (not a full-repo audit)."
+    },
+    "ui-audit": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Same as /ux-review (not a full-repo audit)."
+    },
+    "a11y-check": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Accessibility-first /ux-review. Writes every WCAG gap to the UX inventory."
+    },
+    "compare-ui": {
+      "kind": "step",
+      "group": "check",
+      "caption": "Compare this app to a few named products, then write every change to the UX inventory."
+    },
+    "redesign": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Review one flow against the construction guidelines; apply only the ids you name."
+    },
+    "update-guidelines": {
+      "kind": "step",
+      "group": "build",
+      "caption": "Patch the UX/UI construction guidelines (how we build screens), not a review-only file."
+    },
+    "brand": {
+      "kind": "step",
+      "group": "start",
+      "caption": "Replace Golden Path placeholder logos and pitch with your product brand."
+    },
+    "lean": {
+      "kind": "step",
+      "group": "session",
+      "caption": "Extreme Agent Mode: block Cloud/Grok and convert open CLOUD rows to LOCAL."
+    },
+    "balanced": {
+      "kind": "step",
+      "group": "session",
+      "caption": "Default Agent Mode: LOCAL preferred, Cloud allowed when tagged."
+    },
+    "speed": {
+      "kind": "step",
+      "group": "session",
+      "caption": "Speed Agent Mode: Cloud allowed for fast scoped parallel work."
+    },
+    "mode": {
+      "kind": "step",
+      "group": "session",
+      "caption": "Print the current Agent Mode and one-sentence policy."
+    },
+    "status": {
+      "kind": "step",
+      "group": "session",
+      "caption": "Full repo settings + golden-path status report (read-only)."
     }
   }
 }

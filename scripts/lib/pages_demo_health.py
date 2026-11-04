@@ -28,9 +28,6 @@ def expected_pages_url(root: Path | None = None) -> str | None:
 
 def check_readme(root: Path | None = None) -> list[str]:
     base = root or ROOT
-    if not (base / "examples" / "web").is_dir():
-        return []
-    base = root or ROOT
     url = expected_pages_url(base)
     if not url:
         return ["missing branding/product.json urls.github_repo"]
@@ -57,11 +54,6 @@ def probe(url: str, timeout: float = 8.0) -> str:
 def main() -> int:
     import sys
 
-    from pathlib import Path as P
-
-    if not (P.cwd() / "examples" / "web").is_dir():
-        print("SKIP pages demo link (no examples/web)")
-        return 0
     errors = check_readme()
     url = expected_pages_url()
     if errors:
