@@ -74,7 +74,7 @@ Configure DevPulse package and repo so About and Opportunity do not depend on a 
 ## Alternatives considered
 
 | Pattern | Rejected because |
-|---------|------------------|
+| --------- | ------------------ |
 | MIT remain | Product target is GPL-3.0-or-later; init could not select it |
 | Guess Play dates | Would lie when HTML changes |
 | Installed time paints green | Sideload updates would hide dead remotes |
