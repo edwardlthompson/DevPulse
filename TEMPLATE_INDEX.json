@@ -1,5 +1,5 @@
 {
-  "template_version": "1.12.0",
+  "template_version": "1.13.0",
   "project": {
     "name": "DevPulse",
     "purpose": "Scan installed Android apps across Google Play, F-Droid plus extra repos, and public forges to surface stale or abandoned software so users can find replacements, sideload sources, or decide what to build next.",
@@ -2923,6 +2923,31 @@
     {
       "path": "scripts/lib/readme_badges.py",
       "role": "script"
+    },
+    {
+      "path": ".github/workflows/argus-remote-stub.yml",
+      "purpose": "CI remote status no-op when disabled",
+      "status": "not_started"
+    },
+    {
+      "path": ".github/workflows/argus-rules-manifest.yml",
+      "purpose": "Publish rules.manifest.json on main",
+      "status": "not_started"
+    },
+    {
+      "path": "argus.contract.json",
+      "purpose": "Argus contract markers",
+      "status": "not_started"
+    },
+    {
+      "path": "argus.remote.json",
+      "purpose": "Argus remote off switch",
+      "status": "not_started"
+    },
+    {
+      "path": "rules.manifest.json",
+      "purpose": "Rules manifest",
+      "status": "not_started"
     }
   ],
   "modules": {
