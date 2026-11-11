@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [1.14.0](https://github.com/edwardlthompson/DevPulse/compare/v1.13.0...v1.14.0) (2026-11-11)
 
 
@@ -174,8 +176,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * record v0.37.0 session retrospective in AGENT_MEMORY ([6f2cee7](https://github.com/edwardlthompson/DevPulse/commit/6f2cee7dc84d3cd842f6e7664cdaa7d5f2cfc41b))
 * record v0.38.0 ship notes and sync README template badge ([39dcb57](https://github.com/edwardlthompson/DevPulse/commit/39dcb57347505484774760781712312643d58a94))
 * sync README template badge to 0.38.2 and record KB-036 ([a168a4d](https://github.com/edwardlthompson/DevPulse/commit/a168a4db8c4ab02e83aacc48bbe107cc8a2ca2f2))
-
-## [Unreleased]
 
 ## [1.0.0](https://github.com/edwardlthompson/DevPulse/compare/v0.38.3...v1.0.0) (2026-11-02)
 
