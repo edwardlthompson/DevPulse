@@ -326,6 +326,7 @@ jobs:
         run: bash scripts/check-license-compliance.sh node
 
   android-structure:
+    if: false
     name: Android - Structure Validation
     if: false
     runs-on: ubuntu-latest
@@ -353,6 +354,7 @@ jobs:
           grep -q "SOURCE_DATE_EPOCH" examples/android/README.md
 
   android-build:
+    if: false
     name: Android - assembleDebug
     if: false
     runs-on: ubuntu-latest
@@ -372,6 +374,7 @@ jobs:
         run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
 
   android-instrumented:
+    if: false
     name: Android - connectedDebugAndroidTest
     if: false
     runs-on: ubuntu-latest
@@ -517,6 +520,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   android-release:
+    if: false
     name: Android - assembleRelease
     if: false
     runs-on: ubuntu-latest
