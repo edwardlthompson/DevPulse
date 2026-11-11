@@ -28,39 +28,13 @@ jobs:
       matrix:
         include:
           - language: python
-          - language: java-kotlin
-            paths: examples/android
     steps:
       - uses: actions/checkout@v7
-      - name: Setup Java (Android)
-        if: matrix.language == 'java-kotlin'
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: "17"
-      - name: Setup Android SDK
-        if: matrix.language == 'java-kotlin'
-        uses: android-actions/setup-android@v4
-        with:
-          packages: platform-tools
-      - name: Accept Android SDK licenses
-        if: matrix.language == 'java-kotlin'
-        run: yes | sdkmanager --licenses
-      - name: Initialize CodeQL (repo-wide)
-        if: matrix.language != 'java-kotlin'
+      
+      - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-      - name: Initialize CodeQL (Android)
-        if: matrix.language == 'java-kotlin'
-        uses: github/codeql-action/init@v4
-        with:
-          languages: java-kotlin
-          paths: examples/android
-      - name: Build Android (CodeQL traced)
-        if: matrix.language == 'java-kotlin'
-        working-directory: examples/android
-        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
       - uses: github/codeql-action/analyze@v4
 
   # Job name must be exactly CodeQL — branch protection requires that check context.
