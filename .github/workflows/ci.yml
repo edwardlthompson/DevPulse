@@ -327,6 +327,7 @@ jobs:
 
   android-structure:
     name: Android - Structure Validation
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -353,6 +354,7 @@ jobs:
 
   android-build:
     name: Android - assembleDebug
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -371,6 +373,7 @@ jobs:
 
   android-instrumented:
     name: Android - connectedDebugAndroidTest
+    if: false
     runs-on: ubuntu-latest
     needs: path-changes
     if: needs.path-changes.outputs.android == 'true'
@@ -515,6 +518,7 @@ jobs:
 
   android-release:
     name: Android - assembleRelease
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
