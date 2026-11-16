@@ -1,0 +1,4 @@
+# Pointer only. The inclusion recipe lives on
+# https://gitlab.com/edwardleethompson/fdroiddata/-/tree/fdroid/app.devpulse
+SourceCode: https://github.com/edwardlthompson/DevPulse
+IssueTracker: https://github.com/edwardlthompson/DevPulse/issues

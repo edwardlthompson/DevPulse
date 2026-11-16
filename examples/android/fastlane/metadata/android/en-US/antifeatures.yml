@@ -1,2 +1,2 @@
-AntiFeatures:
-  - NonFreeNet
+NonFreeNet:
+  en-US: Queries Google Play, GitHub, and Aptoide for listing metadata. Lookups stay optional and on-device.

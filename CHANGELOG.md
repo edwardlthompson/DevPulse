@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+* **android:** Drop the stale Material3 `ExposedDropdownMenu` import so release assemble compiles
+
+### Changed
+
+* **fdroid:** Restore app version 1.0.0 / 10000 as the Gradle SoT, make release signing strip-tolerant, replace LICENSE with canonical GPL-3.0 text, and describe NonFreeNet for Play, GitHub, and Aptoide lookups
+
 ## [1.0.0](https://github.com/edwardlthompson/DevPulse/compare/v0.38.3...v1.0.0) (2026-11-02)
 
 ### Added

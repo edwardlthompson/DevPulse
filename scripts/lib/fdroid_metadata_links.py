@@ -4,7 +4,10 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-META = Path("examples/android/metadata/dev.foss.goldenpath.yml")
+CANDIDATES = (
+    Path("examples/android/metadata/app.devpulse.yml"),
+    Path("examples/android/metadata/dev.foss.goldenpath.yml"),
+)
 NEEDLES = ("SourceCode:", "IssueTracker:")
 HTTPS = re.compile(r"^https://github\.com/[^\s]+$")
 
@@ -13,9 +16,9 @@ def check_repo(root: Path) -> list[str]:
     # Child prune may remove the Android Golden Path entirely.
     if not (root / "examples" / "android").is_dir():
         return []
-    path = root / META
-    if not path.is_file():
-        return [f"MISSING: {META.as_posix()}"]
+    path = next((root / rel for rel in CANDIDATES if (root / rel).is_file()), None)
+    if path is None:
+        return [f"MISSING: {CANDIDATES[0].as_posix()}"]
     errors: list[str] = []
     text = path.read_text(encoding="utf-8")
     for key in NEEDLES:
