@@ -5,10 +5,12 @@ import struct
 from pathlib import Path
 
 DUMMY_NAME = ("dummy", "placeholder", "sample", "lorem")
+MIN_BYTES = 5000
 SCREEN_DIRS = ("phoneScreenshots", "sevenInchScreenshots", "tenInchScreenshots")
 ROOTS = (
-    Path("examples") / "android" / "metadata",
+    Path("fastlane") / "metadata" / "android",
     Path("examples") / "android" / "fastlane" / "metadata" / "android",
+    Path("examples") / "android" / "metadata",
 )
 
 
@@ -35,7 +37,7 @@ def _valid_shots(folder: Path) -> list[Path]:
         if _is_dummy_name(shot.name):
             continue
         size = _png_size(shot)
-        if size is None or min(size) <= 8:
+        if size is None or min(size) <= 8 or shot.stat().st_size < MIN_BYTES:
             continue
         shots.append(shot)
     return shots
@@ -62,6 +64,8 @@ def check_tree(root: Path) -> list[str]:
                     errors.append(f"screenshot is not a PNG: {rel}")
                 elif min(size) <= 8:
                     errors.append(f"dummy screenshot size {size[0]}x{size[1]}: {rel}")
+                elif shot.stat().st_size < MIN_BYTES:
+                    errors.append(f"dummy screenshot bytes {shot.stat().st_size}: {rel}")
     return errors
 
 
@@ -70,9 +74,9 @@ def check_completeness(root: Path, *, submit_ready: bool = False) -> list[str]:
     if not submit_ready:
         return []
     errors: list[str] = []
-    meta = root / "examples" / "android" / "metadata" / "en-US" / "images"
+    meta = root / "fastlane" / "metadata" / "android" / "en-US" / "images"
     if not meta.is_dir():
-        return ["missing examples/android/metadata/en-US/images for submit-ready"]
+        return ["missing fastlane/metadata/android/en-US/images for submit-ready"]
     icon = meta / "icon.png"
     if not icon.is_file() or _png_size(icon) is None:
         errors.append("submit-ready requires images/icon.png")

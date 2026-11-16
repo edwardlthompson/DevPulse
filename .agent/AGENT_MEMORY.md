@@ -7,9 +7,9 @@
 
 | Layer | Technology | Version | Notes |
 |-------|-----------|---------|-------|
-| Platform | Android only (Kotlin, Compose, Material 3) | Golden Path stub 0.1.0 | Child of agent-project-bootstrap 0.21.0 |
-| License | GPL-3.0-or-later | - | Init wrote MIT; Sprint 0 replaced it |
-| Distribution | GitHub Releases only | - | Not listed on F-Droid; app still queries F-Droid indexes for other apps |
+| Platform | Android only (Kotlin, Compose, Material 3) | 1.0.0 / 10000 | Child of agent-project-bootstrap; SoT `schemas/golden-path/app-version.json` |
+| License | GPL-3.0-or-later | LICENSE is canonical GPL-3.0 | or-later notice lives in NOTICE (GitHub licensee has no or-later SPDX) |
+| Distribution | GitHub Releases; F-Droid metadata pending | - | Root `fastlane/` is the store listing; app still queries F-Droid indexes |
 ## Active Modules
 
 - ✅ Android / F-Droid (`modules/android/MODULE.md`)

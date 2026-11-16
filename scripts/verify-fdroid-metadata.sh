@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Validate F-Droid/Fastlane metadata scaffold (AGENT gate; APK hashes remain ADB).
+# Validate F-Droid/Fastlane metadata (AGENT gate; APK hashes remain ADB).
 # Usage: scripts/verify-fdroid-metadata.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-META="$ROOT/examples/android/metadata/en-US"
+FASTLANE="$ROOT/fastlane/metadata/android/en-US"
 GRADLE="$ROOT/examples/android/app/build.gradle.kts"
 ERRORS=0
 
@@ -19,93 +19,89 @@ ok() {
   echo "OK   $1"
 }
 
-if [ ! -d "$META" ]; then
-  fail "missing $META"
+if [ ! -d "$FASTLANE" ]; then
+  fail "missing $FASTLANE"
 else
-  ok "metadata directory present"
+  ok "root fastlane metadata present"
 fi
 
 for f in title.txt short_description.txt full_description.txt; do
-  if [ ! -s "$META/$f" ]; then
-    fail "missing or empty $META/$f"
+  if [ ! -s "$FASTLANE/$f" ]; then
+    fail "missing or empty $FASTLANE/$f"
   else
     ok "$f present"
   fi
 done
 
+AF="$FASTLANE/antifeatures.yml"
+if [ ! -s "$AF" ]; then
+  fail "missing $AF"
+elif ! grep -q "NonFreeNet" "$AF"; then
+  fail "antifeatures.yml must declare NonFreeNet"
+elif ! grep -q "Google Play" "$AF" || ! grep -q "GitHub" "$AF" || ! grep -q "Aptoide" "$AF"; then
+  fail "NonFreeNet description must mention Google Play, GitHub, and Aptoide"
+else
+  ok "NonFreeNet describes Play, GitHub, and Aptoide lookups"
+fi
+
+VERSION_CODE="$(python3 -c 'import json; print(json.load(open("schemas/golden-path/app-version.json"))["versionCode"])')"
+if [ -z "${VERSION_CODE:-}" ]; then
+  fail "could not parse versionCode from app-version.json"
+elif [ ! -s "$FASTLANE/changelogs/${VERSION_CODE}.txt" ]; then
+  fail "missing changelog $FASTLANE/changelogs/${VERSION_CODE}.txt"
+else
+  ok "changelog for versionCode ${VERSION_CODE}"
+fi
+
+if [ ! -s "$FASTLANE/images/icon.png" ]; then
+  fail "missing $FASTLANE/images/icon.png"
+else
+  ok "fastlane icon.png present"
+fi
+
+if [ ! -d "$FASTLANE/images/phoneScreenshots" ]; then
+  fail "missing $FASTLANE/images/phoneScreenshots/"
+else
+  ok "phoneScreenshots directory present"
+fi
+
+if [ -f "$ROOT/LICENSE" ] && grep -q "GNU GENERAL PUBLIC LICENSE" "$ROOT/LICENSE"; then
+  FIRST="$(head -n 1 "$ROOT/LICENSE" | sed 's/^[[:space:]]*//')"
+  if [ "$FIRST" != "GNU GENERAL PUBLIC LICENSE" ]; then
+    fail "LICENSE must start with canonical GNU GPL v3 text (not a project header)"
+  elif ! grep -q "<one line to give the program" "$ROOT/LICENSE"; then
+    fail "LICENSE How to Apply section is truncated; GitHub licensee needs the canonical GPL-3.0 text"
+  else
+    ok "root LICENSE is canonical GPL-3.0"
+  fi
+else
+  fail "missing canonical GPL-3.0 LICENSE"
+fi
+
 if [ ! -f "$GRADLE" ]; then
   fail "missing $GRADLE"
+elif grep -q 'getByName("release")' "$GRADLE"; then
+  fail 'build.gradle.kts must not use signingConfigs.getByName("release")'
+elif ! grep -q "maybeCreate" "$GRADLE" || ! grep -q "findByName" "$GRADLE"; then
+  fail "build.gradle.kts must use signingConfigs.maybeCreate/findByName"
 else
-  VERSION_CODE="$(grep -E 'versionCode\s*=' "$GRADLE" | head -1 | sed -E 's/.*=\s*([0-9]+).*/\1/')"
-  if [ -z "${VERSION_CODE:-}" ]; then
-    fail "could not parse versionCode from build.gradle.kts"
-  elif [ ! -s "$META/changelogs/${VERSION_CODE}.txt" ]; then
-    fail "missing changelog $META/changelogs/${VERSION_CODE}.txt"
-  else
-    ok "changelog for versionCode ${VERSION_CODE}"
-  fi
+  ok "release signingConfig is strip-tolerant"
 fi
 
-if [ ! -d "$META/images" ]; then
-  fail "missing $META/images/ (add README + assets before submit)"
-else
-  ok "images directory present"
-fi
-
-if [ -f "$ROOT/LICENSE" ]; then
-  ok "root LICENSE present (MIT for template)"
-else
-  fail "missing root LICENSE"
-fi
-
-FASTLANE="$ROOT/examples/android/fastlane/metadata/android/en-US"
-if [ ! -d "$FASTLANE" ]; then
-  fail "missing $FASTLANE"
-else
-  ok "fastlane metadata mirror present"
+NESTED="$ROOT/examples/android/fastlane/metadata/android/en-US"
+if [ -d "$NESTED" ]; then
   for f in title.txt short_description.txt full_description.txt; do
-    if [ ! -s "$FASTLANE/$f" ]; then
-      fail "missing or empty $FASTLANE/$f"
+    if [ ! -s "$NESTED/$f" ]; then
+      fail "missing or empty $NESTED/$f"
     else
-      ok "fastlane $f present"
+      ok "nested fastlane $f present"
     fi
   done
-  if [ ! -s "$ROOT/examples/android/fastlane/Fastfile" ]; then
-    fail "missing examples/android/fastlane/Fastfile"
-  else
-    ok "Fastfile present"
-  fi
-  if [ ! -s "$ROOT/examples/android/fastlane/Appfile" ]; then
-    fail "missing examples/android/fastlane/Appfile"
-  else
-    ok "Appfile present"
-  fi
-fi
-
-RECIPE="$ROOT/examples/android/metadata/dev.foss.goldenpath.yml"
-if [ ! -s "$RECIPE" ]; then
-  fail "missing F-Droid build recipe $RECIPE"
-elif ! grep -q "RepoType: git" "$RECIPE" || ! grep -q "subdir: examples/android" "$RECIPE"; then
-  fail "F-Droid recipe must set RepoType git and subdir examples/android"
-elif ! grep -q "gradle:" "$RECIPE"; then
-  fail "F-Droid recipe must use a gradle build"
-else
-  ok "F-Droid build recipe present"
-fi
-
-AF="$ROOT/examples/android/metadata/antifeatures.yml"
-if [ ! -s "$AF" ]; then
-  fail "missing F-Droid AntiFeatures template $AF"
-elif ! grep -q "AntiFeatures: \[\]" "$AF"; then
-  fail "FOSS AntiFeatures template must default to an empty list"
-else
-  ok "F-Droid AntiFeatures template present"
 fi
 
 echo ""
 echo "SKIP [ADB] reproducible APK hash verification — run on device/emulator per modules/android/MODULE.md"
 
-# Dummy/placeholder screenshots fail even when metadata text is present.
 if ! bash "$ROOT/scripts/check-fdroid-screenshots.sh"; then
   fail "dummy F-Droid screenshots are not allowed"
 fi
