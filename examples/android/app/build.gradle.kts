@@ -12,15 +12,16 @@ fun readGoldenPathAppVersion(): String {
     return version
 }
 
-fun readGoldenPathVersionCode(): Int {
-    val file = rootProject.file("../../schemas/golden-path/app-version.json")
-    val code = Regex(""""versionCode"\s*:\s*(\d+)""").find(file.readText())?.groupValues?.get(1)?.toIntOrNull()
-    check(code != null && code > 0) { "schemas/golden-path/app-version.json missing versionCode" }
-    return code
+fun pulseVersionCode(version: String): Int {
+    val parts = version.substringBefore('-').substringBefore('+').split('.')
+    val major = parts.getOrNull(0)?.toIntOrNull() ?: 0
+    val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
+    val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
+    return major * 10000 + minor * 100 + patch
 }
 
 val pulseVersion = readGoldenPathAppVersion()
-val pulseVersionCode = readGoldenPathVersionCode()
+val pulseVersionCode = pulseVersionCode(pulseVersion)
 val pulseStore = listOf("GOLDENPATH_UPLOAD_STORE_FILE", "DEVPULSE_STORE_FILE")
     .mapNotNull { System.getenv(it)?.takeIf { path -> path.isNotBlank() } }
     .firstOrNull()

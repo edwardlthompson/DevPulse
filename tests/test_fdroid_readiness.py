@@ -26,19 +26,31 @@ class VersionSotTests(unittest.TestCase):
         self.assertEqual(check(ROOT), [])
         data = json.loads((ROOT / "schemas/golden-path/app-version.json").read_text(encoding="utf-8"))
         self.assertEqual(data["version"], "1.0.0")
-        self.assertEqual(data["versionCode"], 10000)
+        self.assertEqual(version_code(data["version"]), 10000)
+        self.assertNotIn("versionCode", data)
 
     def test_detects_template_reset(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "schemas/golden-path").mkdir(parents=True)
             (root / "schemas/golden-path/app-version.json").write_text(
-                json.dumps({"version": "0.1.0", "versionCode": 100}),
+                json.dumps({"version": "0.1.0"}),
                 encoding="utf-8",
             )
             (root / "CHANGELOG.md").write_text("## [Unreleased]\n\n## [1.0.0]\n", encoding="utf-8")
             errors = check(root)
             self.assertTrue(any("behind CHANGELOG" in e for e in errors))
+
+    def test_stale_json_version_code_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "schemas/golden-path").mkdir(parents=True)
+            (root / "schemas/golden-path/app-version.json").write_text(
+                json.dumps({"version": "1.0.1", "versionCode": 10000}),
+                encoding="utf-8",
+            )
+            errors = check(root)
+            self.assertTrue(any("versionCode 10000 != derived 10001" in e for e in errors))
 
 
 class LicenseAndSigningTests(unittest.TestCase):

@@ -44,7 +44,7 @@ else
   ok "NonFreeNet describes Play, GitHub, and Aptoide lookups"
 fi
 
-VERSION_CODE="$(python3 -c 'import json; print(json.load(open("schemas/golden-path/app-version.json"))["versionCode"])')"
+VERSION_CODE="$(python3 -c 'import json,sys; sys.path.insert(0,"scripts/lib"); from golden_path_app_version import version_code; print(version_code(json.load(open("schemas/golden-path/app-version.json"))["version"]))')"
 if [ -z "${VERSION_CODE:-}" ]; then
   fail "could not parse versionCode from app-version.json"
 elif [ ! -s "$FASTLANE/changelogs/${VERSION_CODE}.txt" ]; then

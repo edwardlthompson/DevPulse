@@ -36,13 +36,11 @@ def load_sot(base: Path) -> tuple[str, int] | list[str]:
     if not isinstance(expected_raw, str) or not expected_raw.strip():
         return ["app-version.json version must be a non-empty string"]
     expected = expected_raw.strip()
-    code = data.get("versionCode")
-    if not isinstance(code, int) or code <= 0:
-        return ["app-version.json versionCode must be a positive int"]
     derived = version_code(expected)
-    if code != derived:
-        return [f"app-version.json versionCode {code} != derived {derived} from {expected}"]
-    return expected, code
+    stored = data.get("versionCode")
+    if stored is not None and stored != derived:
+        return [f"app-version.json versionCode {stored} != derived {derived} from {expected}"]
+    return expected, derived
 
 
 def check(root: Path | None = None) -> list[str]:
@@ -96,10 +94,10 @@ def check(root: Path | None = None) -> list[str]:
                 "examples/android/app/build.gradle.kts must read versionName via "
                 "readGoldenPathAppVersion() from schemas/golden-path/app-version.json"
             )
-        if "readGoldenPathVersionCode" not in text or '"versionCode"' not in text:
+        if "pulseVersionCode(" not in text or "* 10000" not in text:
             errors.append(
-                "examples/android/app/build.gradle.kts must read versionCode from "
-                "schemas/golden-path/app-version.json"
+                "examples/android/app/build.gradle.kts must derive versionCode from "
+                "versionName (major*10000+minor*100+patch)"
             )
         if 'getByName("release")' in text:
             errors.append(

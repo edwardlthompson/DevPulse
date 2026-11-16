@@ -1,5 +1,4 @@
 {
   "version": "1.0.0",
-  "versionCode": 10000,
-  "note": "DevPulse APK versionName/versionCode. Distinct from .template-version. Do not reset to template 0.1.0 on catch-up."
+  "note": "DevPulse APK versionName. versionCode = major*10000+minor*100+patch (1.0.0 → 10000). Distinct from .template-version. Do not reset to template 0.1.0 on catch-up."
 }

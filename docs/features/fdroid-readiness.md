@@ -11,8 +11,8 @@
 
 ## Smoke scenario
 
-1. Given `schemas/golden-path/app-version.json` is 1.0.0 / 10000
-2. When Gradle reads the SoT and F-Droid scrapes root fastlane
+1. Given `schemas/golden-path/app-version.json` is `1.0.0`
+2. When Gradle derives versionCode (`major*10000+minor*100+patch`) and F-Droid scrapes root fastlane
 3. Then versionCode 10000 matches changelog + tag `v1.0.0`, and LICENSE starts with canonical GPL-3.0 text
 
 ## Container map
