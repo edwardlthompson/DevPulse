@@ -1,4 +1,4 @@
 {
-  "version": "1.14.0",
-  "note": "Golden Path demo app version (About string). Distinct from TEMPLATE_INDEX template_version."
+  "version": "1.0.0",
+  "note": "DevPulse APK versionName. versionCode = major*10000+minor*100+patch (1.0.0 → 10000). Distinct from .template-version. Do not reset to template 0.1.0 on catch-up."
 }

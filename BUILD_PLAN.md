@@ -70,6 +70,14 @@ _No cloud agent items._
 
 ---
 
+## Sprint F-Droid
+
+<!-- parallel_exception: one source-side F-Droid slice; no isolated parallel scopes -->
+
+✅ [AGENT][LOCAL] F-Droid source readiness — scope: version SoT 1.0.0/10000, canonical GPL-3.0 LICENSE, strip-tolerant signingConfig, NonFreeNet, root fastlane
+
+---
+
 ## Ongoing Maintenance
 
 Monday cron runs health, gaps, radar, and dep dry-run. `/ship` owns the release tag. Red cron: `weekly-maintain`, then [`docs/GROK_BOTS.md`](docs/GROK_BOTS.md).

@@ -17,6 +17,13 @@
 
 ## Entries
 
+### 2026-11-16 — F-Droid source readiness
+- **Status:** Accepted
+- **Context:** Template catch-up 1.12.0 reset `app-version.json` to 0.1.0 while tag `v1.0.0` ships 1.0.0 / 10000. GitHub licensee reported `NOASSERTION` because LICENSE had a project header and a truncated How to Apply section. F-Droid strips `signingConfigs.getByName("release")`. Fastlane listed NonFreeNet without naming Play/GitHub/Aptoide, and phone screenshots were 1.4KiB placeholders.
+- **Decision:** Single-source `version` + `versionCode` in `app-version.json`; Gradle `maybeCreate`/`findByName`; canonical GNU GPL-3.0 in `LICENSE` with or-later notice in `NOTICE`; describe NonFreeNet; replace placeholders with the real inventory capture; mark the version file sacred so catch-up cannot reset it.
+- **Alternatives considered:** Retag `v1.0.0` (rejected: published tag). GitHub license picker instead of file fix (rejected: picker cannot encode or-later and rewrites LICENSE).
+- **Consequences:** Next F-Droid recipe should drop any signing `prebuild` sed. Tag `v1.0.1` after merge so the signing/LICENSE tree is what fdroiddata builds. GitHub license UI will show GPL-3.0, not GPL-3.0-or-later.
+
 ### 2026-10-21 — Daily schedule reliability + Scan-and-update auto-kick
 - **Status:** Accepted
 - **Context:** Once a day felt broken: `nextDelayMs(null)` waited a full day, Wi‑Fi Worker skips returned success with no retry, and Scan and update still required tapping Update N after Refresh (clunky vs F-Droid/APKUpdater). Chip select must not open Scan.

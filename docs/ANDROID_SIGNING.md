@@ -71,6 +71,8 @@ Rationale: reproducibility is a **gate**, not a binary warehouse. Ship binaries 
 |---------|-----------|----------|
 | GitHub Releases | Your upload (or debug for CI proofs) | Re-attach the previous tag's APK / AAB |
 | F-Droid | F-Droid builders | Previous suggested version in the recipe |
+
+`examples/android/app/build.gradle.kts` uses `signingConfigs.maybeCreate("release")` and `findByName("release")` so F-Droid can strip the block without a `prebuild` sed. Local upload signing still applies only when a store file is present.
 | Play (optional) | Play App Signing after upload | Play Console → prior release; keep the same upload key |
 ## Rollback
 

@@ -6,20 +6,22 @@ plugins {
 fun readGoldenPathAppVersion(): String {
     val file = rootProject.file("../../schemas/golden-path/app-version.json")
     check(file.isFile) { "Missing Golden Path app version SoT: ${file.invariantSeparatorsPath}" }
-    val match = Regex(""""version"\s*:\s*"([^"]+)"""").find(file.readText())
-    val version = match?.groupValues?.get(1)?.trim().orEmpty()
+    val text = file.readText()
+    val version = Regex(""""version"\s*:\s*"([^"]+)"""").find(text)?.groupValues?.get(1)?.trim().orEmpty()
     check(version.isNotEmpty()) { "schemas/golden-path/app-version.json missing version" }
     return version
 }
 
-val pulseVersion = readGoldenPathAppVersion()
-val pulseVersionCode = run {
-    val parts = pulseVersion.substringBefore('-').substringBefore('+').split('.')
+fun pulseVersionCode(version: String): Int {
+    val parts = version.substringBefore('-').substringBefore('+').split('.')
     val major = parts.getOrNull(0)?.toIntOrNull() ?: 0
     val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
     val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
-    major * 10000 + minor * 100 + patch
+    return major * 10000 + minor * 100 + patch
 }
+
+val pulseVersion = readGoldenPathAppVersion()
+val pulseVersionCode = pulseVersionCode(pulseVersion)
 val pulseStore = listOf("GOLDENPATH_UPLOAD_STORE_FILE", "DEVPULSE_STORE_FILE")
     .mapNotNull { System.getenv(it)?.takeIf { path -> path.isNotBlank() } }
     .firstOrNull()
@@ -45,9 +47,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    if (pulseStore != null) {
-        signingConfigs {
-            create("release") {
+    signingConfigs {
+        // F-Droid strips this block; maybeCreate/findByName still compile if it is gone or empty.
+        maybeCreate("release").apply {
+            if (pulseStore != null) {
                 storeFile = pulseStore
                 storePassword = System.getenv("GOLDENPATH_UPLOAD_STORE_PASSWORD")
                     ?: System.getenv("DEVPULSE_STORE_PASSWORD").orEmpty()
@@ -65,8 +68,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            if (pulseStore != null) {
-                signingConfig = signingConfigs.getByName("release")
+            signingConfigs.findByName("release")?.takeIf { it.storeFile != null }?.let {
+                signingConfig = it
             }
         }
     }
