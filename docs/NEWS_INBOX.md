@@ -35,3 +35,13 @@ A Cursor planning agent should review these items and fold the useful ones into 
 
 - [x] Bump the Gradle wrapper 9.8.2 to 9.9.2 and commit the regenerated wrapper jar and distributionSha256Sum — the patch fixes four High build-tool vulnerabilities (SFTP host keys, snapshot dependency verification, TestKit temp dir, daemon registry). It also picks up the 9.3 Critical version-catalog code-execution fix this wrapper lacks. Run ./gradlew wrapper --gradle-version=<ver> in the wrapper (examples/android/gradle/wrapper/). Label: `[AGENT][LOCAL]` · Priority: P2 · https://docs.gradle.org/9.9.2/release-notes.html (synced to BUILD_PLAN)
 - [ ] Decide whether to verify your identity and register this app with Google before January 2027 — if yes, create an Android Developer Console account and register the package name(s) with the SHA-256 of the GitHub Releases signing key (plus F-Droid's key if F-Droid re-signs it); if no, add an "advanced flow" install note to the README. The app is sideloaded (GitHub Releases/Obtainium/F-Droid), exactly the installs the rollout gates, and this is a personal identity/policy call. Label: `[HUMAN]` · Priority: P2 · https://developer.android.com/blog/posts/android-developer-verification-2027 (inbox only: no /build-parsed human group on this board)
+
+## 2026-11-28
+
+**News and updates**
+
+- Gradle [9.9.3](https://github.com/gradle/gradle/releases/tag/v9.9.3) (Nov 27) is a regression-only patch: 9.9.2 failed to start on Windows when GRADLE_USER_HOME sits on an ImDisk RAM disk ([gradle#39909](https://github.com/gradle/gradle/issues/39909)). No new security fixes; 9.9.2's four High fixes are still why the open wrapper-bump row is P2, and Gradle now recommends 9.9.3, so landing on it avoids a second bump. The board row is unchanged. [Release notes](https://docs.gradle.org/9.9.3/release-notes.html)
+
+**Tasks for the planning agent**
+
+- [ ] Use Gradle 9.9.3 rather than 9.9.2 when doing the open wrapper bump — 9.9.3 has the same security fixes plus a Windows startup regression fix, so one bump covers both. Label: `[AGENT][LOCAL]` · Priority: P3 · https://github.com/gradle/gradle/releases/tag/v9.9.3 (BUILD_PLAN row left unchanged)
